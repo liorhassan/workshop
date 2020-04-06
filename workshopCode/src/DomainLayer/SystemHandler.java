@@ -37,6 +37,17 @@ public class SystemHandler {
         return activeUser;
     }
 
+    /**
+     * function for handling UseCase 3.1
+     */
+    public String logout(){
+        activeUser = null;
+        return "You have been successfully logged out!";
+    }
+
+    /**
+     * function for handling UseCase 2.5
+     */
     public List<Product> searchProducts(String name, Category category, String description){
         if(emptyString(name)&&category==null&&emptyString(description))
             throw new IllegalArgumentException("Must enter search parameter");
@@ -57,6 +68,9 @@ public class SystemHandler {
         return matching;
     }
 
+    /**
+     * function for handling UseCase 2.5
+     */
     public List<Product> filterResults(List<Product> toFilter, Integer minPrice, Integer maxPrice, Category category){
         List<Product> matching = new ArrayList<>();
         for(Product p : toFilter){
