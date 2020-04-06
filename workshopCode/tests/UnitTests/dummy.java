@@ -1,4 +1,4 @@
-package unitTests;
+package UnitTests;
 
 public class dummy {
 }
