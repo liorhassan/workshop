@@ -16,6 +16,7 @@ public class SystemHandler {
     private HashMap<String, User> users;
     private HashMap<String, Store> stores;
     private List<User> adminsList;
+    private ShoppingCart guestShoppingCart;
 
 
     private SystemHandler() {
@@ -23,6 +24,7 @@ public class SystemHandler {
         stores = new HashMap<>();
         adminsList = new ArrayList<>();
         activeUser = null;
+        guestShoppingCart = new ShoppingCart(null);
     }
 
     public User getUserByName(String username) {
@@ -122,6 +124,18 @@ public class SystemHandler {
     public String logout(){
         activeUser = null;
         return "You have been successfully logged out!";
+    }
+
+    // function for handling Use Case 2.7
+    public String viewSoppingCart(){
+
+        ShoppingCart shCart;
+        if(activeUser != null){
+            shCart = activeUser.getShoppingCart();
+        }
+        else
+            shCart = guestShoppingCart;
+        return shCart.view();
     }
 
     private boolean emptyString(String arg){
