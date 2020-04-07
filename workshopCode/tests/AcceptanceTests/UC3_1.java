@@ -1,5 +1,5 @@
 package AcceptanceTests;
 
-public class UC3_1Test {
+public class UC3_1 {
     
 }

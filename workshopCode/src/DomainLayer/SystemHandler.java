@@ -37,24 +37,16 @@ public class SystemHandler {
         return activeUser;
     }
 
+    //function for handling UseCase 2.2
     public void register(String username) {
-        if (username == "" || username == null)
+        if (emptyString(username))
             throw new IllegalArgumentException("Username cannot be empty");
         if (users.containsKey(username))
             throw new IllegalArgumentException("This username already exists in the system. Please choose a different one");
         users.put(username, new User());
     }
-    /**
-     * function for handling UseCase 3.1
-     */
-    public String logout(){
-        activeUser = null;
-        return "You have been successfully logged out!";
-    }
 
-    /**
-     * function for handling UseCase 2.5
-     */
+    //function for handling UseCase 2.5
     public List<Product> searchProducts(String name, Category category, String description){
         if(emptyString(name)&&category==null&&emptyString(description))
             throw new IllegalArgumentException("Must enter search parameter");
@@ -75,9 +67,7 @@ public class SystemHandler {
         return matching;
     }
 
-    /**
-     * function for handling UseCase 2.5
-     */
+    //function for handling UseCase 2.5
     public List<Product> filterResults(List<Product> toFilter, Integer minPrice, Integer maxPrice, Category category){
         List<Product> matching = new ArrayList<>();
         for(Product p : toFilter){
@@ -94,7 +84,24 @@ public class SystemHandler {
         return matching;
     }
 
+    //function for handling UseCase 2.6
+    public void addToShoppingBasket(String store, String product){
+        if (emptyString(store) || emptyString(product))
+            throw new IllegalArgumentException("Must enter store name and product name");
+        if (!stores.containsKey(store))
+            throw new IllegalArgumentException("The store doesn't exist in the trading system");
+        if (stores.get(store).checkIfProductAvailable(product) == false)
+            throw new IllegalArgumentException("The product isn't available in the store");
+        activeUser.getShoppingCart().addProduct(product, stores.get(store));
+    }
+
+    //function for handling UseCase 3.1
+    public String logout(){
+        activeUser = null;
+        return "You have been successfully logged out!";
+    }
+
     private boolean emptyString(String arg){
-        return arg==null||arg=="";
+        return arg == null || arg == "";
     }
 }
