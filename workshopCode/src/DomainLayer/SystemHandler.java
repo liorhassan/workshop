@@ -94,6 +94,29 @@ public class SystemHandler {
             throw new IllegalArgumentException("The product isn't available in the store");
         activeUser.getShoppingCart().addProduct(product, stores.get(store));
     }
+    // function for handling UseCase 2.3
+    public void login(String username, boolean adminMode){
+        if(activeUser != null){
+            throw new IllegalArgumentException("first logout");
+        }
+        if (username == "" || username == null)                                                       //check legal input
+            throw new IllegalArgumentException("Username or password cannot be empty");
+        if (!users.containsKey(username))
+            throw new IllegalArgumentException("the user not exist");
+        User user = users.get(username);
+        if(adminMode){                                                                              //check if admin user
+            if(adminsList.contains(user)){
+                this.adminMode = true;
+                activeUser = user;
+            }
+            else
+                throw new IllegalArgumentException("you are should be admin");
+            }
+        else {
+            this.adminMode = false;
+            activeUser = user;
+        }
+    }
 
     //function for handling UseCase 3.1
     public String logout(){

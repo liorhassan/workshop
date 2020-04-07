@@ -15,5 +15,6 @@ public class SecurityHandler {
     }
 
     public boolean validPassword(String password){return true;}
+    public  boolean CorrectPassword (String username, String password) {return true;}
 
 }
