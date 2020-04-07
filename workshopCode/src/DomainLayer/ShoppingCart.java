@@ -7,11 +7,10 @@ public class ShoppingCart {
 
     private HashMap<Store, Basket> baskets;
     private User user;
-    private List<Basket> basketsList;
 
     public ShoppingCart(User user) {
         this.user = user;
-        basketsList = new ArrayList<Basket>();
+        baskets = new HashMap<>();
     }
 
     public void addProduct(String product, Store store){
@@ -28,15 +27,15 @@ public class ShoppingCart {
         this.user = user;
     }
 
-    public List<Basket> getBaskets() {
-        return basketsList;
+    public Collection<Basket> getBaskets() {
+        return baskets.values();
     }
 
     public String view(){
         String output = "Your ShoppingCart details: \n";
         if(baskets.isEmpty())
             return output + "empty!";
-        for(Basket b : basketsList){
+        for(Basket b : baskets.values()){
             output = output + b.viewBasket();
         }
         return output;
