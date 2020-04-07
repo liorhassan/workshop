@@ -44,6 +44,12 @@ public class Basket {
 
 
     public void addProduct(Product p){
-        //TODO: implement
+        for(ProductItem pi : productItems){
+            if(pi.getProduct().equals(p)){
+                pi.setAmount(pi.getAmount()+1);
+                return;
+            }
+        }
+        productItems.add(new ProductItem(p,1,this));
     }
 }
