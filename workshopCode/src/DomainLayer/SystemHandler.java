@@ -59,7 +59,7 @@ public class SystemHandler {
         if(emptyString(name)&&category==null&&emptyString(description))
             throw new IllegalArgumentException("Must enter search parameter");
         List<Product> matching=  new ArrayList<>();
-        for(Store s : storeMap.values()){
+        for(Store s : stores.values()){
             for(Product p : s.getProducts()){
                 if(!emptyString(name)&&!p.getName().contains(name))
                     continue;
