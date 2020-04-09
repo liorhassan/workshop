@@ -141,4 +141,43 @@ public class SystemHandler {
     private boolean emptyString(String arg){
         return arg == null || arg == "";
     }
+
+    public String viewStoreInfo(String storeName){
+
+        if(storeName == null || storeName.isEmpty()){
+            return "The store name is invalid.";
+        }
+        Store toView = getStoreByName(storeName);
+        if(toView == null){
+            return "This store doesn't exist in this trading system";
+        }
+
+        List<Product> products = toView.getProducts();
+        String storeInfo = "Store name: " + toView.getName() + "\n--------------------------------------\n" +
+                "description: \" + toView.getDescription()\n--------------------------------------\n" +
+                "products:\n";
+
+        for(Product currProduct: products){
+            storeInfo.concat("  " + currProduct.getName() + "-");
+            while(storeInfo.length() < 15) {
+                storeInfo.concat(" ");
+            }
+            storeInfo.concat(currProduct.getPrice() + "$\n");
+        }
+
+        return storeInfo;
+    }
+
+    public String viewProductInfo(String storeName, String productName){
+        if(productName == null || productName.isEmpty()){
+            return "The product name is invalid";
+        }
+        Store s = getStoreByName(storeName);
+        Product p = s.getProductByName(productName);
+        if(p == null){
+            return "This product is not available for purchasing in this store";
+        }
+
+        return (p.getName() + ": " + p.getDescription());
+    }
 }

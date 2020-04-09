@@ -7,6 +7,7 @@ public class Store {
 
     private List<Product> products;
     private String name;
+    private String description;
 
     public Store(String name) {
         this.name = name;
@@ -24,8 +25,7 @@ public class Store {
 
 
     public List<Product> getProducts(){
-        //TODO: implement
-        return  null;
+        return this.products;
     }
 
     public boolean checkIfProductAvailable(String product){
@@ -41,4 +41,11 @@ public class Store {
         return null;
     }
 
+    public String getDescription(){
+        return this.description;
+    }
+
+    public void setDescription(String newDesc){
+        this.description = newDesc;
+    }
 }
