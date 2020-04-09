@@ -9,8 +9,6 @@ import java.util.List;
 public class ViewInfo {
 
     private SystemHandler sHandler;
-    private Store store;
-
 
     public void execute(String storeName) {
 
