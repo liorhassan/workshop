@@ -5,7 +5,7 @@ public class User {
     private ShoppingCart shoppingCart;
 
     public User(){
-        shoppingCart = new ShoppingCart();
+        shoppingCart = new ShoppingCart(this);
     }
 
     public ShoppingCart getShoppingCart() {

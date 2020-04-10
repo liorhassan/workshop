@@ -41,6 +41,34 @@ public class ShoppingCart {
         }
         return output;
     }
+
+    private Basket searchBasket(Store store){
+        for(Basket b : basketsList){
+            if(b.getStore().equals(store)){
+                return b;
+            }
+        }
+        throw new IllegalArgumentException("invalid store");
+    }
+
+    public String edit(Store store, String product, int amount){
+        Basket basket = searchBasket(store);
+        List<ProductItem> items = basket.getProductItems();
+        for(ProductItem pi : items){
+            if(pi.getProduct().getName().equals(product)) {
+                if (amount == 0) {
+                    items.remove(pi);
+                    if (items.isEmpty())
+                        basketsList.remove(basket);
+                    return "edited!";
+                } else {
+                    pi.setAmount(amount);
+                    return "edited!";
+                }
+            }
+        }
+        return "cant find the product";
+    }
 }
 
 

@@ -138,6 +138,26 @@ public class SystemHandler {
         return shCart.view();
     }
 
+    // help for use case 2.7
+    private Store searchStoreByName (String storeName){
+        Store store = stores.get(storeName);
+        return store;
+    }
+
+    // function for use case 2.7
+    public String editShoppingCart(String storeName, String productName, int amount){
+        if(storeName == null || storeName == "" || productName ==null || productName == "" || amount < 0 )
+            throw new IllegalArgumentException("invalid input");
+        Store store = searchStoreByName(storeName);
+        if(store == null)
+            throw new IllegalArgumentException("the store not exist");
+        if(activeUser != null){
+            return activeUser.getShoppingCart().edit(store, productName, amount);
+        }
+        else
+            return guestShoppingCart.edit(store, productName, amount);
+    }
+
     private boolean emptyString(String arg){
         return arg == null || arg == "";
     }
