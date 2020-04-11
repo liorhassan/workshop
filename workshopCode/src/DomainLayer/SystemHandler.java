@@ -150,7 +150,7 @@ public class SystemHandler {
             throw new IllegalArgumentException("invalid input");
         Store store = searchStoreByName(storeName);
         if(store == null)
-            throw new IllegalArgumentException("The store doesn't exist in the trading system");
+            throw new IllegalArgumentException("This store doesn't exist");
         if(activeUser != null){
             return activeUser.getShoppingCart().edit(store, productName, amount);
         }
