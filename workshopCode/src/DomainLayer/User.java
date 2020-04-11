@@ -20,4 +20,9 @@ public class User {
     public void removeStoreManagment(Store store) {
         storeManagments.remove(store);
     }
+
+    public boolean hasEditPrivileges(String storeName) {
+        //TODO: implement
+        return true;
+    }
 }

@@ -1,6 +1,7 @@
 package DomainLayer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -62,5 +63,28 @@ public class Store {
     public void removeManager(User user) {
         managments.remove(user);
         user.removeStoreManagment(this);
+    }
+
+    public boolean hasProduct(String productName) {
+        for (Product p : products){
+            if (p.getName().equals(productName))
+                return true;
+        }
+        return false;
+    }
+
+    public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription) {
+        products.add(new Product(productName, productCategory, productDescription, productPrice));
+    }
+
+    public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription) {
+        for (Product p : products){
+            if (p.getName().equals(productName)) {
+                p.setPrice(productPrice);
+                p.setCategory(productCategory);
+                p.setDescription(productDescription);
+                break;
+            }
+        }
     }
 }

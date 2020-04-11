@@ -6,6 +6,12 @@ public class Product {
     private String description;
     private Double price;
 
+    public Product(String name, Category category, String description, Double price) {
+        this.name = name;
+        this.category = category;
+        this.description = description;
+        this.price = price;
+    }
 
     public String getName() {
         return name;
