@@ -102,9 +102,9 @@ public class SystemHandler {
             throw new IllegalArgumentException("first logout");
         }
         if (username == "" || username == null)                                                       //check legal input
-            throw new IllegalArgumentException("Username or password cannot be empty");
+            throw new IllegalArgumentException("The username is invalid");
         if (!users.containsKey(username))
-            throw new IllegalArgumentException("the user not exist");
+            throw new IllegalArgumentException("This user is not registered");
         User user = users.get(username);
         if(adminMode){                                                                              //check if admin user
             if(adminsList.contains(user)){
@@ -150,7 +150,7 @@ public class SystemHandler {
             throw new IllegalArgumentException("invalid input");
         Store store = searchStoreByName(storeName);
         if(store == null)
-            throw new IllegalArgumentException("the store not exist");
+            throw new IllegalArgumentException("The store doesn't exist in the trading system");
         if(activeUser != null){
             return activeUser.getShoppingCart().edit(store, productName, amount);
         }
