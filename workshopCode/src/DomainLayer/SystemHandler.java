@@ -147,7 +147,7 @@ public class SystemHandler {
     // function for use case 2.7
     public String editShoppingCart(String storeName, String productName, int amount){
         if(storeName == null || storeName == "" || productName ==null || productName == "" || amount < 0 )
-            throw new IllegalArgumentException("invalid input");
+            throw new IllegalArgumentException("Must enter product name, store name and amount");
         Store store = searchStoreByName(storeName);
         if(store == null)
             throw new IllegalArgumentException("This store doesn't exist");
