@@ -138,6 +138,24 @@ public class SystemHandler {
         return shCart.view();
     }
 
+    // function for handling Use Case 4.7
+    public String removeManager(String username,String storename){
+        if(emptyString(username) || emptyString(storename))
+            throw new IllegalArgumentException("Must enter username and store name");
+        Store store = stores.get(storename);
+        if(store == null)
+            throw new IllegalArgumentException("This store doesn't exist");
+        User user = users.get(username);
+        if(user == null)
+            throw new IllegalArgumentException("This username doesn't exist");
+        if(!store.isOwner(activeUser))
+            throw new RuntimeException("You must be this store owner for this command");
+        if(store.getAppointer(user) != activeUser)
+            throw new RuntimeException("This username is not one of this store's managers appointed by you");
+        store.removeManager(user);
+        return "Manager removed successfully";
+    }
+
     private boolean emptyString(String arg){
         return arg == null || arg == "";
     }

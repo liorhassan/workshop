@@ -1,16 +1,21 @@
 package DomainLayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Store {
 
     private List<Product> products;
     private String name;
+    private HashMap<User,StoreManaging> managments;
+    private HashMap<User,StoreOwning> ownerships;
 
     public Store(String name) {
         this.name = name;
         this.products = new ArrayList<>();
+        this.managments = new HashMap<>();
+        this.ownerships = new HashMap<>();
     }
 
 
@@ -41,4 +46,21 @@ public class Store {
         return null;
     }
 
+    public boolean isOwner(User user) {
+        return ownerships.containsKey(user);
+    }
+
+    public User getAppointer(User user) {
+        User appointer = null;
+        StoreManaging manage = managments.get(user);
+        if(manage != null)
+            appointer = manage.getAppointer();
+        return appointer;
+
+    }
+
+    public void removeManager(User user) {
+        managments.remove(user);
+        user.removeStoreManagment(this);
+    }
 }
