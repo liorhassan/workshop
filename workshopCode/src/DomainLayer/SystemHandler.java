@@ -126,7 +126,7 @@ public class SystemHandler {
         return "You have been successfully logged out!";
     }
 
-    // function for handling Use Case 2.7
+    //function for handling Use Case 2.7
     public String viewSoppingCart(){
 
         ShoppingCart shCart;
@@ -136,6 +136,25 @@ public class SystemHandler {
         else
             shCart = guestShoppingCart;
         return shCart.view();
+    }
+
+    //function for handling Use Case 4.1
+    public String updateInventory(String storeName, String productName, double productPrice, Category productCategory, String productDescription, int amount){
+        if (emptyString(storeName) || emptyString(productName) || productCategory == null || emptyString(productDescription))
+            throw new IllegalArgumentException("Must enter store name and product info");
+        if (!stores.containsKey(storeName))
+            throw new IllegalArgumentException("This store doesn't exist");
+        if (!activeUser.hasEditPrivileges(storeName))
+            throw new IllegalArgumentException("Must have editing privileges");
+        Store s = stores.get(storeName);
+        if (!s.hasProduct(productName)) {
+            s.addToInventory(productName, productPrice, productCategory, productDescription);
+            return "The product has been added";
+        }
+        else {
+            s.updateInventory(productName, productPrice, productCategory, productDescription);
+            return "The product has been updated";
+        }
     }
 
     // function for handling Use Case 4.7
