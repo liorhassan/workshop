@@ -9,11 +9,14 @@ public class User {
     private UserPurchaseHistory purchaseHistory;
     private String username;
 
-    public User(String name){
-        this.username = name;
+    public User(){
         shoppingCart = new ShoppingCart(this);
         storeManagments = new HashMap<>();
         this.purchaseHistory = new UserPurchaseHistory(this);
+    }
+
+    public void setUsername(String name) {
+        this.username = name;
     }
 
     public String getUsername() {
