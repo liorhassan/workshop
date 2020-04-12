@@ -92,7 +92,7 @@ public class SystemHandler {
             throw new IllegalArgumentException("Must enter store name and product name");
         if (!stores.containsKey(store))
             throw new IllegalArgumentException("The store doesn't exist in the trading system");
-        if (stores.get(store).checkIfProductAvailable(product) == false)
+        if (!stores.get(store).checkIfProductAvailable(product))
             throw new IllegalArgumentException("The product isn't available in the store");
         activeUser.getShoppingCart().addProduct(product, stores.get(store));
     }
@@ -101,7 +101,7 @@ public class SystemHandler {
         if(activeUser != null){
             throw new IllegalArgumentException("first logout");
         }
-        if (username == "" || username == null)                                                       //check legal input
+        if (username == null || username.equals(""))                                                       //check legal input
             throw new IllegalArgumentException("Username or password cannot be empty");
         if (!users.containsKey(username))
             throw new IllegalArgumentException("the user not exist");
@@ -176,6 +176,19 @@ public class SystemHandler {
     }
 
     private boolean emptyString(String arg){
-        return arg == null || arg == "";
+        return arg == null || arg.equals("");
+    }
+
+    // function for handling Use Case 3.2 written by Nufar
+    public String openNewStore(String storeName, String storeDescription) {
+        if (activeUser == null)
+            throw new RuntimeException("Only subscribed users can open a store");
+        if (storeName == null || storeDescription == null || storeName.equals("") || storeDescription.equals(""))
+            throw new IllegalArgumentException("Must enter store name and description");
+        if (stores.get(storeName) != null)
+            throw new RuntimeException("Store name already exists, please choose a different one");
+        Store newStore = new Store(storeName, storeDescription, this.activeUser);
+        this.stores.put(storeName, newStore);
+        return "The new store is now open!";
     }
 }
