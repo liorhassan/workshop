@@ -181,8 +181,6 @@ public class SystemHandler {
 
     // function for handling Use Case 3.2 written by Nufar
     public String openNewStore(String storeName, String storeDescription) {
-        if (activeUser == null)
-            throw new RuntimeException("Only subscribed users can open a store");
         if (storeName == null || storeDescription == null || storeName.equals("") || storeDescription.equals(""))
             throw new IllegalArgumentException("Must enter store name and description");
         if (stores.get(storeName) != null)

@@ -12,16 +12,16 @@ public class Store {
     private HashMap<User,StoreManaging> managments;
     private HashMap<User,StoreOwning> ownerships;
     private String description;
-    private User storeFirstOwner; // TODO: decide if we need or not
+    private User storeFirstOwner;
 
     public Store(String name, String description, User firstOwner) {
         this.name = name;
         this.description = description;
-        this.storeFirstOwner = firstOwner; // TODO: decide if we need or not
+        this.storeFirstOwner = firstOwner;
         this.products = new ArrayList<>();
         this.managments = new HashMap<>();
         this.ownerships = new HashMap<>();
-        this.ownerships.put(firstOwner, new StoreOwning(true));
+        this.ownerships.put(firstOwner, new StoreOwning());
     }
 
 
@@ -98,7 +98,7 @@ public class Store {
     public boolean addStoreOwner(User newOwner) {
         if (this.ownerships.get(newOwner) != null)
             return false;
-        this.ownerships.put(newOwner, new StoreOwning(false));
+        this.ownerships.put(newOwner, new StoreOwning());
         return true;
     }
 }
