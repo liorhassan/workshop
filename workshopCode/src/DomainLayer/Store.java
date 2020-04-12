@@ -7,14 +7,14 @@ import java.util.List;
 
 public class Store {
 
-    private List<Product> products;
+    private HashMap<Product,Integer> products;
     private String name;
     private HashMap<User,StoreManaging> managments;
     private HashMap<User,StoreOwning> ownerships;
 
     public Store(String name) {
         this.name = name;
-        this.products = new ArrayList<>();
+        this.products = new HashMap<>();
         this.managments = new HashMap<>();
         this.ownerships = new HashMap<>();
     }
@@ -29,18 +29,19 @@ public class Store {
     }
 
 
-    public List<Product> getProducts(){
-        //TODO: implement
-        return  null;
+    public Collection<Product> getProducts(){
+        return  products.keySet();
     }
 
     public boolean checkIfProductAvailable(String product){
-        //TODO: implement
-        return true;
+        Product p = getProductByName(product);
+        if(p==null)
+            return false;
+        return products.get(p)>0;
     }
 
     public Product getProductByName(String productName){
-        for (Product p : products) {
+        for (Product p : products.keySet()) {
             if (p.getName() == productName)
                 return p;
         }
@@ -66,7 +67,7 @@ public class Store {
     }
 
     public boolean hasProduct(String productName) {
-        for (Product p : products){
+        for (Product p : products.keySet()){
             if (p.getName().equals(productName))
                 return true;
         }
@@ -74,11 +75,11 @@ public class Store {
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription) {
-        products.add(new Product(productName, productCategory, productDescription, productPrice));
+        products.put(new Product(productName, productCategory, productDescription, productPrice),1);
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription) {
-        for (Product p : products){
+        for (Product p : products.keySet()){
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
