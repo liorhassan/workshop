@@ -45,7 +45,7 @@ public class SystemHandler {
             throw new IllegalArgumentException("Username cannot be empty");
         if (users.containsKey(username))
             throw new IllegalArgumentException("This username already exists in the system. Please choose a different one");
-        users.put(username, new User());
+        users.put(username, new User(username));
     }
 
     //function for handling UseCase 2.5
@@ -177,5 +177,12 @@ public class SystemHandler {
 
     private boolean emptyString(String arg){
         return arg == null || arg == "";
+    }
+
+    // function for handling Use Case 3.7 - written by Nufar
+    public UserPurchaseHistory getUserPurchaseHistory() {
+        if (activeUser == null)
+            throw new IllegalArgumentException("Only subscribed users can view purchase history");
+        return activeUser.getPurchaseHistory();
     }
 }
