@@ -129,26 +129,16 @@ public class SystemHandler {
     // function for handling Use Case 2.7
     public String viewSoppingCart(){
 
-        ShoppingCart shCart;
-        if(activeUser != null){
-            shCart = activeUser.getShoppingCart();
-        }
-        else
-            shCart = guestShoppingCart;
-        return shCart.view();
+        return activeUser.getShoppingCart().view();
     }
 
-    // help for use case 2.7
-    private Store searchStoreByName (String storeName){
-        Store store = stores.get(storeName);
-        return store;
-    }
+
 
     // function for use case 2.7
     public String editShoppingCart(String storeName, String productName, int amount){
         if(emptyString(storeName) || emptyString(productName) || amount < 0 )
             throw new IllegalArgumentException("Must enter product name, store name and amount");
-        Store store = searchStoreByName(storeName);
+        Store store = stores.get(storeName);
         if(store == null)
             throw new IllegalArgumentException("This store doesn't exist");
 
