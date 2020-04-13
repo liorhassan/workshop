@@ -47,11 +47,11 @@ public class ShoppingCart {
                     items.remove(pi);
                     if (items.isEmpty())
                         baskets.remove(store);
-                    return "edited!";
+                    return "The product has been updated successfully";
                 }
                 else if(amount> pi.getAmount() && store.checkProductInventory(pi.getProduct(), amount)) {
                     pi.setAmount(amount);
-                    return "edited!";
+                    return "The product has been updated successfully";
                 }
                 else {
                     return "this amount is not available";
