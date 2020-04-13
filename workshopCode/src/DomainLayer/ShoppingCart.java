@@ -48,9 +48,13 @@ public class ShoppingCart {
                     if (items.isEmpty())
                         baskets.remove(store);
                     return "edited!";
-                } else {
+                }
+                else if(amount> pi.getAmount() && store.checkProductInventory(pi.getProduct(), amount)) {
                     pi.setAmount(amount);
                     return "edited!";
+                }
+                else {
+                    return "this amount is not available";
                 }
             }
         }
