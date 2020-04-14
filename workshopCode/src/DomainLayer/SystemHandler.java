@@ -184,6 +184,23 @@ public class SystemHandler {
         return "Manager removed successfully";
     }
 
+    public String appointManager(String username, String storename){
+        if(emptyString(username) || emptyString(storename))
+            throw new IllegalArgumentException("Must enter username and store name");
+        Store store = stores.get(storename);
+        if(store == null)
+            throw new IllegalArgumentException("This store doesn't exist");
+        User appointed_user = users.get(username);
+        if(appointed_user == null)
+            throw new IllegalArgumentException("This username doesn't exist");
+        if(!store.isOwner(activeUser))
+            throw new RuntimeException("You must be this store owner for this command");
+        if(store.getManagments().containsKey(appointed_user))
+            throw new RuntimeException("This username is already one of the store's managers");
+        store.addManager(appointed_user, activeUser);
+        return "Username has been added as one of the store managers successfully";
+    }
+
     private boolean emptyString(String arg){
         return arg == null || arg.equals("");
     }
