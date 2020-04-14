@@ -16,6 +16,7 @@ public class SystemHandler {
     private HashMap<String, User> users;
     private HashMap<String, Store> stores;
     private List<User> adminsList;
+    private ShoppingCart guestShoppingCart;
 
 
     private SystemHandler() {
@@ -90,7 +91,7 @@ public class SystemHandler {
             throw new IllegalArgumentException("Must enter store name and product name");
         if (!stores.containsKey(store))
             throw new IllegalArgumentException("The store doesn't exist in the trading system");
-        if (stores.get(store).checkIfProductAvailable(product) == false)
+        if (!stores.get(store).checkIfProductAvailable(product))
             throw new IllegalArgumentException("The product isn't available in the store");
         activeUser.getShoppingCart().addProduct(product, stores.get(store));
     }
@@ -112,7 +113,101 @@ public class SystemHandler {
         return "You have been successfully logged out!";
     }
 
+    //function for handling Use Case 2.7
+    public String viewSoppingCart(){
+
+        return activeUser.getShoppingCart().view();
+    }
+
+
+
+    // function for use case 2.7
+    public String editShoppingCart(String storeName, String productName, int amount){
+        if(emptyString(storeName) || emptyString(productName) || amount < 0 )
+            throw new IllegalArgumentException("Must enter product name, store name and amount");
+        Store store = stores.get(storeName);
+        if(store == null)
+            throw new IllegalArgumentException("This store doesn't exist");
+
+        return activeUser.getShoppingCart().edit(store, productName, amount);
+
+    }
+
+    //function for handling Use Case 4.1
+    public String updateInventory(String storeName, String productName, double productPrice, Category productCategory, String productDescription, int amount){
+        if (emptyString(storeName) || emptyString(productName) || productCategory == null || emptyString(productDescription))
+            throw new IllegalArgumentException("Must enter store name and product info");
+        if (!stores.containsKey(storeName))
+            throw new IllegalArgumentException("This store doesn't exist");
+        if (!activeUser.hasEditPrivileges(storeName))
+            throw new IllegalArgumentException("Must have editing privileges");
+        Store s = stores.get(storeName);
+        if (!s.hasProduct(productName)) {
+            s.addToInventory(productName, productPrice, productCategory, productDescription);
+            return "The product has been added";
+        }
+        else {
+            s.updateInventory(productName, productPrice, productCategory, productDescription);
+            return "The product has been updated";
+        }
+    }
+
+    // function for handling Use Case 4.7
+    public String removeManager(String username,String storename){
+        if(emptyString(username) || emptyString(storename))
+            throw new IllegalArgumentException("Must enter username and store name");
+        Store store = stores.get(storename);
+        if(store == null)
+            throw new IllegalArgumentException("This store doesn't exist");
+        User user = users.get(username);
+        if(user == null)
+            throw new IllegalArgumentException("This username doesn't exist");
+        if(!store.isOwner(activeUser))
+            throw new RuntimeException("You must be this store owner for this command");
+        if(store.getAppointer(user) != activeUser)
+            throw new RuntimeException("This username is not one of this store's managers appointed by you");
+        store.removeManager(user);
+        return "Manager removed successfully";
+    }
+
+    public String appointManager(String username, String storename){
+        if(emptyString(username) || emptyString(storename))
+            throw new IllegalArgumentException("Must enter username and store name");
+        Store store = stores.get(storename);
+        if(store == null)
+            throw new IllegalArgumentException("This store doesn't exist");
+        User appointed_user = users.get(username);
+        if(appointed_user == null)
+            throw new IllegalArgumentException("This username doesn't exist");
+        if(!store.isOwner(activeUser))
+            throw new RuntimeException("You must be this store owner for this command");
+        if(store.getManagments().containsKey(appointed_user))
+            throw new RuntimeException("This username is already one of the store's managers");
+        store.addManager(appointed_user, activeUser);
+        return "Username has been added as one of the store managers successfully";
+    }
+
     private boolean emptyString(String arg){
-        return arg == null || arg == "";
+        return arg == null || arg.equals("");
+    }
+
+    // function for handling Use Case 3.2 written by Nufar
+    public String openNewStore(String storeName, String storeDescription) {
+        if (storeName == null || storeDescription == null || storeName.equals("") || storeDescription.equals(""))
+            throw new IllegalArgumentException("Must enter store name and description");
+        if (stores.get(storeName) != null)
+            throw new RuntimeException("Store name already exists, please choose a different one");
+        Store newStore = new Store(storeName, storeDescription, this.activeUser);
+        this.stores.put(storeName, newStore);
+        return "The new store is now open!";
+    }
+
+    // function for handling Use Case 3.7 - written by Nufar
+    public UserPurchaseHistory getUserPurchaseHistory() {
+        if (activeUser == null)
+            throw new RuntimeException("There is no active user");
+        if (activeUser.getUsername() == null)
+            throw new RuntimeException("Only subscribed users can view purchase history");
+        return activeUser.getPurchaseHistory();
     }
 }
