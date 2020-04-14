@@ -44,7 +44,9 @@ public class SystemHandler {
             throw new IllegalArgumentException("Username cannot be empty");
         if (users.containsKey(username))
             throw new IllegalArgumentException("This username already exists in the system. Please choose a different one");
-        users.put(username, new User());
+        User newUser = new User();
+        newUser.setUsername(username);
+        users.put(username, newUser);
     }
 
     //function for handling UseCase 2.5
