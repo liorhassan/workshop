@@ -3,6 +3,7 @@ package DomainLayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SystemHandler {
@@ -17,13 +18,14 @@ public class SystemHandler {
     private HashMap<String, Store> stores;
     private List<User> adminsList;
     private ShoppingCart guestShoppingCart;
-
+    private List<Product> lastSearchResult;
 
     private SystemHandler() {
         users = new HashMap<>();
         stores = new HashMap<>();
         adminsList = new ArrayList<>();
         activeUser = new User();  //guest
+        lastSearchResult = new ArrayList<>();
     }
 
     public User getUserByName(String username) {
@@ -67,18 +69,19 @@ public class SystemHandler {
         }
         if(matching.size()==0)
             throw new RuntimeException("There are no products that match these parameters");
-        return matching;
+        lastSearchResult = matching;
+        return lastSearchResult;
     }
 
     //function for handling UseCase 2.5
-    public List<Product> filterResults(List<Product> toFilter, Integer minPrice, Integer maxPrice, Category category){
+    public List<Product> filterResults(Integer minPrice, Integer maxPrice, Category category){
         List<Product> matching = new ArrayList<>();
-        for(Product p : toFilter){
+        for(Product p : lastSearchResult){
             if(category!=null&&category!=p.getCategory())
                 continue;
             if(minPrice!=null&&p.getPrice()<minPrice)
                 continue;
-            if(maxPrice!=null&&p.getPrice()>minPrice)
+            if(maxPrice!=null&&p.getPrice()>maxPrice)
                 continue;
             matching.add(p);
         }
