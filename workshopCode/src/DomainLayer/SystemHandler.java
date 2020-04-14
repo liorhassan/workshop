@@ -216,4 +216,8 @@ public class SystemHandler {
     public void setUsers(HashMap<String, User> newUsers) {
         users = newUsers;
     }
+
+    public HashMap<String, Store> getStores() {
+        return stores;
+    }
 }
