@@ -9,6 +9,9 @@ public class Store {
 
     private HashMap<Product,Integer> products;
     private String name;
+
+
+
     private HashMap<User,StoreManaging> managments;
     private HashMap<User,StoreOwning> ownerships;
 
@@ -88,4 +91,18 @@ public class Store {
             }
         }
     }
+
+    public HashMap<User, StoreManaging> getManagments() {
+        return managments;
+    }
+
+    public void setManagments(HashMap<User, StoreManaging> managments) {
+        this.managments = managments;
+    }
+
+    public void addManager(User user, User appointer){
+        StoreManaging manager = new StoreManaging(user, this, appointer );
+        managments.put(user, manager);
+    }
+
 }
