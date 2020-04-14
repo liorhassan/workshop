@@ -183,7 +183,7 @@ public class SystemHandler {
             throw new IllegalArgumentException("This username doesn't exist");
         if(!store.isOwner(activeUser))
             throw new RuntimeException("You must be this store owner for this command");
-        if(store.getManagments().containsKey(appointed_user))
+        if(store.getManagements().containsKey(appointed_user))
             throw new RuntimeException("This username is already one of the store's managers");
         store.addManager(appointed_user, activeUser);
         return "Username has been added as one of the store managers successfully";
