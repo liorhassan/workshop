@@ -5,12 +5,26 @@ import java.util.HashMap;
 public class User {
 
     private HashMap<Store,StoreManaging> storeManagments;
-
     private ShoppingCart shoppingCart;
+    private UserPurchaseHistory purchaseHistory;
+    private String username;
 
     public User(){
         shoppingCart = new ShoppingCart(this);
         storeManagments = new HashMap<>();
+        this.purchaseHistory = new UserPurchaseHistory(this);
+    }
+
+    public void setUsername(String name) {
+        this.username = name;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public UserPurchaseHistory getPurchaseHistory() {
+        return this.purchaseHistory;
     }
 
     public ShoppingCart getShoppingCart() {

@@ -189,4 +189,13 @@ public class SystemHandler {
         this.stores.put(storeName, newStore);
         return "The new store is now open!";
     }
+
+    // function for handling Use Case 3.7 - written by Nufar
+    public UserPurchaseHistory getUserPurchaseHistory() {
+        if (activeUser == null)
+            throw new RuntimeException("There is no active user");
+        if (activeUser.getUsername() == null)
+            throw new RuntimeException("Only subscribed users can view purchase history");
+        return activeUser.getPurchaseHistory();
+    }
 }
