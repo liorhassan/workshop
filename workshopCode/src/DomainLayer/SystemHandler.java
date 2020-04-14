@@ -23,8 +23,7 @@ public class SystemHandler {
         users = new HashMap<>();
         stores = new HashMap<>();
         adminsList = new ArrayList<>();
-        activeUser = null;
-        guestShoppingCart = new ShoppingCart(null);
+        activeUser = new User();  //guest
     }
 
     public User getUserByName(String username) {
@@ -97,28 +96,15 @@ public class SystemHandler {
         activeUser.getShoppingCart().addProduct(product, stores.get(store));
     }
     // function for handling UseCase 2.3
-    public void login(String username, boolean adminMode){
-        if(activeUser != null){
-            throw new IllegalArgumentException("first logout");
-        }
+    public void login(String username){
 
-        if (username == null || username.equals(""))                                                       //check legal input
-            throw new IllegalArgumentException("Username or password cannot be empty");
+        if (emptyString(username) )                                                       //check legal input
+            throw new IllegalArgumentException("The username is invalid");
         if (!users.containsKey(username))
             throw new IllegalArgumentException("This user is not registered");
         User user = users.get(username);
-        if(adminMode){                                                                              //check if admin user
-            if(adminsList.contains(user)){
-                this.adminMode = true;
-                activeUser = user;
-            }
-            else
-                throw new IllegalArgumentException("you are should be admin");
-            }
-        else {
-            this.adminMode = false;
-            activeUser = user;
-        }
+        activeUser = user;
+
     }
 
     //function for handling UseCase 3.1
