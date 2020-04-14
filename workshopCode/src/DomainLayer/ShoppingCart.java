@@ -27,6 +27,10 @@ public class ShoppingCart {
         this.user = user;
     }
 
+    public Collection<Basket> getBaskets() {
+        return baskets.values();
+    }
+  
     public String view(){
         String output = "Your ShoppingCart details: \n";
         if(baskets.isEmpty())
@@ -36,7 +40,6 @@ public class ShoppingCart {
         }
         return output;
     }
-
 
     public String edit(Store store, String product, int amount){
         Basket basket = baskets.get(store);
@@ -59,6 +62,15 @@ public class ShoppingCart {
             }
         }
         return "The product doesn’t exist in your shopping cart";
+    }
+    public String viewOnlyProducts() {
+        if (baskets.isEmpty())
+            throw new RuntimeException("There are no products to view");
+        String result = "";
+        for(Basket b : baskets.values()){
+            result = result + b.viewBasket();
+        }
+        return result;
     }
 }
 
