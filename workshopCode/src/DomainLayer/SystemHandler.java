@@ -114,7 +114,7 @@ public class SystemHandler {
 
     //function for handling UseCase 3.1
     public String logout(){
-        activeUser = null;
+        activeUser = new User();
         return "You have been successfully logged out!";
     }
 
