@@ -212,4 +212,8 @@ public class SystemHandler {
             throw new RuntimeException("Only subscribed users can view purchase history");
         return activeUser.getPurchaseHistory();
     }
+
+    public void setUsers(HashMap<String, User> newUsers) {
+        users = newUsers;
+    }
 }

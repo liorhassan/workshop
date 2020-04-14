@@ -14,7 +14,17 @@ public class SecurityHandler {
         return true;
     }
 
-    public boolean validPassword(String password){return true;}
-    public  boolean CorrectPassword (String username, String password) {return true;}
+    public boolean validPassword(String password){
+        for (Character c: password.toCharArray()) {
+            if (!valid(c))
+                return false;
+        }
+        return true;
+    }
 
+    public boolean CorrectPassword (String username, String password) {return true;}
+
+    private boolean valid(Character c) {
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+    }
 }
