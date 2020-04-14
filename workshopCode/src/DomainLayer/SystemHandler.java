@@ -101,10 +101,11 @@ public class SystemHandler {
         if(activeUser != null){
             throw new IllegalArgumentException("first logout");
         }
+
         if (username == null || username.equals(""))                                                       //check legal input
             throw new IllegalArgumentException("Username or password cannot be empty");
         if (!users.containsKey(username))
-            throw new IllegalArgumentException("the user not exist");
+            throw new IllegalArgumentException("This user is not registered");
         User user = users.get(username);
         if(adminMode){                                                                              //check if admin user
             if(adminsList.contains(user)){
@@ -129,13 +130,21 @@ public class SystemHandler {
     //function for handling Use Case 2.7
     public String viewSoppingCart(){
 
-        ShoppingCart shCart;
-        if(activeUser != null){
-            shCart = activeUser.getShoppingCart();
-        }
-        else
-            shCart = guestShoppingCart;
-        return shCart.view();
+        return activeUser.getShoppingCart().view();
+    }
+
+
+
+    // function for use case 2.7
+    public String editShoppingCart(String storeName, String productName, int amount){
+        if(emptyString(storeName) || emptyString(productName) || amount < 0 )
+            throw new IllegalArgumentException("Must enter product name, store name and amount");
+        Store store = stores.get(storeName);
+        if(store == null)
+            throw new IllegalArgumentException("This store doesn't exist");
+
+        return activeUser.getShoppingCart().edit(store, productName, amount);
+
     }
 
     //function for handling Use Case 4.1
