@@ -95,7 +95,7 @@ public class SystemHandler {
         activeUser.getShoppingCart().addProduct(product, stores.get(store));
     }
     // function for handling UseCase 2.3
-    public void login(String username, boolean adminMode){
+    public void login(String username){
 
         if (emptyString(username) )                                                       //check legal input
             throw new IllegalArgumentException("The username is invalid");
