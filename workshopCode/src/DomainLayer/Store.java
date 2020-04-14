@@ -14,12 +14,17 @@ public class Store {
 
     private HashMap<User,StoreManaging> managments;
     private HashMap<User,StoreOwning> ownerships;
+    private String description;
+    private User storeFirstOwner;
 
-    public Store(String name) {
+    public Store(String name, String description, User firstOwner) {
         this.name = name;
+        this.description = description;
+        this.storeFirstOwner = firstOwner;
         this.products = new HashMap<>();
         this.managments = new HashMap<>();
         this.ownerships = new HashMap<>();
+        this.ownerships.put(firstOwner, new StoreOwning());
     }
 
 
@@ -43,9 +48,28 @@ public class Store {
         return products.get(p)>0;
     }
 
+    public HashMap<Product, Integer> getInventory() {
+        return inventory;
+    }
+
+    // help for use case 2.7
+    public Boolean checkProductInventory(Product p, int amount){
+        if(! inventory.containsKey(p))
+            return false;
+        int available_amount =  inventory.get(p);
+        if(amount> available_amount)
+            return false;
+         return true;
+
+    }
+
+    public void setInventory(HashMap<Product, Integer> inventory) {
+        this.inventory = inventory;
+    }
+
     public Product getProductByName(String productName){
-        for (Product p : products.keySet()) {
-            if (p.getName() == productName)
+        for (Product p : products.KeySet()) {
+            if (p.getName().equals(productName))
                 return p;
         }
         return null;
@@ -104,5 +128,12 @@ public class Store {
         StoreManaging manager = new StoreManaging(user, this, appointer );
         managments.put(user, manager);
     }
-
+    // before activating this function make sure the new Owner is registered!!!
+    // the function will return true if added successfully and false if the user is already an owner
+    public boolean addStoreOwner(User newOwner) {
+        if (this.ownerships.get(newOwner) != null)
+            return false;
+        this.ownerships.put(newOwner, new StoreOwning());
+        return true;
+    }
 }

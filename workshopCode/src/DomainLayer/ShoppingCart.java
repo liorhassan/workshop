@@ -10,7 +10,7 @@ public class ShoppingCart {
 
     public ShoppingCart(User user) {
         this.user = user;
-        baskets = new HashMap<>();
+        this.baskets = new HashMap<>();
     }
 
     public void addProduct(String product, Store store){
@@ -30,7 +30,7 @@ public class ShoppingCart {
     public Collection<Basket> getBaskets() {
         return baskets.values();
     }
-
+  
     public String view(){
         String output = "Your ShoppingCart details: \n";
         if(baskets.isEmpty())
@@ -39,6 +39,38 @@ public class ShoppingCart {
             output = output + b.viewBasket();
         }
         return output;
+    }
+
+    public String edit(Store store, String product, int amount){
+        Basket basket = baskets.get(store);
+        List<ProductItem> items = basket.getProductItems();
+        for(ProductItem pi : items){
+            if(pi.getProduct().getName().equals(product)) {
+                if (amount == 0) {
+                    items.remove(pi);
+                    if (items.isEmpty())
+                        baskets.remove(store);
+                    return "The product has been updated successfully";
+                }
+                else if(amount> pi.getAmount() && store.checkProductInventory(pi.getProduct(), amount)) {
+                    pi.setAmount(amount);
+                    return "The product has been updated successfully";
+                }
+                else {
+                    return "this amount is not available";
+                }
+            }
+        }
+        return "The product doesn’t exist in your shopping cart";
+    }
+    public String viewOnlyProducts() {
+        if (baskets.isEmpty())
+            throw new RuntimeException("There are no products to view");
+        String result = "";
+        for(Basket b : baskets.values()){
+            result = result + b.viewBasket();
+        }
+        return result;
     }
 }
 
