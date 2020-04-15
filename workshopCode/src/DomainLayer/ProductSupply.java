@@ -2,8 +2,7 @@ package DomainLayer;
 
 public class ProductSupply {
 
-    public boolean supply(Purchase purchase){
-        //TODO:??
-        return true;
+    public void supply(Purchase purchase, User user){
+
     }
 }

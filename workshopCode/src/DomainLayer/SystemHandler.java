@@ -281,8 +281,10 @@ public class SystemHandler {
 
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
-        PC.pay(newPurchase);
-        PS.supply(newPurchase);
+        if(!PC.pay(newPurchase, this.activeUser)){
+            throw new RuntimeException("Payment failed");
+        }
+        PS.supply(newPurchase, this.activeUser);
         return "Purchasing completed successfully";
 
     }
