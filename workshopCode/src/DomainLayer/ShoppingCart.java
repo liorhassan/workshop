@@ -72,6 +72,14 @@ public class ShoppingCart {
         }
         return result;
     }
+
+    public boolean isEmpty(){
+        return this.baskets.isEmpty();
+    }
+
+    public void addBasket(Basket basket){
+        this.baskets.put(basket.getStore(), basket);
+    }
 }
 
 
