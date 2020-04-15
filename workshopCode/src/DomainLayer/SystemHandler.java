@@ -1,10 +1,7 @@
 package DomainLayer;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SystemHandler {
     private static SystemHandler ourInstance = new SystemHandler();
@@ -234,17 +231,17 @@ public class SystemHandler {
             return "This store doesn't exist in this trading system";
         }
 
-        List<Product> products = toView.getProducts();
+        Collection<Product> products= toView.getProducts();
         String storeInfo = "Store name: " + toView.getName() + "\n--------------------------------------\n" +
                 "description: \" + toView.getDescription()\n--------------------------------------\n" +
                 "products:\n";
 
         for(Product currProduct: products){
-            storeInfo.concat("  " + currProduct.getName() + "-");
+            storeInfo = storeInfo.concat("  " + currProduct.getName() + "-");
             while(storeInfo.length() < 15) {
-                storeInfo.concat(" ");
+                storeInfo = storeInfo.concat(" ");
             }
-            storeInfo.concat(currProduct.getPrice() + "$\n");
+            storeInfo = storeInfo.concat(currProduct.getPrice() + "$\n");
         }
 
         return storeInfo;
@@ -260,6 +257,6 @@ public class SystemHandler {
             return "This product is not available for purchasing in this store";
         }
 
-        return (p.getName() + ": " + p.getDescription());
+        return (p.getName() + ": " + p.getDescription() + "\nprice: " + p.getPrice() + "$");
     }
 }

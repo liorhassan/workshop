@@ -1,10 +1,7 @@
 package ServiceLayer;
 
-import DomainLayer.Product;
-import DomainLayer.Store;
 import DomainLayer.SystemHandler;
 
-import java.util.List;
 
 public class ViewInfo {
 
