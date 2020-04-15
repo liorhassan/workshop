@@ -1,10 +1,7 @@
 package DomainLayer;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SystemHandler {
     private static SystemHandler ourInstance = new SystemHandler();
@@ -236,6 +233,34 @@ public class SystemHandler {
         return stores;
     }
 
+
+    public Store viewStoreInfo(String storeName){
+
+        if(storeName == null || storeName.isEmpty()){
+            throw new RuntimeException("The store name is invalid");
+        }
+        Store toView = getStoreByName(storeName);
+        if(toView == null){
+            throw new RuntimeException("This store doesn't exist in this trading system");
+        }
+
+        return toView;
+    }
+
+    public Product viewProductInfo(String storeName, String productName){
+        if(productName == null || productName.isEmpty()){
+            throw new RuntimeException("The product name is invalid");
+        }
+        Store s = getStoreByName(storeName);
+        Product p = s.getProductByName(productName);
+        if(p == null){
+            throw new RuntimeException("This product is not available for purchasing in this store");
+        }
+
+        return p;
+    }
+
+
     // function for handling Use Case 4.3 - written by Nufar
     public String appointOwner(String username, String storeName) {
         if(emptyString(username) || emptyString(storeName))
@@ -260,4 +285,5 @@ public class SystemHandler {
 
         return "Username has been added as one of the store owners successfully";
     }
+
 }
