@@ -1,16 +1,18 @@
 package DomainLayer;
 
-import DomainLayer.Security.SecurityHandler;
-
 public class StoreOwning {
 
-    public String login(String username, String storename){
+    User appointer;
 
-        try {
-            return SystemHandler.getInstance().appointManager(username, storename);
-        }
-        catch (Exception e){
-            return e.getMessage();
-        }
+    // first owner constructor
+    public StoreOwning() {}
+
+    public StoreOwning(User appointer) {
+        this.appointer = appointer;
     }
+
+    public User getAppointer() {
+        return appointer;
+    }
+
 }
