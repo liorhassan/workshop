@@ -172,7 +172,7 @@ public class SystemHandler {
         if(store.getAppointer(user) != activeUser)
             throw new RuntimeException("This username is not one of this store's managers appointed by you");
         store.removeManager(user);
-        return "Manager removed successfully";
+        return "Manager removed successfully!";
     }
 
     public String appointManager(String username, String storeName){
