@@ -2,7 +2,7 @@ package ServiceLayer;
 
 import DomainLayer.SystemHandler;
 
-public class Purchaseproducts {
+public class PurchaseProducts {
 
     public String execute() {
         try {
