@@ -240,7 +240,7 @@ public class SystemHandler {
             throw new RuntimeException("This username doesn't exist");
         }
 
-        //TODO: add this??
+        //TODO: add this to he use case??
         if(!store.getOwnerships().containsKey(this.activeUser)){
             throw new RuntimeException("You must be this store owner for this command");
         }
