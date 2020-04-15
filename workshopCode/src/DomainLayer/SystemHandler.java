@@ -223,4 +223,34 @@ public class SystemHandler {
     public HashMap<String, Store> getStores() {
         return stores;
     }
+
+    public String editPermissions(String userName, List<Permission> permissions, String storeName){
+
+        if(emptyString(userName) || permissions.isEmpty() || emptyString(storeName)){
+            throw new RuntimeException("Must enter username, permissions list and store name");
+        }
+
+        Store store = getStoreByName(storeName);
+        if(store == null){
+            throw new RuntimeException("This store doesn't exists");
+        }
+
+        User user = getUserByName(userName);
+        if(user == null){
+            throw new RuntimeException("This username doesn't exist");
+        }
+
+        //TODO: add this??
+        if(!store.getOwnerships().containsKey(this.activeUser)){
+            throw new RuntimeException("You must be this store owner for this command");
+        }
+        //
+
+        if(!(store.getManagements().containsKey(user) && store.getManagements().get(user).appointer.equals(this.activeUser))){
+            throw new RuntimeException("You can't edit this user's privileges");
+        }
+
+        user.setPermission(permissions);
+        return "Privileges have been edited successfully";
+    }
 }

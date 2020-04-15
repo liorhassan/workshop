@@ -2,6 +2,7 @@ package DomainLayer;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class Store {
 
@@ -115,6 +116,10 @@ public class Store {
         return managements;
     }
 
+    public HashMap<User, StoreOwning> getOwnerships() {
+        return ownerships;
+    }
+
     public void setManagements(HashMap<User, StoreManaging> managements) {
         this.managements = managements;
     }
@@ -131,4 +136,5 @@ public class Store {
         this.ownerships.put(newOwner, new StoreOwning());
         return true;
     }
+
 }
