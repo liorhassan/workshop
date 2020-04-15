@@ -221,42 +221,30 @@ public class SystemHandler {
         return stores;
     }
 
-    public String viewStoreInfo(String storeName){
+    public Store viewStoreInfo(String storeName){
 
         if(storeName == null || storeName.isEmpty()){
-            return "The store name is invalid.";
+            throw new RuntimeException("The store name is invalid");
         }
         Store toView = getStoreByName(storeName);
         if(toView == null){
-            return "This store doesn't exist in this trading system";
+            throw new RuntimeException("This store doesn't exist in this trading system");
         }
 
-        Collection<Product> products= toView.getProducts();
-        String storeInfo = "Store name: " + toView.getName() + "\n--------------------------------------\n" +
-                "description: \" + toView.getDescription()\n--------------------------------------\n" +
-                "products:\n";
-
-        for(Product currProduct: products){
-            storeInfo = storeInfo.concat("  " + currProduct.getName() + "-");
-            while(storeInfo.length() < 15) {
-                storeInfo = storeInfo.concat(" ");
-            }
-            storeInfo = storeInfo.concat(currProduct.getPrice() + "$\n");
-        }
-
-        return storeInfo;
+        return toView;
     }
 
-    public String viewProductInfo(String storeName, String productName){
+    public Product viewProductInfo(String storeName, String productName){
         if(productName == null || productName.isEmpty()){
-            return "The product name is invalid";
+            throw new RuntimeException("The product name is invalid");
         }
         Store s = getStoreByName(storeName);
         Product p = s.getProductByName(productName);
         if(p == null){
-            return "This product is not available for purchasing in this store";
+            throw new RuntimeException("This product is not available for purchasing in this store");
         }
 
-        return (p.getName() + ": " + p.getDescription() + "\nprice: " + p.getPrice() + "$");
+        return p;
     }
+
 }
