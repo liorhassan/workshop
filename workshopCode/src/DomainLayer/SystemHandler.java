@@ -266,8 +266,13 @@ public class SystemHandler {
             for(ProductItem pi: currProducts){
                 Product p = pi.getProduct();
                 int amount = pi.getAmount();
-                if(!currStore.checkProductInventory(p, amount)){
-                    throw new RuntimeException("There is currently no stock of " + amount +  p.getName() + "products");
+                if(!currStore.checkProductInventory(p, amount)) {
+                    if (!currStore.getInventory().containsKey(p)) {
+                        throw new RuntimeException("There is currently no " + p.getName() + "in store " + currStore.getName());
+                    } else {
+                        int currAmount = currStore.getInventory().get(p);
+                        throw new RuntimeException("There is currently only " + currAmount + p.getName() + "products in store " + currStore.getName());
+                    }
                 }
                 currStore.purchaseProduct(p, amount);
             }
