@@ -7,16 +7,19 @@ import DomainLayer.SystemHandler;
 import java.util.List;
 
 public class FilterResults {
-    public String execute(List<Product> toFilter, Integer minPrice, Integer maxPrice, Category category){
+    public String execute(Integer minPrice, Integer maxPrice, Category category){
         try{
-            return getMessage(SystemHandler.getInstance().filterResults(toFilter,minPrice,maxPrice,category));
+            return getMessage(SystemHandler.getInstance().filterResults(minPrice,maxPrice,category));
         } catch(Exception e){
             return e.getMessage();
         }
     }
 
     private String getMessage(List<Product> products){
-        //TODO: implement
-        return "";
+        String output = "";
+        for(Product p : products){
+            output+="Name: "+p.getName()+", Category: "+p.getCategory().name()+", Description: "+p.getDescription()+", Price: "+p.getPrice()+"\n";
+        }
+        return output.strip();
     }
 }

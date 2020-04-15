@@ -17,7 +17,10 @@ public class SearchProduct {
     }
 
     private String getMessage(List<Product> products){
-        //TODO: implement
-        return "";
+        String output = "";
+        for(Product p : products){
+            output+="Name: "+p.getName()+", Category: "+p.getCategory().name()+", Description: "+p.getDescription()+", Price: "+p.getPrice()+"\n";
+        }
+        return output.strip();
     }
 }
