@@ -11,6 +11,7 @@ public class Store {
     private HashMap<User,StoreOwning> ownerships;
     private String description;
     private User storeFirstOwner;
+    private StorePurchaseHistory purchaseHistory;
 
     public Store(String name, String description, User firstOwner) {
         this.name = name;
@@ -20,6 +21,7 @@ public class Store {
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
         this.ownerships.put(firstOwner, new StoreOwning());
+        this.purchaseHistory = new StorePurchaseHistory(this);
     }
 
 
@@ -144,5 +146,8 @@ public class Store {
         }
     }
 
+    public StorePurchaseHistory getPurchaseHistory(){
+        return this.purchaseHistory;
+    }
 
 }

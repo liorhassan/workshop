@@ -271,6 +271,12 @@ public class SystemHandler {
                 }
                 currStore.purchaseProduct(p, amount);
             }
+
+            //add the store's basket to her purchse history
+            ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
+            storeShoppingCart.addBasket(currBasket);
+            Purchase storePurchase = new Purchase(storeShoppingCart);
+            currStore.getPurchaseHistory().addPurchase(storePurchase);
         }
 
         Purchase newPurchase = new Purchase(sc);
