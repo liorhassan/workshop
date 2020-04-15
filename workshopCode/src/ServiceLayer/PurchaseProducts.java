@@ -8,6 +8,7 @@ public class PurchaseProducts {
         try {
             return SystemHandler.getInstance().purchaseProducts();
         }
+
         catch (Exception e) {
             return e.getMessage();
         }
