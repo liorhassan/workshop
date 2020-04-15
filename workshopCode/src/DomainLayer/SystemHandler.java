@@ -1,10 +1,7 @@
 package DomainLayer;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SystemHandler {
     private static SystemHandler ourInstance = new SystemHandler();
@@ -19,6 +16,8 @@ public class SystemHandler {
     private List<User> adminsList;
     private ShoppingCart guestShoppingCart;
     private List<Product> lastSearchResult;
+    private PaymentCollection PC;
+    private ProductSupply PS;
 
     private SystemHandler() {
         users = new HashMap<>();
@@ -26,6 +25,8 @@ public class SystemHandler {
         adminsList = new ArrayList<>();
         activeUser = new User();  //guest
         lastSearchResult = new ArrayList<>();
+        PC = new PaymentCollection();
+        PS = new ProductSupply();
     }
 
     public User getUserByName(String username) {
@@ -223,4 +224,61 @@ public class SystemHandler {
     public HashMap<String, Store> getStores() {
         return stores;
     }
+
+    public Store viewStoreInfo(String storeName){
+
+        if(storeName == null || storeName.isEmpty()){
+            throw new RuntimeException("The store name is invalid");
+        }
+        Store toView = getStoreByName(storeName);
+        if(toView == null){
+            throw new RuntimeException("This store doesn't exist in this trading system");
+        }
+
+        return toView;
+    }
+
+    public Product viewProductInfo(String storeName, String productName){
+
+        if(productName == null || productName.isEmpty()){
+            throw new RuntimeException("The product name is invalid");
+        }
+        Store s = getStoreByName(storeName);
+        Product p = s.getProductByName(productName);
+        if(p == null){
+            throw new RuntimeException("This product is not available for purchasing in this store");
+        }
+
+        return p;
+    }
+
+    public String purchaseProducts(){
+
+        ShoppingCart sc = this.activeUser.getShoppingCart();
+        if(sc.isEmpty()){
+            throw new RuntimeException("The shopping cart is empty");
+        }
+        Collection<Basket> baskets = sc.getBaskets();
+
+        for(Basket currBasket: baskets){
+            Store currStore = currBasket.getStore();
+            Collection<ProductItem> currProducts = currBasket.getProductItems();
+            for(ProductItem pi: currProducts){
+                Product p = pi.getProduct();
+                int amount = pi.getAmount();
+                if(!currStore.checkProductInventory(p, amount)){
+                    throw new RuntimeException("There is currently no stock of " + amount +  p.getName() + "products");
+                }
+                currStore.purchaseProduct(p, amount);
+            }
+        }
+
+        Purchase newPurchase = new Purchase(sc);
+        this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
+        PC.pay(newPurchase);
+        PS.supply(newPurchase);
+        return "Purchasing completed successfully";
+
+    }
+
 }

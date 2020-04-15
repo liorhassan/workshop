@@ -131,4 +131,18 @@ public class Store {
         this.ownerships.put(newOwner, new StoreOwning());
         return true;
     }
+
+    public void purchaseProduct(Product p, int amount){
+        if(checkProductInventory(p, amount)){
+            int prevAmount = this.products.get(p);
+            if(prevAmount == amount){
+                this.products.remove(p);
+            }
+            else{
+                this.products.replace(p, prevAmount - amount);
+            }
+        }
+    }
+
+
 }

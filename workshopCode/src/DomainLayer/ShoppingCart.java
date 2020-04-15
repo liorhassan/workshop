@@ -72,6 +72,10 @@ public class ShoppingCart {
         }
         return result;
     }
+
+    public boolean isEmpty(){
+        return this.baskets.isEmpty();
+    }
 }
 
 
