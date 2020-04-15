@@ -1,13 +1,10 @@
 package DomainLayer;
 
 public class StoreManaging {
-    User manager;
-    Store store;
+
     User appointer;
 
-    public StoreManaging(User manager, Store store, User appointer) {
-        this.manager = manager;
-        this.store = store;
+    public StoreManaging(User appointer) {
         this.appointer = appointer;
     }
 

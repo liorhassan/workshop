@@ -12,14 +12,14 @@ public class Store {
     private String description;
     private User storeFirstOwner;
 
-    public Store(String name, String description, User firstOwner) {
+    public Store(String name, String description, User firstOwner, StoreOwning owning) {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
         this.products = new HashMap<>();
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
-        this.ownerships.put(firstOwner, new StoreOwning());
+        this.ownerships.put(firstOwner, owning);
     }
 
 
@@ -74,6 +74,10 @@ public class Store {
         return ownerships.containsKey(user);
     }
 
+    public boolean isManager(User user) {
+        return managements.containsKey(user);
+    }
+
     public User getAppointer(User user) {
         User appointer = null;
         StoreManaging manage = managements.get(user);
@@ -119,16 +123,13 @@ public class Store {
         this.managements = managements;
     }
 
-    public void addManager(User user, User appointer){
-        StoreManaging manager = new StoreManaging(user, this, appointer );
-        managements.put(user, manager);
+    public void addManager(User user, StoreManaging storeManaging){
+        managements.put(user, storeManaging);
     }
+
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
-    public boolean addStoreOwner(User newOwner) {
-        if (this.ownerships.get(newOwner) != null)
-            return false;
-        this.ownerships.put(newOwner, new StoreOwning());
-        return true;
+    public void addStoreOwner(User newOwner, StoreOwning storeOwning) {
+        this.ownerships.put(newOwner, storeOwning);
     }
 }

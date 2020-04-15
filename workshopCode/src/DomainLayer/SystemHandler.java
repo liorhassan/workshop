@@ -175,10 +175,11 @@ public class SystemHandler {
         return "Manager removed successfully";
     }
 
-    public String appointManager(String username, String storename){
-        if(emptyString(username) || emptyString(storename))
+    public String appointManager(String username, String storeName){
+
+        if(emptyString(username) || emptyString(storeName))
             throw new IllegalArgumentException("Must enter username and store name");
-        Store store = stores.get(storename);
+        Store store = stores.get(storeName);
         if(store == null)
             throw new IllegalArgumentException("This store doesn't exist");
         User appointed_user = users.get(username);
@@ -186,9 +187,14 @@ public class SystemHandler {
             throw new IllegalArgumentException("This username doesn't exist");
         if(!store.isOwner(activeUser))
             throw new RuntimeException("You must be this store owner for this command");
-        if(store.getManagements().containsKey(appointed_user))
+        if(store.isManager(appointed_user))
             throw new RuntimeException("This username is already one of the store's managers");
-        store.addManager(appointed_user, activeUser);
+
+        // update store and user
+        StoreManaging managing = new StoreManaging(activeUser);
+        store.addManager(appointed_user, managing);
+        appointed_user.addManagedStore(store, managing);
+
         return "Username has been added as one of the store managers successfully";
     }
 
@@ -202,8 +208,14 @@ public class SystemHandler {
             throw new IllegalArgumentException("Must enter store name and description");
         if (stores.get(storeName) != null)
             throw new RuntimeException("Store name already exists, please choose a different one");
-        Store newStore = new Store(storeName, storeDescription, this.activeUser);
+
+        // update stores of the system and the user's data
+        StoreOwning storeOwning = new StoreOwning();
+        Store newStore = new Store(storeName, storeDescription, this.activeUser, storeOwning);
+
+        this.activeUser.addOwnedStore(newStore, storeOwning);
         this.stores.put(storeName, newStore);
+
         return "The new store is now open!";
     }
 
@@ -222,5 +234,30 @@ public class SystemHandler {
 
     public HashMap<String, Store> getStores() {
         return stores;
+    }
+
+    // function for handling Use Case 4.3 - written by Nufar
+    public String appointOwner(String username, String storeName) {
+        if(emptyString(username) || emptyString(storeName))
+            throw new IllegalArgumentException("Must enter username and store name");
+        Store store = stores.get(storeName);
+        if(store == null)
+            throw new IllegalArgumentException("This store doesn't exist");
+
+        User appointed_user = users.get(username);
+
+        if(appointed_user == null)
+            throw new IllegalArgumentException("This username doesn't exist");
+        if(!store.isOwner(activeUser))
+            throw new RuntimeException("You must be this store owner for this action");
+        if(store.isOwner(appointed_user))
+            throw new RuntimeException("This username is already one of the store's owner");
+
+        // update store and user
+        StoreOwning owning = new StoreOwning(activeUser);
+        store.addStoreOwner(appointed_user, owning);
+        appointed_user.addOwnedStore(store, owning);
+
+        return "Username has been added as one of the store owners successfully";
     }
 }
