@@ -24,7 +24,7 @@ public class UC3_7 {
     }
 
     @AfterClass
-    public void tearDown() throws Exception {
+    public static void tearDown() throws Exception {
         SystemHandler.getInstance().setUsers(new HashMap<>());
     }
 

@@ -354,7 +354,7 @@ public class SystemHandler {
         if(!store.isOwner(activeUser))
             throw new RuntimeException("You must be this store owner for this action");
         if(store.isOwner(appointed_user))
-            throw new RuntimeException("This username is already one of the store's owner");
+            throw new RuntimeException("This username is already one of the store's owners");
 
         // update store and user
         StoreOwning owning = new StoreOwning(activeUser);
