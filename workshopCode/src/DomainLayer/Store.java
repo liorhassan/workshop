@@ -155,4 +155,8 @@ public class Store {
     public StorePurchaseHistory getPurchaseHistory(){
         return this.purchaseHistory;
     }
+
+    public String getDescription(){
+        return this.description;
+    }
 }
