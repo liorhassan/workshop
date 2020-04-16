@@ -16,6 +16,8 @@ public class SystemHandler {
     private List<User> adminsList;
     private ShoppingCart guestShoppingCart;
     private List<Product> lastSearchResult;
+    private PaymentCollection PC;
+    private ProductSupply PS;
 
     private SystemHandler() {
         users = new HashMap<>();
@@ -23,6 +25,8 @@ public class SystemHandler {
         adminsList = new ArrayList<>();
         activeUser = new User();  //guest
         lastSearchResult = new ArrayList<>();
+        PC = new PaymentCollection();
+        PS = new ProductSupply();
     }
 
     public User getUserByName(String username) {
@@ -290,6 +294,47 @@ public class SystemHandler {
         return p;
     }
 
+    public String purchaseProducts(){
+
+        ShoppingCart sc = this.activeUser.getShoppingCart();
+        if(sc.isEmpty()){
+            throw new RuntimeException("The shopping cart is empty");
+        }
+        Collection<Basket> baskets = sc.getBaskets();
+
+        for(Basket currBasket: baskets){
+            Store currStore = currBasket.getStore();
+            Collection<ProductItem> currProducts = currBasket.getProductItems();
+            for(ProductItem pi: currProducts){
+                Product p = pi.getProduct();
+                int amount = pi.getAmount();
+                if(!currStore.checkProductInventory(p, amount)) {
+                    if (!currStore.getInventory().containsKey(p)) {
+                        throw new RuntimeException("There is currently no " + p.getName() + "in store " + currStore.getName());
+                    } else {
+                        int currAmount = currStore.getInventory().get(p);
+                        throw new RuntimeException("There is currently only " + currAmount + p.getName() + "products in store " + currStore.getName());
+                    }
+                }
+                currStore.purchaseProduct(p, amount);
+            }
+
+            //add the store's basket to her purchse history
+            ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
+            storeShoppingCart.addBasket(currBasket);
+            Purchase storePurchase = new Purchase(storeShoppingCart);
+            currStore.getPurchaseHistory().addPurchase(storePurchase);
+        }
+
+        Purchase newPurchase = new Purchase(sc);
+        this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
+        if(!PC.pay(newPurchase, this.activeUser)){
+            throw new RuntimeException("Payment failed");
+        }
+        PS.supply(newPurchase, this.activeUser);
+        return "Purchasing completed successfully";
+
+    }
 
     // function for handling Use Case 4.3 - written by Nufar
     public String appointOwner(String username, String storeName) {
@@ -315,6 +360,4 @@ public class SystemHandler {
 
         return "Username has been added as one of the store owners successfully";
     }
-
-
 }
