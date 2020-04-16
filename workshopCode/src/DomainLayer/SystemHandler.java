@@ -41,6 +41,18 @@ public class SystemHandler {
         return activeUser;
     }
 
+    public HashMap<String, Store> getStores() {
+        return stores;
+    }
+
+    public void setStores(HashMap<String, Store> stores) {
+        this.stores = stores;
+    }
+
+    public void setUsers(HashMap<String, User> newUsers) {
+        users = newUsers;
+    }
+
     //function for handling UseCase 2.2
     public void register(String username) {
         if (emptyString(username))
@@ -228,15 +240,6 @@ public class SystemHandler {
             throw new RuntimeException("Only subscribed users can view purchase history");
         return activeUser.getPurchaseHistory();
     }
-
-    public void setUsers(HashMap<String, User> newUsers) {
-        users = newUsers;
-    }
-
-    public HashMap<String, Store> getStores() {
-        return stores;
-    }
-
 
     public String editPermissions(String userName, List<Permission> permissions, String storeName){
 
