@@ -18,6 +18,11 @@ public class UC3_2 {
         SystemHandler.getInstance().login("nufi");
     }
 
+    @AfterClass
+    public static void clean() {
+        SystemHandler.getInstance().setUsers(new HashMap<>());
+    }
+
     @Before
     public void setUp() throws Exception {
         command = new OpenNewStore();
