@@ -1,9 +1,6 @@
 package AcceptanceTests;
 
-import DomainLayer.Category;
-import DomainLayer.Store;
-import DomainLayer.SystemHandler;
-import DomainLayer.User;
+import DomainLayer.*;
 import ServiceLayer.RemoveStoreManager;
 import ServiceLayer.UpdateInventory;
 import org.junit.Before;
@@ -22,7 +19,7 @@ public class UC4_7 {
 
     @BeforeClass
     public static void init() throws Exception{
-        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser());
+        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("FoxHome", s);
         SystemHandler.getInstance().register("shauli");
         SystemHandler.getInstance().register("toya");
@@ -50,7 +47,7 @@ public class UC4_7 {
 
     @Test
     public void doesNotHavePrivileges(){
-        Store s2 = new Store("Castro", "clothing", new User());
+        Store s2 = new Store("Castro", "clothing", new User(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("Castro", s2);
         String result = command.execute("toya", "Castro");
         assertEquals("You must be this store owner for this command", result);

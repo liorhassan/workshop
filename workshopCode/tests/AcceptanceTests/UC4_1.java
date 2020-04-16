@@ -1,9 +1,6 @@
 package AcceptanceTests;
 
-import DomainLayer.Category;
-import DomainLayer.Store;
-import DomainLayer.SystemHandler;
-import DomainLayer.User;
+import DomainLayer.*;
 import ServiceLayer.AddToShoppingBasket;
 import ServiceLayer.UpdateInventory;
 import org.junit.Before;
@@ -23,7 +20,7 @@ public class UC4_1 {
 
     @BeforeClass
     public static void init() throws Exception{
-        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser());
+        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("FoxHome", s);
         s.addToInventory("pillow", 25, Category.Clothing, "beauty pillow");
     }
@@ -48,7 +45,7 @@ public class UC4_1 {
 
     @Test
     public void doesNotHavePrivileges(){
-        Store s2 = new Store("Castro", "clothing", new User());
+        Store s2 = new Store("Castro", "clothing", new User(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("Castro", s2);
         String result = command.UpdateInventory("Castro", "dress", 200, Category.Clothing, "evening dress", 1);
         assertEquals("Must have editing privileges", result);
