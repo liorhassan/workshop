@@ -5,7 +5,7 @@ import DomainLayer.SystemHandler;
 import DomainLayer.UserPurchaseHistory;
 
 
-public class WatchUserPurchaseHistory {
+public class ViewUserPurchaseHistory {
 
     public String execute() {
         try {
