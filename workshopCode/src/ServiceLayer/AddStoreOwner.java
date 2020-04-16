@@ -2,16 +2,14 @@ package ServiceLayer;
 
 import DomainLayer.SystemHandler;
 
-public class AddStoreManager {
+public class AddStoreOwner {
 
     public String execute(String username, String storeName){
-
         try {
-            return SystemHandler.getInstance().appointManager(username, storeName);
+            return SystemHandler.getInstance().appointOwner(username, storeName);
         }
         catch (Exception e){
             return e.getMessage();
         }
     }
-
 }

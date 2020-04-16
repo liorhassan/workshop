@@ -7,6 +7,7 @@ import java.util.List;
 public class User {
 
     private HashMap<Store,StoreManaging> storeManagments;
+    private HashMap<Store, StoreOwning> storeOwnings;
     private ShoppingCart shoppingCart;
     private UserPurchaseHistory purchaseHistory;
     private String username;
@@ -15,6 +16,7 @@ public class User {
     public User(){
         shoppingCart = new ShoppingCart(this);
         storeManagments = new HashMap<>();
+        storeOwnings = new HashMap<>();
         this.purchaseHistory = new UserPurchaseHistory(this);
         this.permission = new LinkedList<>();
     }
@@ -44,11 +46,20 @@ public class User {
         return true;
     }
 
+
     public List<Permission> getPermission(){
         return  permission;
     }
 
     public void setPermission(List<Permission> p){
         permission = p;
+    }
+  
+    public void addManagedStore(Store store, StoreManaging storeManaging) {
+        this.storeManagments.put(store, storeManaging);
+    }
+
+    public void addOwnedStore(Store store, StoreOwning storeOwning) {
+        this.storeOwnings.put(store, storeOwning);
     }
 }
