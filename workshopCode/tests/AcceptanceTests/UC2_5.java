@@ -2,6 +2,7 @@ package AcceptanceTests;
 
 import DomainLayer.Category;
 import DomainLayer.Store;
+import DomainLayer.StoreOwning;
 import DomainLayer.SystemHandler;
 import ServiceLayer.FilterResults;
 import ServiceLayer.SearchProduct;
@@ -23,7 +24,7 @@ public class UC2_5 {
 
     @BeforeClass
     public static void init() throws Exception{
-        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser());
+        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("FoxHome", s);
         s.addToInventory("banana", 7, Category.Food, "yellow with banana-like texture");
         s.addToInventory("shirt", 40, Category.Clothing, "hawaiian shirt");

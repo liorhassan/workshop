@@ -2,6 +2,7 @@ package AcceptanceTests;
 
 import DomainLayer.Category;
 import DomainLayer.Store;
+import DomainLayer.StoreOwning;
 import DomainLayer.SystemHandler;
 import ServiceLayer.AddToShoppingBasket;
 import ServiceLayer.Register;
@@ -25,7 +26,7 @@ public class UC2_6 {
 
     @BeforeClass
     public static void init() throws Exception{
-        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser());
+        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("FoxHome", s);
         s.addToInventory("pillow", 25, null, "beauty pillow");
     }
