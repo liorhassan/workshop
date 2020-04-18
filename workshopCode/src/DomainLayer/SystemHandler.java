@@ -257,11 +257,9 @@ public class SystemHandler {
             throw new RuntimeException("This username doesn't exist");
         }
 
-        //TODO: add this to he use case??
         if(!store.getOwnerships().containsKey(this.activeUser)){
             throw new RuntimeException("You must be this store owner for this command");
         }
-        //
 
         if(!(store.getManagements().containsKey(user) && store.getManagements().get(user).appointer.equals(this.activeUser))){
             throw new RuntimeException("You can't edit this user's privileges");
