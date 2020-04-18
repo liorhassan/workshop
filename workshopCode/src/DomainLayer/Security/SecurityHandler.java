@@ -11,7 +11,10 @@ public class SecurityHandler {
     }
 
     public boolean addUser(String username, String password){
-        return true;
+
+        if(password.equals("1234") || password.equals("good"))
+            return true;
+        return false;
     }
 
     public boolean validPassword(String password){

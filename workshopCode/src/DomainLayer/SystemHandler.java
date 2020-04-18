@@ -361,4 +361,10 @@ public class SystemHandler {
 
         return "Username has been added as one of the store owners successfully";
     }
+
+
+    public HashMap<String, User> getUsers() {
+        return users;
+    }
+
 }
