@@ -40,16 +40,12 @@ public class ViewInfo {
     private String getMessage(Store store) {
 
         Collection<Product> products = store.getProducts();
-        String storeInfo = "Store name: " + store.getName() + "\n--------------------------------------\n" +
-                "description: \" + toView.getDescription()\n--------------------------------------\n" +
-                "products:\n";
+        String storeInfo = "Store name: " + store.getName() +
+                " description: "  + store.getDescription() +
+                "\n products:\n";
 
         for (Product currProduct : products) {
-            storeInfo = storeInfo.concat("  " + currProduct.getName() + "-");
-            while (storeInfo.length() < 15) {
-                storeInfo = storeInfo.concat(" ");
-            }
-            storeInfo = storeInfo.concat(currProduct.getPrice() + "$\n");
+            storeInfo = storeInfo.concat("  " + currProduct.getName() + "- " + currProduct.getPrice() + "$\n");
         }
         return storeInfo;
     }

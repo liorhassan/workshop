@@ -41,6 +41,18 @@ public class SystemHandler {
         return activeUser;
     }
 
+    public HashMap<String, Store> getStores() {
+        return stores;
+    }
+
+    public void setStores(HashMap<String, Store> stores) {
+        this.stores = stores;
+    }
+
+    public void setUsers(HashMap<String, User> newUsers) {
+        users = newUsers;
+    }
+
     //function for handling UseCase 2.2
     public void register(String username) {
         if (emptyString(username))
@@ -229,15 +241,6 @@ public class SystemHandler {
         return activeUser.getPurchaseHistory();
     }
 
-    public void setUsers(HashMap<String, User> newUsers) {
-        users = newUsers;
-    }
-
-    public HashMap<String, Store> getStores() {
-        return stores;
-    }
-
-
     public String editPermissions(String userName, List<Permission> permissions, String storeName){
 
         if(emptyString(userName) || permissions.isEmpty() || emptyString(storeName)){
@@ -351,7 +354,7 @@ public class SystemHandler {
         if(!store.isOwner(activeUser))
             throw new RuntimeException("You must be this store owner for this action");
         if(store.isOwner(appointed_user))
-            throw new RuntimeException("This username is already one of the store's owner");
+            throw new RuntimeException("This username is already one of the store's owners");
 
         // update store and user
         StoreOwning owning = new StoreOwning(activeUser);
