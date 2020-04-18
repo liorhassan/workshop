@@ -43,6 +43,8 @@ public class ShoppingCart {
 
     public String edit(Store store, String product, int amount){
         Basket basket = baskets.get(store);
+        if(basket == null)
+            throw new IllegalArgumentException("This store doesn't exist");
         List<ProductItem> items = basket.getProductItems();
         for(ProductItem pi : items){
             if(pi.getProduct().getName().equals(product)) {
