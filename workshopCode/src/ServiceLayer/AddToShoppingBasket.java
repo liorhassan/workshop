@@ -9,7 +9,7 @@ public class AddToShoppingBasket {
         SystemLogger.getInstance().writeEvent("Add to shopping basket command: store name - " + storeName + ", product name - " + productName);
         try {
             SystemHandler.getInstance().addToShoppingBasket(storeName, productName, amount);
-            return "Item has been added to basket";
+            return "Items have been added to basket";
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Add to shopping basket error: " + e.getMessage());
