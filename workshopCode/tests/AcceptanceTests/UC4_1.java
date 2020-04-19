@@ -1,11 +1,13 @@
 package AcceptanceTests;
 
 import DomainLayer.*;
-import ServiceLayer.AddToShoppingBasket;
 import ServiceLayer.UpdateInventory;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,9 +22,16 @@ public class UC4_1 {
 
     @BeforeClass
     public static void init() throws Exception{
+        SystemHandler.getInstance().register("shenhav");
+        SystemHandler.getInstance().login("shenhav");
         Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("FoxHome", s);
         s.addToInventory("pillow", 25, Category.Clothing, "beauty pillow");
+    }
+
+    @AfterClass
+    public static void clean(){
+        SystemHandler.getInstance().setUsers(new HashMap<>());
     }
 
     @Test
