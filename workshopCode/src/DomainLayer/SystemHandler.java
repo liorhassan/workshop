@@ -104,14 +104,14 @@ public class SystemHandler {
     }
 
     //function for handling UseCase 2.6
-    public void addToShoppingBasket(String store, String product){
-        if (emptyString(store) || emptyString(product))
-            throw new IllegalArgumentException("Must enter store name and product name");
+    public void addToShoppingBasket(String store, String product, int amount){
+        if (emptyString(store) || emptyString(product) || amount <= 0)
+            throw new IllegalArgumentException("Must enter store name and product name and amount bigger than 0");
         if (!stores.containsKey(store))
             throw new IllegalArgumentException("The store doesn't exist in the trading system");
-        if (!stores.get(store).checkIfProductAvailable(product))
-            throw new IllegalArgumentException("The product isn't available in the store");
-        activeUser.getShoppingCart().addProduct(product, stores.get(store));
+        if (!stores.get(store).checkIfProductAvailable(product, amount))
+            throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
+        activeUser.getShoppingCart().addProduct(product, stores.get(store), amount);
     }
     // function for handling UseCase 2.3
     public void login(String username){
@@ -309,7 +309,7 @@ public class SystemHandler {
             for(ProductItem pi: currProducts){
                 Product p = pi.getProduct();
                 int amount = pi.getAmount();
-                if(!currStore.checkProductInventory(p, amount)) {
+                if(!currStore.checkIfProductAvailable(p.getName(), amount)) {
                     if (!currStore.getInventory().containsKey(p)) {
                         throw new RuntimeException("There is currently no " + p.getName() + "in store " + currStore.getName());
                     } else {
