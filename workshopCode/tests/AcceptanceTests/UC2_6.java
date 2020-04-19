@@ -27,7 +27,7 @@ public class UC2_6 {
         SystemHandler.getInstance().login("shenhav");
         Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("FoxHome", s);
-        s.addToInventory("pillow", 25, null, "beauty pillow");
+        s.addToInventory("pillow", 25, null, "beauty pillow", 1);
     }
 
     @AfterClass
