@@ -153,19 +153,19 @@ public class SystemHandler {
 
     //function for handling Use Case 4.1
     public String updateInventory(String storeName, String productName, double productPrice, Category productCategory, String productDescription, int amount){
-        if (emptyString(storeName) || emptyString(productName) || productCategory == null || emptyString(productDescription))
-            throw new IllegalArgumentException("Must enter store name and product info");
+        if (emptyString(storeName) || emptyString(productName) || productCategory == null || emptyString(productDescription) || amount <= 0)
+            throw new IllegalArgumentException("Must enter store name, product info, and amount that is bigger than 0");
         if (!stores.containsKey(storeName))
             throw new IllegalArgumentException("This store doesn't exist");
         if (!activeUser.hasEditPrivileges(storeName))
             throw new IllegalArgumentException("Must have editing privileges");
         Store s = stores.get(storeName);
         if (!s.hasProduct(productName)) {
-            s.addToInventory(productName, productPrice, productCategory, productDescription);
+            s.addToInventory(productName, productPrice, productCategory, productDescription, amount);
             return "The product has been added";
         }
         else {
-            s.updateInventory(productName, productPrice, productCategory, productDescription);
+            s.updateInventory(productName, productPrice, productCategory, productDescription, amount);
             return "The product has been updated";
         }
     }

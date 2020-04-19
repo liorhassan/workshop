@@ -92,16 +92,17 @@ public class Store {
         return false;
     }
 
-    public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription) {
-        products.put(new Product(productName, productCategory, productDescription, productPrice),1);
+    public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
+        products.put(new Product(productName, productCategory, productDescription, productPrice), amount);
     }
 
-    public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription) {
+    public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
         for (Product p : products.keySet()){
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
+                products.put(p, amount);
                 break;
             }
         }
