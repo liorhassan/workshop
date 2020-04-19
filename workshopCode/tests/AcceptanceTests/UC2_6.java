@@ -6,10 +6,7 @@ import DomainLayer.StoreOwning;
 import DomainLayer.SystemHandler;
 import ServiceLayer.AddToShoppingBasket;
 import ServiceLayer.Register;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.HashMap;
 
@@ -26,9 +23,16 @@ public class UC2_6 {
 
     @BeforeClass
     public static void init() throws Exception{
+        SystemHandler.getInstance().register("shenhav");
+        SystemHandler.getInstance().login("shenhav");
         Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("FoxHome", s);
         s.addToInventory("pillow", 25, null, "beauty pillow");
+    }
+
+    @AfterClass
+    public static void clean(){
+        SystemHandler.getInstance().setUsers(new HashMap<>());
     }
 
     @Test
