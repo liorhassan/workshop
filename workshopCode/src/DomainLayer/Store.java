@@ -81,7 +81,7 @@ public class Store {
 
     public void removeManager(User user) {
         managements.remove(user);
-        user.removeStoreManagment(this);
+        user.removeStoreManagement(this);
     }
 
     public boolean hasProduct(String productName) {
