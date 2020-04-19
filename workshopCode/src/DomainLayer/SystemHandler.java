@@ -104,14 +104,14 @@ public class SystemHandler {
     }
 
     //function for handling UseCase 2.6
-    public void addToShoppingBasket(String store, String product){
-        if (emptyString(store) || emptyString(product))
-            throw new IllegalArgumentException("Must enter store name and product name");
+    public void addToShoppingBasket(String store, String product, int amount){
+        if (emptyString(store) || emptyString(product) || amount <= 0)
+            throw new IllegalArgumentException("Must enter store name and product name and amount bigger than 0");
         if (!stores.containsKey(store))
             throw new IllegalArgumentException("The store doesn't exist in the trading system");
-        if (!stores.get(store).checkIfProductAvailable(product))
-            throw new IllegalArgumentException("The product isn't available in the store");
-        activeUser.getShoppingCart().addProduct(product, stores.get(store));
+        if (!stores.get(store).checkIfProductAvailable(product, amount))
+            throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
+        activeUser.getShoppingCart().addProduct(product, stores.get(store), amount);
     }
     // function for handling UseCase 2.3
     public void login(String username){
@@ -153,19 +153,19 @@ public class SystemHandler {
 
     //function for handling Use Case 4.1
     public String updateInventory(String storeName, String productName, double productPrice, Category productCategory, String productDescription, int amount){
-        if (emptyString(storeName) || emptyString(productName) || productCategory == null || emptyString(productDescription))
-            throw new IllegalArgumentException("Must enter store name and product info");
+        if (emptyString(storeName) || emptyString(productName) || productCategory == null || emptyString(productDescription) || amount <= 0)
+            throw new IllegalArgumentException("Must enter store name, product info, and amount that is bigger than 0");
         if (!stores.containsKey(storeName))
             throw new IllegalArgumentException("This store doesn't exist");
         if (!activeUser.hasEditPrivileges(storeName))
             throw new IllegalArgumentException("Must have editing privileges");
         Store s = stores.get(storeName);
         if (!s.hasProduct(productName)) {
-            s.addToInventory(productName, productPrice, productCategory, productDescription);
+            s.addToInventory(productName, productPrice, productCategory, productDescription, amount);
             return "The product has been added";
         }
         else {
-            s.updateInventory(productName, productPrice, productCategory, productDescription);
+            s.updateInventory(productName, productPrice, productCategory, productDescription, amount);
             return "The product has been updated";
         }
     }
@@ -257,11 +257,9 @@ public class SystemHandler {
             throw new RuntimeException("This username doesn't exist");
         }
 
-        //TODO: add this to he use case??
         if(!store.getOwnerships().containsKey(this.activeUser)){
             throw new RuntimeException("You must be this store owner for this command");
         }
-        //
 
         if(!(store.getManagements().containsKey(user) && store.getManagements().get(user).appointer.equals(this.activeUser))){
             throw new RuntimeException("You can't edit this user's privileges");
@@ -311,7 +309,7 @@ public class SystemHandler {
             for(ProductItem pi: currProducts){
                 Product p = pi.getProduct();
                 int amount = pi.getAmount();
-                if(!currStore.checkProductInventory(p, amount)) {
+                if(!currStore.checkIfProductAvailable(p.getName(), amount)) {
                     if (!currStore.getInventory().containsKey(p)) {
                         throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + "products");
                     }

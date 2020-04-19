@@ -13,10 +13,10 @@ public class ShoppingCart {
         this.baskets = new HashMap<>();
     }
 
-    public void addProduct(String product, Store store){
+    public void addProduct(String product, Store store, int amount){
         if (!baskets.containsKey(store))
             baskets.put(store, new Basket(store));
-        baskets.get(store).addProduct(store.getProductByName(product));
+        baskets.get(store).addProduct(store.getProductByName(product), amount);
     }
 
     public User getUser() {
@@ -52,7 +52,7 @@ public class ShoppingCart {
                         baskets.remove(store);
                     return "The product has been updated successfully";
                 }
-                else if(amount> pi.getAmount() && store.checkProductInventory(pi.getProduct(), amount)) {
+                else if(amount> pi.getAmount() && store.checkIfProductAvailable(pi.getProduct().getName(), amount)) {
                     pi.setAmount(amount);
                     return "The product has been updated successfully";
                 }

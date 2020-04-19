@@ -39,26 +39,15 @@ public class Store {
         return  products.keySet();
     }
 
-    public boolean checkIfProductAvailable(String product){
+    public boolean checkIfProductAvailable(String product, int amount){
         Product p = getProductByName(product);
-        if(p==null)
+        if(p == null)
             return false;
-        return products.get(p)>0;
+        return products.get(p) >= amount;
     }
 
     public HashMap<Product, Integer> getInventory() {
         return products;
-    }
-
-    // help for use case 2.7
-    public Boolean checkProductInventory(Product p, int amount){
-        if(!products.containsKey(p))
-            return false;
-        int available_amount =  products.get(p);
-        if(amount> available_amount)
-            return false;
-         return true;
-
     }
 
     public void setInventory(HashMap<Product, Integer> inventory) {
@@ -92,7 +81,7 @@ public class Store {
 
     public void removeManager(User user) {
         managements.remove(user);
-        user.removeStoreManagment(this);
+        user.removeStoreManagement(this);
     }
 
     public boolean hasProduct(String productName) {
@@ -103,16 +92,17 @@ public class Store {
         return false;
     }
 
-    public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription) {
-        products.put(new Product(productName, productCategory, productDescription, productPrice),1);
+    public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
+        products.put(new Product(productName, productCategory, productDescription, productPrice), amount);
     }
 
-    public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription) {
+    public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
         for (Product p : products.keySet()){
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
+                products.put(p, amount);
                 break;
             }
         }
@@ -141,7 +131,7 @@ public class Store {
     }
 
     public void purchaseProduct(Product p, int amount){
-        if(checkProductInventory(p, amount)){
+        if(checkIfProductAvailable(p.getName(), amount)){
             int prevAmount = this.products.get(p);
             if(prevAmount == amount){
                 this.products.remove(p);

@@ -41,13 +41,13 @@ public class Basket {
     }
 
 
-    public void addProduct(Product p) {
+    public void addProduct(Product p, int amount) {
         for (ProductItem pi : productItems) {
             if (pi.getProduct().equals(p)) {
-                pi.setAmount(pi.getAmount() + 1);
+                pi.setAmount(pi.getAmount() + amount);
                 return;
             }
         }
-        productItems.add(new ProductItem(p, 1, this));
+        productItems.add(new ProductItem(p, amount, this));
     }
 }
