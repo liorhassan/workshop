@@ -68,7 +68,19 @@ public class ShoppingCart {
             throw new RuntimeException("There are no products to view");
         String result = "";
         for(Basket b : baskets.values()){
-            result = result + b.viewBasket();
+            result = result.concat(b.viewBasket());
+        }
+        return result;
+    }
+
+    public String viewStoreHistoryBasket(){
+        if (baskets.isEmpty())
+            throw new RuntimeException("There are no products to view");
+        String result = "";
+        for(Basket b : baskets.values()) {
+            for(ProductItem pi: b.getProductItems()) {
+                result = result.concat("Product name: " + pi.getProduct().getName() + " price: " + pi.getProduct().getPrice() + " amount: " + pi.getAmount() + "\n");
+            }
         }
         return result;
     }

@@ -361,4 +361,22 @@ public class SystemHandler {
 
         return "Username has been added as one of the store owners successfully";
     }
+
+    public StorePurchaseHistory storePurchaseHistory(String storeName){
+        if(emptyString(storeName)){
+            throw new RuntimeException("Must enter store name");
+        }
+
+        Store s = getStoreByName(storeName);
+        if(s == null){
+            throw new RuntimeException("This store doesn't exist");
+        }
+
+        //TODO: add permissions
+        if(!s.isOwner(this.activeUser) || !(s.isManager(this.activeUser))){
+            throw new RuntimeException("You are not allowed to view this store's purchasing history");
+        }
+
+        return s.getPurchaseHistory();
+    }
 }

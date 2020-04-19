@@ -17,4 +17,8 @@ public class StorePurchaseHistory {
         this.purchases.add(p);
     }
 
+    public List<Purchase> getPurchases(){
+        return this.purchases;
+    }
+
 }
