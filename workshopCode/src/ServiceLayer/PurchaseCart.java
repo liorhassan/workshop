@@ -2,11 +2,11 @@ package ServiceLayer;
 
 import DomainLayer.SystemHandler;
 
-public class PurchaseProducts {
+public class PurchaseCart {
 
     public String execute() {
         try {
-            return SystemHandler.getInstance().purchaseProducts();
+            return SystemHandler.getInstance().purchaseCart();
         }
 
         catch (Exception e) {

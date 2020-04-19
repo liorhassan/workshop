@@ -295,7 +295,7 @@ public class SystemHandler {
         return p;
     }
 
-    public String purchaseProducts(){
+    public String purchaseCart(){
 
         ShoppingCart sc = this.activeUser.getShoppingCart();
         if(sc.isEmpty()){
