@@ -311,7 +311,7 @@ public class SystemHandler {
                 int amount = pi.getAmount();
                 if(!currStore.checkIfProductAvailable(p.getName(), amount)) {
                     if (!currStore.getInventory().containsKey(p)) {
-                        throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + "products");
+                        throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
                     }
                 }
                 currStore.purchaseProduct(p, amount);
@@ -358,4 +358,6 @@ public class SystemHandler {
 
         return "Username has been added as one of the store owners successfully";
     }
+
+
 }
