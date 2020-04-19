@@ -11,7 +11,7 @@ public class SystemLogger {
     private SystemLogger() {
     }
 
-    public void writeAction(String action){}
+    public void writeEvent(String event){}
 
     public void writeError(String error){}
 }
