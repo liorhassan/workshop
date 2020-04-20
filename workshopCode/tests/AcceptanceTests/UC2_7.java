@@ -29,12 +29,11 @@ public class UC2_7 {
 
         SystemHandler.getInstance().getStores().put("Rami Levi", store);
         SystemHandler.getInstance().getStores().put("Shufersal", store2);
-        store.addToInventory("apple", 2, Category.Food, "green apple");
+        store.addToInventory("apple", 2, Category.Food, "green apple", 3);
 
-        store.addToInventory("water", 3, Category.Food, "water 1 L");
-        SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "apple");
-        SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "apple");
-        SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "water");
+        store.addToInventory("water", 3, Category.Food, "water 1 L", 2);
+        SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "apple",  2);
+        SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "water", 1);
     }
 
     @Test
@@ -44,7 +43,7 @@ public class UC2_7 {
         String output2 = editShoppingCart.edit("Rami Levi", "water", 0);
         assertEquals("The product has been updated successfully", output2);
         String output3 = editShoppingCart.view();
-        assertEquals("Your ShoppingCart details: \n Store name: Rami Levi \n Product name: apple price: 2 amount: 1 \n", output3);
+        assertEquals("Your ShoppingCart details: \nStore name: Rami Levi\nProduct name: apple price: 2.0 amount: 1\n", output3);
     }
 
     @Test
