@@ -30,7 +30,7 @@ public class ShoppingCart {
     public Collection<Basket> getBaskets() {
         return baskets.values();
     }
-  
+
     public String view(){
         String output = "Your ShoppingCart details: \n";
         if(baskets.isEmpty())
