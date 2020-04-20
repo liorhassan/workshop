@@ -26,9 +26,9 @@ public class UC2_5 {
     public static void init() throws Exception{
         Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         SystemHandler.getInstance().getStores().put("FoxHome", s);
-        s.addToInventory("banana", 7, Category.Food, "yellow with banana-like texture");
-        s.addToInventory("shirt", 40, Category.Clothing, "hawaiian shirt");
-        s.addToInventory("hat", 900, Category.Clothing, "beauty pillow");
+        s.addToInventory("banana", 7, Category.Food, "yellow with banana-like texture", 1);
+        s.addToInventory("shirt", 40, Category.Clothing, "hawaiian shirt", 1);
+        s.addToInventory("hat", 900, Category.Clothing, "beauty pillow", 1);
 
     }
 

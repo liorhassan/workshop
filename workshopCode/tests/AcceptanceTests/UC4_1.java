@@ -1,11 +1,13 @@
 package AcceptanceTests;
 
 import DomainLayer.*;
-import ServiceLayer.AddToShoppingBasket;
 import ServiceLayer.UpdateInventory;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,9 +22,15 @@ public class UC4_1 {
 
     @BeforeClass
     public static void init() throws Exception{
-        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
-        SystemHandler.getInstance().getStores().put("FoxHome", s);
-        s.addToInventory("pillow", 25, Category.Clothing, "beauty pillow");
+        SystemHandler.getInstance().register("shenhav");
+        SystemHandler.getInstance().login("shenhav");
+        SystemHandler.getInstance().openNewStore("FoxHome", "stuff for home");
+        SystemHandler.getInstance().updateInventory("FoxHome", "pillow", 25, Category.Clothing, "beauty pillow", 1);
+    }
+
+    @AfterClass
+    public static void clean(){
+        SystemHandler.getInstance().setUsers(new HashMap<>());
     }
 
     @Test
@@ -54,10 +62,10 @@ public class UC4_1 {
     @Test
     public void emptyInput(){
         String result = command.UpdateInventory("", "banana", 20, Category.Food, "yellow food", 1);
-        assertEquals("Must enter store name and product info", result);
+        assertEquals("Must enter store name, product info, and amount that is bigger than 0", result);
         result = command.UpdateInventory(null, "banana", 20, Category.Food, "yellow food", 1);
-        assertEquals("Must enter store name and product info", result);
+        assertEquals("Must enter store name, product info, and amount that is bigger than 0", result);
         result = command.UpdateInventory("FoxHome", "", 20, Category.Clothing, "yellow food", 1);
-        assertEquals("Must enter store name and product info", result);
+        assertEquals("Must enter store name, product info, and amount that is bigger than 0", result);
     }
 }
