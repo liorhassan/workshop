@@ -14,7 +14,6 @@ public class SystemHandler {
     private HashMap<String, User> users;
     private HashMap<String, Store> stores;
     private List<User> adminsList;
-    private ShoppingCart guestShoppingCart;
     private List<Product> lastSearchResult;
     private PaymentCollection PC;
     private ProductSupply PS;
