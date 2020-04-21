@@ -10,9 +10,7 @@ public class SecurityHandler {
     private SecurityHandler() {
     }
 
-    public boolean addUser(String username, String password){
-        return true;
-    }
+    public boolean addUser(String username, String password){ return true; }
 
     public boolean validPassword(String password){
         for (Character c: password.toCharArray()) {
