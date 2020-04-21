@@ -43,7 +43,7 @@ public class UC2_3 {
     }
 
     @Test
-    public void inCorrectPassword() {
+    public void incorrectPassword() {
         String output = login.login("lior", "notgood");
         assertEquals("This password is incorrect", output);
     }
