@@ -13,7 +13,7 @@ public class ViewUserPurchaseHistory {
         try {
             return getMessage(SystemHandler.getInstance().getUserPurchaseHistory());
         } catch (RuntimeException e) {
-            SystemLogger.getInstance().writeError("Register error: " + e.getMessage());
+            SystemLogger.getInstance().writeError("View User Purchase History error: " + e.getMessage());
             return e.getMessage();
         }
     }
