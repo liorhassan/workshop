@@ -35,6 +35,11 @@ public class UC2_7 {
         SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "apple",  2);
         SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "water", 1);
     }
+    @AfterClass
+    public static void clean() {
+        SystemHandler.getInstance().setUsers(new HashMap<>());
+        SystemHandler.getInstance().setStores(new HashMap<>());
+    }
 
     @Test
     public void successful(){
