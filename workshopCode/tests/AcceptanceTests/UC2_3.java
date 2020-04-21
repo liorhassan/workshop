@@ -58,7 +58,7 @@ public class UC2_3 {
     public void emptyUsername() {
         String output1 = login.login(null, "1234");
         assertEquals("The username is invalid" , output1);
-        String output2 = login.login("", "gooood");
+        String output2 = login.login("", "good");
         assertEquals("The username is invalid" , output2);
     }
 

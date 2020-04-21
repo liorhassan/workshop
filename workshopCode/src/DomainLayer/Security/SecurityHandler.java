@@ -11,10 +11,7 @@ public class SecurityHandler {
     }
 
     public boolean addUser(String username, String password){
-
-        if(password.equals("1234") || password.equals("good"))
-            return true;
-        return false;
+        return true;
     }
 
     public boolean validPassword(String password){
@@ -25,7 +22,11 @@ public class SecurityHandler {
         return true;
     }
 
-    public boolean CorrectPassword (String username, String password) {return true;}
+    public boolean CorrectPassword (String username, String password) {
+        if(password.equals("1234") || password.equals("good"))
+            return true;
+        return false;
+    }
 
     private boolean valid(Character c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
