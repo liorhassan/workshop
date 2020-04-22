@@ -5,7 +5,7 @@ import DomainLayer.Store;
 import DomainLayer.StoreOwning;
 import DomainLayer.SystemHandler;
 import ServiceLayer.ViewAndEditShoppingCart;
-import ServiceLayer.Register;
+
 import org.junit.*;
 
 import java.util.HashMap;
@@ -24,6 +24,8 @@ public class UC2_7 {
     @BeforeClass
     public static void init() throws Exception {
 
+        SystemHandler.getInstance().register("lior");
+        SystemHandler.getInstance().login("lior");
         Store store = new Store("Rami Levi", "supermarket", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
         Store store2 = new Store("Shufersal", "supermarket", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
 
@@ -34,6 +36,11 @@ public class UC2_7 {
         store.addToInventory("water", 3, Category.Food, "water 1 L", 2);
         SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "apple",  2);
         SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "water", 1);
+    }
+    @AfterClass
+    public static void clean() {
+        SystemHandler.getInstance().setUsers(new HashMap<>());
+        SystemHandler.getInstance().setStores(new HashMap<>());
     }
 
     @Test
