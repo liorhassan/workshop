@@ -264,7 +264,7 @@ public class SystemHandler {
             throw new RuntimeException("You can't edit this user's privileges");
         }
 
-        user.setPermission(permissions);
+        store.getManagements().get(user).setPermission(permissions);
         return "Privileges have been edited successfully";
     }
 
