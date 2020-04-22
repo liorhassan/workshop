@@ -1,9 +1,6 @@
 package ServiceLayer;
 
-import DomainLayer.Product;
-import DomainLayer.Store;
-import DomainLayer.SystemHandler;
-import DomainLayer.UserPurchaseHistory;
+import DomainLayer.*;
 
 import java.util.Collection;
 
@@ -13,14 +10,14 @@ public class ViewInfo {
     private SystemHandler sHandler;
 
     public String execute(String storeName) {
-
+        SystemLogger.getInstance().writeEvent("View Info command");
         this.sHandler = SystemHandler.getInstance();
-
         try {
 
             Store store = sHandler.viewStoreInfo(storeName);
             return getMessage(store);
         } catch (Exception e) {
+            SystemLogger.getInstance().writeError("View Info error: " + e.getMessage());
             return e.getMessage();
         }
     }
