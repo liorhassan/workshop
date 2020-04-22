@@ -59,4 +59,8 @@ public class User {
     public void addOwnedStore(Store store, StoreOwning storeOwning) {
         this.storeOwnings.put(store, storeOwning);
     }
+
+    public void emptyCart(){
+        this.shoppingCart = new ShoppingCart(this);
+    }
 }
