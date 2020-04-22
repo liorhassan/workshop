@@ -14,7 +14,6 @@ public class SystemHandler {
     private HashMap<String, User> users;
     private HashMap<String, Store> stores;
     private List<User> adminsList;
-    private ShoppingCart guestShoppingCart;
     private List<Product> lastSearchResult;
     private PaymentCollection PC;
     private ProductSupply PS;
@@ -362,6 +361,10 @@ public class SystemHandler {
         return "Username has been added as one of the store owners successfully";
     }
 
+    public HashMap<String, User> getUsers() {
+        return users;
+    }
+
     public StorePurchaseHistory storePurchaseHistory(String storeName){
         if(emptyString(storeName)){
             throw new RuntimeException("Must enter store name");
@@ -379,4 +382,5 @@ public class SystemHandler {
 
         return s.getPurchaseHistory();
     }
+
 }
