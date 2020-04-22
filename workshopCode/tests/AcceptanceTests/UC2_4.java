@@ -2,9 +2,12 @@ package AcceptanceTests;
 
 import DomainLayer.*;
 import ServiceLayer.ViewInfo;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -24,6 +27,12 @@ public class UC2_4 {
         SystemHandler.getInstance().getStores().put("Lalin", s);
         s.addToInventory("Body Cream ocean", 40, Category.BeautyProducts, "Velvety and soft skin lotion with ocean scent", 1);
         s.addToInventory("Body Scrub musk", 50, Category.BeautyProducts, "Deep cleaning with natural salt crystals with a musk scent", 1);
+    }
+
+
+    @AfterClass
+    public static void clean() {
+        SystemHandler.getInstance().setStores(new HashMap<>());
     }
 
     @Test
