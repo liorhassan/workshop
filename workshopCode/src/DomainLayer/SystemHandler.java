@@ -14,7 +14,6 @@ public class SystemHandler {
     private HashMap<String, User> users;
     private HashMap<String, Store> stores;
     private List<User> adminsList;
-    private ShoppingCart guestShoppingCart;
     private List<Product> lastSearchResult;
     private PaymentCollection PC;
     private ProductSupply PS;
@@ -311,13 +310,16 @@ public class SystemHandler {
                 int amount = pi.getAmount();
                 if(!currStore.checkIfProductAvailable(p.getName(), amount)) {
                     if (!currStore.getInventory().containsKey(p)) {
-                        throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
+                        throw new RuntimeException("There is currently no " + p.getName() + "in store " + currStore.getName());
+                    } else {
+                        int currAmount = currStore.getInventory().get(p);
+                        throw new RuntimeException("There is currently only " + currAmount + p.getName() + "products in store " + currStore.getName());
                     }
                 }
                 currStore.purchaseProduct(p, amount);
             }
 
-            //add the store's basket to her purchase history
+            //add the store's basket to her purchse history
             ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
             storeShoppingCart.addBasket(currBasket);
             Purchase storePurchase = new Purchase(storeShoppingCart);
@@ -359,5 +361,9 @@ public class SystemHandler {
         return "Username has been added as one of the store owners successfully";
     }
 
+
+    public HashMap<String, User> getUsers() {
+        return users;
+    }
 
 }
