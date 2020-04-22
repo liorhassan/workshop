@@ -6,14 +6,14 @@ import java.util.List;
 public class StoreOwning {
 
     User appointer;
-    private List<Permission> permission;
+    private List<Permission> permissions;
 
     // first owner constructor
     public StoreOwning() {}
 
     public StoreOwning(User appointer) {
         this.appointer = appointer;
-        this.permission = new LinkedList<>();
+        this.permissions = new LinkedList<>();
     }
 
     public User getAppointer() {
@@ -21,7 +21,7 @@ public class StoreOwning {
     }
 
     public List<Permission> getPermission(){
-        return  permission;
+        return  permissions;
     }
 
 

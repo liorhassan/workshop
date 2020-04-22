@@ -6,11 +6,11 @@ import java.util.List;
 public class StoreManaging {
 
     User appointer;
-    private List<Permission> permission;
+    private List<Permission> permissions;
 
     public StoreManaging(User appointer) {
         this.appointer = appointer;
-        this.permission = new LinkedList<>();
+        this.permissions = new LinkedList<>();
 
     }
 
@@ -19,11 +19,11 @@ public class StoreManaging {
     }
 
     public List<Permission> getPermission(){
-        return  permission;
+        return  permissions;
     }
 
     public void setPermission(List<Permission> p){
-        permission = p;
+        permissions = p;
     }
 
 }
