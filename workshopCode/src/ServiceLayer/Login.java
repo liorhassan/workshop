@@ -10,7 +10,7 @@ public class Login {
             return "This password is incorrect";
         try {
             SystemHandler.getInstance().login(username);
-            return "You have been successfully logged in";
+            return "You have been successfully logged in!";
         }
         catch (Exception e){
             return e.getMessage();
