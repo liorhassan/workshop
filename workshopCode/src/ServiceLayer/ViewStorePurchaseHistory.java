@@ -8,9 +8,11 @@ public class ViewStorePurchaseHistory {
 
     public String execute(String storeName){
         try{
+            SystemLogger.getInstance().writeEvent("View Store Purchase History command");
             return getMessage(SystemHandler.getInstance().storePurchaseHistory(storeName));
         }
         catch (Exception e){
+            SystemLogger.getInstance().writeError("View Store Purchase History error: " + e.getMessage());
             return e.getMessage();
         }
     }
