@@ -3,6 +3,7 @@ package DomainLayer;
 public enum Category {
 
     Clothing,
-    Food
+    Food,
+    BeautyProducts
 
 }
