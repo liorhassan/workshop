@@ -1,7 +1,7 @@
 package AcceptanceTests;
 
 import DomainLayer.*;
-import ServiceLayer.PurchaseProducts;
+import ServiceLayer.PurchaseCart;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -13,11 +13,11 @@ import static org.junit.Assert.assertEquals;
 
 public class UC2_8 {
 
-    private PurchaseProducts purchaseProducts;
+    private PurchaseCart purchaseProducts;
 
     @Before
     public void setUp(){
-        this.purchaseProducts = new PurchaseProducts();
+        this.purchaseProducts = new PurchaseCart();
     }
 
     @BeforeClass
