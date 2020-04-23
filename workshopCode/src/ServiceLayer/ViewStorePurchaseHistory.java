@@ -8,7 +8,7 @@ public class ViewStorePurchaseHistory {
 
     public String execute(String storeName){
         try{
-            SystemLogger.getInstance().writeEvent("View Store Purchase History command");
+            SystemLogger.getInstance().writeEvent(String.format("View Store Purchase History command: store name - %s", storeName));
             return getMessage(SystemHandler.getInstance().storePurchaseHistory(storeName));
         }
         catch (Exception e){
