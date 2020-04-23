@@ -264,7 +264,7 @@ public class SystemHandler {
             throw new RuntimeException("You can't edit this user's privileges");
         }
 
-        user.setPermission(permissions);
+        store.getManagements().get(user).setPermission(permissions);
         return "Privileges have been edited successfully";
     }
 
@@ -294,7 +294,7 @@ public class SystemHandler {
         return p;
     }
 
-    public String purchaseProducts(){
+    public String purchaseCart(){
 
         ShoppingCart sc = this.activeUser.getShoppingCart();
         if(sc.isEmpty()){
@@ -310,16 +310,13 @@ public class SystemHandler {
                 int amount = pi.getAmount();
                 if(!currStore.checkIfProductAvailable(p.getName(), amount)) {
                     if (!currStore.getInventory().containsKey(p)) {
-                        throw new RuntimeException("There is currently no " + p.getName() + "in store " + currStore.getName());
-                    } else {
-                        int currAmount = currStore.getInventory().get(p);
-                        throw new RuntimeException("There is currently only " + currAmount + p.getName() + "products in store " + currStore.getName());
+                        throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + "products");
                     }
                 }
                 currStore.purchaseProduct(p, amount);
             }
 
-            //add the store's basket to her purchse history
+            //add the store's basket to her purchase history
             ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
             storeShoppingCart.addBasket(currBasket);
             Purchase storePurchase = new Purchase(storeShoppingCart);

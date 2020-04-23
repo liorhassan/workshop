@@ -11,14 +11,12 @@ public class User {
     private ShoppingCart shoppingCart;
     private UserPurchaseHistory purchaseHistory;
     private String username;
-    private List<Permission> permission;
 
     public User(){
         shoppingCart = new ShoppingCart(this);
         storeManagements = new HashMap<>();
         storeOwnings = new HashMap<>();
         this.purchaseHistory = new UserPurchaseHistory(this);
-        this.permission = new LinkedList<>();
     }
 
     public void setUsername(String name) {
@@ -53,14 +51,6 @@ public class User {
         return false;
     }
 
-
-    public List<Permission> getPermission(){
-        return  permission;
-    }
-
-    public void setPermission(List<Permission> p){
-        permission = p;
-    }
   
     public void addManagedStore(Store store, StoreManaging storeManaging) {
         this.storeManagements.put(store, storeManaging);
@@ -68,5 +58,9 @@ public class User {
 
     public void addOwnedStore(Store store, StoreOwning storeOwning) {
         this.storeOwnings.put(store, storeOwning);
+    }
+
+    public void emptyCart(){
+        this.shoppingCart = new ShoppingCart(this);
     }
 }
