@@ -34,9 +34,16 @@ public class StoreHandler {
         }
     }
 
-    public String UpdateInventory(String storeName, String productName, double productPrice, Category productCategory, String productDes, int amount){
-        SystemLogger.getInstance().writeEvent(String.format("Update inventory command: store name - %s, product name - %s, product price - %f, product category - %s, product description - %s, amount - %d", storeName, productName, productPrice, productCategory.name(), productDes, amount));
+    public String UpdateInventory(String storeName, String productName, double productPrice, String productCategory, String productDes, int amount){
+        SystemLogger.getInstance().writeEvent(String.format("Update inventory command: store name - %s, product name - %s, product price - %f, product category - %s, product description - %s, amount - %d", storeName, productName, productPrice, productCategory, productDes, amount));
         try {
+            String[] args = {storeName, productName, productCategory, productDes};
+            if (SystemHandler.getInstance().emptyString(args) || amount <= 0)
+                throw new IllegalArgumentException("Must enter store name, product info, and amount that is bigger than 0");
+            if (!SystemHandler.getInstance().storeExists(storeName))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if (!SystemHandler.getInstance().userHasEditPrivileges(storeName))
+                throw new IllegalArgumentException("Must have editing privileges");
             return SystemHandler.getInstance().updateInventory(storeName, productName, productPrice, productCategory, productDes, amount);
         }
         catch (Exception e) {

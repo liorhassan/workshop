@@ -1,11 +1,10 @@
 package AcceptanceTests;
 
-import DomainLayer.Category;
-import DomainLayer.Store;
-import DomainLayer.StoreOwning;
 import DomainLayer.SystemHandler;
-import ServiceLayer.AddToShoppingBasket;
-import ServiceLayer.Register;
+import ServiceLayer.ShoppingCartHandler;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.SystemReset;
+import ServiceLayer.UsersHandler;
 import org.junit.*;
 
 import java.util.HashMap;
@@ -14,54 +13,54 @@ import static org.junit.Assert.assertEquals;
 
 public class UC2_6 {
 
-    private AddToShoppingBasket command;
+    private ShoppingCartHandler handler;
 
     @Before
     public void setUp() throws Exception{
-        command = new AddToShoppingBasket();
+        handler = new ShoppingCartHandler();
     }
 
     @BeforeClass
     public static void init() throws Exception{
-        SystemHandler.getInstance().register("shenhav");
-        SystemHandler.getInstance().login("shenhav");
-        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
-        SystemHandler.getInstance().getStores().put("FoxHome", s);
-        s.addToInventory("pillow", 25, null, "beauty pillow", 1);
+        (new UsersHandler()).register("shenhav","toya");
+        (new UsersHandler()).login("shenhav","toya");
+        (new StoreHandler()).openNewStore("FoxHome","stuff for home");
+        (new StoreHandler()).UpdateInventory("FoxHome","pillow", 25, "BeautyProducts", "beauty pillow", 1);
+
     }
 
     @AfterClass
     public static void clean(){
-        SystemHandler.getInstance().setUsers(new HashMap<>());
+        (new SystemReset()).resetUsers();
     }
 
     @Test
     public void valid(){
-        String result = command.AddToShoppingBasket("FoxHome", "pillow", 1);
+        String result = handler.AddToShoppingBasket("FoxHome", "pillow", 1);
         assertEquals("Items have been added to basket", result);
     }
 
     @Test
     public void productIsNotAvailable(){
-        String result = command.AddToShoppingBasket("FoxHome", "banana", 1);
+        String result = handler.AddToShoppingBasket("FoxHome", "banana", 1);
         assertEquals("The product isn't available in the store with the requested amount", result);
     }
 
     @Test
     public void storeDoesNotExist(){
-        String result = command.AddToShoppingBasket("Fox", "banana", 1);
+        String result = handler.AddToShoppingBasket("Fox", "banana", 1);
         assertEquals("The store doesn't exist in the trading system", result);
     }
 
     @Test
     public void emptyInput(){
-        String result = command.AddToShoppingBasket("", "pillow", 1);
+        String result = handler.AddToShoppingBasket("", "pillow", 1);
         assertEquals("Must enter store name and product name and amount bigger than 0", result);
-        result = command.AddToShoppingBasket(null, "pillow", 1);
+        result = handler.AddToShoppingBasket(null, "pillow", 1);
         assertEquals("Must enter store name and product name and amount bigger than 0", result);
-        result = command.AddToShoppingBasket("FoxHome", "", 1);
+        result = handler.AddToShoppingBasket("FoxHome", "", 1);
         assertEquals("Must enter store name and product name and amount bigger than 0", result);
-        result = command.AddToShoppingBasket("FoxHome", null, 1);
+        result = handler.AddToShoppingBasket("FoxHome", null, 1);
         assertEquals("Must enter store name and product name and amount bigger than 0", result);
     }
 
