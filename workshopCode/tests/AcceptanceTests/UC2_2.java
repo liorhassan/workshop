@@ -1,8 +1,7 @@
 package AcceptanceTests;
 
-import DomainLayer.Security.SecurityHandler;
 import DomainLayer.SystemHandler;
-import ServiceLayer.Register;
+import ServiceLayer.UsersHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,11 +12,11 @@ import static org.junit.Assert.*;
 
 public class UC2_2 {
 
-    private Register r;
+    private UsersHandler handler;
 
     @Before
     public void setUp() throws Exception {
-        r = new Register();
+        handler = new UsersHandler();
     }
 
     @After
@@ -27,28 +26,28 @@ public class UC2_2 {
 
     @Test
     public void valid() {
-        String result = r.register("shenhav", "toya");
+        String result = handler.register("shenhav", "toya");
         assertEquals("You have been successfully registered!", result);
     }
 
     @Test
     public void invalidPassword() {
-        String result = r.register("shenhav", "++");
+        String result = handler.register("shenhav", "++");
         assertEquals("This password is not valid. Please choose a different one", result);
     }
 
     @Test
     public void usernameExist() {
-        r.register("shenhav", "toya");
-        String result = r.register("shenhav", "toya2");
+        handler.register("shenhav", "toya");
+        String result = handler.register("shenhav", "toya2");
         assertEquals("This username already exists in the system. Please choose a different one", result);
     }
 
     @Test
     public void emptyUsername() {
-        String result1 = r.register("", "toya");
+        String result1 = handler.register("", "toya");
         assertEquals("Username cannot be empty", result1);
-        String result2 = r.register(null, "toya");
+        String result2 = handler.register(null, "toya");
         assertEquals("Username cannot be empty", result2);
     }
 
