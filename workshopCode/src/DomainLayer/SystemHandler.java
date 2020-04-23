@@ -227,6 +227,17 @@ public class SystemHandler {
         return true;
     }
 
+    public boolean checkIfProductExists(String storeName, String productName) {
+       Store s = stores.get(storeName);
+       if (s != null && s.getProductByName(productName) != null)
+            return true;
+       return false;
+    }
+
+    public boolean cartIsEmpty(){
+        return this.activeUser.getShoppingCart().isEmpty();
+    }
+
     // function for handling Use Case 3.2 written by Nufar
     public String openNewStore(String storeName, String storeDescription) {
 
@@ -277,40 +288,30 @@ public class SystemHandler {
         return "Privileges have been edited successfully";
     }
 
-    public Store viewStoreInfo(String storeName){
+    public String viewStoreInfo(String storeName){
 
-        if(storeName == null || storeName.isEmpty()){
-            throw new RuntimeException("The store name is invalid");
-        }
-        Store toView = getStoreByName(storeName);
-        if(toView == null){
-            throw new RuntimeException("This store doesn't exist in this trading system");
-        }
+        Store s = getStoreByName(storeName);
+        Collection<Product> products = s.getProducts();
+        String storeInfo = "Store name: " + s.getName() +
+                " description: "  + s.getDescription() +
+                "\n products:\n";
 
-        return toView;
+        for (Product currProduct : products) {
+            storeInfo = storeInfo.concat("  " + currProduct.getName() + "- " + currProduct.getPrice() + "$\n");
+        }
+        return storeInfo;
     }
 
-    public Product viewProductInfo(String storeName, String productName){
-        if(productName == null || productName.isEmpty()){
-            throw new RuntimeException("The product name is invalid");
-        }
+    public String viewProductInfo(String storeName, String productName){
         Store s = getStoreByName(storeName);
         Product p = s.getProductByName(productName);
-        if(p == null){
-            throw new RuntimeException("This product is not available for purchasing in this store");
-        }
-
-        return p;
+        return (p.getName() + ": " + p.getDescription() + "\nprice: " + p.getPrice() + "$");
     }
 
     public String purchaseCart(){
 
         ShoppingCart sc = this.activeUser.getShoppingCart();
-        if(sc.isEmpty()){
-            throw new RuntimeException("The shopping cart is empty");
-        }
         Collection<Basket> baskets = sc.getBaskets();
-
         for(Basket currBasket: baskets){
             Store currStore = currBasket.getStore();
             Collection<ProductItem> currProducts = currBasket.getProductItems();
@@ -342,6 +343,7 @@ public class SystemHandler {
         return "Purchasing completed successfully";
 
     }
+
 
     // function for handling Use Case 4.3 - written by Nufar
     public String appointOwner(String username, String storeName) {

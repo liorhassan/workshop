@@ -32,8 +32,11 @@ public class ShoppingCartHandler {
     }
 
     public String purchaseCart() {
+        SystemLogger.getInstance().writeEvent("Purchase Cart command");
         try {
-            SystemLogger.getInstance().writeEvent("Purchase Cart command");
+            if(SystemHandler.getInstance().cartIsEmpty()){
+                throw new RuntimeException("The shopping cart is empty");
+            }
             return SystemHandler.getInstance().purchaseCart();
         }
 

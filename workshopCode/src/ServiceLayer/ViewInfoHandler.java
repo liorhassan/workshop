@@ -9,49 +9,44 @@ import java.util.Collection;
 
 public class ViewInfoHandler {
 
-    private SystemHandler sHandler;
 
-    public String execute(String storeName) {
-        SystemLogger.getInstance().writeEvent("View Info command");
-        this.sHandler = SystemHandler.getInstance();
+    public String viewStoreinfo(String storeName) {
+        SystemLogger.getInstance().writeEvent("View Store Info command");
         try {
+            String[] arg = {storeName};
+            if(SystemHandler.getInstance().emptyString(arg)) {
+                throw new IllegalArgumentException("The store name is invalid");
+            }
+            if(!SystemHandler.getInstance().checkIfStoreExists(storeName)){
+                throw new RuntimeException("This store doesn't exist in this trading system");
+            }
+            return SystemHandler.getInstance().viewStoreInfo(storeName);
 
-            Store store = sHandler.viewStoreInfo(storeName);
-            return getMessage(store);
         } catch (Exception e) {
-            SystemLogger.getInstance().writeError("View Info error: " + e.getMessage());
+            SystemLogger.getInstance().writeError("View Store Info error: " + e.getMessage());
             return e.getMessage();
         }
     }
 
     public String viewProductInfo(String storeName, String productName) {
-
+        SystemLogger.getInstance().writeEvent("View Product Info command");
         try {
+            String[] args = {storeName, productName};
+            if(SystemHandler.getInstance().emptyString(args)){
+                throw new IllegalArgumentException("The product name is invalid");
+            }
+            if(!SystemHandler.getInstance().checkIfProductExists(storeName, productName)){
+                throw new RuntimeException("This product is not available for purchasing in this store");
+            }
 
-            Product product = this.sHandler.viewProductInfo(storeName, productName);
-            return getMessage(product);
+            return SystemHandler.getInstance().viewProductInfo(storeName, productName);
         } catch (Exception e) {
-
+            SystemLogger.getInstance().writeError("View Product Info error: " + e.getMessage());
             return e.getMessage();
         }
     }
 
-    private String getMessage(Store store) {
-
-        Collection<Product> products = store.getProducts();
-        String storeInfo = "Store name: " + store.getName() +
-                " description: "  + store.getDescription() +
-                "\n products:\n";
-
-        for (Product currProduct : products) {
-            storeInfo = storeInfo.concat("  " + currProduct.getName() + "- " + currProduct.getPrice() + "$\n");
-        }
-        return storeInfo;
-    }
 
 
-    private String getMessage(Product product) {
-        return (product.getName() + ": " + product.getDescription() + "\nprice: " + product.getPrice() + "$");
-    }
 
 }
