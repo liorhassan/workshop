@@ -235,12 +235,6 @@ public class SystemHandler {
         return true;
     }
 
-    public boolean checkIfStoreExists(String storeName) {
-        if (stores.get(storeName) != null)
-            return false;
-        return true;
-    }
-
     // function for handling Use Case 3.2 written by Nufar
     public String openNewStore(String storeName, String storeDescription) {
 
@@ -369,20 +363,8 @@ public class SystemHandler {
 
     // function for handling Use Case 4.3 - written by Nufar
     public String appointOwner(String username, String storeName) {
-        if(emptyString(username) || emptyString(storeName))
-            throw new IllegalArgumentException("Must enter username and store name");
         Store store = stores.get(storeName);
-        if(store == null)
-            throw new IllegalArgumentException("This store doesn't exist");
-
         User appointed_user = users.get(username);
-
-        if(appointed_user == null)
-            throw new IllegalArgumentException("This username doesn't exist");
-        if(!store.isOwner(activeUser))
-            throw new RuntimeException("You must be this store owner for this action");
-        if(store.isOwner(appointed_user))
-            throw new RuntimeException("This username is already one of the store's owners");
 
         // update store and user
         StoreOwning owning = new StoreOwning(activeUser);
@@ -396,7 +378,17 @@ public class SystemHandler {
         return users;
     }
 
+    public boolean checkIfActiveUserIsOwner(String storeName) {
+        Store store = stores.get(storeName);
+        return store.isOwner(activeUser);
+    }
+
+    public boolean checkIfUserIsOwner(String storName, String userName) {
+        return stores.get(storName).isOwner(this.users.get(userName));
+    }
+
     public boolean checkIfActiveUserSubscribed() {
         return activeUser.getUsername() == null;
     }
+
 }

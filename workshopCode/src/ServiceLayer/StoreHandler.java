@@ -1,6 +1,5 @@
 package ServiceLayer;
 
-import DomainLayer.Category;
 import DomainLayer.SystemHandler;
 import DomainLayer.SystemLogger;
 
@@ -13,7 +12,7 @@ public class StoreHandler {
         try {
             if (SystemHandler.getInstance().emptyString(args))
                 throw new IllegalArgumentException("Must enter store name and description");
-            if (SystemHandler.getInstance().checkIfStoreExists(storeName))
+            if (SystemHandler.getInstance().storeExists(storeName))
                 throw new RuntimeException("Store name already exists, please choose a different one");
             return SystemHandler.getInstance().openNewStore(storeName,storeDescription);
         }
@@ -26,6 +25,17 @@ public class StoreHandler {
     public String addStoreOwner(String username, String storeName) {
         SystemLogger.getInstance().writeEvent(String.format("Add store owner command: new owner username - %s, store name - %s",username,storeName));
         try {
+            String[] args = {username, storeName};
+            if (SystemHandler.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Must enter username and store name");
+            if (SystemHandler.getInstance().storeExists(storeName))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if(SystemHandler.getInstance().userExists(username))
+                throw new IllegalArgumentException("This username doesn't exist");
+            if(!SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName))
+                throw new RuntimeException("You must be this store owner for this action");
+            if(SystemHandler.getInstance().checkIfUserIsOwner(storeName, username))
+                throw new RuntimeException("This username is already one of the store's owners");
             return SystemHandler.getInstance().appointOwner(username, storeName);
         }
         catch (Exception e){
