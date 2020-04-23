@@ -10,9 +10,6 @@ public class EditPermissions {
 
     public String execute(String userName, List<Permission> permissions, String storeName ){
         try{
-
-            String result =  SystemHandler.getInstance().editPermissions(userName, permissions, storeName);
-
             //logger
             String permissionsStr;
             if(permissions.isEmpty()){
@@ -26,7 +23,11 @@ public class EditPermissions {
                 permissionsStr = permissionsStr + "}";
             }
             SystemLogger.getInstance().writeEvent("Edit Permissions command: user name - " + userName + ", permissions - " + permissionsStr + ", store name - " + storeName);
-            return result;
+
+            return SystemHandler.getInstance().editPermissions(userName, permissions, storeName);
+
+
+
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Edit Permissions error: " + e.getMessage());
