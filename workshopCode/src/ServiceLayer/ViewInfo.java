@@ -10,7 +10,7 @@ public class ViewInfo {
     private SystemHandler sHandler;
 
     public String execute(String storeName) {
-        SystemLogger.getInstance().writeEvent("View Info command");
+        SystemLogger.getInstance().writeEvent("View Info command: store name - %s, store description - %" +  storeName);
         this.sHandler = SystemHandler.getInstance();
         try {
 
