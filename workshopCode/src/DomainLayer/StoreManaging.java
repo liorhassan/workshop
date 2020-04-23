@@ -26,4 +26,16 @@ public class StoreManaging {
         permissions = p;
     }
 
+    public boolean isAllowed(String action){
+        if(permissions.isEmpty()){
+            return false;
+        }
+
+        for(Permission p: permissions){
+            if(p.getAllowedAction().equals(action)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

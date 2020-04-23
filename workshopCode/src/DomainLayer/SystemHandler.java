@@ -372,8 +372,7 @@ public class SystemHandler {
             throw new RuntimeException("This store doesn't exist");
         }
 
-        //TODO: add permissions
-        if(!s.isOwner(this.activeUser) || !(s.isManager(this.activeUser))){
+        if(!s.isOwner(this.activeUser) || !(s.isManager(this.activeUser)&& s.getManagements().get(this.activeUser).isAllowed("View store purchase history"))){
             throw new RuntimeException("You are not allowed to view this store's purchasing history");
         }
 
