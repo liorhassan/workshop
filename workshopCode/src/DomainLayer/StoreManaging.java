@@ -1,5 +1,7 @@
 package DomainLayer;
 
+import DomainLayer.Models.User;
+
 import java.util.LinkedList;
 import java.util.List;
 

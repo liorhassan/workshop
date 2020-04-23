@@ -1,6 +1,10 @@
 package DomainLayer;
 
 
+import DomainLayer.ExternalSystems.PaymentCollection;
+import DomainLayer.ExternalSystems.ProductSupply;
+import DomainLayer.Models.*;
+
 import java.util.*;
 
 public class SystemHandler {
@@ -112,6 +116,7 @@ public class SystemHandler {
             throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
         activeUser.getShoppingCart().addProduct(product, stores.get(store), amount);
     }
+
     // function for handling UseCase 2.3
     public void login(String username){
 
@@ -135,8 +140,6 @@ public class SystemHandler {
 
         return activeUser.getShoppingCart().view();
     }
-
-
 
     // function for use case 2.7
     public String editShoppingCart(String storeName, String productName, int amount){
@@ -210,16 +213,22 @@ public class SystemHandler {
         return "Username has been added as one of the store managers successfully";
     }
 
-    private boolean emptyString(String arg){
-        return arg == null || arg.equals("");
+    public boolean emptyString(String[] args){
+        for (String s: args) {
+            if (s == null || s.equals(""))
+                return false;
+        }
+        return true;
+    }
+
+    public boolean checkIfStoreExists(String storeName) {
+        if (stores.get(storeName) != null)
+            return false;
+        return true;
     }
 
     // function for handling Use Case 3.2 written by Nufar
     public String openNewStore(String storeName, String storeDescription) {
-        if (storeName == null || storeDescription == null || storeName.equals("") || storeDescription.equals(""))
-            throw new IllegalArgumentException("Must enter store name and description");
-        if (stores.get(storeName) != null)
-            throw new RuntimeException("Store name already exists, please choose a different one");
 
         // update stores of the system and the user's data
         StoreOwning storeOwning = new StoreOwning();
@@ -328,6 +337,7 @@ public class SystemHandler {
         if(!PC.pay(newPurchase, this.activeUser)){
             throw new RuntimeException("Payment failed");
         }
+
         PS.supply(newPurchase, this.activeUser);
         return "Purchasing completed successfully";
 
@@ -358,9 +368,7 @@ public class SystemHandler {
         return "Username has been added as one of the store owners successfully";
     }
 
-
     public HashMap<String, User> getUsers() {
         return users;
     }
-
 }

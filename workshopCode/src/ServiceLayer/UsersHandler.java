@@ -4,9 +4,25 @@ import DomainLayer.Security.SecurityHandler;
 import DomainLayer.SystemHandler;
 import DomainLayer.SystemLogger;
 
-import java.security.Security;
+public class UsersHandler {
 
-public class Register {
+    public String login(String username, String password){
+        if (!SecurityHandler.getInstance().CorrectPassword(username, password))
+            return "This password is incorrect";
+        try {
+            SystemHandler.getInstance().login(username);
+            return "You have been successfully logged in!";
+        }
+        catch (Exception e){
+            return e.getMessage();
+        }
+    }
+
+    public String logout(){
+        SystemLogger.getInstance().writeEvent("Logout command");
+        return SystemHandler.getInstance().logout();
+    }
+
 
     public String register(String username, String password){
         SystemLogger.getInstance().writeEvent("Register command: " + username);
@@ -25,3 +41,4 @@ public class Register {
         }
     }
 }
+

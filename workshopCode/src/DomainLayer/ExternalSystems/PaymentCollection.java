@@ -1,4 +1,7 @@
-package DomainLayer;
+package DomainLayer.ExternalSystems;
+
+import DomainLayer.Models.Purchase;
+import DomainLayer.Models.User;
 
 public class PaymentCollection {
 

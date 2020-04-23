@@ -1,15 +1,16 @@
-package DomainLayer;
+package DomainLayer.Models;
+
+import DomainLayer.*;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 public class Store {
 
     private HashMap<Product,Integer> products;
     private String name;
-    private HashMap<User,StoreManaging> managements;
-    private HashMap<User,StoreOwning> ownerships;
+    private HashMap<User, StoreManaging> managements;
+    private HashMap<User, StoreOwning> ownerships;
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;

@@ -1,5 +1,8 @@
 package DomainLayer;
 
+import DomainLayer.Models.Purchase;
+import DomainLayer.Models.Store;
+
 import java.util.LinkedList;
 import java.util.List;
 
