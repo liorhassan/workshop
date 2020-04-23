@@ -56,15 +56,26 @@ public class SystemHandler {
         users = newUsers;
     }
 
+    //reset functions
+    public void resetUsers(){
+        users.clear();
+    }
+
+    public void resetStores(){
+        stores.clear();
+    }
+
     //function for handling UseCase 2.2
     public void register(String username) {
-        if (emptyString(username))
-            throw new IllegalArgumentException("Username cannot be empty");
-        if (users.containsKey(username))
-            throw new IllegalArgumentException("This username already exists in the system. Please choose a different one");
+
         User newUser = new User();
         newUser.setUsername(username);
         users.put(username, newUser);
+    }
+
+    //help function for register use case
+    public boolean userExists(String username){
+        return users.containsKey(username);
     }
 
     //function for handling UseCase 2.5
@@ -108,13 +119,17 @@ public class SystemHandler {
 
     //function for handling UseCase 2.6
     public void addToShoppingBasket(String store, String product, int amount){
-        if (emptyString(store) || emptyString(product) || amount <= 0)
-            throw new IllegalArgumentException("Must enter store name and product name and amount bigger than 0");
-        if (!stores.containsKey(store))
-            throw new IllegalArgumentException("The store doesn't exist in the trading system");
-        if (!stores.get(store).checkIfProductAvailable(product, amount))
-            throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
         activeUser.getShoppingCart().addProduct(product, stores.get(store), amount);
+    }
+
+    //helper function for UseCase 2.6
+    public boolean storeExists(String storeName){
+        return stores.containsKey(storeName);
+    }
+
+    //helper function for UseCase 2.6
+    public boolean isProductAvailable(String store, String product, int amount){
+        return stores.get(store).checkIfProductAvailable(product, amount);
     }
 
     // function for handling UseCase 2.3
@@ -154,22 +169,21 @@ public class SystemHandler {
     }
 
     //function for handling Use Case 4.1
-    public String updateInventory(String storeName, String productName, double productPrice, Category productCategory, String productDescription, int amount){
-        if (emptyString(storeName) || emptyString(productName) || productCategory == null || emptyString(productDescription) || amount <= 0)
-            throw new IllegalArgumentException("Must enter store name, product info, and amount that is bigger than 0");
-        if (!stores.containsKey(storeName))
-            throw new IllegalArgumentException("This store doesn't exist");
-        if (!activeUser.hasEditPrivileges(storeName))
-            throw new IllegalArgumentException("Must have editing privileges");
+    public String updateInventory(String storeName, String productName, double productPrice, String productCategory, String productDescription, int amount){
         Store s = stores.get(storeName);
         if (!s.hasProduct(productName)) {
-            s.addToInventory(productName, productPrice, productCategory, productDescription, amount);
+            s.addToInventory(productName, productPrice, Category.valueOf(productCategory), productDescription, amount);
             return "The product has been added";
         }
         else {
-            s.updateInventory(productName, productPrice, productCategory, productDescription, amount);
+            s.updateInventory(productName, productPrice, Category.valueOf(productCategory), productDescription, amount);
             return "The product has been updated";
         }
+    }
+
+    //helper function for Use Case 4.1
+    public boolean userHasEditPrivileges(String storeName){
+        return activeUser.hasEditPrivileges(storeName);
     }
 
     // function for handling Use Case 4.7
@@ -241,12 +255,22 @@ public class SystemHandler {
     }
 
     // function for handling Use Case 3.7 - written by Nufar
-    public UserPurchaseHistory getUserPurchaseHistory() {
-        if (activeUser == null)
-            throw new RuntimeException("There is no active user");
-        if (activeUser.getUsername() == null)
-            throw new RuntimeException("Only subscribed users can view purchase history");
-        return activeUser.getPurchaseHistory();
+    public String getActiveUserPurchaseHistory() {
+        return getUserPurchaseHistory(this.activeUser.getUsername());
+    }
+
+    // function for handling Use Case 3.7 - written by Nufar
+    public String getUserPurchaseHistory(String userName) {
+        UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
+        String historyOutput = "Shopping history:" + "\n";
+        int counter = 1;
+        for (Purchase p : purchaseHistory.getUserPurchases()) {
+            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
+            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
+            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
+            counter++;
+        }
+        return historyOutput;
     }
 
     public String editPermissions(String userName, List<Permission> permissions, String storeName){
@@ -334,7 +358,7 @@ public class SystemHandler {
 
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
-        if(!PC.pay(newPurchase, this.activeUser)){
+        if(!PC.pay(newPurchase, this.activeUser)) {
             throw new RuntimeException("Payment failed");
         }
 
@@ -370,5 +394,9 @@ public class SystemHandler {
 
     public HashMap<String, User> getUsers() {
         return users;
+    }
+
+    public boolean checkIfActiveUserSubscribed() {
+        return activeUser.getUsername() == null;
     }
 }
