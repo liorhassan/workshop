@@ -255,12 +255,22 @@ public class SystemHandler {
     }
 
     // function for handling Use Case 3.7 - written by Nufar
-    public UserPurchaseHistory getUserPurchaseHistory() {
-        if (activeUser == null)
-            throw new RuntimeException("There is no active user");
-        if (activeUser.getUsername() == null)
-            throw new RuntimeException("Only subscribed users can view purchase history");
-        return activeUser.getPurchaseHistory();
+    public String getActiveUserPurchaseHistory() {
+        return getUserPurchaseHistory(this.activeUser.getUsername());
+    }
+
+    // function for handling Use Case 3.7 - written by Nufar
+    public String getUserPurchaseHistory(String userName) {
+        UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
+        String historyOutput = "Shopping history:" + "\n";
+        int counter = 1;
+        for (Purchase p : purchaseHistory.getUserPurchases()) {
+            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
+            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
+            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
+            counter++;
+        }
+        return historyOutput;
     }
 
     public String editPermissions(String userName, List<Permission> permissions, String storeName){
@@ -348,7 +358,7 @@ public class SystemHandler {
 
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
-        if(!PC.pay(newPurchase, this.activeUser)){
+        if(!PC.pay(newPurchase, this.activeUser)) {
             throw new RuntimeException("Payment failed");
         }
 
@@ -384,5 +394,9 @@ public class SystemHandler {
 
     public HashMap<String, User> getUsers() {
         return users;
+    }
+
+    public boolean checkIfActiveUserSubscribed() {
+        return activeUser.getUsername() == null;
     }
 }

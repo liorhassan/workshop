@@ -6,26 +6,18 @@ import DomainLayer.SystemLogger;
 import DomainLayer.UserPurchaseHistory;
 
 public class ViewPurchaseHistoryHandler {
-    public String ViewUserPurchaseHistory() {
+
+    public String ViewPurchaseHistoryOfUser() {
+
         SystemLogger.getInstance().writeEvent("View User Purchase History command");
         try {
-            return getMessage(SystemHandler.getInstance().getUserPurchaseHistory());
-        } catch (RuntimeException e) {
+            if (SystemHandler.getInstance().checkIfActiveUserSubscribed())
+                throw new RuntimeException("Only subscribed users can view purchase history");
+            return SystemHandler.getInstance().getActiveUserPurchaseHistory();
+        }
+        catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("View User Purchase History error: " + e.getMessage());
             return e.getMessage();
         }
-    }
-
-    // TODO: insert into domain
-    private String getMessage(UserPurchaseHistory purchaseHistory) {
-        String historyOutput = "Shopping history:" + "\n";
-        int counter = 1;
-        for (Purchase p : purchaseHistory.getUserPurchases()) {
-            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
-            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
-            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
-            counter++;
-        }
-        return historyOutput;
     }
 }

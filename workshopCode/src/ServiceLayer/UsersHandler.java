@@ -45,5 +45,11 @@ public class UsersHandler {
             return e.getMessage();
         }
     }
+
+    public void resetUsers(){
+        SystemHandler.getInstance().resetUsers();
+    }
+
+
 }
 

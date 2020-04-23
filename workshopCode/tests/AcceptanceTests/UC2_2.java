@@ -21,7 +21,7 @@ public class UC2_2 {
 
     @After
     public void tearDown() throws Exception {
-        SystemHandler.getInstance().setUsers(new HashMap<>());
+        (new UsersHandler()).resetUsers();
     }
 
     @Test

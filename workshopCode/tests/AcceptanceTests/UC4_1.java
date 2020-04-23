@@ -37,8 +37,8 @@ public class UC4_1 {
 
     @AfterClass
     public static void clean(){
-
-        (new SystemReset()).resetUsers();
+        (new StoreHandler()).resetStores();
+        (new UsersHandler()).resetUsers();
     }
 
     @Test

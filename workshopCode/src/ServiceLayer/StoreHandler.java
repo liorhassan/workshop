@@ -51,4 +51,8 @@ public class StoreHandler {
             return e.getMessage();
         }
     }
+
+    public void resetStores(){
+        SystemHandler.getInstance().resetStores();
+    }
 }
