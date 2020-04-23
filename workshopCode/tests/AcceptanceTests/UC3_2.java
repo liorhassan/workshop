@@ -1,60 +1,60 @@
 package AcceptanceTests;
 
-import DomainLayer.SystemHandler;
-import ServiceLayer.OpenNewStore;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.UsersHandler;
 import org.junit.*;
-
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
 public class UC3_2 {
 
-    private OpenNewStore command;
+    private StoreHandler storeHandler;
+    private UsersHandler usersHandler;
 
     @BeforeClass
-    public static void init() throws Exception{
-        SystemHandler.getInstance().register("nufi");
-        SystemHandler.getInstance().login("nufi");
+    public void init() throws Exception{
+        usersHandler = new UsersHandler();
+        usersHandler.register("nufi", "123456");
+        usersHandler.login("nufi", "123456");
     }
 
     @AfterClass
-    public static void clean() {
-        SystemHandler.getInstance().setUsers(new HashMap<>());
+    public void clean() {
+        usersHandler.resetUsers();
     }
 
     @Before
     public void setUp() throws Exception {
-        command = new OpenNewStore();
+        storeHandler = new StoreHandler();
     }
 
     @After
     public void tearDown() throws Exception {
-        SystemHandler.getInstance().setStores(new HashMap<>());
+        storeHandler.resetStores();
     }
 
     @Test
     public void valid() {
-        String result = command.execute("KKW store", "best Kim Kardashian beauty products");
+        String result = storeHandler.openNewStore("KKW store", "best Kim Kardashian beauty products");
         assertEquals("The new store is now open!", result);
     }
 
     @Test
     public void emptyInput(){
-        String result = command.execute("", "best Kim Kardashian beauty products");
+        String result = storeHandler.openNewStore("", "best Kim Kardashian beauty products");
         assertEquals("Must enter store name and description", result);
-        result = command.execute(null, "best Kim Kardashian beauty products");
+        result = storeHandler.openNewStore(null, "best Kim Kardashian beauty products");
         assertEquals("Must enter store name and description", result);
-        result = command.execute("KKW store", "");
+        result = storeHandler.openNewStore("KKW store", "");
         assertEquals("Must enter store name and description", result);
-        result = command.execute("KKW store", null);
+        result = storeHandler.openNewStore("KKW store", null);
         assertEquals("Must enter store name and description", result);
     }
 
     @Test
     public void storeAlreadyExist(){
-        command.execute("KKW store", "best Kim Kardashian beauty products");
-        String result = command.execute("KKW store", "best storeeeee");
+        storeHandler.openNewStore("KKW store", "best Kim Kardashian beauty products");
+        String result = storeHandler.openNewStore("KKW store", "best storeeeee");
         assertEquals("Store name already exists, please choose a different one", result);
     }
 }
