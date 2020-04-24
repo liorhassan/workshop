@@ -1,4 +1,6 @@
-package DomainLayer;
+package DomainLayer.Models;
+
+import DomainLayer.ProductItem;
 
 public class Purchase {
 

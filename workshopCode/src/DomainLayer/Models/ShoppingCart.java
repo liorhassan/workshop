@@ -1,4 +1,6 @@
-package DomainLayer;
+package DomainLayer.Models;
+
+import DomainLayer.ProductItem;
 
 import java.util.*;
 import java.util.HashMap;

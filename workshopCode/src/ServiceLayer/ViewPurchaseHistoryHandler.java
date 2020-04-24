@@ -1,14 +1,12 @@
 package ServiceLayer;
 
-import DomainLayer.Purchase;
+import DomainLayer.Models.Purchase;
 import DomainLayer.SystemHandler;
 import DomainLayer.SystemLogger;
 import DomainLayer.UserPurchaseHistory;
 
-
-public class ViewUserPurchaseHistory {
-
-    public String execute() {
+public class ViewPurchaseHistoryHandler {
+    public String ViewUserPurchaseHistory() {
         SystemLogger.getInstance().writeEvent("View User Purchase History command");
         try {
             return getMessage(SystemHandler.getInstance().getUserPurchaseHistory());
@@ -18,6 +16,7 @@ public class ViewUserPurchaseHistory {
         }
     }
 
+    // TODO: insert into domain
     private String getMessage(UserPurchaseHistory purchaseHistory) {
         String historyOutput = "Shopping history:" + "\n";
         int counter = 1;

@@ -1,4 +1,6 @@
-package DomainLayer;
+package DomainLayer.Models;
+
+import DomainLayer.Category;
 
 public class Product {
     private String name;

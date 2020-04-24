@@ -1,11 +1,13 @@
 package ServiceLayer;
 
 import DomainLayer.*;
+import DomainLayer.Models.Product;
+import DomainLayer.Models.Store;
 
 import java.util.Collection;
 
 
-public class ViewInfo {
+public class ViewInfoHandler {
 
     private SystemHandler sHandler;
 

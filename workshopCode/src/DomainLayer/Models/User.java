@@ -1,12 +1,14 @@
-package DomainLayer;
+package DomainLayer.Models;
+
+import DomainLayer.StoreManaging;
+import DomainLayer.StoreOwning;
+import DomainLayer.UserPurchaseHistory;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 public class User {
 
-    private HashMap<Store,StoreManaging> storeManagements;
+    private HashMap<Store, StoreManaging> storeManagements;
     private HashMap<Store, StoreOwning> storeOwnings;
     private ShoppingCart shoppingCart;
     private UserPurchaseHistory purchaseHistory;
