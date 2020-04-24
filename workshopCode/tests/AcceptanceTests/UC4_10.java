@@ -1,7 +1,6 @@
 package AcceptanceTests;
 
-import DomainLayer.*;
-import ServiceLayer.ViewStorePurchaseHistory;
+import ServiceLayer.*;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -14,30 +13,39 @@ import static org.junit.Assert.assertEquals;
 
 public class UC4_10 {
 
-    ViewStorePurchaseHistory storePurchaseHistory;
+    private static ViewPurchaseHistoryHandler storePurchaseHistory;
+    private static UsersHandler usersHandler;
+    private static StoreHandler storeHandler;
+    private static StoreManagerHandler storeManagerHandler;
+    private static ShoppingCartHandler shoppingCartHandler;
+
     @Before
     public void setUp(){
-        storePurchaseHistory = new ViewStorePurchaseHistory();
+        storePurchaseHistory = new ViewPurchaseHistoryHandler();
+        usersHandler = new UsersHandler();
+        storeHandler = new StoreHandler();
+        storeManagerHandler = new StoreManagerHandler();
+        shoppingCartHandler = new ShoppingCartHandler();
     }
 
     @BeforeClass
     public static void init(){
-        SystemHandler.getInstance().register("noy");
-        SystemHandler.getInstance().register("maor");
-        SystemHandler.getInstance().register("zuzu");
-        SystemHandler.getInstance().register("rachel");
-        SystemHandler.getInstance().login("noy");
+        usersHandler.register("noy", "1234");
+        usersHandler.register("maor", "1234");
+        usersHandler.register("zuzu", "1234");
+        usersHandler.login("noy", "1234");
         //open new store
-        Store s = new Store("Lalin", "beauty products", SystemHandler.getInstance().getActiveUser(), new StoreOwning(null));
-        s.addToInventory("Body Cream ocean", 40, Category.BeautyProducts, "Velvety and soft skin lotion with ocean scent", 50);
-        s.addToInventory("Body Scrub musk", 50, Category.BeautyProducts, "Deep cleaning with natural salt crystals with a musk scent", 20);
-        SystemHandler.getInstance().appointManager("maor", "Lalin");
-        SystemHandler.getInstance().appointManager("rachel", "Lalin");
-        List<Permission> p = new LinkedList<>();
-        p.add(new Permission("View store purchase history"));
-        SystemHandler.getInstance().editPermissions("rachel", p, "Lalin");
-        SystemHandler.getInstance().addToShoppingBasket("Lalin", "Body Cream ocean", 5);
-        SystemHandler.getInstance().purchaseCart();
+        storeHandler.openNewStore("Lalin", "beauty products");
+        storeHandler.UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
+        storeHandler.UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 20);
+        storeManagerHandler.addStoreManager("maor", "Lalin");
+
+        List<String> p = new LinkedList<>();
+        p.add("View store purchase history");
+        storeManagerHandler.editManagerPermissions("rachel", p, "Lalin");
+
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Cream ocean", 5);
+        shoppingCartHandler.purchaseCart();
     }
 
 
@@ -49,43 +57,43 @@ public class UC4_10 {
     @Test
     public void valid() {
         //noy - store owner
-        String result = storePurchaseHistory.execute("Lalin");
+        String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
         String expectedResult = "Shopping history:\nPurchase #1:\n + " +
                 "Product name: Body Cream ocean price: 50 amount: 5" +
                 "\ntotal money paid: 250";
         assertEquals(expectedResult, result);
 
         //rachel - store manager with the required permissions
-        SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().login("rachel");
-        result = storePurchaseHistory.execute("Lalin");
+        usersHandler.logout();
+        usersHandler.login("rachel", "1234");
+        result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
         assertEquals(expectedResult, result);
     }
 
     @Test
     public void storeDoesntExists() {
-        String result = storePurchaseHistory.execute("Swear");
+        String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Swear");
         assertEquals("This store doesn't exist", result);
     }
 
     @Test
     public void noPermissions() {
         //zuzu - neither a manager nor a store owner
-        SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().login("zuzu");
-        String result = storePurchaseHistory.execute("Lalin");
+        usersHandler.logout();
+        usersHandler.login("zuzu", "1234");
+        String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
         assertEquals("You are not allowed to view this store's purchasing history", result);
 
         //maor - manager without required permission
-        SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().login("maor");
-        result = storePurchaseHistory.execute("Lalin");
+        usersHandler.logout();
+        usersHandler.login("maor", "1234");
+        result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
         assertEquals("You are not allowed to view this store's purchasing history", result);
     }
 
     @Test
     public void emptyStore() {
-        String result = storePurchaseHistory.execute("");
+        String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("");
         assertEquals("Must enter store name", result);
     }
 

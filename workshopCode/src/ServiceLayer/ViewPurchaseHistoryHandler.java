@@ -34,17 +34,12 @@ public class ViewPurchaseHistoryHandler {
             if(!SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName) || !(SystemHandler.getInstance().checkIfActiveUserIsManager(storeName)&& SystemHandler.getInstance().checkIfUserHavePermission(storeName, "View store purchase history"))){
                 throw new RuntimeException("You are not allowed to view this store's purchasing history");
             }
-            return getMessage(SystemHandler.getInstance().storePurchaseHistory(storeName));
+            return SystemHandler.getInstance().getStorePurchaseHistory(storeName);
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("View Store Purchase History error: " + e.getMessage());
             return e.getMessage();
         }
     }
-
-    private String getMessage(StorePurchaseHistory purchaseHistory) {
-
-    }
-
 
 }

@@ -265,9 +265,9 @@ public class SystemHandler {
 
     public boolean checkIfProductExists(String storeName, String productName) {
        Store s = stores.get(storeName);
-       if (s != null && s.getProductByName(productName) != null)
-            return true;
-       return false;
+       if(s == null || s.getProductByName(productName) == null)
+            return false;
+       return true;
     }
 
     public boolean cartIsEmpty(){
@@ -306,19 +306,21 @@ public class SystemHandler {
         return historyOutput;
     }
 
+    // function for handling Use Case 4.6 - written by Noy
     public String editPermissions(String userName, List<String> permissions, String storeName){
         Store store = getStoreByName(storeName);
         User user = getUserByName(userName);
 
         List<Permission> p = new LinkedList<>();
-        for(int i = 0; i < permissions.size(); i++){
-            p.add(new Permission(permissions.get(i)));
+        for(String per: permissions){
+            p.add(new Permission(per));
         }
 
-        store.getManagements().get(user).setPermission(permissions);
+        store.getManagements().get(user).setPermission(p);
         return "Privileges have been edited successfully";
     }
 
+    // function for handling Use Case 2.4 - written by Noy
     public String viewStoreInfo(String storeName){
 
         Store s = getStoreByName(storeName);
@@ -333,23 +335,24 @@ public class SystemHandler {
         return storeInfo;
     }
 
+    // function for handling Use Case 2.4 - written by Noy
     public String viewProductInfo(String storeName, String productName){
         Store s = getStoreByName(storeName);
         Product p = s.getProductByName(productName);
         return (p.getName() + ": " + p.getDescription() + "\nprice: " + p.getPrice() + "$");
     }
 
-    public String purchaseCart(){
-
+    // function for handling Use Case 2.8 - written by Noy
+    public void purchaseBaskets() {
         ShoppingCart sc = this.activeUser.getShoppingCart();
         Collection<Basket> baskets = sc.getBaskets();
-        for(Basket currBasket: baskets){
+        for (Basket currBasket : baskets) {
             Store currStore = currBasket.getStore();
             Collection<ProductItem> currProducts = currBasket.getProductItems();
-            for(ProductItem pi: currProducts){
+            for (ProductItem pi : currProducts) {
                 Product p = pi.getProduct();
                 int amount = pi.getAmount();
-                if(!currStore.checkIfProductAvailable(p.getName(), amount)) {
+                if (!currStore.checkIfProductAvailable(p.getName(), amount)) {
                     if (!currStore.getInventory().containsKey(p)) {
                         throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + "products");
                     }
@@ -363,16 +366,27 @@ public class SystemHandler {
             Purchase storePurchase = new Purchase(storeShoppingCart);
             currStore.getPurchaseHistory().addPurchase(storePurchase);
         }
+    }
 
+    // function for handling Use Case 2.8 - written by Noy
+    public void addToPurchaseHistory() {
+        ShoppingCart sc = this.activeUser.getShoppingCart();
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
-        if(!PC.pay(newPurchase, this.activeUser)) {
-            throw new RuntimeException("Payment failed");
-        }
+    }
 
+    // function for handling Use Case 2.8 - written by Noy
+    public boolean pay() {
+        ShoppingCart sc = this.activeUser.getShoppingCart();
+        Purchase newPurchase = new Purchase(sc);
+        return PC.pay(newPurchase, this.activeUser);
+    }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public void supply(){
+        ShoppingCart sc = this.activeUser.getShoppingCart();
+        Purchase newPurchase = new Purchase(sc);
         PS.supply(newPurchase, this.activeUser);
-        return "Purchasing completed successfully";
-
     }
 
 
@@ -397,7 +411,7 @@ public class SystemHandler {
         int counter = 1;
         for (Purchase p : storeHistory.getPurchases()) {
             historyOutput = historyOutput.concat("\n" + "Purchase #" + counter + ":" + "\n");
-            historyOutput = historyOutput.concat(p.getPurchasedProducts().viewStoreHistoryBasket());
+            historyOutput = historyOutput.concat(p.getPurchasedProducts().viewBasketForStoreHistory());
             historyOutput = historyOutput.concat("\n" + "total money paid: " + p.getTotalCheck());
             counter++;
         }

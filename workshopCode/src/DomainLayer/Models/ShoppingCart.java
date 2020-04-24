@@ -77,6 +77,18 @@ public class ShoppingCart {
         return result;
     }
 
+    public String viewBasketForStoreHistory(){
+        if (baskets.isEmpty())
+            throw new RuntimeException("There are no products to view");
+        String result = "";
+        for(Basket b : baskets.values()) {
+            for(ProductItem pi: b.getProductItems()) {
+                result = result.concat("Product name: " + pi.getProduct().getName() + " price: " + pi.getProduct().getPrice() + " amount: " + pi.getAmount() + "\n");
+            }
+        }
+        return result;
+    }
+
     public boolean isEmpty(){
         return this.baskets.isEmpty();
     }
