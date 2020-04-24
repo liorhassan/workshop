@@ -390,21 +390,18 @@ public class SystemHandler {
     }
 
     // function for handling Use Case 4.10 - written by Noy
-    public StorePurchaseHistory storePurchaseHistory(String storeName){
-        if(emptyString(storeName)){
-            throw new RuntimeException("Must enter store name");
-        }
-
+    public String getStorePurchaseHistory(String storeName){
         Store s = getStoreByName(storeName);
-        if(s == null){
-            throw new RuntimeException("This store doesn't exist");
+        StorePurchaseHistory storeHistory = s.getPurchaseHistory();
+        String historyOutput = "Shopping history:";
+        int counter = 1;
+        for (Purchase p : storeHistory.getPurchases()) {
+            historyOutput = historyOutput.concat("\n" + "Purchase #" + counter + ":" + "\n");
+            historyOutput = historyOutput.concat(p.getPurchasedProducts().viewStoreHistoryBasket());
+            historyOutput = historyOutput.concat("\n" + "total money paid: " + p.getTotalCheck());
+            counter++;
         }
-
-        if(!s.isOwner(this.activeUser) || !(s.isManager(this.activeUser)&& s.getManagements().get(this.activeUser).isAllowed("View store purchase history"))){
-            throw new RuntimeException("You are not allowed to view this store's purchasing history");
-        }
-
-        return s.getPurchaseHistory();
+        return historyOutput;
     }
 
 
@@ -421,6 +418,10 @@ public class SystemHandler {
         return stores.get(storName).isOwner(this.users.get(userName));
     }
 
+    public boolean checkIfActiveUserIsManager(String storName) {
+        return stores.get(storName).isManager(this.activeUser);
+    }
+
     public boolean checkIfUserIsManager(String storName, String userName) {
         return stores.get(storName).isManager(this.users.get(userName));
     }
@@ -429,4 +430,10 @@ public class SystemHandler {
         return activeUser.getUsername() == null;
     }
 
+    public boolean checkIfUserHavePermission(String storeName, String permission){
+        if(!storeExists(storeName))
+            return false;
+        Store s = getStoreByName(storeName);
+        return s.getManagements().get(this.activeUser).havePermission(permission);
+    }
 }
