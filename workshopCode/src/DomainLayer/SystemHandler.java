@@ -79,17 +79,18 @@ public class SystemHandler {
     }
 
     //function for handling UseCase 2.5
-    public List<Product> searchProducts(String name, Category category, String description){
-        if(emptyString(name)&&category==null&&emptyString(description))
-            throw new IllegalArgumentException("Must enter search parameter");
+    public String searchProducts(String name, String category, String[] keywords){
+        boolean searchName = name == null ? false : !name.equals("");
+        boolean searchCategory = category == null ? false : !category.equals("");
+        boolean searchKKeywords = keywords == null ? false : !String.join("",keywords).equals("");
         List<Product> matching=  new ArrayList<>();
         for(Store s : stores.values()){
             for(Product p : s.getProducts()){
-                if(!emptyString(name)&&!p.getName().contains(name))
+                if(searchName&&!p.getName().contains(name))
                     continue;
-                if(category!=null&&category!=p.getCategory())
+                if(searchCategory&&!category.equals(p.getCategory().name()))
                     continue;
-                if(!emptyString(description)&&!p.getDescription().contains(description))
+                if(searchKKeywords&&!p.getKeyWords().containsAll(Arrays.asList(keywords)))
                     continue;
                 matching.add(p);
             }
@@ -97,14 +98,23 @@ public class SystemHandler {
         if(matching.size()==0)
             throw new RuntimeException("There are no products that match these parameters");
         lastSearchResult = matching;
-        return lastSearchResult;
+        return productListToString(lastSearchResult);
+    }
+
+    private String productListToString(List<Product> products){
+        StringBuilder output = new StringBuilder();
+        for(Product p : products){
+            output.append("Name: ").append(p.getName()).append(", Category: ").append(p.getCategory().name()).append(", Description: ").append(p.getDescription()).append(", Price: ").append(p.getPrice()).append("\n");
+        }
+        return output.toString().strip();
     }
 
     //function for handling UseCase 2.5
-    public List<Product> filterResults(Integer minPrice, Integer maxPrice, Category category){
+    public String filterResults(Integer minPrice, Integer maxPrice, String category){
+        boolean searchCategory = category == null ? false : !category.equals("");
         List<Product> matching = new ArrayList<>();
         for(Product p : lastSearchResult){
-            if(category!=null&&category!=p.getCategory())
+            if(searchCategory&&!category.equals(p.getCategory().name()))
                 continue;
             if(minPrice!=null&&p.getPrice()<minPrice)
                 continue;
@@ -114,7 +124,7 @@ public class SystemHandler {
         }
         if(matching.size()==0)
             throw new RuntimeException("There are no products that match this search filter");
-        return matching;
+        return productListToString(matching);
     }
 
     //function for handling UseCase 2.6
@@ -188,20 +198,30 @@ public class SystemHandler {
 
     // function for handling Use Case 4.7
     public String removeManager(String username,String storename){
-        if(emptyString(username) || emptyString(storename))
-            throw new IllegalArgumentException("Must enter username and store name");
+        Store store = stores.get(storename);
+        User user = users.get(username);
+        if(store != null && user != null) {
+            store.removeManager(user);
+            return "Manager removed successfully!";
+        }
+        return "Manager wasn't removed";
+    }
+
+    //helper function for Use Case 4.7
+    public boolean isUserStoreOwner(String storename){
         Store store = stores.get(storename);
         if(store == null)
-            throw new IllegalArgumentException("This store doesn't exist");
+            return false;
+        return store.isOwner(activeUser);
+    }
+
+    //helper function for Use Case 4.7
+    public boolean isUserAppointer(String username, String storename){
+        Store store = stores.get(storename);
         User user = users.get(username);
-        if(user == null)
-            throw new IllegalArgumentException("This username doesn't exist");
-        if(!store.isOwner(activeUser))
-            throw new RuntimeException("You must be this store owner for this command");
-        if(store.getAppointer(user) != activeUser)
-            throw new RuntimeException("This username is not one of this store's managers appointed by you");
-        store.removeManager(user);
-        return "Manager removed successfully!";
+        if(store == null || user == null)
+            return false;
+        return store.getAppointer(user).equals(activeUser);
     }
 
     public String appointManager(String username, String storeName){
@@ -230,6 +250,14 @@ public class SystemHandler {
     public boolean emptyString(String[] args){
         for (String s: args) {
             if (s == null || s.equals(""))
+                return false;
+        }
+        return true;
+    }
+
+    public boolean allEmptyString(String[] args){
+        for (String s: args) {
+            if (s != null && !s.equals(""))
                 return false;
         }
         return true;
