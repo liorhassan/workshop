@@ -1,8 +1,8 @@
 package AcceptanceTests;
 
-import DomainLayer.*;
-import ServiceLayer.RemoveStoreManager;
-import ServiceLayer.UpdateInventory;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.StoreManagerHandler;
+import ServiceLayer.UsersHandler;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -10,64 +10,66 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class UC4_7 {
-    private RemoveStoreManager command;
+    private StoreManagerHandler handler;
 
     @Before
     public void setUp() throws Exception{
-        command = new RemoveStoreManager();
+        handler = new StoreManagerHandler();
     }
 
     @BeforeClass
     public static void init() throws Exception{
-        Store s = new Store("FoxHome", "stuff for home", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
-        SystemHandler.getInstance().getStores().put("FoxHome", s);
-        SystemHandler.getInstance().register("shauli");
-        SystemHandler.getInstance().register("toya");
-        SystemHandler.getInstance().appointManager("toya","FoxHome");
+        (new UsersHandler()).register("tester","tester");
+        (new UsersHandler()).login("tester","tester");
+        (new StoreHandler()).openNewStore("Castro", "clothing");
+        (new UsersHandler()).logout();
+        (new UsersHandler()).register("shauli","shauli");
+        (new UsersHandler()).register("toya","toya");
+        (new UsersHandler()).login("shauli","shauli");
+        (new StoreHandler()).openNewStore("FoxHome", "stuff for home");
+        (new StoreManagerHandler()).addStoreManager("toya","FoxHome");
     }
 
     @Test
     public void valid(){
-        String result = command.execute("toya","FoxHome");
+        String result = handler.removeStoreManager("toya","FoxHome");
         assertEquals("Manager removed successfully!", result);
-        SystemHandler.getInstance().appointManager("toya","FoxHome");
+        (new StoreManagerHandler()).addStoreManager("toya","FoxHome");
     }
 
     @Test
     public void storeDoesNotExists(){
-        String result = command.execute("toya","Fox");
+        String result = handler.removeStoreManager("toya","Fox");
         assertEquals("This store doesn't exist", result);
     }
 
     @Test
     public void userDoesNotExists(){
-        String result = command.execute("cooper","FoxHome");
+        String result = handler.removeStoreManager("cooper","FoxHome");
         assertEquals("This username doesn't exist", result);
     }
 
     @Test
     public void doesNotHavePrivileges(){
-        Store s2 = new Store("Castro", "clothing", new User(), new StoreOwning());
-        SystemHandler.getInstance().getStores().put("Castro", s2);
-        String result = command.execute("toya", "Castro");
+        String result = handler.removeStoreManager("toya", "Castro");
         assertEquals("You must be this store owner for this command", result);
     }
 
     @Test
     public void notAppointedByUser(){
-        String result = command.execute("shauli","FoxHome");
+        String result = handler.removeStoreManager("shauli","FoxHome");
         assertEquals("This username is not one of this store's managers appointed by you", result);
     }
 
     @Test
     public void emptyInput(){
-        String result = command.execute("","FoxHome");
+        String result = handler.removeStoreManager("","FoxHome");
         assertEquals("Must enter username and store name", result);
-        result = command.execute(null,"FoxHome");
+        result = handler.removeStoreManager(null,"FoxHome");
         assertEquals("Must enter username and store name", result);
-        result = command.execute("toya","");
+        result = handler.removeStoreManager("toya","");
         assertEquals("Must enter username and store name", result);
-        result = command.execute("toya",null);
+        result = handler.removeStoreManager("toya",null);
         assertEquals("Must enter username and store name", result);
     }
 
