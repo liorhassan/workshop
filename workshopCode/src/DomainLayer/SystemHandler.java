@@ -389,6 +389,25 @@ public class SystemHandler {
         return "Username has been added as one of the store owners successfully";
     }
 
+    // function for handling Use Case 4.10 - written by Noy
+    public StorePurchaseHistory storePurchaseHistory(String storeName){
+        if(emptyString(storeName)){
+            throw new RuntimeException("Must enter store name");
+        }
+
+        Store s = getStoreByName(storeName);
+        if(s == null){
+            throw new RuntimeException("This store doesn't exist");
+        }
+
+        if(!s.isOwner(this.activeUser) || !(s.isManager(this.activeUser)&& s.getManagements().get(this.activeUser).isAllowed("View store purchase history"))){
+            throw new RuntimeException("You are not allowed to view this store's purchasing history");
+        }
+
+        return s.getPurchaseHistory();
+    }
+
+
     public HashMap<String, User> getUsers() {
         return users;
     }
