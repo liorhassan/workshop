@@ -288,6 +288,7 @@ public class SystemHandler {
         return "Privileges have been edited successfully";
     }
 
+
     public String viewStoreInfo(String storeName){
 
         Store s = getStoreByName(storeName);
