@@ -31,6 +31,11 @@ public class UsersHandler {
             return "This password is not valid. Please choose a different one";
         }
         try {
+            String[] args = {username};
+            if (SystemHandler.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Username cannot be empty");
+            if (SystemHandler.getInstance().userExists(username))
+                throw new IllegalArgumentException("This username already exists in the system. Please choose a different one");
             SystemHandler.getInstance().register(username);
             SecurityHandler.getInstance().addUser(username, password);
             return "You have been successfully registered!";
@@ -40,5 +45,11 @@ public class UsersHandler {
             return e.getMessage();
         }
     }
+
+    public void resetUsers(){
+        SystemHandler.getInstance().resetUsers();
+    }
+
+
 }
 

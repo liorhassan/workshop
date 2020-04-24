@@ -56,29 +56,41 @@ public class SystemHandler {
         users = newUsers;
     }
 
+    //reset functions
+    public void resetUsers(){
+        users.clear();
+    }
+
+    public void resetStores(){
+        stores.clear();
+    }
+
     //function for handling UseCase 2.2
     public void register(String username) {
-        if (emptyString(username))
-            throw new IllegalArgumentException("Username cannot be empty");
-        if (users.containsKey(username))
-            throw new IllegalArgumentException("This username already exists in the system. Please choose a different one");
+
         User newUser = new User();
         newUser.setUsername(username);
         users.put(username, newUser);
     }
 
+    //help function for register use case
+    public boolean userExists(String username){
+        return users.containsKey(username);
+    }
+
     //function for handling UseCase 2.5
-    public List<Product> searchProducts(String name, Category category, String description){
-        if(emptyString(name)&&category==null&&emptyString(description))
-            throw new IllegalArgumentException("Must enter search parameter");
+    public String searchProducts(String name, String category, String[] keywords){
+        boolean searchName = name == null ? false : !name.equals("");
+        boolean searchCategory = category == null ? false : !category.equals("");
+        boolean searchKKeywords = keywords == null ? false : !String.join("",keywords).equals("");
         List<Product> matching=  new ArrayList<>();
         for(Store s : stores.values()){
             for(Product p : s.getProducts()){
-                if(!emptyString(name)&&!p.getName().contains(name))
+                if(searchName&&!p.getName().contains(name))
                     continue;
-                if(category!=null&&category!=p.getCategory())
+                if(searchCategory&&!category.equals(p.getCategory().name()))
                     continue;
-                if(!emptyString(description)&&!p.getDescription().contains(description))
+                if(searchKKeywords&&!p.getKeyWords().containsAll(Arrays.asList(keywords)))
                     continue;
                 matching.add(p);
             }
@@ -86,14 +98,23 @@ public class SystemHandler {
         if(matching.size()==0)
             throw new RuntimeException("There are no products that match these parameters");
         lastSearchResult = matching;
-        return lastSearchResult;
+        return productListToString(lastSearchResult);
+    }
+
+    private String productListToString(List<Product> products){
+        StringBuilder output = new StringBuilder();
+        for(Product p : products){
+            output.append("Name: ").append(p.getName()).append(", Category: ").append(p.getCategory().name()).append(", Description: ").append(p.getDescription()).append(", Price: ").append(p.getPrice()).append("\n");
+        }
+        return output.toString().strip();
     }
 
     //function for handling UseCase 2.5
-    public List<Product> filterResults(Integer minPrice, Integer maxPrice, Category category){
+    public String filterResults(Integer minPrice, Integer maxPrice, String category){
+        boolean searchCategory = category == null ? false : !category.equals("");
         List<Product> matching = new ArrayList<>();
         for(Product p : lastSearchResult){
-            if(category!=null&&category!=p.getCategory())
+            if(searchCategory&&!category.equals(p.getCategory().name()))
                 continue;
             if(minPrice!=null&&p.getPrice()<minPrice)
                 continue;
@@ -103,18 +124,22 @@ public class SystemHandler {
         }
         if(matching.size()==0)
             throw new RuntimeException("There are no products that match this search filter");
-        return matching;
+        return productListToString(matching);
     }
 
     //function for handling UseCase 2.6
     public void addToShoppingBasket(String store, String product, int amount){
-        if (emptyString(store) || emptyString(product) || amount <= 0)
-            throw new IllegalArgumentException("Must enter store name and product name and amount bigger than 0");
-        if (!stores.containsKey(store))
-            throw new IllegalArgumentException("The store doesn't exist in the trading system");
-        if (!stores.get(store).checkIfProductAvailable(product, amount))
-            throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
         activeUser.getShoppingCart().addProduct(product, stores.get(store), amount);
+    }
+
+    //helper function for UseCase 2.6
+    public boolean storeExists(String storeName){
+        return stores.containsKey(storeName);
+    }
+
+    //helper function for UseCase 2.6
+    public boolean isProductAvailable(String store, String product, int amount){
+        return stores.get(store).checkIfProductAvailable(product, amount);
     }
 
     // function for handling UseCase 2.3
@@ -154,40 +179,49 @@ public class SystemHandler {
     }
 
     //function for handling Use Case 4.1
-    public String updateInventory(String storeName, String productName, double productPrice, Category productCategory, String productDescription, int amount){
-        if (emptyString(storeName) || emptyString(productName) || productCategory == null || emptyString(productDescription) || amount <= 0)
-            throw new IllegalArgumentException("Must enter store name, product info, and amount that is bigger than 0");
-        if (!stores.containsKey(storeName))
-            throw new IllegalArgumentException("This store doesn't exist");
-        if (!activeUser.hasEditPrivileges(storeName))
-            throw new IllegalArgumentException("Must have editing privileges");
+    public String updateInventory(String storeName, String productName, double productPrice, String productCategory, String productDescription, int amount){
         Store s = stores.get(storeName);
         if (!s.hasProduct(productName)) {
-            s.addToInventory(productName, productPrice, productCategory, productDescription, amount);
+            s.addToInventory(productName, productPrice, Category.valueOf(productCategory), productDescription, amount);
             return "The product has been added";
         }
         else {
-            s.updateInventory(productName, productPrice, productCategory, productDescription, amount);
+            s.updateInventory(productName, productPrice, Category.valueOf(productCategory), productDescription, amount);
             return "The product has been updated";
         }
     }
 
+    //helper function for Use Case 4.1
+    public boolean userHasEditPrivileges(String storeName){
+        return activeUser.hasEditPrivileges(storeName);
+    }
+
     // function for handling Use Case 4.7
     public String removeManager(String username,String storename){
-        if(emptyString(username) || emptyString(storename))
-            throw new IllegalArgumentException("Must enter username and store name");
+        Store store = stores.get(storename);
+        User user = users.get(username);
+        if(store != null && user != null) {
+            store.removeManager(user);
+            return "Manager removed successfully!";
+        }
+        return "Manager wasn't removed";
+    }
+
+    //helper function for Use Case 4.7
+    public boolean isUserStoreOwner(String storename){
         Store store = stores.get(storename);
         if(store == null)
-            throw new IllegalArgumentException("This store doesn't exist");
+            return false;
+        return store.isOwner(activeUser);
+    }
+
+    //helper function for Use Case 4.7
+    public boolean isUserAppointer(String username, String storename){
+        Store store = stores.get(storename);
         User user = users.get(username);
-        if(user == null)
-            throw new IllegalArgumentException("This username doesn't exist");
-        if(!store.isOwner(activeUser))
-            throw new RuntimeException("You must be this store owner for this command");
-        if(store.getAppointer(user) != activeUser)
-            throw new RuntimeException("This username is not one of this store's managers appointed by you");
-        store.removeManager(user);
-        return "Manager removed successfully!";
+        if(store == null || user == null)
+            return false;
+        return store.getAppointer(user).equals(activeUser);
     }
 
     public String appointManager(String username, String storeName){
@@ -221,9 +255,11 @@ public class SystemHandler {
         return true;
     }
 
-    public boolean checkIfStoreExists(String storeName) {
-        if (stores.get(storeName) != null)
-            return false;
+    public boolean allEmptyString(String[] args){
+        for (String s: args) {
+            if (s != null && !s.equals(""))
+                return false;
+        }
         return true;
     }
 
@@ -252,12 +288,22 @@ public class SystemHandler {
     }
 
     // function for handling Use Case 3.7 - written by Nufar
-    public UserPurchaseHistory getUserPurchaseHistory() {
-        if (activeUser == null)
-            throw new RuntimeException("There is no active user");
-        if (activeUser.getUsername() == null)
-            throw new RuntimeException("Only subscribed users can view purchase history");
-        return activeUser.getPurchaseHistory();
+    public String getActiveUserPurchaseHistory() {
+        return getUserPurchaseHistory(this.activeUser.getUsername());
+    }
+
+    // function for handling Use Case 3.7 - written by Nufar
+    public String getUserPurchaseHistory(String userName) {
+        UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
+        String historyOutput = "Shopping history:" + "\n";
+        int counter = 1;
+        for (Purchase p : purchaseHistory.getUserPurchases()) {
+            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
+            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
+            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
+            counter++;
+        }
+        return historyOutput;
     }
 
     public String editPermissions(String userName, List<Permission> permissions, String storeName){
@@ -335,7 +381,7 @@ public class SystemHandler {
 
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
-        if(!PC.pay(newPurchase, this.activeUser)){
+        if(!PC.pay(newPurchase, this.activeUser)) {
             throw new RuntimeException("Payment failed");
         }
 
@@ -347,20 +393,8 @@ public class SystemHandler {
 
     // function for handling Use Case 4.3 - written by Nufar
     public String appointOwner(String username, String storeName) {
-        if(emptyString(username) || emptyString(storeName))
-            throw new IllegalArgumentException("Must enter username and store name");
         Store store = stores.get(storeName);
-        if(store == null)
-            throw new IllegalArgumentException("This store doesn't exist");
-
         User appointed_user = users.get(username);
-
-        if(appointed_user == null)
-            throw new IllegalArgumentException("This username doesn't exist");
-        if(!store.isOwner(activeUser))
-            throw new RuntimeException("You must be this store owner for this action");
-        if(store.isOwner(appointed_user))
-            throw new RuntimeException("This username is already one of the store's owners");
 
         // update store and user
         StoreOwning owning = new StoreOwning(activeUser);
@@ -373,4 +407,18 @@ public class SystemHandler {
     public HashMap<String, User> getUsers() {
         return users;
     }
+
+    public boolean checkIfActiveUserIsOwner(String storeName) {
+        Store store = stores.get(storeName);
+        return store.isOwner(activeUser);
+    }
+
+    public boolean checkIfUserIsOwner(String storName, String userName) {
+        return stores.get(storName).isOwner(this.users.get(userName));
+    }
+
+    public boolean checkIfActiveUserSubscribed() {
+        return activeUser.getUsername() == null;
+    }
+
 }

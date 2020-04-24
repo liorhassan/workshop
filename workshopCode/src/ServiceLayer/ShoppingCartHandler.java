@@ -22,6 +22,13 @@ public class ShoppingCartHandler {
     public String AddToShoppingBasket(String storeName, String productName, int amount){
         SystemLogger.getInstance().writeEvent("Add to shopping basket command: store name - " + storeName + ", product name - " + productName);
         try {
+            String[] args = {storeName, productName};
+            if (SystemHandler.getInstance().emptyString(args) || amount <= 0)
+                throw new IllegalArgumentException("Must enter store name and product name and amount bigger than 0");
+            if (!SystemHandler.getInstance().storeExists(storeName))
+                throw new IllegalArgumentException("The store doesn't exist in the trading system");
+            if (!SystemHandler.getInstance().isProductAvailable(storeName, productName, amount))
+                throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
             SystemHandler.getInstance().addToShoppingBasket(storeName, productName, amount);
             return "Items have been added to basket";
         }
