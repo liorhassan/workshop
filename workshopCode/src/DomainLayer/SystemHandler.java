@@ -306,28 +306,13 @@ public class SystemHandler {
         return historyOutput;
     }
 
-    public String editPermissions(String userName, List<Permission> permissions, String storeName){
-
-        if(emptyString(userName) || permissions.isEmpty() || emptyString(storeName)){
-            throw new RuntimeException("Must enter username, permissions list and store name");
-        }
-
+    public String editPermissions(String userName, List<String> permissions, String storeName){
         Store store = getStoreByName(storeName);
-        if(store == null){
-            throw new RuntimeException("This store doesn't exists");
-        }
-
         User user = getUserByName(userName);
-        if(user == null){
-            throw new RuntimeException("This username doesn't exist");
-        }
 
-        if(!store.getOwnerships().containsKey(this.activeUser)){
-            throw new RuntimeException("You must be this store owner for this command");
-        }
-
-        if(!(store.getManagements().containsKey(user) && store.getManagements().get(user).appointer.equals(this.activeUser))){
-            throw new RuntimeException("You can't edit this user's privileges");
+        List<Permission> p = new LinkedList<>();
+        for(int i = 0; i < permissions.size(); i++){
+            p.add(new Permission(permissions.get(i)));
         }
 
         store.getManagements().get(user).setPermission(permissions);
@@ -415,6 +400,10 @@ public class SystemHandler {
 
     public boolean checkIfUserIsOwner(String storName, String userName) {
         return stores.get(storName).isOwner(this.users.get(userName));
+    }
+
+    public boolean checkIfUserIsManager(String storName, String userName) {
+        return stores.get(storName).isManager(this.users.get(userName));
     }
 
     public boolean checkIfActiveUserSubscribed() {

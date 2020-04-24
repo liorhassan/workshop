@@ -54,14 +54,18 @@ public class StoreManagerHandler {
             if(SystemHandler.getInstance().emptyString(args)){
                 throw new RuntimeException("Must enter username, permissions list and store name");
             }
-            if(SystemHandler.getInstance().checkIfStoreExists(storeName)){
+            if(!SystemHandler.getInstance().storeExists(storeName)){
                 throw new RuntimeException("This store doesn't exists");
             }
-            if(!store.getOwnerships().containsKey(this.activeUser)){
+            if(!SystemHandler.getInstance().userExists(userName)){
+                throw new RuntimeException("This username doesn't exist");
+            }
+            if(!SystemHandler.getInstance().checkIfUserIsOwner(storeName, userName)){
                 throw new RuntimeException("You must be this store owner for this command");
             }
-
-
+            if(!SystemHandler.getInstance().checkIfUserIsManager(storeName, userName) && SystemHandler.getInstance().isUserAppointer(userName, storeName)){
+                throw new RuntimeException("You can't edit this user's privileges");
+            }
             return SystemHandler.getInstance().editPermissions(userName, permissions, storeName);
         }
         catch (Exception e){

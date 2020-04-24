@@ -33,14 +33,16 @@ public class UC2_4 {
         usersHandler.register("noy", "1234");
         usersHandler.login("noy", "1234");
         storeHandler.openNewStore("Lalin", "beauty products");
-        storeHandler.UpdateInventory("Lalin", "Body Cream ocean", 40, Category.BeautyProducts, "Velvety and soft skin lotion with ocean scent", 1);
-        storeHandler.UpdateInventory("Lalin", "Body Scrub musk", 50, Category.BeautyProducts, "Deep cleaning with natural salt crystals with a musk scent", 1);
+        storeHandler.UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 1);
+        storeHandler.UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 1);
     }
 
 
     @AfterClass
     public static void clean() {
         usersHandler.logout();
+        usersHandler.resetUsers();
+        storeHandler.resetStores();
     }
 
     @Test
