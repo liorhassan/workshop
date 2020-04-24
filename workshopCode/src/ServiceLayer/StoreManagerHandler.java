@@ -10,10 +10,23 @@ public class StoreManagerHandler {
 
     public String addStoreManager(String username, String storeName){
 
+        SystemLogger.getInstance().writeEvent(String.format("Add manager command: username - %s, store name - %s",username,storeName));
         try {
+            String [] args = {username, storeName};
+            if(SystemHandler.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Must enter username and store name");
+            if(! SystemHandler.getInstance().storeExists(storeName))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if(SystemHandler.getInstance().userExists(username))
+                throw new IllegalArgumentException("This username doesn't exist");
+            if(SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName))
+                throw new RuntimeException("You must be this store owner for this command");
+            if(SystemHandler.getInstance().checkIfUserIsManager(storeName, username))
+                throw new RuntimeException("This username is already one of the store's managers");
             return SystemHandler.getInstance().appointManager(username, storeName);
         }
         catch (Exception e){
+            SystemLogger.getInstance().writeError("Add manager error: " + e.getMessage());
             return e.getMessage();
         }
     }
