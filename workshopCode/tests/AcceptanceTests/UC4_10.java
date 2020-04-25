@@ -31,13 +31,14 @@ public class UC4_10 {
     @BeforeClass
     public static void init(){
         usersHandler.register("noy", "1234");
+        usersHandler.register("rachel", "1234");
         usersHandler.register("maor", "1234");
         usersHandler.register("zuzu", "1234");
         usersHandler.login("noy", "1234");
-        //open new store
         storeHandler.openNewStore("Lalin", "beauty products");
         storeHandler.UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
         storeHandler.UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 20);
+        storeManagerHandler.addStoreManager("rachel", "Lalin");
         storeManagerHandler.addStoreManager("maor", "Lalin");
 
         List<String> p = new LinkedList<>();

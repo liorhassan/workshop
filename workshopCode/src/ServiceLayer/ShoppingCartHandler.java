@@ -47,7 +47,6 @@ public class ShoppingCartHandler {
 
             SystemHandler.getInstance().purchaseBaskets();
             SystemHandler.getInstance().addToPurchaseHistory();
-
             if (!SystemHandler.getInstance().pay()) {
                 throw new RuntimeException("Payment failed");
             }

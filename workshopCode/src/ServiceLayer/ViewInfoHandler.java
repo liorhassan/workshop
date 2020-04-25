@@ -17,7 +17,7 @@ public class ViewInfoHandler {
             if(SystemHandler.getInstance().emptyString(arg)) {
                 throw new IllegalArgumentException("The store name is invalid");
             }
-            if(!SystemHandler.getInstance().checkIfStoreExists(storeName)){
+            if(!SystemHandler.getInstance().storeExists(storeName)){
                 throw new RuntimeException("This store doesn't exist in this trading system");
             }
             return SystemHandler.getInstance().viewStoreInfo(storeName);
