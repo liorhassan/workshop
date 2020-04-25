@@ -7,7 +7,40 @@ import DomainLayer.UserPurchaseHistory;
 
 public class ViewPurchaseHistoryHandler {
 
-    public String ViewPurchaseHistoryOfUser() {
+    // UseCase 6.4 - Admin only
+    public String viewPurchaseHistoryOfUser(String username) {
+        SystemLogger.getInstance().writeEvent("View User Purchase History command as an Admin");
+        try {
+            if (SystemHandler.getInstance().checkIfInAdminMode())
+                throw new RuntimeException("Only admin user can view other users' purchase history");
+            if (SystemHandler.getInstance().userExists(username))
+                throw new IllegalArgumentException("The user requested doesn't exist in the system");
+            return SystemHandler.getInstance().getUserPurchaseHistory(username);
+        }
+        catch (RuntimeException e) {
+            SystemLogger.getInstance().writeError("View user purchase history as admin error: " + e.getMessage());
+            return e.getMessage();
+        }
+    }
+
+    // UseCase 6.4 - Admin only
+    public String viewPurchaseHistoryOfStore (String storeName) {
+        SystemLogger.getInstance().writeEvent("View User Purchase History command as an Admin");
+        try {
+            if (SystemHandler.getInstance().checkIfInAdminMode())
+                throw new RuntimeException("Only admin user can view store's purchase history");
+            if (SystemHandler.getInstance().storeExists(storeName))
+                throw new IllegalArgumentException("The store requested doesn't exist in the system");
+            return SystemHandler.getInstance().getStorePurchaseHistory(storeName);
+        }
+        catch (RuntimeException e) {
+            SystemLogger.getInstance().writeError("View store purchase history as admin error: " + e.getMessage());
+            return e.getMessage();
+        }
+    }
+
+    // UseCase 3.7
+    public String viewLoggedInUserPurchaseHistory() {
 
         SystemLogger.getInstance().writeEvent("View User Purchase History command");
         try {
