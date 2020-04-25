@@ -144,15 +144,16 @@ public class SystemHandler {
     }
 
     // function for handling UseCase 2.3
-    public void login(String username){
-
-        if (emptyString(username) )                                                       //check legal input
-            throw new IllegalArgumentException("The username is invalid");
-        if (!users.containsKey(username))
-            throw new IllegalArgumentException("This user is not registered");
+    public void login(String username, boolean adminMode) {
         User user = users.get(username);
-        activeUser = user;
-
+        if (!adminMode) {
+            this.adminMode = false;
+            activeUser = user;
+        }
+        else {
+                this.adminMode = true;
+                activeUser = user;
+        }
     }
 
     //function for handling UseCase 3.1
@@ -169,12 +170,7 @@ public class SystemHandler {
 
     // function for use case 2.7
     public String editShoppingCart(String storeName, String productName, int amount){
-        if(emptyString(storeName) || emptyString(productName) || amount < 0 )
-            throw new IllegalArgumentException("Must enter product name, store name and amount");
         Store store = stores.get(storeName);
-        if(store == null)
-            throw new IllegalArgumentException("This store doesn't exist");
-
         return activeUser.getShoppingCart().edit(store, productName, amount);
 
     }
@@ -226,19 +222,8 @@ public class SystemHandler {
     }
 
     public String appointManager(String username, String storeName){
-
-        if(emptyString(username) || emptyString(storeName))
-            throw new IllegalArgumentException("Must enter username and store name");
         Store store = stores.get(storeName);
-        if(store == null)
-            throw new IllegalArgumentException("This store doesn't exist");
         User appointed_user = users.get(username);
-        if(appointed_user == null)
-            throw new IllegalArgumentException("This username doesn't exist");
-        if(!store.isOwner(activeUser))
-            throw new RuntimeException("You must be this store owner for this command");
-        if(store.isManager(appointed_user))
-            throw new RuntimeException("This username is already one of the store's managers");
 
         // update store and user
         StoreManaging managing = new StoreManaging(activeUser);
@@ -416,9 +401,30 @@ public class SystemHandler {
         return stores.get(storName).isOwner(this.users.get(userName));
     }
 
+    public boolean checkIfUserIsManager(String storName, String userName) {
+        return stores.get(storName).isManager(this.users.get(userName));
+    }
+
     public boolean checkIfActiveUserSubscribed() {
         return activeUser.getUsername() == null;
     }
+    public boolean checkIfUserIsAdmin( String userName) {
+        User user = getUserByName(userName);
+        return adminsList.contains(user);
+    }
+
+    public boolean checkIfBasketExists(String storeName) {
+        return activeUser.getShoppingCart().isBasketExists(storeName);
+    }
+
+    public void addAdmin(String userName){
+        User user = users.get(userName);
+        adminsList.add(user);
+    }
+    public void resetAdmins(){
+        adminsList = new ArrayList<>();
+    }
+
 
     // function fir handling Use Case 3b - written by Nufar
     public List<String> getProductsNamesAndKeywords() {
