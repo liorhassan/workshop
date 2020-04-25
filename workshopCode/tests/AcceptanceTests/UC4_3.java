@@ -1,38 +1,41 @@
 package AcceptanceTests;
 
 import DomainLayer.SystemHandler;
-import ServiceLayer.AddStoreOwner;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.UsersHandler;
 import org.junit.*;
-
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
 public class UC4_3 {
 
-    private AddStoreOwner command;
+    private StoreHandler storeHandler;
+    private UsersHandler usersHandler;
 
     @BeforeClass
-    public static void init() throws Exception{
+    public void init() throws Exception{
+        usersHandler = new UsersHandler();
+        storeHandler = new StoreHandler();
+
         // store owner (appointer)
-        SystemHandler.getInstance().register("nufi");
+        usersHandler.register("nufi", "123456");
 
         // subscribed user (appointee)
-        SystemHandler.getInstance().register("tooti");
+        usersHandler.register("tooti", "9999");
 
-        SystemHandler.getInstance().login("nufi");
-        SystemHandler.getInstance().openNewStore("KKW", "best Kim Kardashian beauty products");
+        usersHandler.login("nufi", "123456");
+        storeHandler.openNewStore("KKW", "best Kim Kardashian beauty products");
     }
 
     @AfterClass
-    public static void clean() {
-        SystemHandler.getInstance().setUsers(new HashMap<>());
-        SystemHandler.getInstance().setStores(new HashMap<>());
+    public void clean() {
+        usersHandler.resetUsers();
+        storeHandler.resetStores();
     }
 
     @Before
     public void setUp() throws Exception {
-        command = new AddStoreOwner();
+        //storeHandler = new StoreHandler();
     }
 
     @After
@@ -41,31 +44,31 @@ public class UC4_3 {
 
     @Test
     public void valid() {
-        String result = command.execute("tooti", "KKW");
+        String result = storeHandler.openNewStore("tooti", "KKW");
         assertEquals("Username has been added as one of the store owners successfully", result);
     }
 
     @Test
     public void emptyInput(){
-        String result = command.execute("", "KKW");
+        String result = storeHandler.openNewStore("", "KKW");
         assertEquals("Must enter username and store name", result);
-        result = command.execute(null, "KKW");
+        result = storeHandler.openNewStore(null, "KKW");
         assertEquals("Must enter username and store name", result);
-        result = command.execute("tooti", "");
+        result = storeHandler.openNewStore("tooti", "");
         assertEquals("Must enter username and store name", result);
-        result = command.execute("tooti", null);
+        result = storeHandler.openNewStore("tooti", null);
         assertEquals("Must enter username and store name", result);
     }
 
     @Test
     public void storeDoesNotExist(){
-        String result = command.execute("tooti", "poosh");
+        String result = storeHandler.openNewStore("tooti", "poosh");
         assertEquals("This store doesn't exist", result);
     }
 
     @Test
     public void userDoesNotExist(){
-        String result = command.execute("tooton", "KKW");
+        String result = storeHandler.openNewStore("tooton", "KKW");
         assertEquals("This username doesn't exist", result);
     }
 
@@ -74,7 +77,7 @@ public class UC4_3 {
         SystemHandler.getInstance().logout();
         SystemHandler.getInstance().register("toya");
         SystemHandler.getInstance().login("toya");
-        String result = command.execute("tooti", "KKW");
+        String result = storeHandler.openNewStore("tooti", "KKW");
         assertEquals("You must be this store owner for this action", result);
         SystemHandler.getInstance().logout();
         SystemHandler.getInstance().login("nufi");
@@ -85,8 +88,8 @@ public class UC4_3 {
         SystemHandler.getInstance().logout();
         SystemHandler.getInstance().register("cooper");
         SystemHandler.getInstance().login("nufi");
-        command.execute("cooper", "KKW");
-        String result = command.execute("cooper", "KKW");
+        storeHandler.openNewStore("cooper", "KKW");
+        String result = storeHandler.openNewStore("cooper", "KKW");
         assertEquals("This username is already one of the store's owners", result);
     }
 }
