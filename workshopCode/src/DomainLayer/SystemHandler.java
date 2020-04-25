@@ -6,6 +6,7 @@ import DomainLayer.ExternalSystems.ProductSupply;
 import DomainLayer.Models.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SystemHandler {
     private static SystemHandler ourInstance = new SystemHandler();
@@ -425,4 +426,17 @@ public class SystemHandler {
     }
 
 
+    // function fir handling Use Case 3b - written by Nufar
+    public List<String> getProductsNamesAndKeywords() {
+        List<String> res = new LinkedList<>();
+        for (Store store: this.stores.values()) {
+            res.addAll(store.getProducts().stream().map(p -> p.getName()).collect(Collectors.toList()));
+            res.addAll(store.getProducts().stream().map(p -> p.getKeyWords()).
+                    reduce(new LinkedList<String>(), (ans, i)-> {
+                        ans.addAll(i);
+                        return ans;
+                    }));
+        }
+        return res;
+    }
 }
