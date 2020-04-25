@@ -1,84 +1,84 @@
 package AcceptanceTests;
 
-import DomainLayer.Category;
-import DomainLayer.Store;
-import DomainLayer.StoreOwning;
-import DomainLayer.SystemHandler;
-import ServiceLayer.ViewAndEditShoppingCart;
-
+import ServiceLayer.ShoppingCartHandler;
+import ServiceLayer.UsersHandler;
+import ServiceLayer.StoreHandler;
 import org.junit.*;
-
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
 public class UC2_7 {
 
-    private  ViewAndEditShoppingCart editShoppingCart;
+    private  ShoppingCartHandler service;
 
     @Before
     public void setUp() throws Exception{
-        editShoppingCart = new ViewAndEditShoppingCart();
+        service = new ShoppingCartHandler();
     }
 
     @BeforeClass
     public static void init() throws Exception {
 
-        SystemHandler.getInstance().register("lior");
-        SystemHandler.getInstance().login("lior");
-        Store store = new Store("Rami Levi", "supermarket", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
-        Store store2 = new Store("Shufersal", "supermarket", SystemHandler.getInstance().getActiveUser(), new StoreOwning());
+        (new UsersHandler()).register("lior", "1234");
+        (new UsersHandler()).login("lior", "1234", false);
+        (new StoreHandler()).openNewStore("Rami Levi", "Supermarket");
+        (new StoreHandler()).openNewStore("Shufersal", "Supermarket");
+        (new StoreHandler()).UpdateInventory("Rami Levi","apple", 2, "Food", "green apple", 3);
 
-        SystemHandler.getInstance().getStores().put("Rami Levi", store);
-        SystemHandler.getInstance().getStores().put("Shufersal", store2);
-        store.addToInventory("apple", 2, Category.Food, "green apple", 3);
-
-        store.addToInventory("water", 3, Category.Food, "water 1 L", 2);
-        SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "apple",  2);
-        SystemHandler.getInstance().addToShoppingBasket("Rami Levi", "water", 1);
+        (new StoreHandler()).UpdateInventory("Rami Levi","water", 3, "Food", "water 1 L", 2);
+        (new  ShoppingCartHandler()).AddToShoppingBasket("Rami Levi", "apple",  2);
+        (new  ShoppingCartHandler()).AddToShoppingBasket("Rami Levi", "water", 1);
     }
     @AfterClass
     public static void clean() {
-        SystemHandler.getInstance().setUsers(new HashMap<>());
-        SystemHandler.getInstance().setStores(new HashMap<>());
+        (new  UsersHandler()).resetUsers();
+        (new  StoreHandler()).resetStores();
     }
 
     @Test
     public void successful(){
-        String output1 = editShoppingCart.edit("Rami Levi", "apple", 1);
+        String output1 = service.editCart("Rami Levi", "apple", 1);
         assertEquals("The product has been updated successfully", output1);
-        String output2 = editShoppingCart.edit("Rami Levi", "water", 0);
+        String output2 = service.editCart("Rami Levi", "water", 0);
         assertEquals("The product has been updated successfully", output2);
-        String output3 = editShoppingCart.view();
+        String output3 = service.viewCart();
         assertEquals("Your ShoppingCart details: \nStore name: Rami Levi\nProduct name: apple price: 2.0 amount: 1\n", output3);
     }
 
     @Test
     public void productIsNotExist(){
-        String output = editShoppingCart.edit("Rami Levi", "fish", 2);
+        String output = service.editCart("Rami Levi", "fish", 2);
         assertEquals("The product doesn’t exist in your shopping cart", output);
     }
 
     @Test
     public void storeDoesNotExist(){
-        String output1 = editShoppingCart.edit("Shufersal", "milki", 1);
+        String output1 = service.editCart("Shufersal", "milki", 1);
         assertEquals("This store doesn't exist", output1);
-        String output2 = editShoppingCart.edit("Golda", "ice cream" , 1);
+        String output2 = service.editCart("Golda", "ice cream" , 1);
         assertEquals("This store doesn't exist", output2);
     }
 
     @Test
+    public void productDoesNotAvailable(){
+        String output1 = service.editCart("Rami Levi", "water", 2);
+        assertEquals("The product isn't available in the store with the requested amount", output1);
+        String output2 = service.editCart("Rami Levi", "apple" , 10);
+        assertEquals("The product isn't available in the store with the requested amount", output2);
+    }
+
+    @Test
     public void emptyInput(){
-        String output1 = editShoppingCart.edit("", "apple", 1);
-        assertEquals("Must enter product name, store name and amount", output1);
-        String output2 = editShoppingCart.edit(null, "apple", 1);
-        assertEquals("Must enter product name, store name and amount", output2);
-        String output3 = editShoppingCart.edit("Rami levi", "", 2);
-        assertEquals("Must enter product name, store name and amount", output3);
-        String output4 = editShoppingCart.edit("Rami levi", null, 2);
-        assertEquals("Must enter product name, store name and amount", output4);
-        String output5 = editShoppingCart.edit("Rami levi", "apple", -1);
-        assertEquals("Must enter product name, store name and amount", output5);
+        String output1 = service.editCart("", "apple", 1);
+        assertEquals("Must enter store name and product name and amount bigger than 0", output1);
+        String output2 = service.editCart(null, "apple", 1);
+        assertEquals("Must enter store name and product name and amount bigger than 0", output2);
+        String output3 = service.editCart("Rami levi", "", 2);
+        assertEquals("Must enter store name and product name and amount bigger than 0", output3);
+        String output4 = service.editCart("Rami levi", null, 2);
+        assertEquals("Must enter store name and product name and amount bigger than 0", output4);
+        String output5 = service.editCart("Rami levi", "apple", -1);
+        assertEquals("Must enter store name and product name and amount bigger than 0", output5);
     }
 
 }

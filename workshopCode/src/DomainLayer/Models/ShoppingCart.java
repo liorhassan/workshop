@@ -45,8 +45,6 @@ public class ShoppingCart {
 
     public String edit(Store store, String product, int amount){
         Basket basket = baskets.get(store);
-        if(basket == null)
-            return  "This store doesn't exist";
         List<ProductItem> items = basket.getProductItems();
         for(ProductItem pi : items){
             if(pi.getProduct().getName().equals(product)) {
@@ -56,17 +54,19 @@ public class ShoppingCart {
                         baskets.remove(store);
                     return "The product has been updated successfully";
                 }
-                else if(store.checkIfProductAvailable(pi.getProduct().getName(), amount)) {
+                else  {
                     pi.setAmount(amount);
                     return "The product has been updated successfully";
-                }
-                else {
-                    return "this amount is not available";
                 }
             }
         }
         return "The product doesn’t exist in your shopping cart";
     }
+
+    public boolean isBasketExists (String storename){
+        return baskets.get(storename) != null ;
+    }
+
     public String viewOnlyProducts() {
         if (baskets.isEmpty())
             throw new RuntimeException("There are no products to view");

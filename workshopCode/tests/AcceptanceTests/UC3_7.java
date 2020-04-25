@@ -28,7 +28,7 @@ public class UC3_7 {
 
     @Test
     public void valid() {
-        String result = historyHandlerhandler.ViewPurchaseHistoryOfUser();
+        String result = historyHandlerhandler.viewLoggedInUserPurchaseHistory();
         assertEquals("Shopping history:"+"\n", result);
     }
 }
