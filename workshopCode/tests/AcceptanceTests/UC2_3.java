@@ -1,9 +1,7 @@
 package AcceptanceTests;
 
 import DomainLayer.Security.SecurityHandler;
-import DomainLayer.SystemHandler;
-import DomainLayer.User;
-import ServiceLayer.Login;
+import ServiceLayer.UsersHandler;
 import org.junit.*;
 
 import java.util.HashMap;
@@ -12,53 +10,64 @@ import static org.junit.Assert.*;
 
 public class UC2_3 {
 
-    private Login login;
+    private UsersHandler service;
 
     @Before
     public void setUp() throws Exception {
-        login = new Login();
+        service = new UsersHandler();
 
     }
 
     @BeforeClass
     public static void init() throws Exception{
-        SystemHandler.getInstance().register("lior");
+        (new UsersHandler()).register("lior", "1234");
+        (new UsersHandler()).register("Amit", "good");
+        (new UsersHandler()).addAdmin("lior");
     }
 
 
     @AfterClass
     public static void clean() {
-        SystemHandler.getInstance().setUsers(new HashMap<>());
+        (new UsersHandler()).resetUsers();
+        (new UsersHandler()).resetAdmins();
     }
 
     @After
     public void tearDown() throws Exception {
-        SystemHandler.getInstance().logout();
+        (new UsersHandler()).logout();
     }
 
     @Test
     public void successfully() {
-        String output = login.login("lior", "good");
-        assertEquals("You have been successfully logged in!", output);
+        String output1 = service.login("lior", "1234", true);
+        assertEquals("You have been successfully logged in!", output1);
+        service.logout();
+        String output2 = service.login("Amit", "good", false);
+        assertEquals("You have been successfully logged in!", output2);
     }
 
     @Test
     public void incorrectPassword() {
-        String output = login.login("lior", "notgood");
+        String output = service.login("lior", "notgood", false);
         assertEquals("This password is incorrect", output);
     }
 
     @Test
     public void usernameNotExist() {
-        String output = login.login("hassan", "good");
+        String output = service.login("hassan", "good", false);
         assertEquals("This user is not registered", output);
+    }
+    @Test
+    public void NotAdmin() {
+        String output = service.login("Amit", "good", true);
+        assertEquals("this user is not a system admin", output);
     }
 
     @Test
     public void emptyUsername() {
-        String output1 = login.login(null, "1234");
+        String output1 = service.login(null, "1234", false);
         assertEquals("The username is invalid" , output1);
-        String output2 = login.login("", "good");
+        String output2 = service.login("", "good", false);
         assertEquals("The username is invalid" , output2);
     }
 

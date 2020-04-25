@@ -10,11 +10,23 @@ public class ShoppingCartHandler {
     }
 
     public String editCart (String storeName, String productName, int amount){
+        SystemLogger.getInstance().writeEvent("Edit shopping cart command: store name - " + storeName + ", product name - " + productName + "amount - " + amount);
         try {
+            String [] args = {storeName, productName};
+            if(SystemHandler.getInstance().emptyString(args)|| amount < 0 )
+                throw new IllegalArgumentException("Must enter store name and product name and amount bigger than 0");
+            if(SystemHandler.getInstance().storeExists(storeName))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if(SystemHandler.getInstance().checkIfBasketExists(storeName))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if (!SystemHandler.getInstance().isProductAvailable(storeName, productName, amount))
+                throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
             String output = SystemHandler.getInstance().editShoppingCart(storeName, productName, amount);
             return output;
         }
         catch (Exception e){
+
+            SystemLogger.getInstance().writeError("Edit shopping cart error: " + e.getMessage());
             return e.getMessage();
         }
     }
