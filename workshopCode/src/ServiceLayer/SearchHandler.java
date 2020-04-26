@@ -22,8 +22,12 @@ public class SearchHandler {
 
             // create dictionary for spell checking
             List<String> localDictionary = SystemHandler.getInstance().getProductsNamesAndKeywords();
-            // TODO: activate spellchecking function with input
-
+            if(name!=null)
+                name = spellcheckAndCorrect(name,localDictionary);
+            if(keywords!=null) {
+                for (int i = 0; i < keywords.length; i++)
+                    keywords[i] = spellcheckAndCorrect(keywords[i], localDictionary);
+            }
             return SystemHandler.getInstance().searchProducts(name, category, keywords);
         } catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("Search product error: " + e.getMessage());
