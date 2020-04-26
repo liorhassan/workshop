@@ -42,6 +42,7 @@ public class UC4_6 {
 
     @Test
     public void valid() {
+        (new UsersHandler()).login("noy", "1234", false);
         List<String> p = new LinkedList<>();
         p.add("View Store Purchase History");
         String result = storeManagerHandler.editManagerPermissions("maor", p, "Mcdonalds");

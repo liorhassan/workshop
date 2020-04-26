@@ -19,9 +19,9 @@ public class StoreManagerHandler {
                 throw new IllegalArgumentException("Must enter username and store name");
             if(! SystemHandler.getInstance().storeExists(storeName))
                 throw new IllegalArgumentException("This store doesn't exist");
-            if(SystemHandler.getInstance().userExists(username))
+            if(!SystemHandler.getInstance().userExists(username))
                 throw new IllegalArgumentException("This username doesn't exist");
-            if(SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName))
+            if(!SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName))
                 throw new RuntimeException("You must be this store owner for this command");
             if(SystemHandler.getInstance().checkIfUserIsManager(storeName, username))
                 throw new RuntimeException("This username is already one of the store's managers");
@@ -58,12 +58,21 @@ public class StoreManagerHandler {
     public String editManagerPermissions(String userName, List<String> permissions, String storeName ){
         SystemLogger.getInstance().writeEvent("Edit Permissions command");
         try{
-            String args[] = new String[2 + permissions.size()];
-            args[0] = userName;
-            args[1] = storeName;
-            for(int i = 0; i < permissions.size(); i++){
-                args[i+2] = permissions.get(i);
+            String args[] = new String[3];
+            if(permissions.isEmpty()) {
+                args[0] = userName;
+                args[1] = storeName;
+                args[2] = "";
             }
+            else{
+                args = new String[2 + permissions.size()];
+                args[0] = userName;
+                args[1] = storeName;
+                for(int i = 0; i < permissions.size(); i++){
+                    args[i+2] = permissions.get(i);
+                }
+            }
+
 
             if(SystemHandler.getInstance().emptyString(args)){
                 throw new RuntimeException("Must enter username, permissions list and store name");
@@ -74,10 +83,10 @@ public class StoreManagerHandler {
             if(!SystemHandler.getInstance().userExists(userName)){
                 throw new RuntimeException("This username doesn't exist");
             }
-            if(!SystemHandler.getInstance().checkIfUserIsOwner(storeName, userName)){
+            if(!SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName)){
                 throw new RuntimeException("You must be this store owner for this command");
             }
-            if(!SystemHandler.getInstance().checkIfUserIsManager(storeName, userName) && SystemHandler.getInstance().isUserAppointer(userName, storeName)){
+            if(!(SystemHandler.getInstance().checkIfUserIsManager(storeName, userName) && SystemHandler.getInstance().isUserAppointer(userName, storeName))){
                 throw new RuntimeException("You can't edit this user's privileges");
             }
             return SystemHandler.getInstance().editPermissions(userName, permissions, storeName);
