@@ -53,9 +53,9 @@ public class UC4_10 {
     public void valid() {
         //noy - store owner
         String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
-        String expectedResult = "Shopping history:\nPurchase #1:\n + " +
-                "Product name: Body Cream ocean price: 50 amount: 5" +
-                "\ntotal money paid: 250";
+        String expectedResult = "Shopping history of the store:\n\nPurchase #1:\nStore name: Lalin\n" +
+                "Product name: Body Cream ocean price: 40.0 amount: 5" +
+                "\n\ntotal money paid: 200.0";
         assertEquals(expectedResult, result);
 
         //rachel - store manager with the required permissions

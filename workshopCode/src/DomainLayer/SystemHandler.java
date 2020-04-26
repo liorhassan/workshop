@@ -295,7 +295,7 @@ public class SystemHandler {
         return historyOutput;
     }
 
-    // function for handling Use Case 6.4 - written by Nufar
+    // function for handling Use Case 4.10 and 6.4 - written by Nufar
     public String getStorePurchaseHistory(String storeName) {
         StorePurchaseHistory purchaseHistory = this.stores.get(storeName).getPurchaseHistory();
         String historyOutput = "Shopping history of the store:" + "\n";
@@ -356,9 +356,7 @@ public class SystemHandler {
                 Product p = pi.getProduct();
                 int amount = pi.getAmount();
                 if (!currStore.checkIfProductAvailable(p.getName(), amount)) {
-                    if (!currStore.getInventory().containsKey(p)) {
-                        throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + "products");
-                    }
+                        throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
                 }
                 currStore.purchaseProduct(p, amount);
             }
@@ -485,6 +483,10 @@ public class SystemHandler {
         if(s == null || s.getProductByName(productName) == null)
             return false;
         return true;
+    }
+
+    public void emptyCart(){
+        this.activeUser.emptyCart();
     }
 
 }

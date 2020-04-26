@@ -71,7 +71,7 @@ public class ViewPurchaseHistoryHandler {
             if(!SystemHandler.getInstance().storeExists(storeName)){
                 throw new RuntimeException("This store doesn't exist");
             }
-            if(!SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName) || !(SystemHandler.getInstance().checkIfActiveUserIsManager(storeName)&& SystemHandler.getInstance().checkIfUserHavePermission(storeName, "View store purchase history"))){
+            if(!(SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName) || (SystemHandler.getInstance().checkIfActiveUserIsManager(storeName)&& SystemHandler.getInstance().checkIfUserHavePermission(storeName, "View store purchase history")))){
                 throw new RuntimeException("You are not allowed to view this store's purchasing history");
             }
             return SystemHandler.getInstance().getStorePurchaseHistory(storeName);

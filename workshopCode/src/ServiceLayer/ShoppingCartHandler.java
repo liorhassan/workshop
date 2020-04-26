@@ -68,6 +68,7 @@ public class ShoppingCartHandler {
         }
 
         catch (Exception e) {
+            SystemHandler.getInstance().emptyCart();
             SystemLogger.getInstance().writeError("Purchase Cart error: " + e.getMessage());
             return e.getMessage();
         }
