@@ -1,6 +1,8 @@
 package AcceptanceTests;
 
+import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,6 +15,12 @@ public class UC3_1 {
     @Before
     public void setUp() throws Exception {
         handler = new UsersHandler();
+    }
+
+    @AfterClass
+    public static void clean(){
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @BeforeClass

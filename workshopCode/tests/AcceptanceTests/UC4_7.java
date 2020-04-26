@@ -3,6 +3,7 @@ package AcceptanceTests;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.StoreManagerHandler;
 import ServiceLayer.UsersHandler;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,6 +29,12 @@ public class UC4_7 {
         (new UsersHandler()).login("shauli","shauli", false);
         (new StoreHandler()).openNewStore("FoxHome", "stuff for home");
         (new StoreManagerHandler()).addStoreManager("toya","FoxHome");
+    }
+
+    @AfterClass
+    public static void clean(){
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @Test
