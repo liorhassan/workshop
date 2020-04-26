@@ -81,8 +81,8 @@ public class ShoppingCart {
         this.baskets.put(basket.getStore(), basket);
     }
 
-    public Basket getStoreBasket(String name){
-       return baskets.get(name);
+    public Basket getStoreBasket(Store s){
+       return baskets.get(s);
     }
 }
 
