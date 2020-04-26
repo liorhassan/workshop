@@ -30,7 +30,8 @@ public class SystemHandler_UT {
         SystemHandler.getInstance().register("prince");
         SystemHandler.getInstance().addAdmin("prince");
         SystemHandler.getInstance().register("loco");
-
+        SystemHandler.getInstance().getUsers().put("KING", new User());
+        SystemHandler.getInstance().getUsers().get("KING").setUsername("KING");
         SystemHandler.getInstance().getUsers().put("noy", new User());
         HashMap<String, User> u= SystemHandler.getInstance().getUsers();
         SystemHandler.getInstance().getUsers().get("noy").setUsername("noy");
@@ -50,11 +51,107 @@ public class SystemHandler_UT {
     }
 
     @Test
+    public void register_Test() {
+        sys.register("lior");
+        assertTrue(sys.getUsers().containsKey("lior"));
+    }
+
+    @Test
+    public void login_Test() {
+        assertEquals(null, sys.getActiveUser().getUsername());
+        sys.login("prince", true);
+        assertEquals(sys.getUsers().get("prince"), sys.getActiveUser());
+        assertTrue(sys.getActiveUser().getUsername().equals("prince"));
+        assertTrue(sys.isAdminMode());
+        sys.logout();
+        sys.login("loco", false);
+        assertEquals(sys.getUsers().get("loco"), sys.getActiveUser());
+        assertTrue(sys.getActiveUser().getUsername().equals("loco"));
+        assertFalse(sys.isAdminMode());
+        sys.logout();
+    }
+
+    @Test
+    public void openNewStore_Test() {
+        sys.login("loco", false);
+        sys.openNewStore("ZARA", "clothing");
+        assertTrue(sys.getStores().containsKey("ZARA"));
+        assertTrue(sys.getActiveUser().getStoreOwnings().containsKey(sys.getStores().get("ZARA")));
+        assertEquals(sys.getStores().get("ZARA").getStoreFirstOwner(),sys.getActiveUser());
+        sys.logout();
+    }
+
+
+    @Test
+    public void addToShoppingBasket_Test() {
+        sys.addToShoppingBasket("Pull&Bear", "skinny jeans", 1);
+        assertTrue(sys.checkIfBasketExists("Pull&Bear"));
+        String output =  sys.getActiveUser().getShoppingCart().getStoreBasket(sys.getStoreByName("Pull&Bear")).viewBasket();
+        assertEquals("Store name: Pull&Bear\nProduct name: skinny jeans price: 120.0 amount: 1\n",output);
+    }
+
+
+
+    @Test
+    public void isProductAvailable_Test() {
+        assertTrue(sys.isProductAvailable("Pull&Bear", "skinny jeans", 1));
+        assertTrue(sys.isProductAvailable("Pull&Bear", "skinny jeans", 3));
+        assertTrue(sys.isProductAvailable("Pull&Bear", "blue top", 4));
+        assertFalse(sys.isProductAvailable("Pull&Bear", "blue top", 7));
+        assertFalse(sys.isProductAvailable("Pull&Bear", "skinny jeans", 4));
+    }
+
+    @Test
+    public void viewShoppingCart_Test() {
+        sys.login("KING", false);
+        String output = sys.viewSoppingCart();
+        assertEquals("Your ShoppingCart details: \nempty!", output);
+        sys.addToShoppingBasket("Pull&Bear", "skinny jeans", 1);
+        String output1 = sys.viewSoppingCart();
+        assertTrue(sys.checkIfBasketExists("Pull&Bear"));
+        assertEquals("Your ShoppingCart details: \nStore name: Pull&Bear\nProduct name: skinny jeans price: 120.0 amount: 1\n", output1);
+        sys.editShoppingCart("Pull&Bear", "skinny jeans", 0);
+        sys.logout();
+    }
+
+    @Test
+    public void editShoppingCart_Test() {
+        sys.login("loco", false);
+        sys.addToShoppingBasket("Pull&Bear", "skinny jeans", 1);
+        String output = sys.viewSoppingCart();
+        assertTrue(sys.checkIfBasketExists("Pull&Bear"));
+        assertEquals("Your ShoppingCart details: \nStore name: Pull&Bear\nProduct name: skinny jeans price: 120.0 amount: 1\n", output);
+        sys.editShoppingCart("Pull&Bear", "skinny jeans", 3);
+        String output1 = sys.viewSoppingCart();
+        assertEquals("Your ShoppingCart details: \nStore name: Pull&Bear\nProduct name: skinny jeans price: 120.0 amount: 3\n", output1);
+        sys.logout();
+    }
+
+    @Test
+    public void updateInventory_Test(){
+        sys.login("noy", false);
+        String output1 = sys.updateInventory("Pull&Bear", "t-shirt", 70, "Clothing","white t-shirt", 2);
+        assertEquals("The product has been added", output1);
+        String output2 = sys.updateInventory("Pull&Bear", "t-shirt", 60, "Clothing","white t-shirt", 4);
+        assertEquals("The product has been updated", output2);
+        sys.logout();
+    }
+
+    @Test
+    public void appointManager_Test(){
+        sys.login("noy", false);
+        sys.appointManager("prince", "Pull&Bear");
+        assertTrue(sys.getStoreByName("Pull&Bear").getManagements().containsKey(sys.getUserByName("prince")));
+        sys.logout();
+    }
+
+    @Test
     public void removeManager_Test(){
         sys.login("noy", false);
         assertEquals("Manager removed successfully!", sys.removeManager("loco", "Pull&Bear"));
         assertEquals("Manager wasn't removed", sys.removeManager("maor", "Pull&Bear"));
         assertEquals("Manager wasn't removed", sys.removeManager("loco", "Swear"));
+        sys.logout();
     }
 
     @Test
@@ -140,7 +237,7 @@ public class SystemHandler_UT {
     public void checkIfUserIsManager_Test(){
         sys.login("noy", false);
         assertTrue(sys.checkIfUserIsManager("Pull&Bear", "zuzu"));
-        assertFalse(sys.checkIfUserIsManager("Pull&Bear", "prince"));
+        assertFalse(sys.checkIfUserIsManager("Pull&Bear", "KING"));
         sys.logout();
     }
 

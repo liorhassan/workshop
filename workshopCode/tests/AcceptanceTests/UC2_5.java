@@ -3,11 +3,13 @@ package AcceptanceTests;
 import ServiceLayer.SearchHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class UC2_5 {
     private SearchHandler handler;
@@ -26,10 +28,16 @@ public class UC2_5 {
         (new StoreHandler()).UpdateInventory("FoxHome","hat", 900, "Clothing", "beauty pillow", 1);
     }
 
+    @AfterClass
+    public static void clean(){
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
+    }
+
     @Test
     public void valid() {
         String result = handler.searchProduct(null,"Clothing",null);
-        assertEquals("Name: shirt, Category: Clothing, Description: hawaiian shirt, Price: 40.0\nName: hat, Category: Clothing, Description: beauty pillow, Price: 900.0", result);
+        assertTrue(result.equals("Name: shirt, Category: Clothing, Description: hawaiian shirt, Price: 40.0\nName: hat, Category: Clothing, Description: beauty pillow, Price: 900.0")||result.equals("Name: hat, Category: Clothing, Description: beauty pillow, Price: 900.0\nName: shirt, Category: Clothing, Description: hawaiian shirt, Price: 40.0"));
         result = handler.filterResults(0,50, null);
         assertEquals("Name: shirt, Category: Clothing, Description: hawaiian shirt, Price: 40.0", result);
     }
