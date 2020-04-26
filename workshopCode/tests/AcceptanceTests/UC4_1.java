@@ -2,7 +2,6 @@ package AcceptanceTests;
 
 import DomainLayer.*;
 import ServiceLayer.StoreHandler;
-import ServiceLayer.SystemReset;
 import ServiceLayer.UsersHandler;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -25,11 +24,11 @@ public class UC4_1 {
     @BeforeClass
     public static void init() throws Exception{
         (new UsersHandler()).register("toya","shenhav");
-        (new UsersHandler()).login("toya","shenhav");
+        (new UsersHandler()).login("toya","shenhav", false);
         (new StoreHandler()).openNewStore("Castro","clothing");
         (new UsersHandler()).logout();
         (new UsersHandler()).register("shenhav","toya");
-        (new UsersHandler()).login("shenhav","toya");
+        (new UsersHandler()).login("shenhav","toya", false);
         (new StoreHandler()).openNewStore("FoxHome","stuff for home");
         (new StoreHandler()).UpdateInventory("FoxHome","pillow", 25, "BeautyProducts", "beauty pillow", 1);
 

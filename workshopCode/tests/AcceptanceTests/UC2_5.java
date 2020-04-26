@@ -19,7 +19,7 @@ public class UC2_5 {
     @BeforeClass
     public static void init() throws Exception{
         (new UsersHandler()).register("shauli","shauli");
-        (new UsersHandler()).login("shauli","shauli");
+        (new UsersHandler()).login("shauli","shauli", false);
         (new StoreHandler()).openNewStore("FoxHome", "stuff for home");
         (new StoreHandler()).UpdateInventory("FoxHome","banana", 7, "Food", "yellow with banana-like texture", 1);
         (new StoreHandler()).UpdateInventory("FoxHome","shirt", 40, "Clothing", "hawaiian shirt", 1);

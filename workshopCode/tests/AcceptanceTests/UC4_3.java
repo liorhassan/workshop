@@ -23,7 +23,7 @@ public class UC4_3 {
         // subscribed user (appointee)
         usersHandler.register("tooti", "9999");
 
-        usersHandler.login("nufi", "123456");
+        usersHandler.login("nufi", "123456", false);
         storeHandler.openNewStore("KKW", "best Kim Kardashian beauty products");
     }
 
@@ -76,18 +76,18 @@ public class UC4_3 {
     public void appointerIsNotOwner() {
         SystemHandler.getInstance().logout();
         SystemHandler.getInstance().register("toya");
-        SystemHandler.getInstance().login("toya");
+        SystemHandler.getInstance().login("toya", false);
         String result = storeHandler.openNewStore("tooti", "KKW");
         assertEquals("You must be this store owner for this action", result);
         SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().login("nufi");
+        SystemHandler.getInstance().login("nufi", false);
     }
 
     @Test
     public void userAlreadyOwner() {
         SystemHandler.getInstance().logout();
         SystemHandler.getInstance().register("cooper");
-        SystemHandler.getInstance().login("nufi");
+        SystemHandler.getInstance().login("nufi", false);
         storeHandler.openNewStore("cooper", "KKW");
         String result = storeHandler.openNewStore("cooper", "KKW");
         assertEquals("This username is already one of the store's owners", result);
