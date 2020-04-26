@@ -1,8 +1,6 @@
 package AcceptanceTests;
 
-import DomainLayer.*;
-import DomainLayer.Models.Store;
-import DomainLayer.Models.User;
+
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import ServiceLayer.ViewInfoHandler;
@@ -10,8 +8,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.HashMap;
 
 import static junit.framework.TestCase.assertEquals;
 

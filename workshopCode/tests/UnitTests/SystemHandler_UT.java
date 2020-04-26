@@ -32,7 +32,6 @@ public class SystemHandler_UT {
         SystemHandler.getInstance().register("loco");
 
         SystemHandler.getInstance().getUsers().put("noy", new User());
-        HashMap<String, User> u= SystemHandler.getInstance().getUsers();
         SystemHandler.getInstance().getUsers().get("noy").setUsername("noy");
         SystemHandler.getInstance().getUsers().put("zuzu", new User());
         SystemHandler.getInstance().getUsers().get("zuzu").setUsername("zuzu");
