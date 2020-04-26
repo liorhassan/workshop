@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,14 +32,16 @@ public class SystemHandler_UT {
         SystemHandler.getInstance().register("loco");
 
         SystemHandler.getInstance().getUsers().put("noy", new User());
+        HashMap<String, User> u= SystemHandler.getInstance().getUsers();
         SystemHandler.getInstance().getUsers().get("noy").setUsername("noy");
         SystemHandler.getInstance().getUsers().put("zuzu", new User());
         SystemHandler.getInstance().getUsers().get("zuzu").setUsername("zuzu");
         Store s = new Store("Pull&Bear", "clothing", SystemHandler.getInstance().getUsers().get("noy"),new StoreOwning());
-        s.addManager(SystemHandler.getInstance().getUsers().get("zuzu"), new StoreManaging(SystemHandler.getInstance().getUsers().get("zuzu")));
-        s.addManager(SystemHandler.getInstance().getUsers().get("loco"), new StoreManaging(SystemHandler.getInstance().getUsers().get("loco")));
-        s.updateInventory("skinny jeans", 120, Category.Clothing, "The most comfortable skiny jeans", 3);
-        s.updateInventory("blue top", 120, Category.Clothing, "pretty blue crop top", 4);
+        SystemHandler.getInstance().getStores().put("Pull&Bear", s);
+        s.addManager(SystemHandler.getInstance().getUsers().get("zuzu"), new StoreManaging(SystemHandler.getInstance().getUsers().get("noy")));
+        s.addManager(SystemHandler.getInstance().getUsers().get("loco"), new StoreManaging(SystemHandler.getInstance().getUsers().get("noy")));
+        s.addToInventory("skinny jeans", 120, Category.Clothing, "The most comfortable skiny jeans", 3);
+        s.addToInventory("blue top", 120, Category.Clothing, "pretty blue crop top", 4);
     }
 
     @AfterClass
@@ -76,7 +79,7 @@ public class SystemHandler_UT {
         List<String> p = new LinkedList<>();
         p.add("Define Purchase Policy And Type");
         sys.editPermissions("zuzu", p, "Pull&Bear");
-        assertTrue(sys.getStoreByName("Pull&Bear").getManagements().get(sys.getUserByName("zuzu")).getPermission().contains(new Permission("Define Purchase Policy And Type")));
+        assertTrue(sys.getStoreByName("Pull&Bear").getManagements().get(sys.getUserByName("zuzu")).havePermission("Define Purchase Policy And Type"));
         assertFalse(sys.getStoreByName("Pull&Bear").getManagements().get(sys.getUserByName("zuzu")).getPermission().contains(new Permission("View Store Purchase History")));
         sys.logout();
     }
@@ -143,9 +146,9 @@ public class SystemHandler_UT {
 
     @Test
     public void checkIfActiveUserSubscribed_Test(){
-        assertFalse(sys.checkIfActiveUserSubscribed());
-        sys.login("noy", false);
         assertTrue(sys.checkIfActiveUserSubscribed());
+        sys.login("noy", false);
+        assertFalse(sys.checkIfActiveUserSubscribed());
         sys.logout();
     }
 

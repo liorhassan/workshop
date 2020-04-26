@@ -218,7 +218,10 @@ public class SystemHandler {
         User user = users.get(username);
         if(store == null || user == null)
             return false;
-        return store.getAppointer(user).equals(activeUser);
+        User appointer = store.getAppointer(user);
+        if(appointer == null)
+            return false;
+        return appointer.equals(activeUser);
     }
 
     public String appointManager(String username, String storeName){
