@@ -428,7 +428,7 @@ public class SystemHandler {
     }
 
     public boolean checkIfActiveUserSubscribed() {
-        return activeUser.getUsername() == null;
+        return activeUser.getUsername() != null;
     }
 
     public boolean checkIfUserIsAdmin( String userName) {
