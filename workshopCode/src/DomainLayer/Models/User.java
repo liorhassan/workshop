@@ -55,11 +55,13 @@ public class User {
 
   
     public void addManagedStore(Store store, StoreManaging storeManaging) {
-        this.storeManagements.put(store, storeManaging);
+        if (!storeManagements.containsKey(store))
+            this.storeManagements.put(store, storeManaging);
     }
 
     public void addOwnedStore(Store store, StoreOwning storeOwning) {
-        this.storeOwnings.put(store, storeOwning);
+        if (!storeOwnings.containsKey(store))
+            this.storeOwnings.put(store, storeOwning);
     }
 
     public void emptyCart(){
