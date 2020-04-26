@@ -21,6 +21,7 @@ public class UC2_6 {
 
     @BeforeClass
     public static void init() throws Exception{
+        (new StoreHandler()).resetStores();
         (new UsersHandler()).register("shenhav","toya");
         (new UsersHandler()).login("shenhav","toya", false);
         (new StoreHandler()).openNewStore("FoxHome","stuff for home");
