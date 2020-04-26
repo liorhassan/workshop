@@ -425,7 +425,7 @@ public class SystemHandler {
     }
 
     public boolean checkIfBasketExists(String storeName) {
-        return activeUser.getShoppingCart().isBasketExists(storeName);
+        return activeUser.getShoppingCart().isBasketExists(stores.get(storeName));
     }
 
     public void addAdmin(String userName){
@@ -475,4 +475,7 @@ public class SystemHandler {
         return true;
     }
 
+    public boolean isAdminMode() {
+        return adminMode;
+    }
 }

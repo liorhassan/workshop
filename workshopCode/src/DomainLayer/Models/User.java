@@ -41,6 +41,10 @@ public class User {
         storeManagements.remove(store);
     }
 
+    public HashMap<Store, StoreOwning> getStoreOwnings() {
+        return storeOwnings;
+    }
+
     public boolean hasEditPrivileges(String storeName) {
         for (Store s: storeManagements.keySet()) {
             if (s.getName().equals(storeName))

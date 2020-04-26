@@ -27,6 +27,10 @@ public class Store {
     }
 
 
+    public User getStoreFirstOwner() {
+        return storeFirstOwner;
+    }
+
     public String getName() {
         return name;
     }
