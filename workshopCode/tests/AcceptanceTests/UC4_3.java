@@ -15,12 +15,12 @@ public class UC4_3 {
     public static void init() throws Exception{
 
         // store owner (appointer)
-        (new UsersHandler()).register("nufi", "123456");
+        (new UsersHandler()).register("nufi", "1234");
 
         // subscribed user (appointee)
-        (new UsersHandler()).register("tooti", "9999");
+        (new UsersHandler()).register("tooti", "1234");
 
-        (new UsersHandler()).login("nufi", "123456", false);
+        (new UsersHandler()).login("nufi", "1234", false);
         (new StoreHandler()).openNewStore("KKW", "best Kim Kardashian beauty products");
     }
 
@@ -37,35 +37,47 @@ public class UC4_3 {
 
     @After
     public void tearDown() throws Exception {
+        (new UsersHandler()).resetUsers();
+        storeHandler.resetStores();
+
+        // store owner (appointer)
+        (new UsersHandler()).register("nufi", "1234");
+
+        // subscribed user (appointee)
+        (new UsersHandler()).register("tooti", "1234");
+
+        (new UsersHandler()).login("nufi", "1234", false);
+
+        (new StoreHandler()).openNewStore("KKW", "best Kim Kardashian beauty products");
     }
 
     @Test
     public void valid() {
-        String result = storeHandler.openNewStore("tooti", "KKW");
+        String result = storeHandler.addStoreOwner("tooti", "KKW");
         assertEquals("Username has been added as one of the store owners successfully", result);
     }
 
     @Test
     public void emptyInput(){
-        String result = storeHandler.openNewStore("", "KKW");
+        String result = storeHandler.addStoreOwner("", "KKW");
         assertEquals("Must enter username and store name", result);
-        result = storeHandler.openNewStore(null, "KKW");
+         result = storeHandler.addStoreOwner("tooti", "");
         assertEquals("Must enter username and store name", result);
-        result = storeHandler.openNewStore("tooti", "");
+        result = storeHandler.addStoreOwner(null, "KKW");
         assertEquals("Must enter username and store name", result);
-        result = storeHandler.openNewStore("tooti", null);
+        result = storeHandler.addStoreOwner("tooti", null);
         assertEquals("Must enter username and store name", result);
     }
 
     @Test
     public void storeDoesNotExist(){
-        String result = storeHandler.openNewStore("tooti", "poosh");
+        String result = storeHandler.addStoreOwner("tooti", "poosh");
         assertEquals("This store doesn't exist", result);
     }
 
     @Test
     public void userDoesNotExist(){
-        String result = storeHandler.openNewStore("tooton", "KKW");
+        String result = storeHandler.addStoreOwner("tooton", "KKW");
         assertEquals("This username doesn't exist", result);
     }
 
@@ -74,7 +86,7 @@ public class UC4_3 {
         SystemHandler.getInstance().logout();
         SystemHandler.getInstance().register("toya");
         SystemHandler.getInstance().login("toya", false);
-        String result = storeHandler.openNewStore("tooti", "KKW");
+        String result = storeHandler.addStoreOwner("tooti", "KKW");
         assertEquals("You must be this store owner for this action", result);
         SystemHandler.getInstance().logout();
         SystemHandler.getInstance().login("nufi", false);
@@ -82,11 +94,7 @@ public class UC4_3 {
 
     @Test
     public void userAlreadyOwner() {
-        SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().register("cooper");
-        SystemHandler.getInstance().login("nufi", false);
-        storeHandler.openNewStore("cooper", "KKW");
-        String result = storeHandler.openNewStore("cooper", "KKW");
+        String result = storeHandler.addStoreOwner("nufi", "KKW");
         assertEquals("This username is already one of the store's owners", result);
     }
 }

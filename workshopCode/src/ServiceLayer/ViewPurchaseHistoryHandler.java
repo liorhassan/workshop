@@ -15,9 +15,9 @@ public class ViewPurchaseHistoryHandler {
             String[] args = {username};
             if (SystemHandler.getInstance().emptyString(args))
                 throw new IllegalArgumentException("Must enter username");
-            if (SystemHandler.getInstance().checkIfInAdminMode())
+            if (!SystemHandler.getInstance().checkIfInAdminMode())
                 throw new RuntimeException("Only admin user can view other users' purchase history");
-            if (SystemHandler.getInstance().userExists(username))
+            if (!SystemHandler.getInstance().userExists(username))
                 throw new IllegalArgumentException("The user requested doesn't exist in the system");
             return SystemHandler.getInstance().getUserPurchaseHistory(username);
         }
@@ -34,9 +34,9 @@ public class ViewPurchaseHistoryHandler {
             String[] args = {storeName};
             if (SystemHandler.getInstance().emptyString(args))
                 throw new IllegalArgumentException("Must enter store name");
-            if (SystemHandler.getInstance().checkIfInAdminMode())
+            if (!SystemHandler.getInstance().checkIfInAdminMode())
                 throw new RuntimeException("Only admin user can view store's purchase history");
-            if (SystemHandler.getInstance().storeExists(storeName))
+            if (!SystemHandler.getInstance().storeExists(storeName))
                 throw new IllegalArgumentException("The store requested doesn't exist in the system");
             return SystemHandler.getInstance().getStorePurchaseHistory(storeName);
         }
@@ -51,7 +51,7 @@ public class ViewPurchaseHistoryHandler {
 
         SystemLogger.getInstance().writeEvent("View User Purchase History command");
         try {
-            if (SystemHandler.getInstance().checkIfActiveUserSubscribed())
+            if (!SystemHandler.getInstance().checkIfActiveUserSubscribed())
                 throw new RuntimeException("Only subscribed users can view purchase history");
             return SystemHandler.getInstance().getActiveUserPurchaseHistory();
         }
