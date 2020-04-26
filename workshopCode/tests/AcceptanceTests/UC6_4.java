@@ -13,8 +13,7 @@ public class UC6_4 {
 
     @BeforeClass
     public static void init() throws Exception {
-        (new UsersHandler()).register("nufi", "123456"); // admin user
-        (new UsersHandler()).login("nufi", "123456", true);
+        (new UsersHandler()).login("Admin159", "951", true);
         (new UsersHandler()).register("toya", "555"); // to check history
         (new StoreHandler()).openNewStore("KKW", "best makeup products"); // to check history
     }
