@@ -27,10 +27,10 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../spellcheckdemo/suggester-basic/lib/suggester-1.1.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/suggester-1.1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
