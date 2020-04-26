@@ -1,6 +1,7 @@
 package ServiceLayer;
 
 import DomainLayer.Models.Purchase;
+import DomainLayer.StorePurchaseHistory;
 import DomainLayer.SystemHandler;
 import DomainLayer.SystemLogger;
 import DomainLayer.UserPurchaseHistory;

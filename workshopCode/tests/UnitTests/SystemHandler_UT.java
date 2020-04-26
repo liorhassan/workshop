@@ -1,0 +1,123 @@
+package UnitTests;
+
+import DomainLayer.*;
+
+import DomainLayer.Models.Store;
+import DomainLayer.Models.User;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class SystemHandler_UT {
+
+    private static SystemHandler sys;
+
+    @Before
+    public void setUp(){
+        sys = SystemHandler.getInstance();
+    }
+
+    @BeforeClass
+    public static void init(){
+        sys.register("prince");
+        //TODO: addAdmin(Prince)
+        sys.register("loco");
+
+        sys.getUsers().put("noy", new User());
+        sys.getUsers().get("noy").setUsername("noy");
+        sys.getUsers().put("zuzu", new User());
+        sys.getUsers().get("zuzu").setUsername("zuzu");
+        Store s = new Store("Pull&Bear", "clothing", sys.getUsers().get("noy"),new StoreOwning());
+        s.addManager(sys.getUsers().get("zuzu"), new StoreManaging(sys.getUsers().get("zuzu")));
+    }
+
+    @AfterClass
+    public static void clean(){
+
+    }
+
+
+
+    @Test
+    public void editPermissions_Test(){
+        sys.login("noy");
+        List<String> p = new LinkedList<>();
+        p.add("Define Purchase Policy And Type");
+        sys.editPermissions("zuzu", p, "Pull&Bear");
+        assertTrue(sys.getStoreByName("Pull&Bear").getManagements().get(sys.getUserByName("zuzu")).getPermission().contains(new Permission("Define Purchase Policy And Type")));
+        assertFalse(sys.getStoreByName("Pull&Bear").getManagements().get(sys.getUserByName("zuzu")).getPermission().contains(new Permission("View Store Purchase History")));
+    }
+
+    @Test
+    public void appointOwner_Test(){
+        sys.login("noy");
+        sys.appointOwner("prince", "Pull&Bear");
+        assertTrue(sys.getStoreByName("Pull&Bear").getOwnerships().containsKey(sys.getUserByName("prince")));
+        sys.logout();
+    }
+
+    @Test
+    public void checkIfActiveUserIsOwner_Test(){
+        sys.login("noy");
+        assertTrue(sys.checkIfActiveUserIsOwner("Pull&Bear"));
+        sys.logout();
+        sys.login("zuzu");
+        assertFalse(sys.checkIfActiveUserIsOwner("Pull&Bear"));
+        sys.logout();
+    }
+
+    @Test
+    public void checkIfUserIsOwner_Test(){
+        sys.login("noy");
+        assertFalse(sys.checkIfUserIsOwner("Pull&Bear", "zuzu"));
+        assertTrue(sys.checkIfUserIsOwner("Pull&Bear", "noy"));
+        sys.logout();
+    }
+
+    @Test
+    public void checkIfActiveUserIsManager_Test(){
+        sys.login("noy");
+        assertFalse(sys.checkIfActiveUserIsManager("Pull&Bear"));
+        sys.logout();
+        sys.login("zuzu");
+        assertTrue(sys.checkIfActiveUserIsManager("Pull&Bear"));
+        sys.logout();
+    }
+
+
+    @Test
+    public void checkIfUserIsManager_Test(){
+        sys.login("noy");
+        assertTrue(sys.checkIfUserIsManager("Pull&Bear", "zuzu"));
+        assertFalse(sys.checkIfUserIsManager("Pull&Bear", "prince"));
+        sys.logout();
+    }
+
+    @Test
+    public void checkIfActiveUserSubscribed_Test(){
+        assertFalse(sys.checkIfActiveUserSubscribed());
+        sys.login("noy");
+        assertTrue(sys.checkIfActiveUserSubscribed());
+        sys.logout();
+    }
+
+    @Test
+    public void checkIfUserHavePermission_Test(){
+        sys.login("noy");
+        List<Permission> p = new LinkedList<>();
+        p.add(new Permission("View Store Purchase History"));
+        sys.getStoreByName("Pull&Bear").getManagements().get(sys.getUserByName("zuzu")).setPermission(p);
+        sys.logout();
+        sys.login("zuzu");
+        assertTrue(sys.checkIfUserHavePermission("Pull&Bear", "View Store Purchase History"));
+        assertFalse(sys.checkIfUserHavePermission("Pull&Bear", "Appoint New Owner"));
+        sys.logout();
+    }
+}
