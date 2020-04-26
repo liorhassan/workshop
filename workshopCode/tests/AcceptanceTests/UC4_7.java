@@ -20,12 +20,12 @@ public class UC4_7 {
     @BeforeClass
     public static void init() throws Exception{
         (new UsersHandler()).register("tester","tester");
-        (new UsersHandler()).login("tester","tester");
+        (new UsersHandler()).login("tester","tester", false);
         (new StoreHandler()).openNewStore("Castro", "clothing");
         (new UsersHandler()).logout();
         (new UsersHandler()).register("shauli","shauli");
         (new UsersHandler()).register("toya","toya");
-        (new UsersHandler()).login("shauli","shauli");
+        (new UsersHandler()).login("shauli","shauli", false);
         (new StoreHandler()).openNewStore("FoxHome", "stuff for home");
         (new StoreManagerHandler()).addStoreManager("toya","FoxHome");
     }

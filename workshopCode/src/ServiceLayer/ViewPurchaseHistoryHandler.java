@@ -58,24 +58,21 @@ public class ViewPurchaseHistoryHandler {
     public String ViewPurchaseHistoryOfStore(String storeName){
         SystemLogger.getInstance().writeEvent("View Store Purchase History command: store name - " + storeName);
         try{
-
-            return getMessage(SystemHandler.getInstance().storePurchaseHistory(storeName));
+            String[] arg = {storeName};
+            if(SystemHandler.getInstance().emptyString(arg)){
+                throw new RuntimeException("Must enter store name");
+            }
+            if(!SystemHandler.getInstance().storeExists(storeName)){
+                throw new RuntimeException("This store doesn't exist");
+            }
+            if(!SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName) || !(SystemHandler.getInstance().checkIfActiveUserIsManager(storeName)&& SystemHandler.getInstance().checkIfUserHavePermission(storeName, "View store purchase history"))){
+                throw new RuntimeException("You are not allowed to view this store's purchasing history");
+            }
+            return SystemHandler.getInstance().getStorePurchaseHistory(storeName);
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("View Store Purchase History error: " + e.getMessage());
             return e.getMessage();
         }
-    }
-
-    private String getMessage(StorePurchaseHistory purchaseHistory) {
-        String historyOutput = "Shopping history:";
-        int counter = 1;
-        for (Purchase p : purchaseHistory.getPurchases()) {
-            historyOutput = historyOutput.concat("\n" + "Purchase #" + counter + ":" + "\n");
-            historyOutput = historyOutput.concat(p.getPurchasedProducts().viewStoreHistoryBasket());
-            historyOutput = historyOutput.concat("\n" + "total money paid: " + p.getTotalCheck());
-            counter++;
-        }
-        return historyOutput;
     }
 }

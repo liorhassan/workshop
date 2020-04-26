@@ -54,9 +54,32 @@ public class StoreManagerHandler {
         }
     }
 
-    public String editManagerPermissions(String userName, List<Permission> permissions, String storeName ){
+
+    public String editManagerPermissions(String userName, List<String> permissions, String storeName ){
+        SystemLogger.getInstance().writeEvent("Edit Permissions command");
         try{
-            SystemLogger.getInstance().writeEvent("Edit Permissions command");
+            String args[] = new String[2 + permissions.size()];
+            args[0] = userName;
+            args[1] = storeName;
+            for(int i = 0; i < permissions.size(); i++){
+                args[i+2] = permissions.get(i);
+            }
+
+            if(SystemHandler.getInstance().emptyString(args)){
+                throw new RuntimeException("Must enter username, permissions list and store name");
+            }
+            if(!SystemHandler.getInstance().storeExists(storeName)){
+                throw new RuntimeException("This store doesn't exists");
+            }
+            if(!SystemHandler.getInstance().userExists(userName)){
+                throw new RuntimeException("This username doesn't exist");
+            }
+            if(!SystemHandler.getInstance().checkIfUserIsOwner(storeName, userName)){
+                throw new RuntimeException("You must be this store owner for this command");
+            }
+            if(!SystemHandler.getInstance().checkIfUserIsManager(storeName, userName) && SystemHandler.getInstance().isUserAppointer(userName, storeName)){
+                throw new RuntimeException("You can't edit this user's privileges");
+            }
             return SystemHandler.getInstance().editPermissions(userName, permissions, storeName);
         }
         catch (Exception e){

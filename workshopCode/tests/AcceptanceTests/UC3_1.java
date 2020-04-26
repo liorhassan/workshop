@@ -18,7 +18,7 @@ public class UC3_1 {
     @BeforeClass
     public static void init() throws Exception{
         (new UsersHandler()).register("shauli","shauli");
-        (new UsersHandler()).login("shauli","shauli");
+        (new UsersHandler()).login("shauli","shauli", false);
     }
 
     @Test

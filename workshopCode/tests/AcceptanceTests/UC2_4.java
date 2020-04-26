@@ -1,7 +1,11 @@
 package AcceptanceTests;
 
 import DomainLayer.*;
-import ServiceLayer.ViewInfo;
+import DomainLayer.Models.Store;
+import DomainLayer.Models.User;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.UsersHandler;
+import ServiceLayer.ViewInfoHandler;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -13,31 +17,37 @@ import static junit.framework.TestCase.assertEquals;
 
 public class UC2_4 {
 
-    private ViewInfo viewInfo;
+    private ViewInfoHandler viewInfo;
+    private static StoreHandler storeHandler;
+    private static UsersHandler usersHandler;
 
     @Before
     public void setUp(){
-        this.viewInfo = new ViewInfo();
+        this.viewInfo = new ViewInfoHandler();
+        this.storeHandler = new StoreHandler();
+        this.usersHandler = new UsersHandler();
     }
 
     @BeforeClass
     public static void init(){
-        User user = SystemHandler.getInstance().getActiveUser();
-        Store s = new Store("Lalin", "beauty products", user, new StoreOwning(null));
-        SystemHandler.getInstance().getStores().put("Lalin", s);
-        s.addToInventory("Body Cream ocean", 40, Category.BeautyProducts, "Velvety and soft skin lotion with ocean scent", 1);
-        s.addToInventory("Body Scrub musk", 50, Category.BeautyProducts, "Deep cleaning with natural salt crystals with a musk scent", 1);
+        usersHandler.register("noy", "1234");
+        usersHandler.login("noy", "1234", false);
+        storeHandler.openNewStore("Lalin", "beauty products");
+        storeHandler.UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 1);
+        storeHandler.UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 1);
     }
 
 
     @AfterClass
     public static void clean() {
-        SystemHandler.getInstance().setStores(new HashMap<>());
+        usersHandler.logout();
+        usersHandler.resetUsers();
+        storeHandler.resetStores();
     }
 
     @Test
     public void valid() {
-        String result = viewInfo.execute("Lalin");
+        String result = viewInfo.viewStoreinfo("Lalin");
         String expectefResult = "Store name: Lalin description: beauty products" +
                 "\n products:\n" +
                 "  Body Cream ocean- 40$\n  Body Scrub musk- 50$\n";
@@ -50,13 +60,13 @@ public class UC2_4 {
 
     @Test
     public void storeDoesntExist(){
-        String result = viewInfo.execute("Swear");
+        String result = viewInfo.viewStoreinfo("Swear");
         assertEquals("This store doesn't exist in this trading system", result);
     }
 
     @Test
     public void storeNameEmpty(){
-        String result = viewInfo.execute("");
+        String result = viewInfo.viewStoreinfo("");
         assertEquals("The store name is invalid", result);
     }
 

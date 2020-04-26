@@ -15,7 +15,7 @@ public class UC3_2 {
     public void init() throws Exception{
         usersHandler = new UsersHandler();
         usersHandler.register("nufi", "123456");
-        usersHandler.login("nufi", "123456");
+        usersHandler.login("nufi", "123456", false);
     }
 
     @AfterClass

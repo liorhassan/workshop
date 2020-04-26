@@ -3,7 +3,6 @@ package AcceptanceTests;
 import DomainLayer.SystemHandler;
 import ServiceLayer.ShoppingCartHandler;
 import ServiceLayer.StoreHandler;
-import ServiceLayer.SystemReset;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
@@ -23,7 +22,7 @@ public class UC2_6 {
     @BeforeClass
     public static void init() throws Exception{
         (new UsersHandler()).register("shenhav","toya");
-        (new UsersHandler()).login("shenhav","toya");
+        (new UsersHandler()).login("shenhav","toya", false);
         (new StoreHandler()).openNewStore("FoxHome","stuff for home");
         (new StoreHandler()).UpdateInventory("FoxHome","pillow", 25, "BeautyProducts", "beauty pillow", 1);
 
