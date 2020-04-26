@@ -42,11 +42,17 @@ public class SystemHandler_UT {
         s.addManager(SystemHandler.getInstance().getUsers().get("loco"), new StoreManaging(SystemHandler.getInstance().getUsers().get("noy")));
         s.addToInventory("skinny jeans", 120, Category.Clothing, "The most comfortable skiny jeans", 3);
         s.addToInventory("blue top", 120, Category.Clothing, "pretty blue crop top", 4);
+        Store s2 = new Store("Bershka", "clothing", SystemHandler.getInstance().getUsers().get("noy"),new StoreOwning());
+        SystemHandler.getInstance().getStores().put("Bershka", s2);
+        s2.addToInventory("skinny jeans", 100, Category.Clothing, "skinny jeans", 3);
+
     }
 
     @AfterClass
     public static void clean(){
-
+        SystemHandler.getInstance().resetAdmins();
+        SystemHandler.getInstance().resetStores();
+        SystemHandler.getInstance().resetUsers();
     }
 
     @Test
@@ -261,4 +267,29 @@ public class SystemHandler_UT {
         assertFalse(sys.checkIfUserHavePermission("Pull&Bear", "Appoint New Owner"));
         sys.logout();
     }
+
+    @Test
+    public void searchProducts_Test(){
+
+        String output1 =sys.searchProducts("skinny jeans", "Clothing", null);
+        assertEquals("Name: skinny jeans, Category: Clothing, Description: The most comfortable skiny jeans, Price: 120.0\n" +
+                "Name: skinny jeans, Category: Clothing, Description: skinny jeans, Price: 100.0", output1);
+        String output2 = sys.searchProducts("skirt", "Clothing", null);
+        assertEquals("There are no products that match these parameters", output2);
+
+    }
+
+    @Test
+    public void filterResults_Test(){
+        sys.searchProducts("skinny jeans", "Clothing", null);
+        String output1 =sys.filterResults(40, 200, "Clothing");
+        assertEquals("Name: skinny jeans, Category: Clothing, Description: The most comfortable skiny jeans, Price: 120.0\n" +
+                "Name: skinny jeans, Category: Clothing, Description: skinny jeans, Price: 100.0", output1);
+        String output2 = sys.filterResults(40, 110, "Clothing");
+        assertEquals("Name: skinny jeans, Category: Clothing, Description: skinny jeans, Price: 100.0", output2);
+        String output3 = sys.filterResults(40, 80, "Clothing");
+        assertEquals("There are no products that match this search filter", output3);
+
+    }
+
 }
