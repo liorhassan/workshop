@@ -57,6 +57,7 @@ public class SystemHandler_UT {
 
     @Test
     public void login_Test() {
+        sys.logout();
         assertEquals(null, sys.getActiveUser().getUsername());
         sys.login("prince", true);
         assertEquals(sys.getUsers().get("prince"), sys.getActiveUser());

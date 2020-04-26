@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class Store {
 
-    private HashMap<Product,Integer> products;
+    private Inventory products;
     private String name;
     private HashMap<User, StoreManaging> managements;
     private HashMap<User, StoreOwning> ownerships;
@@ -19,7 +19,7 @@ public class Store {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
-        this.products = new HashMap<>();
+        this.products = new Inventory();
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
@@ -41,26 +41,24 @@ public class Store {
 
 
     public Collection<Product> getProducts(){
-        return  products.keySet();
+        return  products.getProducts().keySet();
     }
 
     public boolean checkIfProductAvailable(String product, int amount){
         Product p = getProductByName(product);
         if(p == null)
             return false;
-        return products.get(p) >= amount;
+        return products.getProducts().get(p) >= amount;
     }
 
     public HashMap<Product, Integer> getInventory() {
-        return products;
+        return products.getProducts();
     }
 
-    public void setInventory(HashMap<Product, Integer> inventory) {
-        this.products = inventory;
-    }
+
 
     public Product getProductByName(String productName){
-        for (Product p : products.keySet()) {
+        for (Product p : products.getProducts().keySet()) {
             if (p.getName().equals(productName))
                 return p;
         }
@@ -90,7 +88,7 @@ public class Store {
     }
 
     public boolean hasProduct(String productName) {
-        for (Product p : products.keySet()){
+        for (Product p : products.getProducts().keySet()){
             if (p.getName().equals(productName))
                 return true;
         }
@@ -98,16 +96,16 @@ public class Store {
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        products.put(new Product(productName, productCategory, productDescription, productPrice), amount);
+        products.getProducts().put(new Product(productName, productCategory, productDescription, productPrice), amount);
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        for (Product p : products.keySet()){
+        for (Product p : products.getProducts().keySet()){
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
-                products.put(p, amount);
+                products.getProducts().put(p, amount);
                 break;
             }
         }
@@ -139,12 +137,12 @@ public class Store {
 
     public void purchaseProduct(Product p, int amount){
         if(checkIfProductAvailable(p.getName(), amount)){
-            int prevAmount = this.products.get(p);
+            int prevAmount = this.products.getProducts().get(p);
             if(prevAmount == amount){
-                this.products.remove(p);
+                this.products.getProducts().remove(p);
             }
             else{
-                this.products.replace(p, prevAmount - amount);
+                this.products.getProducts().replace(p, prevAmount - amount);
             }
         }
     }

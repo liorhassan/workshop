@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 public class UC2_4 {
 
@@ -40,13 +41,17 @@ public class UC2_4 {
     @Test
     public void valid() {
         String result = viewInfo.viewStoreinfo("Lalin");
-        String expectefResult = "Store name: Lalin description: beauty products" +
+        String expectefResult1 = "Store name: Lalin description: beauty products" +
                 "\n products:\n" +
                 "  Body Cream ocean- 40.0$\n  Body Scrub musk- 50.0$\n";
-        assertEquals(expectefResult, result);
+        String expectefResult2 = "Store name: Lalin description: beauty products" +
+                "\n products:\n" +
+                "  Body Scrub musk- 50.0$\n  Body Cream ocean- 40.0$\n";
+        assertTrue(result.equals(expectefResult1)||result.equals(expectefResult2));
+
 
         result = viewInfo.viewProductInfo("Lalin", "Body Cream ocean");
-        expectefResult = "Body Cream ocean: Velvety and soft skin lotion with ocean scent\nprice: 40.0$";
+        String expectefResult = "Body Cream ocean: Velvety and soft skin lotion with ocean scent\nprice: 40.0$";
         assertEquals(expectefResult, result);
     }
 
