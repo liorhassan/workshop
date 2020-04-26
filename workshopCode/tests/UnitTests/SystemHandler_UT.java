@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 public class SystemHandler_UT {
 
-    private static SystemHandler sys;
+    private SystemHandler sys;
 
     @Before
     public void setUp(){
@@ -26,17 +26,17 @@ public class SystemHandler_UT {
 
     @BeforeClass
     public static void init(){
-        sys.register("prince");
-        sys.addAdmin("prince");
-        sys.register("loco");
+        SystemHandler.getInstance().register("prince");
+        SystemHandler.getInstance().addAdmin("prince");
+        SystemHandler.getInstance().register("loco");
 
-        sys.getUsers().put("noy", new User());
-        sys.getUsers().get("noy").setUsername("noy");
-        sys.getUsers().put("zuzu", new User());
-        sys.getUsers().get("zuzu").setUsername("zuzu");
-        Store s = new Store("Pull&Bear", "clothing", sys.getUsers().get("noy"),new StoreOwning());
-        s.addManager(sys.getUsers().get("zuzu"), new StoreManaging(sys.getUsers().get("zuzu")));
-        s.addManager(sys.getUsers().get("loco"), new StoreManaging(sys.getUsers().get("loco")));
+        SystemHandler.getInstance().getUsers().put("noy", new User());
+        SystemHandler.getInstance().getUsers().get("noy").setUsername("noy");
+        SystemHandler.getInstance().getUsers().put("zuzu", new User());
+        SystemHandler.getInstance().getUsers().get("zuzu").setUsername("zuzu");
+        Store s = new Store("Pull&Bear", "clothing", SystemHandler.getInstance().getUsers().get("noy"),new StoreOwning());
+        s.addManager(SystemHandler.getInstance().getUsers().get("zuzu"), new StoreManaging(SystemHandler.getInstance().getUsers().get("zuzu")));
+        s.addManager(SystemHandler.getInstance().getUsers().get("loco"), new StoreManaging(SystemHandler.getInstance().getUsers().get("loco")));
         s.updateInventory("skinny jeans", 120, Category.Clothing, "The most comfortable skiny jeans", 3);
         s.updateInventory("blue top", 120, Category.Clothing, "pretty blue crop top", 4);
     }

@@ -14,45 +14,39 @@ import static org.junit.Assert.assertEquals;
 public class UC4_10 {
 
     private static ViewPurchaseHistoryHandler storePurchaseHistory;
-    private static UsersHandler usersHandler;
-    private static StoreHandler storeHandler;
-    private static StoreManagerHandler storeManagerHandler;
-    private static ShoppingCartHandler shoppingCartHandler;
 
     @Before
     public void setUp(){
         storePurchaseHistory = new ViewPurchaseHistoryHandler();
-        usersHandler = new UsersHandler();
-        storeHandler = new StoreHandler();
-        storeManagerHandler = new StoreManagerHandler();
-        shoppingCartHandler = new ShoppingCartHandler();
     }
 
     @BeforeClass
     public static void init(){
-        usersHandler.register("noy", "1234");
-        usersHandler.register("rachel", "1234");
-        usersHandler.register("maor", "1234");
-        usersHandler.register("zuzu", "1234");
-        usersHandler.login("noy", "1234", false);
-        storeHandler.openNewStore("Lalin", "beauty products");
-        storeHandler.UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
-        storeHandler.UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 20);
-        storeManagerHandler.addStoreManager("rachel", "Lalin");
-        storeManagerHandler.addStoreManager("maor", "Lalin");
+        (new UsersHandler()).register("noy", "1234");
+        (new UsersHandler()).register("rachel", "1234");
+        (new UsersHandler()).register("maor", "1234");
+        (new UsersHandler()).register("zuzu", "1234");
+        (new UsersHandler()).login("noy", "1234", false);
+        (new StoreHandler()).openNewStore("Lalin", "beauty products");
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 20);
+        (new StoreManagerHandler()).addStoreManager("rachel", "Lalin");
+        (new StoreManagerHandler()).addStoreManager("maor", "Lalin");
 
         List<String> p = new LinkedList<>();
         p.add("View store purchase history");
-        storeManagerHandler.editManagerPermissions("rachel", p, "Lalin");
+        (new StoreManagerHandler()).editManagerPermissions("rachel", p, "Lalin");
 
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Cream ocean", 5);
-        shoppingCartHandler.purchaseCart();
+        (new ShoppingCartHandler()).AddToShoppingBasket("Lalin", "Body Cream ocean", 5);
+        (new ShoppingCartHandler()).purchaseCart();
     }
 
 
     @AfterClass
     public static void clean() {
-
+        (new UsersHandler()).logout();
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @Test
@@ -65,8 +59,8 @@ public class UC4_10 {
         assertEquals(expectedResult, result);
 
         //rachel - store manager with the required permissions
-        usersHandler.logout();
-        usersHandler.login("rachel", "1234", false);
+        (new UsersHandler()).logout();
+        (new UsersHandler()).login("rachel", "1234", false);
         result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
         assertEquals(expectedResult, result);
     }
@@ -80,14 +74,14 @@ public class UC4_10 {
     @Test
     public void noPermissions() {
         //zuzu - neither a manager nor a store owner
-        usersHandler.logout();
-        usersHandler.login("zuzu", "1234", false);
+        (new UsersHandler()).logout();
+        (new UsersHandler()).login("zuzu", "1234", false);
         String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
         assertEquals("You are not allowed to view this store's purchasing history", result);
 
         //maor - manager without required permission
-        usersHandler.logout();
-        usersHandler.login("maor", "1234", false);
+        (new UsersHandler()).logout();
+        (new UsersHandler()).login("maor", "1234", false);
         result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
         assertEquals("You are not allowed to view this store's purchasing history", result);
     }

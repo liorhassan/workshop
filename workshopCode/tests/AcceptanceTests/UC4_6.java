@@ -16,32 +16,28 @@ import static junit.framework.TestCase.assertEquals;
 public class UC4_6 {
 
     private static StoreManagerHandler storeManagerHandler;
-    private static UsersHandler usersHandler;
-    private static StoreHandler storeHandler;
 
     @Before
     public void setUp(){
         storeManagerHandler = new StoreManagerHandler();
-        usersHandler = new UsersHandler();
-        storeHandler = new StoreHandler();
     }
 
     @BeforeClass
     public static void init(){
         // store owner
-        usersHandler.register("noy", "1234");
+        (new UsersHandler()).register("noy", "1234");
         // store manager
-        usersHandler.register("maor", "1234");
-        usersHandler.login("noy", "1234", false);
-        storeHandler.openNewStore("Mcdonalds", "The best hamburger in town");
-        storeManagerHandler.addStoreManager("maor", "Mcdonalds");
+        (new UsersHandler()).register("maor", "1234");
+        (new UsersHandler()).login("noy", "1234", false);
+        (new StoreHandler()).openNewStore("Mcdonalds", "The best hamburger in town");
+        (new StoreManagerHandler()).addStoreManager("maor", "Mcdonalds");
     }
 
     @AfterClass
     public static void clean() {
-        usersHandler.logout();
-        usersHandler.resetUsers();
-        storeHandler.resetStores();
+        (new UsersHandler()).logout();
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @Test
@@ -72,7 +68,7 @@ public class UC4_6 {
     public void userIsNotManager() {
         List<String> p = new LinkedList<>();
         p.add("View Store Purchase History");
-        usersHandler.register("zuzu", "1234");
+        (new UsersHandler()).register("zuzu", "1234");
         String result = storeManagerHandler.editManagerPermissions("zuzu", p, "Mcdonalds");
         assertEquals("You can't edit this user's privileges", result);
     }
@@ -93,8 +89,8 @@ public class UC4_6 {
 
     @Test
     public void userIsNotOwner() {
-        usersHandler.logout();
-        usersHandler.login("maor", "1234", false);
+        (new UsersHandler()).logout();
+        (new UsersHandler()).login("maor", "1234", false);
         List<String> p = new LinkedList<>();
         p.add("View Store Purchase History");
         String result =  storeManagerHandler.editManagerPermissions("noy", p, "Mcdonalds");

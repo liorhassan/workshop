@@ -18,31 +18,27 @@ import static junit.framework.TestCase.assertEquals;
 public class UC2_4 {
 
     private ViewInfoHandler viewInfo;
-    private static StoreHandler storeHandler;
-    private static UsersHandler usersHandler;
 
     @Before
     public void setUp(){
         this.viewInfo = new ViewInfoHandler();
-        this.storeHandler = new StoreHandler();
-        this.usersHandler = new UsersHandler();
     }
 
     @BeforeClass
     public static void init(){
-        usersHandler.register("noy", "1234");
-        usersHandler.login("noy", "1234", false);
-        storeHandler.openNewStore("Lalin", "beauty products");
-        storeHandler.UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 1);
-        storeHandler.UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 1);
+        (new UsersHandler()).register("noy", "1234");
+        (new UsersHandler()).login("noy", "1234", false);
+        (new StoreHandler()).openNewStore("Lalin", "beauty products");
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 1);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 1);
     }
 
 
     @AfterClass
     public static void clean() {
-        usersHandler.logout();
-        usersHandler.resetUsers();
-        storeHandler.resetStores();
+        (new UsersHandler()).logout();
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @Test
