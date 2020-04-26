@@ -426,7 +426,7 @@ public class SystemHandler {
     }
 
     public boolean checkIfActiveUserSubscribed() {
-        return activeUser.getUsername() == null;
+        return activeUser.getUsername() != null;
     }
 
     public boolean checkIfUserIsAdmin( String userName) {
@@ -435,7 +435,7 @@ public class SystemHandler {
     }
 
     public boolean checkIfBasketExists(String storeName) {
-        return activeUser.getShoppingCart().isBasketExists(storeName);
+        return activeUser.getShoppingCart().isBasketExists(getStoreByName(storeName));
     }
 
     public void addAdmin(String userName){
@@ -487,6 +487,10 @@ public class SystemHandler {
 
     public void emptyCart(){
         this.activeUser.emptyCart();
+    }
+
+    public boolean isAdminMode() {
+        return adminMode;
     }
 
 }

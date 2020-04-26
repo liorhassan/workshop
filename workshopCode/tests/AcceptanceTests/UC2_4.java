@@ -42,7 +42,7 @@ public class UC2_4 {
         String result = viewInfo.viewStoreinfo("Lalin");
         String expectefResult = "Store name: Lalin description: beauty products" +
                 "\n products:\n" +
-                "  Body Scrub musk- 50.0$\n  Body Cream ocean- 40.0$\n";
+                "  Body Cream ocean- 40.0$\n  Body Scrub musk- 50.0$\n";
         assertEquals(expectefResult, result);
 
         result = viewInfo.viewProductInfo("Lalin", "Body Cream ocean");
