@@ -10,6 +10,8 @@ public class StoreHandler {
         String[] args = {storeName, storeDescription};
 
         try {
+            if (!SystemHandler.getInstance().checkIfActiveUserSubscribed())
+                throw new RuntimeException("Only subscribed users can open a new store");
             if (SystemHandler.getInstance().emptyString(args))
                 throw new IllegalArgumentException("Must enter store name and description");
             if (SystemHandler.getInstance().storeExists(storeName))
@@ -28,9 +30,9 @@ public class StoreHandler {
             String[] args = {username, storeName};
             if (SystemHandler.getInstance().emptyString(args))
                 throw new IllegalArgumentException("Must enter username and store name");
-            if (SystemHandler.getInstance().storeExists(storeName))
+            if (!SystemHandler.getInstance().storeExists(storeName))
                 throw new IllegalArgumentException("This store doesn't exist");
-            if(SystemHandler.getInstance().userExists(username))
+            if(!SystemHandler.getInstance().userExists(username))
                 throw new IllegalArgumentException("This username doesn't exist");
             if(!SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName))
                 throw new RuntimeException("You must be this store owner for this action");
