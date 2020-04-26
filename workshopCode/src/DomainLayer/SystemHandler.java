@@ -250,9 +250,9 @@ public class SystemHandler {
     public boolean emptyString(String[] args){
         for (String s: args) {
             if (s == null || s.equals(""))
-                return false;
+                return true;
         }
-        return true;
+        return false;
     }
 
     public boolean allEmptyString(String[] args){
