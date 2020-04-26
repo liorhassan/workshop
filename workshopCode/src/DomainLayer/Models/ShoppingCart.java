@@ -1,6 +1,7 @@
 package DomainLayer.Models;
 
 import DomainLayer.ProductItem;
+import DomainLayer.SystemHandler;
 
 import java.util.*;
 import java.util.HashMap;
@@ -61,6 +62,16 @@ public class ShoppingCart {
             }
         }
         return "The product doesn’t exist in your shopping cart";
+    }
+
+    public boolean isProductInCart(String product, Store store){
+        Basket basket = baskets.get(store);
+        List<ProductItem> items = basket.getProductItems();
+        for(ProductItem pi : items){
+            if(pi.getProduct().getName().equals(product))
+                return true;
+        }
+        return false;
     }
 
     public boolean isBasketExists (Store store){

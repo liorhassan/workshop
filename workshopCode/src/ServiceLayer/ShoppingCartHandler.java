@@ -15,10 +15,12 @@ public class ShoppingCartHandler {
             String [] args = {storeName, productName};
             if(SystemHandler.getInstance().emptyString(args)|| amount < 0 )
                 throw new IllegalArgumentException("Must enter store name and product name and amount bigger than 0");
-            if(SystemHandler.getInstance().storeExists(storeName))
+            if(! SystemHandler.getInstance().storeExists(storeName))
                 throw new IllegalArgumentException("This store doesn't exist");
-            if(SystemHandler.getInstance().checkIfBasketExists(storeName))
+            if(! SystemHandler.getInstance().checkIfBasketExists(storeName))
                 throw new IllegalArgumentException("This store doesn't exist");
+           if(! SystemHandler.getInstance().checkIfProductInCart(storeName, productName))
+                throw new IllegalArgumentException("The product doesn’t exist in your shopping cart");
             if (!SystemHandler.getInstance().isProductAvailable(storeName, productName, amount))
                 throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
             String output = SystemHandler.getInstance().editShoppingCart(storeName, productName, amount);

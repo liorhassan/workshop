@@ -1,6 +1,7 @@
 package AcceptanceTests;
 
 import DomainLayer.Security.SecurityHandler;
+import DomainLayer.SystemHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
@@ -15,6 +16,7 @@ public class UC2_3 {
     @Before
     public void setUp() throws Exception {
         service = new UsersHandler();
+        service.addAdmin("lior");
 
     }
 

@@ -41,10 +41,10 @@ public class SystemLogger {
     }
 
     public void writeEvent(String event){
-        //eventLogger.info(event);
+        eventLogger.info(event);
     }
 
     public void writeError(String error){
-        //errorLogger.info(error);
+        errorLogger.info(error);
     }
 }

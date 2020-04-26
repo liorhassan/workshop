@@ -425,6 +425,10 @@ public class SystemHandler {
         return stores.get(storName).isManager(this.users.get(userName));
     }
 
+    public boolean checkIfProductInCart(String storName, String productName) {
+        return activeUser.getShoppingCart().isProductInCart(productName, stores.get(storName));
+    }
+
     public boolean checkIfActiveUserSubscribed() {
         return activeUser.getUsername() != null;
     }

@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DomainLayer.SystemHandler;
 import ServiceLayer.ShoppingCartHandler;
 import ServiceLayer.UsersHandler;
 import ServiceLayer.StoreHandler;
@@ -37,12 +38,15 @@ public class UC2_7 {
 
     @Test
     public void successful(){
+        service.AddToShoppingBasket("Rami Levi", "apple",  2);
+       // System.out.println(SystemHandler.getInstance().storeExists("Rami Levi"));
         String output1 = service.editCart("Rami Levi", "apple", 1);
         assertEquals("The product has been updated successfully", output1);
         String output2 = service.editCart("Rami Levi", "water", 0);
         assertEquals("The product has been updated successfully", output2);
         String output3 = service.viewCart();
         assertEquals("Your ShoppingCart details: \nStore name: Rami Levi\nProduct name: apple price: 2.0 amount: 1\n", output3);
+        service.AddToShoppingBasket("Rami Levi", "water", 1);
     }
 
     @Test
@@ -61,7 +65,7 @@ public class UC2_7 {
 
     @Test
     public void productDoesNotAvailable(){
-        String output1 = service.editCart("Rami Levi", "water", 2);
+        String output1 = service.editCart("Rami Levi", "water", 4);
         assertEquals("The product isn't available in the store with the requested amount", output1);
         String output2 = service.editCart("Rami Levi", "apple" , 10);
         assertEquals("The product isn't available in the store with the requested amount", output2);

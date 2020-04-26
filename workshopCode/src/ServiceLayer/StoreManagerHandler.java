@@ -22,7 +22,7 @@ public class StoreManagerHandler {
             if(!SystemHandler.getInstance().userExists(username))
                 throw new IllegalArgumentException("This username doesn't exist");
             if(!SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName))
-                throw new RuntimeException("You must be this store owner for this command");
+                throw new RuntimeException("You must be a store owner for this action");
             if(SystemHandler.getInstance().checkIfUserIsManager(storeName, username))
                 throw new RuntimeException("This username is already one of the store's managers");
             return SystemHandler.getInstance().appointManager(username, storeName);

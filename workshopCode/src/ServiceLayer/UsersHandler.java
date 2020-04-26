@@ -20,7 +20,7 @@ public class UsersHandler {
                 throw new IllegalArgumentException("The username is invalid");
             if (! SystemHandler.getInstance().userExists(username))
                 throw new IllegalArgumentException("This user is not registered");
-            if(mood && ! SystemHandler.getInstance().checkIfUserIsAdmin(username))
+            if(mood && !(SystemHandler.getInstance().checkIfUserIsAdmin(username)))
                 throw new IllegalArgumentException("this user is not a system admin");
             SystemHandler.getInstance().login(username, mood);
             return "You have been successfully logged in!";
@@ -69,19 +69,21 @@ public class UsersHandler {
 
     }
 
-    public void addAdmin(String username) {
+    public String addAdmin(String username) {
         try {
             String[] args = {username};
             if (SystemHandler.getInstance().emptyString(args))
                 throw new IllegalArgumentException("Username cannot be empty");
-            if (SystemHandler.getInstance().userExists(username))
+            if (!SystemHandler.getInstance().userExists(username))
                 throw new IllegalArgumentException("This username not exist");
             if (SystemHandler.getInstance().checkIfUserIsAdmin(username))
                 throw new IllegalArgumentException("This username is already admin");
 
             SystemHandler.getInstance().addAdmin(username);
+            return"done";
         }
         catch (Exception e){
+            return e.getMessage();
         }
     }
 
