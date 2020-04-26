@@ -9,18 +9,16 @@ import static org.junit.Assert.assertEquals;
 public class UC3_2 {
 
     private StoreHandler storeHandler;
-    private UsersHandler usersHandler;
 
     @BeforeClass
-    public void init() throws Exception{
-        usersHandler = new UsersHandler();
-        usersHandler.register("nufi", "123456");
-        usersHandler.login("nufi", "123456", false);
+    public static void init() throws Exception{
+        (new UsersHandler()).register("nufi", "123456");
+        (new UsersHandler()).login("nufi", "123456", false);
     }
 
     @AfterClass
-    public void clean() {
-        usersHandler.resetUsers();
+    public static void clean() {
+        (new UsersHandler()).resetUsers();
     }
 
     @Before
