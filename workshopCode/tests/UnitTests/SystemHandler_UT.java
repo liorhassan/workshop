@@ -27,7 +27,7 @@ public class SystemHandler_UT {
     @BeforeClass
     public static void init(){
         sys.register("prince");
-        //TODO: addAdmin(Prince)
+        sys.addAdmin("prince");
         sys.register("loco");
 
         sys.getUsers().put("noy", new User());

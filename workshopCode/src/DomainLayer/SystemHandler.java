@@ -405,10 +405,7 @@ public class SystemHandler {
     }
 
     public boolean checkIfActiveUserIsManager(String storeName) {
-        Store store = stores.get(storeName);
-        if(store == null)
-            return false;
-        return store.isManager(this.activeUser);
+        return stores.get(storeName).isManager(this.activeUser);
     }
 
     public boolean checkIfUserIsManager(String storName, String userName) {
