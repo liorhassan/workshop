@@ -122,13 +122,15 @@ public class Store {
     }
 
     public void addManager(User user, StoreManaging storeManaging){
-        managements.put(user, storeManaging);
+        if (!managements.containsKey(user))
+            managements.put(user, storeManaging);
     }
 
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
     public void addStoreOwner(User newOwner, StoreOwning storeOwning) {
-        this.ownerships.put(newOwner, storeOwning);
+        if (!ownerships.containsKey(newOwner))
+            this.ownerships.put(newOwner, storeOwning);
     }
 
     public void purchaseProduct(Product p, int amount){
