@@ -12,8 +12,8 @@ public class UC3_2 {
 
     @BeforeClass
     public static void init() throws Exception{
-        (new UsersHandler()).register("nufi", "123456");
-        (new UsersHandler()).login("nufi", "123456", false);
+        (new UsersHandler()).register("nufi", "1234");
+        (new UsersHandler()).login("nufi", "1234", false);
     }
 
     @AfterClass

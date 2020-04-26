@@ -63,8 +63,8 @@ public class ShoppingCart {
         return "The product doesn’t exist in your shopping cart";
     }
 
-    public boolean isBasketExists (String storename){
-        return baskets.get(storename) != null ;
+    public boolean isBasketExists (Store store){
+        return baskets.containsKey(store) ;
     }
 
     public String viewOnlyProducts() {
@@ -79,6 +79,10 @@ public class ShoppingCart {
 
     public void addBasket(Basket basket){
         this.baskets.put(basket.getStore(), basket);
+    }
+
+    public Basket getStoreBasket(Store s){
+       return baskets.get(s);
     }
 }
 

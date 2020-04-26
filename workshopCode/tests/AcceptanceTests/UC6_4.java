@@ -59,7 +59,7 @@ public class UC6_4 {
     public void emptyInputUser() {
         String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin("");
         assertEquals("Must enter username", result);
-        result = viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(null);
+        result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(null);
         assertEquals("Must enter username", result);
     }
 
@@ -67,7 +67,8 @@ public class UC6_4 {
     @Test
     public void notAdminMode() {
         (new UsersHandler()).logout();
-        (new UsersHandler()).login("nufi", "123456", false);
+        (new UsersHandler()).register("nufi", "1234");
+        (new UsersHandler()).login("nufi", "1234", false);
 
         String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin("toya");
         assertEquals("Only admin user can view other users' purchase history", result);
@@ -75,7 +76,7 @@ public class UC6_4 {
         assertEquals("Only admin user can view store's purchase history", result);
 
         (new UsersHandler()).logout();
-        (new UsersHandler()).login("nufi", "123456", true);
+        (new UsersHandler()).login("Admin159", "951", true);
     }
 
     @Test
