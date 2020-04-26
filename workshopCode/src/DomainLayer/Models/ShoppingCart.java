@@ -70,11 +70,7 @@ public class ShoppingCart {
     public String viewOnlyProducts() {
         if (baskets.isEmpty())
             throw new RuntimeException("There are no products to view");
-        String result = "";
-        for(Basket b : baskets.values()){
-            result = result + b.viewBasket();
-        }
-        return result;
+        return view().substring(28);
     }
 
     public boolean isEmpty(){
