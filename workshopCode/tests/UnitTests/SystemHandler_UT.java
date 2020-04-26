@@ -242,9 +242,9 @@ public class SystemHandler_UT {
 
     @Test
     public void checkIfActiveUserSubscribed_Test(){
-        assertTrue(sys.checkIfActiveUserSubscribed());
-        sys.login("noy", false);
         assertFalse(sys.checkIfActiveUserSubscribed());
+        sys.login("noy", false);
+        assertTrue(sys.checkIfActiveUserSubscribed());
         sys.logout();
     }
 
