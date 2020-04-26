@@ -4,6 +4,7 @@ package DomainLayer;
 import DomainLayer.ExternalSystems.PaymentCollection;
 import DomainLayer.ExternalSystems.ProductSupply;
 import DomainLayer.Models.*;
+import DomainLayer.Security.SecurityHandler;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +32,11 @@ public class SystemHandler {
         lastSearchResult = new ArrayList<>();
         PC = new PaymentCollection();
         PS = new ProductSupply();
+        User firstAdmin = new User();
+        firstAdmin.setUsername("Admin159");
+        SecurityHandler.getInstance().addUser("Admin159", "951");
+        this.adminsList.add(firstAdmin);
+        this.users.put("Admin159", firstAdmin);
     }
 
     public User getUserByName(String username) {
@@ -60,6 +66,11 @@ public class SystemHandler {
     //reset functions
     public void resetUsers(){
         users.clear();
+        adminsList.clear();
+        User firstAdmin = new User();
+        firstAdmin.setUsername("Admin159");
+        this.adminsList.add(firstAdmin);
+        this.users.put("Admin159", firstAdmin);
     }
 
     public void resetStores(){
@@ -297,6 +308,7 @@ public class SystemHandler {
         }
         return historyOutput;
     }
+
     // function for handling Use Case 4.6 - written by Noy
     public String editPermissions(String userName, List<String> permissions, String storeName){
         Store store = getStoreByName(storeName);

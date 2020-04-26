@@ -10,32 +10,29 @@ import static org.junit.Assert.assertEquals;
 public class UC4_3 {
 
     private StoreHandler storeHandler;
-    private UsersHandler usersHandler;
 
     @BeforeClass
-    public void init() throws Exception{
-        usersHandler = new UsersHandler();
-        storeHandler = new StoreHandler();
+    public static void init() throws Exception{
 
         // store owner (appointer)
-        usersHandler.register("nufi", "123456");
+        (new UsersHandler()).register("nufi", "123456");
 
         // subscribed user (appointee)
-        usersHandler.register("tooti", "9999");
+        (new UsersHandler()).register("tooti", "9999");
 
-        usersHandler.login("nufi", "123456", false);
-        storeHandler.openNewStore("KKW", "best Kim Kardashian beauty products");
+        (new UsersHandler()).login("nufi", "123456", false);
+        (new StoreHandler()).openNewStore("KKW", "best Kim Kardashian beauty products");
     }
 
     @AfterClass
-    public void clean() {
-        usersHandler.resetUsers();
-        storeHandler.resetStores();
+    public static void clean() {
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @Before
     public void setUp() throws Exception {
-        //storeHandler = new StoreHandler();
+        storeHandler = new StoreHandler();
     }
 
     @After

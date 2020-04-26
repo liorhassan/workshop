@@ -21,7 +21,7 @@ public class SecurityHandler {
     }
 
     public boolean CorrectPassword (String username, String password) {
-        if(password.equals("1234") || password.equals("good"))
+        if(password.equals("1234") || password.equals("good") || password.equals("951"))
             return true;
         return false;
     }
