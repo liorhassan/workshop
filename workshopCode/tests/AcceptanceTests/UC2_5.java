@@ -3,6 +3,7 @@ package AcceptanceTests;
 import ServiceLayer.SearchHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,6 +26,12 @@ public class UC2_5 {
         (new StoreHandler()).UpdateInventory("FoxHome","banana", 7, "Food", "yellow with banana-like texture", 1);
         (new StoreHandler()).UpdateInventory("FoxHome","shirt", 40, "Clothing", "hawaiian shirt", 1);
         (new StoreHandler()).UpdateInventory("FoxHome","hat", 900, "Clothing", "beauty pillow", 1);
+    }
+
+    @AfterClass
+    public static void clean(){
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @Test
