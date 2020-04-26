@@ -9,9 +9,12 @@ import DomainLayer.UserPurchaseHistory;
 public class ViewPurchaseHistoryHandler {
 
     // UseCase 6.4 - Admin only
-    public String viewPurchaseHistoryOfUser(String username) {
-        SystemLogger.getInstance().writeEvent("View User Purchase History command as an Admin");
+    public String viewPurchaseHistoryOfUserAsAdmin(String username) {
+        SystemLogger.getInstance().writeEvent("View user purchase history command as an admin");
         try {
+            String[] args = {username};
+            if (SystemHandler.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Must enter username");
             if (SystemHandler.getInstance().checkIfInAdminMode())
                 throw new RuntimeException("Only admin user can view other users' purchase history");
             if (SystemHandler.getInstance().userExists(username))
@@ -25,9 +28,12 @@ public class ViewPurchaseHistoryHandler {
     }
 
     // UseCase 6.4 - Admin only
-    public String viewPurchaseHistoryOfStore (String storeName) {
-        SystemLogger.getInstance().writeEvent("View User Purchase History command as an Admin");
+    public String viewPurchaseHistoryOfStoreAsAdmin (String storeName) {
+        SystemLogger.getInstance().writeEvent("View store purchase history command as an admin");
         try {
+            String[] args = {storeName};
+            if (SystemHandler.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Must enter store name");
             if (SystemHandler.getInstance().checkIfInAdminMode())
                 throw new RuntimeException("Only admin user can view store's purchase history");
             if (SystemHandler.getInstance().storeExists(storeName))

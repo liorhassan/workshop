@@ -294,6 +294,7 @@ public class SystemHandler {
         }
         return historyOutput;
     }
+
     // function for handling Use Case 4.6 - written by Noy
     public String editPermissions(String userName, List<String> permissions, String storeName){
         Store store = getStoreByName(storeName);
