@@ -267,12 +267,26 @@ public class SystemHandler {
         return getUserPurchaseHistory(this.activeUser.getUsername());
     }
 
-    // function for handling Use Case 3.7 - written by Nufar
+    // function for handling Use Case 3.7 + 6.4 - written by Nufar
     public String getUserPurchaseHistory(String userName) {
         UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
         String historyOutput = "Shopping history:" + "\n";
         int counter = 1;
         for (Purchase p : purchaseHistory.getUserPurchases()) {
+            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
+            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
+            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
+            counter++;
+        }
+        return historyOutput;
+    }
+
+    // function for handling Use Case 6.4 - written by Nufar
+    public String getStorePurchaseHistory(String storeName) {
+        StorePurchaseHistory purchaseHistory = this.stores.get(storeName).getPurchaseHistory();
+        String historyOutput = "Shopping history of the store:" + "\n";
+        int counter = 1;
+        for (Purchase p : purchaseHistory.getStorePurchases()) {
             historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
             historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
             historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
@@ -421,6 +435,11 @@ public class SystemHandler {
         User user = users.get(userName);
         adminsList.add(user);
     }
+
+    public boolean checkIfInAdminMode() {
+        return this.adminMode;
+    }
+
     public void resetAdmins(){
         adminsList = new ArrayList<>();
     }
