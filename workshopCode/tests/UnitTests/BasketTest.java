@@ -31,27 +31,27 @@ public class BasketTest {
         assertEquals("",basket.viewBasket());
         basket.getProductItems().add(new ProductItem(new Product("Shirt",null,null,40.0),1,basket));
         assertEquals("Store name: Fox\nProduct name: Shirt price: 40.0 amount: 1\n",basket.viewBasket());
-        basket.getProductItems().add(new ProductItem(new Product("Dress",null,null,45.4),2,basket));
-        assertEquals("Store name: Fox\nProduct name: Shirt price: 40.0 amount: 1\nProduct name: Dress price: 45.5 amount 2\n",basket.viewBasket());
+        basket.getProductItems().add(new ProductItem(new Product("Dress",null,null,45.5),2,basket));
+        assertEquals("Store name: Fox\nProduct name: Shirt price: 40.0 amount: 1\nProduct name: Dress price: 45.5 amount: 2\n",basket.viewBasket());
     }
 
     @Test
     public void addProduct() {
-        ArrayList<ProductItem> excpected = new ArrayList<>();
-        assertEquals(excpected,basket.getProductItems());
+        assertEquals(new ArrayList<>(),basket.getProductItems());
         Product p = new Product("Shirt",null,null,40.0);
-        ProductItem pi = new ProductItem(p,1,basket);
-        excpected.add(pi);
         basket.addProduct(p,1);
-        assertEquals(excpected,basket.getProductItems());
+        assertEquals(1,basket.getProductItems().size());
+        assertEquals(p,basket.getProductItems().get(0).getProduct());
+        assertEquals(1,basket.getProductItems().get(0).getAmount());
         Product p2 = new Product("Dress",null,null,45.5);
-        ProductItem pi2 = new ProductItem(p2,1,basket);
-        excpected.add(pi2);
-        basket.addProduct(p2,1);
-        assertEquals(excpected,basket.getProductItems());
+        basket.addProduct(p2,3);
+        assertEquals(2,basket.getProductItems().size());
+        assertEquals(p2,basket.getProductItems().get(1).getProduct());
+        assertEquals(3,basket.getProductItems().get(1).getAmount());
         basket.addProduct(p,4);
-        excpected.get(0).setAmount(5);
-        assertEquals(excpected,basket.getProductItems());
+        assertEquals(2,basket.getProductItems().size());
+        assertEquals(p,basket.getProductItems().get(0).getProduct());
+        assertEquals(5,basket.getProductItems().get(0).getAmount());
     }
 
 
