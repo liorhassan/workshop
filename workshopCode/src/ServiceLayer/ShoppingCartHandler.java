@@ -51,9 +51,20 @@ public class ShoppingCartHandler {
     }
 
     public String purchaseCart() {
+        SystemLogger.getInstance().writeEvent("Purchase Cart command");
         try {
-            SystemLogger.getInstance().writeEvent("Purchase Cart command");
-            return SystemHandler.getInstance().purchaseCart();
+            if(SystemHandler.getInstance().cartIsEmpty()){
+                throw new RuntimeException("The shopping cart is empty");
+            }
+
+            SystemHandler.getInstance().purchaseBaskets();
+            SystemHandler.getInstance().addToPurchaseHistory();
+            if (!SystemHandler.getInstance().pay()) {
+                throw new RuntimeException("Payment failed");
+            }
+
+            SystemHandler.getInstance().supply();
+            return "Purchasing completed successfully";
         }
 
         catch (Exception e) {

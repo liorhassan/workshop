@@ -218,7 +218,10 @@ public class SystemHandler {
         User user = users.get(username);
         if(store == null || user == null)
             return false;
-        return store.getAppointer(user).equals(activeUser);
+        User appointer = store.getAppointer(user);
+        if(appointer == null)
+            return false;
+        return appointer.equals(activeUser);
     }
 
     public String appointManager(String username, String storeName){
@@ -294,76 +297,53 @@ public class SystemHandler {
         }
         return historyOutput;
     }
-
-    public String editPermissions(String userName, List<Permission> permissions, String storeName){
-
-        if(emptyString(userName) || permissions.isEmpty() || emptyString(storeName)){
-            throw new RuntimeException("Must enter username, permissions list and store name");
-        }
-
+    // function for handling Use Case 4.6 - written by Noy
+    public String editPermissions(String userName, List<String> permissions, String storeName){
         Store store = getStoreByName(storeName);
-        if(store == null){
-            throw new RuntimeException("This store doesn't exists");
-        }
-
         User user = getUserByName(userName);
-        if(user == null){
-            throw new RuntimeException("This username doesn't exist");
+
+        List<Permission> p = new LinkedList<>();
+        for(String per: permissions){
+            p.add(new Permission(per));
         }
 
-        if(!store.getOwnerships().containsKey(this.activeUser)){
-            throw new RuntimeException("You must be this store owner for this command");
-        }
-
-        if(!(store.getManagements().containsKey(user) && store.getManagements().get(user).appointer.equals(this.activeUser))){
-            throw new RuntimeException("You can't edit this user's privileges");
-        }
-
-        store.getManagements().get(user).setPermission(permissions);
+        store.getManagements().get(user).setPermission(p);
         return "Privileges have been edited successfully";
     }
 
-    public Store viewStoreInfo(String storeName){
+    // function for handling Use Case 2.4 - written by Noy
+    public String viewStoreInfo(String storeName){
 
-        if(storeName == null || storeName.isEmpty()){
-            throw new RuntimeException("The store name is invalid");
-        }
-        Store toView = getStoreByName(storeName);
-        if(toView == null){
-            throw new RuntimeException("This store doesn't exist in this trading system");
-        }
+        Store s = getStoreByName(storeName);
+        Collection<Product> products = s.getProducts();
+        String storeInfo = "Store name: " + s.getName() +
+                " description: "  + s.getDescription() +
+                "\n products:\n";
 
-        return toView;
+        for (Product currProduct : products) {
+            storeInfo = storeInfo.concat("  " + currProduct.getName() + "- " + currProduct.getPrice() + "$\n");
+        }
+        return storeInfo;
     }
 
-    public Product viewProductInfo(String storeName, String productName){
-        if(productName == null || productName.isEmpty()){
-            throw new RuntimeException("The product name is invalid");
-        }
+    // function for handling Use Case 2.4 - written by Noy
+    public String viewProductInfo(String storeName, String productName){
         Store s = getStoreByName(storeName);
         Product p = s.getProductByName(productName);
-        if(p == null){
-            throw new RuntimeException("This product is not available for purchasing in this store");
-        }
-
-        return p;
+        return (p.getName() + ": " + p.getDescription() + "\nprice: " + p.getPrice() + "$");
     }
 
-    public String purchaseCart(){
-
+    // function for handling Use Case 2.8 - written by Noy
+    public void purchaseBaskets() {
         ShoppingCart sc = this.activeUser.getShoppingCart();
-        if(sc.isEmpty()){
-            throw new RuntimeException("The shopping cart is empty");
-        }
         Collection<Basket> baskets = sc.getBaskets();
-
-        for(Basket currBasket: baskets){
+        for (Basket currBasket : baskets) {
             Store currStore = currBasket.getStore();
             Collection<ProductItem> currProducts = currBasket.getProductItems();
-            for(ProductItem pi: currProducts){
+            for (ProductItem pi : currProducts) {
                 Product p = pi.getProduct();
                 int amount = pi.getAmount();
-                if(!currStore.checkIfProductAvailable(p.getName(), amount)) {
+                if (!currStore.checkIfProductAvailable(p.getName(), amount)) {
                     if (!currStore.getInventory().containsKey(p)) {
                         throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + "products");
                     }
@@ -377,16 +357,28 @@ public class SystemHandler {
             Purchase storePurchase = new Purchase(storeShoppingCart);
             currStore.getPurchaseHistory().addPurchase(storePurchase);
         }
+    }
 
+    // function for handling Use Case 2.8 - written by Noy
+    public void addToPurchaseHistory() {
+        ShoppingCart sc = this.activeUser.getShoppingCart();
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
-        if(!PC.pay(newPurchase, this.activeUser)) {
-            throw new RuntimeException("Payment failed");
-        }
+    }
 
+    // function for handling Use Case 2.8 - written by Noy
+    public boolean pay() {
+        ShoppingCart sc = this.activeUser.getShoppingCart();
+        Purchase newPurchase = new Purchase(sc);
+        return PC.pay(newPurchase, this.activeUser);
+    }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public void supply(){
+        ShoppingCart sc = this.activeUser.getShoppingCart();
+        Purchase newPurchase = new Purchase(sc);
         PS.supply(newPurchase, this.activeUser);
-        return "Purchasing completed successfully";
-
+        this.activeUser.emptyCart();
     }
 
     // function for handling Use Case 4.3 - written by Nufar
@@ -415,6 +407,10 @@ public class SystemHandler {
         return stores.get(storName).isOwner(this.users.get(userName));
     }
 
+    public boolean checkIfActiveUserIsManager(String storeName) {
+        return stores.get(storeName).isManager(this.activeUser);
+    }
+
     public boolean checkIfUserIsManager(String storName, String userName) {
         return stores.get(storName).isManager(this.users.get(userName));
     }
@@ -422,6 +418,7 @@ public class SystemHandler {
     public boolean checkIfActiveUserSubscribed() {
         return activeUser.getUsername() == null;
     }
+
     public boolean checkIfUserIsAdmin( String userName) {
         User user = getUserByName(userName);
         return adminsList.contains(user);
@@ -458,4 +455,24 @@ public class SystemHandler {
         }
         return res;
     }
+
+
+    public boolean cartIsEmpty(){
+        return this.activeUser.getShoppingCart().isEmpty();
+    }
+
+    public boolean checkIfUserHavePermission(String storeName, String permission){
+        if(!storeExists(storeName))
+            return false;
+        Store s = getStoreByName(storeName);
+        return s.getManagements().get(this.activeUser).havePermission(permission);
+    }
+
+    public boolean checkIfProductExists(String storeName, String productName) {
+        Store s = stores.get(storeName);
+        if(s == null || s.getProductByName(productName) == null)
+            return false;
+        return true;
+    }
+
 }

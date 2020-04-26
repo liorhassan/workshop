@@ -18,7 +18,7 @@ public class UC3_7 {
         usersHandler = new UsersHandler();
         historyHandlerhandler = new ViewPurchaseHistoryHandler();
         usersHandler.register("nufi", "123456");
-        usersHandler.login("nufi", "123456");
+        usersHandler.login("nufi", "123456", false);
     }
 
     @AfterClass
