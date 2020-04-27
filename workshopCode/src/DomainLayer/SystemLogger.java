@@ -14,8 +14,8 @@ public class SystemLogger {
     }
 
     File logDir = new File("../logs/");
-    private final String eventLogURL = "logs/EventLogger.log";
-    private final String errorLogURL = "logs/ErrorLogger.log";
+    private final String eventLogURL = "../logs/EventLogger.log";
+    private final String errorLogURL = "../logs/ErrorLogger.log";
     private Logger eventLogger;
     private Logger errorLogger;
     private FileHandler eventLog;

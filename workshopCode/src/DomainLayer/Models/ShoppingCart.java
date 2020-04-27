@@ -1,4 +1,7 @@
-package DomainLayer;
+package DomainLayer.Models;
+
+import DomainLayer.ProductItem;
+import DomainLayer.SystemHandler;
 
 import java.util.*;
 import java.util.HashMap;
@@ -43,8 +46,6 @@ public class ShoppingCart {
 
     public String edit(Store store, String product, int amount){
         Basket basket = baskets.get(store);
-        if(basket == null)
-            return  "This store doesn't exist";
         List<ProductItem> items = basket.getProductItems();
         for(ProductItem pi : items){
             if(pi.getProduct().getName().equals(product)) {
@@ -54,25 +55,33 @@ public class ShoppingCart {
                         baskets.remove(store);
                     return "The product has been updated successfully";
                 }
-                else if(store.checkIfProductAvailable(pi.getProduct().getName(), amount)) {
+                else  {
                     pi.setAmount(amount);
                     return "The product has been updated successfully";
-                }
-                else {
-                    return "this amount is not available";
                 }
             }
         }
         return "The product doesn’t exist in your shopping cart";
     }
+
+    public boolean isProductInCart(String product, Store store){
+        Basket basket = baskets.get(store);
+        List<ProductItem> items = basket.getProductItems();
+        for(ProductItem pi : items){
+            if(pi.getProduct().getName().equals(product))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isBasketExists (Store store){
+        return baskets.containsKey(store) ;
+    }
+
     public String viewOnlyProducts() {
         if (baskets.isEmpty())
             throw new RuntimeException("There are no products to view");
-        String result = "";
-        for(Basket b : baskets.values()){
-            result = result + b.viewBasket();
-        }
-        return result;
+        return view().substring(28);
     }
 
     public boolean isEmpty(){
@@ -81,6 +90,10 @@ public class ShoppingCart {
 
     public void addBasket(Basket basket){
         this.baskets.put(basket.getStore(), basket);
+    }
+
+    public Basket getStoreBasket(Store s){
+       return baskets.get(s);
     }
 }
 

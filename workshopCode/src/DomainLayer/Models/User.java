@@ -1,12 +1,14 @@
-package DomainLayer;
+package DomainLayer.Models;
+
+import DomainLayer.StoreManaging;
+import DomainLayer.StoreOwning;
+import DomainLayer.UserPurchaseHistory;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 public class User {
 
-    private HashMap<Store,StoreManaging> storeManagements;
+    private HashMap<Store, StoreManaging> storeManagements;
     private HashMap<Store, StoreOwning> storeOwnings;
     private ShoppingCart shoppingCart;
     private UserPurchaseHistory purchaseHistory;
@@ -39,6 +41,10 @@ public class User {
         storeManagements.remove(store);
     }
 
+    public HashMap<Store, StoreOwning> getStoreOwnings() {
+        return storeOwnings;
+    }
+
     public boolean hasEditPrivileges(String storeName) {
         for (Store s: storeManagements.keySet()) {
             if (s.getName().equals(storeName))
@@ -53,11 +59,13 @@ public class User {
 
   
     public void addManagedStore(Store store, StoreManaging storeManaging) {
-        this.storeManagements.put(store, storeManaging);
+        if (!storeManagements.containsKey(store))
+            this.storeManagements.put(store, storeManaging);
     }
 
     public void addOwnedStore(Store store, StoreOwning storeOwning) {
-        this.storeOwnings.put(store, storeOwning);
+        if (!storeOwnings.containsKey(store))
+            this.storeOwnings.put(store, storeOwning);
     }
 
     public void emptyCart(){

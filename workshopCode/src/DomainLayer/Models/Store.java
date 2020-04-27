@@ -1,15 +1,16 @@
-package DomainLayer;
+package DomainLayer.Models;
+
+import DomainLayer.*;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 public class Store {
 
-    private HashMap<Product,Integer> products;
+    private Inventory products;
     private String name;
-    private HashMap<User,StoreManaging> managements;
-    private HashMap<User,StoreOwning> ownerships;
+    private HashMap<User, StoreManaging> managements;
+    private HashMap<User, StoreOwning> ownerships;
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
@@ -18,13 +19,17 @@ public class Store {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
-        this.products = new HashMap<>();
+        this.products = new Inventory();
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
     }
 
+
+    public User getStoreFirstOwner() {
+        return storeFirstOwner;
+    }
 
     public String getName() {
         return name;
@@ -36,26 +41,24 @@ public class Store {
 
 
     public Collection<Product> getProducts(){
-        return  products.keySet();
+        return  products.getProducts().keySet();
     }
 
     public boolean checkIfProductAvailable(String product, int amount){
         Product p = getProductByName(product);
         if(p == null)
             return false;
-        return products.get(p) >= amount;
+        return products.getProducts().get(p) >= amount;
     }
 
     public HashMap<Product, Integer> getInventory() {
-        return products;
+        return products.getProducts();
     }
 
-    public void setInventory(HashMap<Product, Integer> inventory) {
-        this.products = inventory;
-    }
+
 
     public Product getProductByName(String productName){
-        for (Product p : products.keySet()) {
+        for (Product p : products.getProducts().keySet()) {
             if (p.getName().equals(productName))
                 return p;
         }
@@ -85,7 +88,7 @@ public class Store {
     }
 
     public boolean hasProduct(String productName) {
-        for (Product p : products.keySet()){
+        for (Product p : products.getProducts().keySet()){
             if (p.getName().equals(productName))
                 return true;
         }
@@ -93,16 +96,16 @@ public class Store {
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        products.put(new Product(productName, productCategory, productDescription, productPrice), amount);
+        products.getProducts().put(new Product(productName, productCategory, productDescription, productPrice), amount);
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        for (Product p : products.keySet()){
+        for (Product p : products.getProducts().keySet()){
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
-                products.put(p, amount);
+                products.getProducts().put(p, amount);
                 break;
             }
         }
@@ -121,23 +124,25 @@ public class Store {
     }
 
     public void addManager(User user, StoreManaging storeManaging){
-        managements.put(user, storeManaging);
+        if (!managements.containsKey(user))
+            managements.put(user, storeManaging);
     }
 
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
     public void addStoreOwner(User newOwner, StoreOwning storeOwning) {
-        this.ownerships.put(newOwner, storeOwning);
+        if (!ownerships.containsKey(newOwner))
+            this.ownerships.put(newOwner, storeOwning);
     }
 
     public void purchaseProduct(Product p, int amount){
         if(checkIfProductAvailable(p.getName(), amount)){
-            int prevAmount = this.products.get(p);
+            int prevAmount = this.products.getProducts().get(p);
             if(prevAmount == amount){
-                this.products.remove(p);
+                this.products.getProducts().remove(p);
             }
             else{
-                this.products.replace(p, prevAmount - amount);
+                this.products.getProducts().replace(p, prevAmount - amount);
             }
         }
     }

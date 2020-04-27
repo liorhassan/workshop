@@ -1,11 +1,8 @@
 package AcceptanceTests;
 
-import DomainLayer.Category;
-import DomainLayer.Store;
-import DomainLayer.SystemHandler;
-import ServiceLayer.FilterResults;
-import ServiceLayer.Logout;
-import ServiceLayer.SearchProduct;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.UsersHandler;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,21 +11,27 @@ import static org.junit.Assert.assertEquals;
 
 public class UC3_1 {
 
-    private Logout command;
+    private UsersHandler handler;
     @Before
     public void setUp() throws Exception {
-        command = new Logout();
+        handler = new UsersHandler();
+    }
+
+    @AfterClass
+    public static void clean(){
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @BeforeClass
     public static void init() throws Exception{
-        SystemHandler.getInstance().register("shauli");
-        SystemHandler.getInstance().login("shauli");
+        (new UsersHandler()).register("shauli","shauli");
+        (new UsersHandler()).login("shauli","shauli", false);
     }
 
     @Test
     public void valid() {
-        String result = command.execute();
+        String result = handler.logout();
         assertEquals("You have been successfully logged out!", result);
     }
 

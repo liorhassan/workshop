@@ -1,5 +1,7 @@
 package DomainLayer;
 
+import DomainLayer.Models.User;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,4 +28,13 @@ public class StoreManaging {
         permissions = p;
     }
 
+    public boolean havePermission(String permission){
+        if(permission.isEmpty())
+            return false;
+        for(Permission p: permissions){
+            if(p.getAllowedAction().equals(permission))
+                return true;
+        }
+        return false;
+    }
 }

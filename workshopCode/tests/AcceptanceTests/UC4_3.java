@@ -1,71 +1,83 @@
 package AcceptanceTests;
 
 import DomainLayer.SystemHandler;
-import ServiceLayer.AddStoreOwner;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.UsersHandler;
 import org.junit.*;
-
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
 public class UC4_3 {
 
-    private AddStoreOwner command;
+    private StoreHandler storeHandler;
 
     @BeforeClass
     public static void init() throws Exception{
+
         // store owner (appointer)
-        SystemHandler.getInstance().register("nufi");
+        (new UsersHandler()).register("nufi", "1234");
 
         // subscribed user (appointee)
-        SystemHandler.getInstance().register("tooti");
+        (new UsersHandler()).register("tooti", "1234");
 
-        SystemHandler.getInstance().login("nufi");
-        SystemHandler.getInstance().openNewStore("KKW", "best Kim Kardashian beauty products");
+        (new UsersHandler()).login("nufi", "1234", false);
+        (new StoreHandler()).openNewStore("KKW", "best Kim Kardashian beauty products");
     }
 
     @AfterClass
     public static void clean() {
-        SystemHandler.getInstance().setUsers(new HashMap<>());
-        SystemHandler.getInstance().setStores(new HashMap<>());
+        (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @Before
     public void setUp() throws Exception {
-        command = new AddStoreOwner();
+        storeHandler = new StoreHandler();
     }
 
     @After
     public void tearDown() throws Exception {
+        (new UsersHandler()).resetUsers();
+        storeHandler.resetStores();
+
+        // store owner (appointer)
+        (new UsersHandler()).register("nufi", "1234");
+
+        // subscribed user (appointee)
+        (new UsersHandler()).register("tooti", "1234");
+
+        (new UsersHandler()).login("nufi", "1234", false);
+
+        (new StoreHandler()).openNewStore("KKW", "best Kim Kardashian beauty products");
     }
 
     @Test
     public void valid() {
-        String result = command.execute("tooti", "KKW");
+        String result = storeHandler.addStoreOwner("tooti", "KKW");
         assertEquals("Username has been added as one of the store owners successfully", result);
     }
 
     @Test
     public void emptyInput(){
-        String result = command.execute("", "KKW");
+        String result = storeHandler.addStoreOwner("", "KKW");
         assertEquals("Must enter username and store name", result);
-        result = command.execute(null, "KKW");
+         result = storeHandler.addStoreOwner("tooti", "");
         assertEquals("Must enter username and store name", result);
-        result = command.execute("tooti", "");
+        result = storeHandler.addStoreOwner(null, "KKW");
         assertEquals("Must enter username and store name", result);
-        result = command.execute("tooti", null);
+        result = storeHandler.addStoreOwner("tooti", null);
         assertEquals("Must enter username and store name", result);
     }
 
     @Test
     public void storeDoesNotExist(){
-        String result = command.execute("tooti", "poosh");
+        String result = storeHandler.addStoreOwner("tooti", "poosh");
         assertEquals("This store doesn't exist", result);
     }
 
     @Test
     public void userDoesNotExist(){
-        String result = command.execute("tooton", "KKW");
+        String result = storeHandler.addStoreOwner("tooton", "KKW");
         assertEquals("This username doesn't exist", result);
     }
 
@@ -73,20 +85,16 @@ public class UC4_3 {
     public void appointerIsNotOwner() {
         SystemHandler.getInstance().logout();
         SystemHandler.getInstance().register("toya");
-        SystemHandler.getInstance().login("toya");
-        String result = command.execute("tooti", "KKW");
+        SystemHandler.getInstance().login("toya", false);
+        String result = storeHandler.addStoreOwner("tooti", "KKW");
         assertEquals("You must be this store owner for this action", result);
         SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().login("nufi");
+        SystemHandler.getInstance().login("nufi", false);
     }
 
     @Test
     public void userAlreadyOwner() {
-        SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().register("cooper");
-        SystemHandler.getInstance().login("nufi");
-        command.execute("cooper", "KKW");
-        String result = command.execute("cooper", "KKW");
+        String result = storeHandler.addStoreOwner("nufi", "KKW");
         assertEquals("This username is already one of the store's owners", result);
     }
 }
