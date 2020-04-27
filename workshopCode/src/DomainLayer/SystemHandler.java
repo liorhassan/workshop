@@ -108,7 +108,7 @@ public class SystemHandler {
             }
         }
         if(matching.size()==0)
-           return "There are no products that match these parameters";
+           throw new RuntimeException("There are no products that match these parameters");
         lastSearchResult = matching;
         return productListToString(lastSearchResult);
     }
@@ -135,7 +135,7 @@ public class SystemHandler {
             matching.add(p);
         }
         if(matching.size()==0)
-            return "There are no products that match this search filter";
+            throw new RuntimeException("There are no products that match this search filter");
         return productListToString(matching);
     }
 
