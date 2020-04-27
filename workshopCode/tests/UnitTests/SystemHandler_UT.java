@@ -5,10 +5,8 @@ import DomainLayer.*;
 import DomainLayer.Models.Basket;
 import DomainLayer.Models.Store;
 import DomainLayer.Models.User;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -268,15 +266,20 @@ public class SystemHandler_UT {
         sys.logout();
     }
 
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
     @Test
     public void searchProducts_Test(){
 
         String output1 =sys.searchProducts("skinny jeans", "Clothing", null);
         assertEquals("Name: skinny jeans, Category: Clothing, Description: The most comfortable skiny jeans, Price: 120.0\n" +
                 "Name: skinny jeans, Category: Clothing, Description: skinny jeans, Price: 100.0", output1);
-        String output2 = sys.searchProducts("skirt", "Clothing", null);
-        assertEquals("There are no products that match these parameters", output2);
 
+        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expectMessage("There are no products that match these parameters");
+        sys.searchProducts("skirt", "Clothing", null);
     }
 
     @Test
@@ -287,9 +290,9 @@ public class SystemHandler_UT {
                 "Name: skinny jeans, Category: Clothing, Description: skinny jeans, Price: 100.0", output1);
         String output2 = sys.filterResults(40, 110, "Clothing");
         assertEquals("Name: skinny jeans, Category: Clothing, Description: skinny jeans, Price: 100.0", output2);
-        String output3 = sys.filterResults(40, 80, "Clothing");
-        assertEquals("There are no products that match this search filter", output3);
-
+        exceptionRule.expect(RuntimeException.class);
+        exceptionRule.expectMessage("There are no products that match this search filter");
+        sys.filterResults(40, 80, "Clothing");
     }
 
 }
