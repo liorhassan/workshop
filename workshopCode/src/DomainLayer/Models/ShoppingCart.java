@@ -10,6 +10,7 @@ public class ShoppingCart {
 
     private HashMap<Store, Basket> baskets;
     private User user;
+    private double totalCartPrice;
 
     public ShoppingCart(User user) {
         this.user = user;
@@ -94,6 +95,14 @@ public class ShoppingCart {
 
     public Basket getStoreBasket(Store s){
        return baskets.get(s);
+    }
+
+    public double getTotalCartPrice(){
+        return this.totalCartPrice;
+    }
+
+    public void setTotalCartPrice(double p){
+        this.totalCartPrice = p;
     }
 }
 

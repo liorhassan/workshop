@@ -349,47 +349,66 @@ public class SystemHandler {
     public void purchaseBaskets() {
         ShoppingCart sc = this.activeUser.getShoppingCart();
         Collection<Basket> baskets = sc.getBaskets();
-        for (Basket currBasket : baskets) {
+        checkProductsAvailability(baskets);
+
+        for (Basket currBasket : baskets){
             Store currStore = currBasket.getStore();
-            Collection<ProductItem> currProducts = currBasket.getProductItems();
-            for (ProductItem pi : currProducts) {
-                Product p = pi.getProduct();
-                int amount = pi.getAmount();
-                if (!currStore.checkIfProductAvailable(p.getName(), amount)) {
-                        throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
-                }
-                currStore.purchaseProduct(p, amount);
-            }
+            currStore.purchaseBasket(currBasket);
 
             //add the store's basket to her purchase history
             ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
             storeShoppingCart.addBasket(currBasket);
+            storeShoppingCart.setTotalCartPrice(currStore.calculateTotalCheck(currBasket));
             Purchase storePurchase = new Purchase(storeShoppingCart);
             currStore.getPurchaseHistory().addPurchase(storePurchase);
         }
     }
 
+    public void checkProductsAvailability(Collection<Basket> baskets){
+        for (Basket currBasket : baskets) {
+            Store currStore = currBasket.getStore();
+            currStore.getProductsInventory().checkProductsAvailabilityInInventory(currBasket);
+            }
+    }
+
+    public void computePrice() {
+        double totalPrice = 0;
+        ShoppingCart sc = this.activeUser.getShoppingCart();
+        Collection<Basket> baskets = sc.getBaskets();
+        for (Basket currBasket : baskets) {
+            Store currStore = currBasket.getStore();
+            totalPrice += currStore.calculateTotalCheck(currBasket);
+        }
+        sc.setTotalCartPrice(totalPrice);
+    }
+
     // function for handling Use Case 2.8 - written by Noy
-    public void addToPurchaseHistory() {
+    public boolean payment() {
+        if(!PC.pay(this.activeUser.getShoppingCart(), this.activeUser)){
+            //TODO: RETURN PRODUCTS TO THE STORES
+            return false;
+        }
+        return true;
+
+    }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public boolean supply(){
+        if(PS.supply(this.activeUser.getShoppingCart(), this.activeUser)) {
+            //TODO: RETURN PRODUCTS TO THE STORES
+            return false;
+        }
+        this.activeUser.emptyCart();
+        return true;
+    }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public void addPurchaseToHistory() {
         ShoppingCart sc = this.activeUser.getShoppingCart();
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
     }
 
-    // function for handling Use Case 2.8 - written by Noy
-    public boolean pay() {
-        ShoppingCart sc = this.activeUser.getShoppingCart();
-        Purchase newPurchase = new Purchase(sc);
-        return PC.pay(newPurchase, this.activeUser);
-    }
-
-    // function for handling Use Case 2.8 - written by Noy
-    public void supply(){
-        ShoppingCart sc = this.activeUser.getShoppingCart();
-        Purchase newPurchase = new Purchase(sc);
-        PS.supply(newPurchase, this.activeUser);
-        this.activeUser.emptyCart();
-    }
 
     // function for handling Use Case 4.3 - written by Nufar
     public String appointOwner(String username, String storeName) {

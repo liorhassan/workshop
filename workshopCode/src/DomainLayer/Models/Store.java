@@ -95,6 +95,10 @@ public class Store {
         return false;
     }
 
+    public Inventory getProductsInventory(){
+        return this.products;
+    }
+
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
         products.getProducts().put(new Product(productName, productCategory, productDescription, productPrice), amount);
     }
@@ -146,6 +150,26 @@ public class Store {
             }
         }
     }
+
+    public void purchaseBasket(Basket b){
+        Collection<ProductItem> products = b.getProductItems();
+        for (ProductItem pi : products) {
+            Product p = pi.getProduct();
+            int amount = pi.getAmount();
+            purchaseProduct(p, amount);
+        }
+    }
+
+    public double calculateTotalCheck(Basket b){
+        double total = 0;
+        for (ProductItem pi: b.getProductItems()) {
+            //TODO: CHECK PURCHASE AND DISCOUNT POLICY
+            total = total + (pi.getAmount() * pi.getProduct().getPrice());
+        }
+        return total;
+    }
+
+
 
     public StorePurchaseHistory getPurchaseHistory(){
         return this.purchaseHistory;

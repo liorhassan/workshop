@@ -58,14 +58,16 @@ public class ShoppingCartHandler {
             if(SystemHandler.getInstance().cartIsEmpty()){
                 throw new RuntimeException("The shopping cart is empty");
             }
-
             SystemHandler.getInstance().purchaseBaskets();
-            SystemHandler.getInstance().addToPurchaseHistory();
-            if (!SystemHandler.getInstance().pay()) {
+            SystemHandler.getInstance().computePrice();
+            if (!SystemHandler.getInstance().payment()) {
                 throw new RuntimeException("Payment failed");
             }
+            if(!SystemHandler.getInstance().supply()){
+                throw new RuntimeException("supplement failed");
+            }
 
-            SystemHandler.getInstance().supply();
+            SystemHandler.getInstance().addPurchaseToHistory();
             return "Purchasing completed successfully";
         }
 

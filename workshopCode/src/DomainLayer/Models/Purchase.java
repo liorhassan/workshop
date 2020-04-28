@@ -14,13 +14,8 @@ public class Purchase {
         return shoppingCart;
     }
 
+
     public double getTotalCheck() {
-        double total = 0;
-        for (Basket b: shoppingCart.getBaskets()) {
-            for (ProductItem pi: b.getProductItems()) {
-                total = total + (pi.getAmount() * pi.getProduct().getPrice());
-            }
-        }
-        return total;
+        return this.shoppingCart.getTotalCartPrice();
     }
 }
