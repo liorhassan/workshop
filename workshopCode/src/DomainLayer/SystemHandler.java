@@ -358,12 +358,13 @@ public class SystemHandler {
             //add the store's basket to her purchase history
             ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
             storeShoppingCart.addBasket(currBasket);
-            storeShoppingCart.setTotalCartPrice(currStore.calculateTotalCheck(currBasket));
+            storeShoppingCart.setCartTotalCheck(currStore.calculateTotalCheck(currBasket));
             Purchase storePurchase = new Purchase(storeShoppingCart);
             currStore.getPurchaseHistory().addPurchase(storePurchase);
         }
     }
 
+    // function for handling Use Case 2.8 - written by Noy
     public void checkProductsAvailability(Collection<Basket> baskets){
         for (Basket currBasket : baskets) {
             Store currStore = currBasket.getStore();
@@ -371,6 +372,7 @@ public class SystemHandler {
             }
     }
 
+    // function for handling Use Case 2.8 - written by Noy
     public void computePrice() {
         double totalPrice = 0;
         ShoppingCart sc = this.activeUser.getShoppingCart();
@@ -379,13 +381,13 @@ public class SystemHandler {
             Store currStore = currBasket.getStore();
             totalPrice += currStore.calculateTotalCheck(currBasket);
         }
-        sc.setTotalCartPrice(totalPrice);
+        sc.setCartTotalCheck(totalPrice);
     }
 
     // function for handling Use Case 2.8 - written by Noy
     public boolean payment() {
         if(!PC.pay(this.activeUser.getShoppingCart(), this.activeUser)){
-            //TODO: RETURN PRODUCTS TO THE STORES
+            returnProducts();
             return false;
         }
         return true;
@@ -394,12 +396,19 @@ public class SystemHandler {
 
     // function for handling Use Case 2.8 - written by Noy
     public boolean supply(){
-        if(PS.supply(this.activeUser.getShoppingCart(), this.activeUser)) {
-            //TODO: RETURN PRODUCTS TO THE STORES
+        if(!PS.supply(this.activeUser.getShoppingCart(), this.activeUser)) {
+            returnProducts();
             return false;
         }
-        this.activeUser.emptyCart();
         return true;
+    }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public void returnProducts(){
+        for(Basket b: this.activeUser.getShoppingCart().getBaskets()){
+            Store s = b.getStore();
+            s.returnProdyuctsToStock(b);
+        }
     }
 
     // function for handling Use Case 2.8 - written by Noy
@@ -407,6 +416,7 @@ public class SystemHandler {
         ShoppingCart sc = this.activeUser.getShoppingCart();
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
+        this.activeUser.emptyCart();
     }
 
 

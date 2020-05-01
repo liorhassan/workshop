@@ -1,7 +1,6 @@
 package DomainLayer.Models;
 
 import DomainLayer.ProductItem;
-import DomainLayer.SystemHandler;
 
 import java.util.*;
 import java.util.HashMap;
@@ -10,7 +9,7 @@ public class ShoppingCart {
 
     private HashMap<Store, Basket> baskets;
     private User user;
-    private double totalCartPrice;
+    private double cartTotalCheck;
 
     public ShoppingCart(User user) {
         this.user = user;
@@ -98,11 +97,11 @@ public class ShoppingCart {
     }
 
     public double getTotalCartPrice(){
-        return this.totalCartPrice;
+        return this.cartTotalCheck;
     }
 
-    public void setTotalCartPrice(double p){
-        this.totalCartPrice = p;
+    public void setCartTotalCheck(double p){
+        this.cartTotalCheck = p;
     }
 }
 

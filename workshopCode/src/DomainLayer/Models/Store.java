@@ -178,4 +178,15 @@ public class Store {
     public String getDescription(){
         return this.description;
     }
+
+    public void returnProdyuctsToStock(Basket b){
+        for(ProductItem pi: b.getProductItems()){
+            if(products.getProducts().get(pi.getProduct()) != null){
+                products.getProducts().put(pi.getProduct(), products.getProducts().get(pi.getProduct()) + pi.getAmount());
+            }
+            else{
+                products.getProducts().put(pi.getProduct(), pi.getAmount());
+            }
+        }
+    }
 }
