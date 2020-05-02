@@ -14,6 +14,7 @@ public class Store {
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
+    private DiscountPolicy discountPolicy;
 
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
         this.name = name;
@@ -24,6 +25,7 @@ public class Store {
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
+        this.discountPolicy = new DiscountPolicy();
     }
 
 
@@ -163,8 +165,8 @@ public class Store {
     public double calculateTotalCheck(Basket b){
         double total = 0;
         for (ProductItem pi: b.getProductItems()) {
-            //TODO: CHECK PURCHASE AND DISCOUNT POLICY
-            total = total + (pi.getAmount() * pi.getProduct().getPrice());
+            //TODO: HANDEL PURCHASE POLICY
+            total += (pi.getAmount() * (pi.getProduct().getPrice() - this.discountPolicy.calcProductDiscount(pi.getProduct(), pi.getAmount()))) ;
         }
         return total;
     }
@@ -188,5 +190,9 @@ public class Store {
                 products.getProducts().put(pi.getProduct(), pi.getAmount());
             }
         }
+    }
+
+    public void addDiscount(String productName, double percentage){
+        this.discountPolicy.addDiscount(getProductByName(productName), percentage);
     }
 }

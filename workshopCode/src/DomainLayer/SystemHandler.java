@@ -358,7 +358,7 @@ public class SystemHandler {
             //add the store's basket to her purchase history
             ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
             storeShoppingCart.addBasket(currBasket);
-            storeShoppingCart.setCartTotalCheck(currStore.calculateTotalCheck(currBasket));
+            storeShoppingCart.computeCartPrice();
             Purchase storePurchase = new Purchase(storeShoppingCart);
             currStore.getPurchaseHistory().addPurchase(storePurchase);
         }
@@ -374,14 +374,7 @@ public class SystemHandler {
 
     // function for handling Use Case 2.8 - written by Noy
     public void computePrice() {
-        double totalPrice = 0;
-        ShoppingCart sc = this.activeUser.getShoppingCart();
-        Collection<Basket> baskets = sc.getBaskets();
-        for (Basket currBasket : baskets) {
-            Store currStore = currBasket.getStore();
-            totalPrice += currStore.calculateTotalCheck(currBasket);
-        }
-        sc.setCartTotalCheck(totalPrice);
+        this.activeUser.getShoppingCart().computeCartPrice();
     }
 
     // function for handling Use Case 2.8 - written by Noy
@@ -524,6 +517,11 @@ public class SystemHandler {
 
     public boolean isAdminMode() {
         return adminMode;
+    }
+
+    public void addDiscount(String storeName, String productName, double percentage){
+        Store s = getStoreByName(storeName);
+        s.addDiscount(productName, percentage);
     }
 
 }

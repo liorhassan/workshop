@@ -67,4 +67,27 @@ public class StoreHandler {
     public void resetStores(){
         SystemHandler.getInstance().resetStores();
     }
+
+    public String addDiscount(String storeName, String productName, double percentage){
+        try{
+            String[] args = {storeName, productName};
+            if(SystemHandler.getInstance().emptyString(args)){
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if(percentage > 100 || percentage < 0){
+                throw new IllegalArgumentException("Invalid percentage value: must be between 0 and 100");
+            }
+            if(!SystemHandler.getInstance().storeExists(storeName)){
+                throw new IllegalArgumentException("The store doesn't exist in the trading system");
+            }
+            if(!SystemHandler.getInstance().checkIfProductExists(storeName, productName)){
+                throw new IllegalArgumentException("The product isn't available in this store");
+            }
+            SystemHandler.getInstance().addDiscount(storeName, productName, percentage);
+            return "discount have been added to the store";
+        }
+        catch(Exception e){
+            return e.getMessage();
+        }
+    }
 }

@@ -9,7 +9,7 @@ public class ShoppingCart {
 
     private HashMap<Store, Basket> baskets;
     private User user;
-    private double cartTotalCheck;
+    private double cartTotalPrice;
 
     public ShoppingCart(User user) {
         this.user = user;
@@ -84,6 +84,15 @@ public class ShoppingCart {
         return view().substring(28);
     }
 
+    public void computeCartPrice() {
+        double totalPrice = 0;
+        for (Basket currBasket : this.baskets.values()) {
+            Store currStore = currBasket.getStore();
+            totalPrice += currStore.calculateTotalCheck(currBasket);
+        }
+        this.cartTotalPrice = totalPrice;
+    }
+
     public boolean isEmpty(){
         return this.baskets.isEmpty();
     }
@@ -97,12 +106,10 @@ public class ShoppingCart {
     }
 
     public double getTotalCartPrice(){
-        return this.cartTotalCheck;
+        return this.cartTotalPrice;
     }
 
-    public void setCartTotalCheck(double p){
-        this.cartTotalCheck = p;
-    }
+
 }
 
 
