@@ -1,14 +1,12 @@
 package UnitTests;
 
-import DomainLayer.Models.Product;
-import DomainLayer.Models.Purchase;
-import DomainLayer.Models.ShoppingCart;
-import DomainLayer.Models.Store;
+import DomainLayer.TradingSystem.Models.Product;
+import DomainLayer.TradingSystem.Models.Purchase;
+import DomainLayer.TradingSystem.Models.ShoppingCart;
+import DomainLayer.TradingSystem.Models.Store;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 

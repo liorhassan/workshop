@@ -1,6 +1,4 @@
-package DomainLayer.Models;
-
-import DomainLayer.ProductItem;
+package DomainLayer.TradingSystem.Models;
 
 public class Purchase {
 

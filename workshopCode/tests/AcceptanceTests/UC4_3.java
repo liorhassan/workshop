@@ -1,6 +1,6 @@
 package AcceptanceTests;
 
-import DomainLayer.SystemHandler;
+import DomainLayer.TradingSystem.SystemFacade;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
@@ -83,13 +83,13 @@ public class UC4_3 {
 
     @Test
     public void appointerIsNotOwner() {
-        SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().register("toya");
-        SystemHandler.getInstance().login("toya", false);
+        SystemFacade.getInstance().logout();
+        SystemFacade.getInstance().register("toya");
+        SystemFacade.getInstance().login("toya", false);
         String result = storeHandler.addStoreOwner("tooti", "KKW");
         assertEquals("You must be this store owner for this action", result);
-        SystemHandler.getInstance().logout();
-        SystemHandler.getInstance().login("nufi", false);
+        SystemFacade.getInstance().logout();
+        SystemFacade.getInstance().login("nufi", false);
     }
 
     @Test

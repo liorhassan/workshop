@@ -1,17 +1,17 @@
-package DomainLayer;
+package DomainLayer.TradingSystem;
 
 
-import DomainLayer.ExternalSystems.PaymentCollection;
-import DomainLayer.ExternalSystems.ProductSupply;
-import DomainLayer.Models.*;
-import DomainLayer.Security.SecurityHandler;
+import ExternalSystems.PaymentCollectionStub;
+import ExternalSystems.ProductSupplyStub;
+import DomainLayer.TradingSystem.Models.*;
+import DomainLayer.Security.SecurityFacade;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SystemHandler {
-    private static SystemHandler ourInstance = new SystemHandler();
-    public static SystemHandler getInstance() {
+public class SystemFacade {
+    private static SystemFacade ourInstance = new SystemFacade();
+    public static SystemFacade getInstance() {
         return ourInstance;
     }
 
@@ -21,20 +21,20 @@ public class SystemHandler {
     private HashMap<String, Store> stores;
     private List<User> adminsList;
     private List<Product> lastSearchResult;
-    private PaymentCollection PC;
-    private ProductSupply PS;
+    private PaymentCollectionStub PC;
+    private ProductSupplyStub PS;
 
-    private SystemHandler() {
+    private SystemFacade() {
         users = new HashMap<>();
         stores = new HashMap<>();
         adminsList = new ArrayList<>();
         activeUser = new User();  //guest
         lastSearchResult = new ArrayList<>();
-        PC = new PaymentCollection();
-        PS = new ProductSupply();
+        PC = new PaymentCollectionStub();
+        PS = new ProductSupplyStub();
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
-        SecurityHandler.getInstance().addUser("Admin159", "951");
+        SecurityFacade.getInstance().addUser("Admin159", "951");
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
     }
@@ -349,7 +349,7 @@ public class SystemHandler {
     public void purchaseBaskets() {
         ShoppingCart sc = this.activeUser.getShoppingCart();
         Collection<Basket> baskets = sc.getBaskets();
-        checkProductsAvailability(baskets);
+        checkProductsAvailability(baskets);//TODO: save all purchased products and if failed return all of them
 
         for (Basket currBasket : baskets){
             Store currStore = currBasket.getStore();
@@ -360,7 +360,7 @@ public class SystemHandler {
             storeShoppingCart.addBasket(currBasket);
             storeShoppingCart.computeCartPrice();
             Purchase storePurchase = new Purchase(storeShoppingCart);
-            currStore.getPurchaseHistory().addPurchase(storePurchase);
+            currStore.getPurchaseHistory().addPurchase(storePurchase);//TODO: seperate purchase and adding store perchase history
         }
     }
 
@@ -397,7 +397,7 @@ public class SystemHandler {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void returnProducts(){
+    public void returnProducts(){ //TODO: unreserve products - move to shopping cart
         for(Basket b: this.activeUser.getShoppingCart().getBaskets()){
             Store s = b.getStore();
             s.returnProdyuctsToStock(b);
@@ -405,7 +405,7 @@ public class SystemHandler {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void addPurchaseToHistory() {
+    public void addPurchaseToHistory() {//TODO: add purchase to each store purchase history
         ShoppingCart sc = this.activeUser.getShoppingCart();
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);

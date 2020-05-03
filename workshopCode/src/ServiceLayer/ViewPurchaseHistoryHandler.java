@@ -1,10 +1,7 @@
 package ServiceLayer;
 
-import DomainLayer.Models.Purchase;
-import DomainLayer.StorePurchaseHistory;
-import DomainLayer.SystemHandler;
-import DomainLayer.SystemLogger;
-import DomainLayer.UserPurchaseHistory;
+import DomainLayer.TradingSystem.SystemFacade;
+import DomainLayer.TradingSystem.SystemLogger;
 
 public class ViewPurchaseHistoryHandler {
 
@@ -13,13 +10,13 @@ public class ViewPurchaseHistoryHandler {
         SystemLogger.getInstance().writeEvent("View user purchase history command as an admin");
         try {
             String[] args = {username};
-            if (SystemHandler.getInstance().emptyString(args))
+            if (SystemFacade.getInstance().emptyString(args))
                 throw new IllegalArgumentException("Must enter username");
-            if (!SystemHandler.getInstance().checkIfInAdminMode())
+            if (!SystemFacade.getInstance().checkIfInAdminMode())
                 throw new RuntimeException("Only admin user can view other users' purchase history");
-            if (!SystemHandler.getInstance().userExists(username))
+            if (!SystemFacade.getInstance().userExists(username))
                 throw new IllegalArgumentException("The user requested doesn't exist in the system");
-            return SystemHandler.getInstance().getUserPurchaseHistory(username);
+            return SystemFacade.getInstance().getUserPurchaseHistory(username);
         }
         catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("View user purchase history as admin error: " + e.getMessage());
@@ -32,13 +29,13 @@ public class ViewPurchaseHistoryHandler {
         SystemLogger.getInstance().writeEvent("View store purchase history command as an admin");
         try {
             String[] args = {storeName};
-            if (SystemHandler.getInstance().emptyString(args))
+            if (SystemFacade.getInstance().emptyString(args))
                 throw new IllegalArgumentException("Must enter store name");
-            if (!SystemHandler.getInstance().checkIfInAdminMode())
+            if (!SystemFacade.getInstance().checkIfInAdminMode())
                 throw new RuntimeException("Only admin user can view store's purchase history");
-            if (!SystemHandler.getInstance().storeExists(storeName))
+            if (!SystemFacade.getInstance().storeExists(storeName))
                 throw new IllegalArgumentException("The store requested doesn't exist in the system");
-            return SystemHandler.getInstance().getStorePurchaseHistory(storeName);
+            return SystemFacade.getInstance().getStorePurchaseHistory(storeName);
         }
         catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("View store purchase history as admin error: " + e.getMessage());
@@ -51,9 +48,9 @@ public class ViewPurchaseHistoryHandler {
 
         SystemLogger.getInstance().writeEvent("View User Purchase History command");
         try {
-            if (!SystemHandler.getInstance().checkIfActiveUserSubscribed())
+            if (!SystemFacade.getInstance().checkIfActiveUserSubscribed())
                 throw new RuntimeException("Only subscribed users can view purchase history");
-            return SystemHandler.getInstance().getActiveUserPurchaseHistory();
+            return SystemFacade.getInstance().getActiveUserPurchaseHistory();
         }
         catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("View User Purchase History error: " + e.getMessage());
@@ -65,16 +62,16 @@ public class ViewPurchaseHistoryHandler {
         SystemLogger.getInstance().writeEvent("View Store Purchase History command: store name - " + storeName);
         try{
             String[] arg = {storeName};
-            if(SystemHandler.getInstance().emptyString(arg)){
+            if(SystemFacade.getInstance().emptyString(arg)){
                 throw new RuntimeException("Must enter store name");
             }
-            if(!SystemHandler.getInstance().storeExists(storeName)){
+            if(!SystemFacade.getInstance().storeExists(storeName)){
                 throw new RuntimeException("This store doesn't exist");
             }
-            if(!(SystemHandler.getInstance().checkIfActiveUserIsOwner(storeName) || (SystemHandler.getInstance().checkIfActiveUserIsManager(storeName)&& SystemHandler.getInstance().checkIfUserHavePermission(storeName, "View store purchase history")))){
+            if(!(SystemFacade.getInstance().checkIfActiveUserIsOwner(storeName) || (SystemFacade.getInstance().checkIfActiveUserIsManager(storeName)&& SystemFacade.getInstance().checkIfUserHavePermission(storeName, "View store purchase history")))){
                 throw new RuntimeException("You are not allowed to view this store's purchasing history");
             }
-            return SystemHandler.getInstance().getStorePurchaseHistory(storeName);
+            return SystemFacade.getInstance().getStorePurchaseHistory(storeName);
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("View Store Purchase History error: " + e.getMessage());

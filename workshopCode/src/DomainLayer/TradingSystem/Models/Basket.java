@@ -1,8 +1,6 @@
-package DomainLayer.Models;
+package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.Models.Product;
-import DomainLayer.Models.Store;
-import DomainLayer.ProductItem;
+import DomainLayer.TradingSystem.ProductItem;
 
 import java.util.ArrayList;
 import java.util.List;

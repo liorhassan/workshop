@@ -1,6 +1,6 @@
-package DomainLayer.Models;
+package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.*;
+import DomainLayer.TradingSystem.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -154,6 +154,7 @@ public class Store {
     }
 
     public void purchaseBasket(Basket b){
+        //TODO: HANDEL PURCHASE POLICY
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {
             Product p = pi.getProduct();
@@ -165,7 +166,6 @@ public class Store {
     public double calculateTotalCheck(Basket b){
         double total = 0;
         for (ProductItem pi: b.getProductItems()) {
-            //TODO: HANDEL PURCHASE POLICY
             total += (pi.getAmount() * (pi.getProduct().getPrice() - this.discountPolicy.calcProductDiscount(pi.getProduct(), pi.getAmount()))) ;
         }
         return total;

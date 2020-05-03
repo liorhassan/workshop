@@ -1,7 +1,7 @@
-package DomainLayer;
+package DomainLayer.TradingSystem;
 
-import DomainLayer.Models.Purchase;
-import DomainLayer.Models.Store;
+import DomainLayer.TradingSystem.Models.Purchase;
+import DomainLayer.TradingSystem.Models.Store;
 
 import java.util.LinkedList;
 import java.util.List;

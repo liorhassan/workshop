@@ -1,13 +1,13 @@
 package DomainLayer.Security;
 
-public class SecurityHandler {
-    private static SecurityHandler ourInstance = new SecurityHandler();
+public class SecurityFacade {
+    private static SecurityFacade ourInstance = new SecurityFacade();
 
-    public static SecurityHandler getInstance() {
+    public static SecurityFacade getInstance() {
         return ourInstance;
     }
 
-    private SecurityHandler() {
+    private SecurityFacade() {
     }
 
     public boolean addUser(String username, String password){ return true; }

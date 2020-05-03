@@ -1,4 +1,4 @@
-package DomainLayer;
+package DomainLayer.TradingSystem;
 
 public enum Category {
 

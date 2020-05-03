@@ -1,7 +1,7 @@
-package DomainLayer;
+package DomainLayer.TradingSystem;
 
-import DomainLayer.Models.Basket;
-import DomainLayer.Models.Product;
+import DomainLayer.TradingSystem.Models.Basket;
+import DomainLayer.TradingSystem.Models.Product;
 
 public class ProductItem {
 

@@ -1,6 +1,6 @@
-package DomainLayer;
+package DomainLayer.TradingSystem;
 
-import DomainLayer.Models.Product;
+import DomainLayer.TradingSystem.Models.Product;
 
 import java.util.HashMap;
 

@@ -1,6 +1,6 @@
 package UnitTests;
 
-import DomainLayer.Models.Product;
+import DomainLayer.TradingSystem.Models.Product;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

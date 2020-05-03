@@ -1,6 +1,6 @@
-package DomainLayer.Models;
+package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.Category;
+import DomainLayer.TradingSystem.Category;
 
 import java.util.ArrayList;
 import java.util.List;
