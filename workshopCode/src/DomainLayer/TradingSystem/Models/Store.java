@@ -165,8 +165,7 @@ public class Store {
 
     //for each products in the basket - checks if the product meets the purchase policy requirements
     //if it does - reserve the product and adds it to the reserved products list
-    //if a product is unavailable - return its ProductItem, otherwise - returns null
-    public ProductItem reserveBasket(Basket b){
+    public void reserveBasket(Basket b){
         //this field save all the products that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
         if(!this.purchasePolicy.purchaseAccordingToPolicy(b)){
@@ -177,11 +176,10 @@ public class Store {
             Product p = pi.getProduct();
             int amount = pi.getAmount();
             if(!reserveProduct(p, amount)){
-                return pi;
+                throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
             }
             this.reservedProducts.get(b).add(pi);
         }
-        return null;
     }
 
     public List<ProductItem> getReservedProducts(Basket b){

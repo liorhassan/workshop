@@ -99,12 +99,13 @@ public class ShoppingCart {
     public void reserveBaskets(){
         for(Basket b: baskets.values()){
             Store s = b.getStore();
-            ProductItem pi = s.reserveBasket(b);
-            if(pi != null){
-                unreserveProducts();
-                throw new RuntimeException("There is currently no stock of " + pi.getAmount() + " " + pi.getProduct().getName() + " products");
+            try{
+                s.reserveBasket(b);
             }
-
+            catch (Exception e){
+                unreserveProducts();
+                throw new RuntimeException(e.getMessage());
+            }
         }
     }
 
