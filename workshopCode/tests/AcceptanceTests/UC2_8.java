@@ -17,14 +17,13 @@ public class UC2_8 {
     @Before
     public void setUp(){
         shoppingCartHandler = new ShoppingCartHandler();
-
     }
 
     @BeforeClass
     public static void init(){
-        (new UsersHandler()).register("noy", "1234");
+        UC3_2.init(); // user toya is logged in
         (new UsersHandler()).register("maor", "1234");
-        (new UsersHandler()).login("noy", "1234", false);
+        (new UsersHandler()).login("toya", "1234", false);
         (new StoreHandler()).openNewStore("Castro", "clothes for women and men");
         (new StoreHandler()).openNewStore("Lalin", "beauty products");
         (new StoreHandler()).UpdateInventory("Castro", "white T-shirt", 25, "Clothing", "white T-shirt for men", 3);
@@ -64,7 +63,7 @@ public class UC2_8 {
         shoppingCartHandler.AddToShoppingBasket("Castro", "white T-shirt", 2);
         shoppingCartHandler.purchaseCart();
         (new UsersHandler()).logout();
-        (new UsersHandler()).login("noy", "1234", false);
+        (new UsersHandler()).login("toya", "1234", false);
         String result = shoppingCartHandler.purchaseCart();
         assertEquals("There is currently no stock of 3 white T-shirt products", result);
 

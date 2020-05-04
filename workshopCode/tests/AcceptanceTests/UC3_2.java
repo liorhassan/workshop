@@ -8,12 +8,10 @@ import static org.junit.Assert.assertEquals;
 
 public class UC3_2 {
 
-    private StoreHandler storeHandler;
-
     @BeforeClass
-    public static void init() throws Exception{
-        (new UsersHandler()).register("nufi", "1234");
-        (new UsersHandler()).login("nufi", "1234", false);
+    public static void init() {
+        UC2_3.setUp();
+        (new UsersHandler()).login("toya", "1234", false);
     }
 
     @AfterClass
@@ -21,38 +19,33 @@ public class UC3_2 {
         (new UsersHandler()).resetUsers();
     }
 
-    @Before
-    public void setUp() throws Exception {
-        storeHandler = new StoreHandler();
-    }
-
     @After
     public void tearDown() throws Exception {
-        storeHandler.resetStores();
+        (new StoreHandler()).resetStores();
     }
 
     @Test
     public void valid() {
-        String result = storeHandler.openNewStore("KKW store", "best Kim Kardashian beauty products");
+        String result = (new StoreHandler()).openNewStore("KKW store", "best Kim Kardashian beauty products");
         assertEquals("The new store is now open!", result);
     }
 
     @Test
     public void emptyInput(){
-        String result = storeHandler.openNewStore("", "best Kim Kardashian beauty products");
+        String result = (new StoreHandler()).openNewStore("", "best Kim Kardashian beauty products");
         assertEquals("Must enter store name and description", result);
-        result = storeHandler.openNewStore(null, "best Kim Kardashian beauty products");
+        result = (new StoreHandler()).openNewStore(null, "best Kim Kardashian beauty products");
         assertEquals("Must enter store name and description", result);
-        result = storeHandler.openNewStore("KKW store", "");
+        result = (new StoreHandler()).openNewStore("KKW store", "");
         assertEquals("Must enter store name and description", result);
-        result = storeHandler.openNewStore("KKW store", null);
+        result = (new StoreHandler()).openNewStore("KKW store", null);
         assertEquals("Must enter store name and description", result);
     }
 
     @Test
     public void storeAlreadyExist(){
-        storeHandler.openNewStore("KKW store", "best Kim Kardashian beauty products");
-        String result = storeHandler.openNewStore("KKW store", "best storeeeee");
+        (new StoreHandler()).openNewStore("KKW store", "best Kim Kardashian beauty products");
+        String result = (new StoreHandler()).openNewStore("KKW store", "best storeeeee");
         assertEquals("Store name already exists, please choose a different one", result);
     }
 }
