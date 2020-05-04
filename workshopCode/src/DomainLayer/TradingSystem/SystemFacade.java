@@ -357,7 +357,7 @@ public class SystemFacade {
 
     // function for handling Use Case 2.8 - written by Noy
     public boolean payment() {
-        if(!PC.pay(this.activeUser.getShoppingCart(), this.activeUser)){
+        if(!PC.pay(this.activeUser.getShoppingCart().getTotalCartPrice(), this.activeUser)){
             this.activeUser.getShoppingCart().unreserveProducts();
             return false;
         }
@@ -367,7 +367,7 @@ public class SystemFacade {
 
     // function for handling Use Case 2.8 - written by Noy
     public boolean supply(){
-        if(!PS.supply(this.activeUser.getShoppingCart(), this.activeUser)) {
+        if(!PS.supply(this.activeUser.getShoppingCart().getBaskets(), this.activeUser)) {
             this.activeUser.getShoppingCart().unreserveProducts();
             return false;
         }
