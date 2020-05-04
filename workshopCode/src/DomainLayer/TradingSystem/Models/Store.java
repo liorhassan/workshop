@@ -167,6 +167,7 @@ public class Store {
     //if it does - reserve the product and adds it to the reserved products list
     //if a product is unavailable - return its ProductItem, otherwise - returns null
     public ProductItem reserveBasket(Basket b){
+        //this field save all the products that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
         if(!this.purchasePolicy.purchaseAccordingToPolicy(b)){
             throw new RuntimeException("Purchase does not match store purchase policy");
