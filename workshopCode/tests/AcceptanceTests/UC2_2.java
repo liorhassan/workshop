@@ -1,6 +1,5 @@
 package AcceptanceTests;
 
-import DomainLayer.SystemHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.After;
 import org.junit.Before;

@@ -188,14 +188,14 @@ public class SystemHandler_UT {
     }
 
     @Test
-    public void purchaseBaskets_Test(){
+    public void preserveProducts_Test(){
         sys.login("noy", false);
         Store s = sys.getStoreByName("Pull&Bear");
         Basket b = new Basket(s);
         b.addProduct(s.getProductByName("skinny jeans"), 2);
         b.addProduct(s.getProductByName("blue top"), 4);
         sys.getActiveUser().getShoppingCart().addBasket(b);
-        sys.purchaseBaskets();
+        sys.reserveProducts();
         assertFalse(s.checkIfProductAvailable("blue top", 1));
         assertFalse(s.checkIfProductAvailable("blue top", 2));
         assertTrue(s.checkIfProductAvailable("skinny jeans", 1));

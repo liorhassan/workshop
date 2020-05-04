@@ -9,6 +9,9 @@ public class DiscountPolicy {
 
     private HashMap<Product, Double> discountPerProduct;
 
+    public DiscountPolicy(){
+        this.discountPerProduct = new HashMap<>();
+    }
     public void addDiscount(Product p, Double percentage) {
         discountPerProduct.put(p, (percentage/100));
     }
