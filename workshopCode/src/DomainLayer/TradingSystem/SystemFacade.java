@@ -346,30 +346,8 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void purchaseBaskets() {
-        ShoppingCart sc = this.activeUser.getShoppingCart();
-        Collection<Basket> baskets = sc.getBaskets();
-        checkProductsAvailability(baskets);//TODO: save all purchased products and if failed return all of them
-
-        for (Basket currBasket : baskets){
-            Store currStore = currBasket.getStore();
-            currStore.purchaseBasket(currBasket);
-
-            //add the store's basket to her purchase history
-            ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
-            storeShoppingCart.addBasket(currBasket);
-            storeShoppingCart.computeCartPrice();
-            Purchase storePurchase = new Purchase(storeShoppingCart);
-            currStore.getPurchaseHistory().addPurchase(storePurchase);//TODO: seperate purchase and adding store perchase history
-        }
-    }
-
-    // function for handling Use Case 2.8 - written by Noy
-    public void checkProductsAvailability(Collection<Basket> baskets){
-        for (Basket currBasket : baskets) {
-            Store currStore = currBasket.getStore();
-            currStore.getProductsInventory().checkProductsAvailabilityInInventory(currBasket);
-            }
+    public void reserveProducts() {
+        this.activeUser.getShoppingCart().reserveBaskets();
     }
 
     // function for handling Use Case 2.8 - written by Noy
@@ -380,7 +358,7 @@ public class SystemFacade {
     // function for handling Use Case 2.8 - written by Noy
     public boolean payment() {
         if(!PC.pay(this.activeUser.getShoppingCart(), this.activeUser)){
-            returnProducts();
+            this.activeUser.getShoppingCart().unreserveProducts();
             return false;
         }
         return true;
@@ -390,25 +368,23 @@ public class SystemFacade {
     // function for handling Use Case 2.8 - written by Noy
     public boolean supply(){
         if(!PS.supply(this.activeUser.getShoppingCart(), this.activeUser)) {
-            returnProducts();
+            this.activeUser.getShoppingCart().unreserveProducts();
             return false;
         }
         return true;
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void returnProducts(){ //TODO: unreserve products - move to shopping cart
-        for(Basket b: this.activeUser.getShoppingCart().getBaskets()){
-            Store s = b.getStore();
-            s.returnProdyuctsToStock(b);
-        }
-    }
-
-    // function for handling Use Case 2.8 - written by Noy
-    public void addPurchaseToHistory() {//TODO: add purchase to each store purchase history
+    public void addPurchaseToHistory() {
         ShoppingCart sc = this.activeUser.getShoppingCart();
+        //handle User-Purchase-History
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
+
+        //handle Store-Purchase-History
+        sc.addStoresPurchaseHistory();
+
+        //finally - empty the shopping cart
         this.activeUser.emptyCart();
     }
 

@@ -8,6 +8,10 @@ public class Purchase {
         this.shoppingCart = shoppingCart;
     }
 
+    public Purchase(Basket b, User u){
+        this.shoppingCart = new ShoppingCart(u);
+        this.shoppingCart.addBasket(b);
+    }
     public ShoppingCart getPurchasedProducts() {
         return shoppingCart;
     }

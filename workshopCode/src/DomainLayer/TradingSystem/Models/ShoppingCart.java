@@ -93,6 +93,40 @@ public class ShoppingCart {
         this.cartTotalPrice = totalPrice;
     }
 
+
+    //for each basket in the cart - reserved the products in the basket
+    //if a product is unavailable - return all reserved products in the cart and throws exception
+    public void reserveBaskets(){
+        for(Basket b: baskets.values()){
+            Store s = b.getStore();
+            ProductItem pi = s.reserveBasket(b);
+            if(pi != null){
+                unreserveProducts();
+                throw new RuntimeException("There is currently no stock of " + pi.getAmount() + " " + pi.getProduct().getName() + " products");
+            }
+
+        }
+    }
+
+    //checks for each basket in the cart if there are reserved products in the store
+    //if such products exist, it returns them
+    public void unreserveProducts(){
+        for(Basket b: baskets.values()){
+            Store s = b.getStore();
+            if(!s.getReservedProducts(b).isEmpty()){
+                //there are reserved products in the basket that needs to be returned
+                s.unreserveBasket(b);
+            }
+        }
+    }
+
+    //for each store in the cart adds it store purchase history
+    public void addStoresPurchaseHistory(){
+        for(Store s: baskets.keySet()){
+            s.addStorePurchaseHistory(baskets.get(s), user);
+        }
+    }
+
     public boolean isEmpty(){
         return this.baskets.isEmpty();
     }

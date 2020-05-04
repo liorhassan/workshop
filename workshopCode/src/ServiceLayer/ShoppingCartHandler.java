@@ -58,7 +58,7 @@ public class ShoppingCartHandler {
             if(SystemFacade.getInstance().cartIsEmpty()){
                 throw new RuntimeException("The shopping cart is empty");
             }
-            SystemFacade.getInstance().purchaseBaskets();
+            SystemFacade.getInstance().reserveProducts();
             SystemFacade.getInstance().computePrice();
             if (!SystemFacade.getInstance().payment()) {
                 throw new RuntimeException("Payment failed");
