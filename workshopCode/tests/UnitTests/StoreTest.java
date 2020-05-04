@@ -85,11 +85,11 @@ public class StoreTest {
         Product p2 = new Product("Dress",null,null,45.5);
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
-        store.purchaseProduct(p,3);
+        store.reserveProduct(p,3);
         assertEquals(7,(int)store.getInventory().get(p));
-        store.purchaseProduct(p,10);
+        store.reserveProduct(p,10);
         assertEquals(7,(int)store.getInventory().get(p));
-        store.purchaseProduct(p,7);
+        store.reserveProduct(p,7);
         assertFalse(store.getInventory().containsKey(p));
     }
 }

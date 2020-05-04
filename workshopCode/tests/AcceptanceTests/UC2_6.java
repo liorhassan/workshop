@@ -1,6 +1,5 @@
 package AcceptanceTests;
 
-import DomainLayer.SystemHandler;
 import ServiceLayer.ShoppingCartHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
