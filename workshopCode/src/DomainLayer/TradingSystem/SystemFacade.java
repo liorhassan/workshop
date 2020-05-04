@@ -1,17 +1,17 @@
-package DomainLayer;
+package DomainLayer.TradingSystem;
 
 
-import DomainLayer.ExternalSystems.PaymentCollection;
-import DomainLayer.ExternalSystems.ProductSupply;
-import DomainLayer.Models.*;
-import DomainLayer.Security.SecurityHandler;
+import ExternalSystems.PaymentCollectionStub;
+import ExternalSystems.ProductSupplyStub;
+import DomainLayer.TradingSystem.Models.*;
+import DomainLayer.Security.SecurityFacade;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SystemHandler {
-    private static SystemHandler ourInstance = new SystemHandler();
-    public static SystemHandler getInstance() {
+public class SystemFacade {
+    private static SystemFacade ourInstance = new SystemFacade();
+    public static SystemFacade getInstance() {
         return ourInstance;
     }
 
@@ -21,20 +21,20 @@ public class SystemHandler {
     private HashMap<String, Store> stores;
     private List<User> adminsList;
     private List<Product> lastSearchResult;
-    private PaymentCollection PC;
-    private ProductSupply PS;
+    private PaymentCollectionStub PC;
+    private ProductSupplyStub PS;
 
-    private SystemHandler() {
+    private SystemFacade() {
         users = new HashMap<>();
         stores = new HashMap<>();
         adminsList = new ArrayList<>();
         activeUser = new User();  //guest
         lastSearchResult = new ArrayList<>();
-        PC = new PaymentCollection();
-        PS = new ProductSupply();
+        PC = new PaymentCollectionStub();
+        PS = new ProductSupplyStub();
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
-        SecurityHandler.getInstance().addUser("Admin159", "951");
+        SecurityFacade.getInstance().addUser("Admin159", "951");
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
     }
@@ -346,50 +346,48 @@ public class SystemHandler {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void purchaseBaskets() {
-        ShoppingCart sc = this.activeUser.getShoppingCart();
-        Collection<Basket> baskets = sc.getBaskets();
-        for (Basket currBasket : baskets) {
-            Store currStore = currBasket.getStore();
-            Collection<ProductItem> currProducts = currBasket.getProductItems();
-            for (ProductItem pi : currProducts) {
-                Product p = pi.getProduct();
-                int amount = pi.getAmount();
-                if (!currStore.checkIfProductAvailable(p.getName(), amount)) {
-                        throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
-                }
-                currStore.purchaseProduct(p, amount);
-            }
-
-            //add the store's basket to her purchase history
-            ShoppingCart storeShoppingCart = new ShoppingCart(this.activeUser);
-            storeShoppingCart.addBasket(currBasket);
-            Purchase storePurchase = new Purchase(storeShoppingCart);
-            currStore.getPurchaseHistory().addPurchase(storePurchase);
-        }
+    public void reserveProducts() {
+        this.activeUser.getShoppingCart().reserveBaskets();
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void addToPurchaseHistory() {
+    public void computePrice() {
+        this.activeUser.getShoppingCart().computeCartPrice();
+    }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public boolean payment() {
+        if(!PC.pay(this.activeUser.getShoppingCart(), this.activeUser)){
+            this.activeUser.getShoppingCart().unreserveProducts();
+            return false;
+        }
+        return true;
+
+    }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public boolean supply(){
+        if(!PS.supply(this.activeUser.getShoppingCart(), this.activeUser)) {
+            this.activeUser.getShoppingCart().unreserveProducts();
+            return false;
+        }
+        return true;
+    }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public void addPurchaseToHistory() {
         ShoppingCart sc = this.activeUser.getShoppingCart();
+        //handle User-Purchase-History
         Purchase newPurchase = new Purchase(sc);
         this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
-    }
 
-    // function for handling Use Case 2.8 - written by Noy
-    public boolean pay() {
-        ShoppingCart sc = this.activeUser.getShoppingCart();
-        Purchase newPurchase = new Purchase(sc);
-        return PC.pay(newPurchase, this.activeUser);
-    }
+        //handle Store-Purchase-History
+        sc.addStoresPurchaseHistory();
 
-    // function for handling Use Case 2.8 - written by Noy
-    public void supply(){
-        ShoppingCart sc = this.activeUser.getShoppingCart();
-        Purchase newPurchase = new Purchase(sc);
-        PS.supply(newPurchase, this.activeUser);
+        //finally - empty the shopping cart
         this.activeUser.emptyCart();
     }
+
 
     // function for handling Use Case 4.3 - written by Nufar
     public String appointOwner(String username, String storeName) {
@@ -495,6 +493,11 @@ public class SystemHandler {
 
     public boolean isAdminMode() {
         return adminMode;
+    }
+
+    public void addDiscount(String storeName, String productName, double percentage){
+        Store s = getStoreByName(storeName);
+        s.addDiscount(productName, percentage);
     }
 
 }

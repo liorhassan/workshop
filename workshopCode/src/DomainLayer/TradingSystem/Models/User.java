@@ -1,8 +1,8 @@
-package DomainLayer.Models;
+package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.StoreManaging;
-import DomainLayer.StoreOwning;
-import DomainLayer.UserPurchaseHistory;
+import DomainLayer.TradingSystem.StoreManaging;
+import DomainLayer.TradingSystem.StoreOwning;
+import DomainLayer.TradingSystem.UserPurchaseHistory;
 
 import java.util.HashMap;
 

@@ -1,7 +1,6 @@
-package DomainLayer.Models;
+package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.ProductItem;
-import DomainLayer.SystemHandler;
+import DomainLayer.TradingSystem.ProductItem;
 
 import java.util.*;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ public class ShoppingCart {
 
     private HashMap<Store, Basket> baskets;
     private User user;
+    private double cartTotalPrice;
 
     public ShoppingCart(User user) {
         this.user = user;
@@ -84,6 +84,50 @@ public class ShoppingCart {
         return view().substring(28);
     }
 
+    public void computeCartPrice() {
+        double totalPrice = 0;
+        for (Basket currBasket : this.baskets.values()) {
+            Store currStore = currBasket.getStore();
+            totalPrice += currStore.calculateTotalCheck(currBasket);
+        }
+        this.cartTotalPrice = totalPrice;
+    }
+
+
+    //for each basket in the cart - reserved the products in the basket
+    //if a product is unavailable - return all reserved products in the cart and throws exception
+    public void reserveBaskets(){
+        for(Basket b: baskets.values()){
+            Store s = b.getStore();
+            try{
+                s.reserveBasket(b);
+            }
+            catch (Exception e){
+                unreserveProducts();
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+    }
+
+    //checks for each basket in the cart if there are reserved products in the store
+    //if such products exist, it returns them
+    public void unreserveProducts(){
+        for(Basket b: baskets.values()){
+            Store s = b.getStore();
+            if(!s.getReservedProducts(b).isEmpty()){
+                //there are reserved products in the basket that needs to be returned
+                s.unreserveBasket(b);
+            }
+        }
+    }
+
+    //for each store in the cart adds it store purchase history
+    public void addStoresPurchaseHistory(){
+        for(Store s: baskets.keySet()){
+            s.addStorePurchaseHistory(baskets.get(s), user);
+        }
+    }
+
     public boolean isEmpty(){
         return this.baskets.isEmpty();
     }
@@ -95,6 +139,12 @@ public class ShoppingCart {
     public Basket getStoreBasket(Store s){
        return baskets.get(s);
     }
+
+    public double getTotalCartPrice(){
+        return this.cartTotalPrice;
+    }
+
+
 }
 
 

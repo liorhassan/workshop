@@ -1,9 +1,9 @@
 package UnitTests;
 
-import DomainLayer.Models.Basket;
-import DomainLayer.Models.Product;
-import DomainLayer.Models.Store;
-import DomainLayer.ProductItem;
+import DomainLayer.TradingSystem.Models.Basket;
+import DomainLayer.TradingSystem.Models.Product;
+import DomainLayer.TradingSystem.Models.Store;
+import DomainLayer.TradingSystem.ProductItem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

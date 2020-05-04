@@ -1,11 +1,7 @@
 package AcceptanceTests;
 
-import DomainLayer.Security.SecurityHandler;
-import DomainLayer.SystemHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
-
-import java.util.HashMap;
 
 import static org.junit.Assert.*;
 

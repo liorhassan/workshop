@@ -1,9 +1,11 @@
-package DomainLayer.Models;
+package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.*;
+import DomainLayer.TradingSystem.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Store {
 
@@ -14,6 +16,9 @@ public class Store {
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
+    private DiscountPolicy discountPolicy;
+    private PurchasePolicy purchasePolicy;
+    private HashMap<Basket, List<ProductItem>> reservedProducts;
 
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
         this.name = name;
@@ -24,6 +29,9 @@ public class Store {
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
+        this.discountPolicy = new DiscountPolicy();
+        this.purchasePolicy = new PurchasePolicy();
+        this.reservedProducts= new HashMap<>();
     }
 
 
@@ -95,6 +103,10 @@ public class Store {
         return false;
     }
 
+    public Inventory getProductsInventory(){
+        return this.products;
+    }
+
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
         products.getProducts().put(new Product(productName, productCategory, productDescription, productPrice), amount);
     }
@@ -135,7 +147,9 @@ public class Store {
             this.ownerships.put(newOwner, storeOwning);
     }
 
-    public void purchaseProduct(Product p, int amount){
+    //reserve a specific product
+    //returns false if the product is unavailable in the inventory
+    public boolean reserveProduct(Product p, int amount){
         if(checkIfProductAvailable(p.getName(), amount)){
             int prevAmount = this.products.getProducts().get(p);
             if(prevAmount == amount){
@@ -144,8 +158,62 @@ public class Store {
             else{
                 this.products.getProducts().replace(p, prevAmount - amount);
             }
+            return true;
+        }
+        return false;
+    }
+
+    //for each products in the basket - checks if the product meets the purchase policy requirements
+    //if it does - reserve the product and adds it to the reserved products list
+    public void reserveBasket(Basket b){
+        //this field save all the products that have been reserved
+        this.reservedProducts.put(b, new LinkedList<>());
+        if(!this.purchasePolicy.purchaseAccordingToPolicy(b)){
+            throw new RuntimeException("Your purchase doesn’t match the store’s policy");
+        }
+        Collection<ProductItem> products = b.getProductItems();
+        for (ProductItem pi : products) {
+            Product p = pi.getProduct();
+            int amount = pi.getAmount();
+            if(!reserveProduct(p, amount)){
+                throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
+            }
+            this.reservedProducts.get(b).add(pi);
         }
     }
+
+    public List<ProductItem> getReservedProducts(Basket b){
+        return this.reservedProducts.get(b);
+    }
+
+    public void unreserveBasket(Basket b){
+        for(ProductItem pi: this.reservedProducts.get(b)){
+            if(products.getProducts().get(pi.getProduct()) != null){
+                products.getProducts().put(pi.getProduct(), products.getProducts().get(pi.getProduct()) + pi.getAmount());
+            }
+            else{
+                products.getProducts().put(pi.getProduct(), pi.getAmount());
+            }
+        }
+    }
+
+    public double calculateTotalCheck(Basket b){
+        double total = 0;
+        for (ProductItem pi: b.getProductItems()) {
+            total += (pi.getAmount() * pi.getProduct().getPrice());
+        }
+        double discount = this.discountPolicy.calcProductDiscount(b);
+        return total - discount;
+    }
+
+
+    public void addStorePurchaseHistory(Basket b, User u){
+        Purchase p = new Purchase(b, u);
+        p.getPurchasedProducts().computeCartPrice();
+        this.purchaseHistory.addPurchase(p);
+    }
+
+
 
     public StorePurchaseHistory getPurchaseHistory(){
         return this.purchaseHistory;
@@ -153,5 +221,10 @@ public class Store {
 
     public String getDescription(){
         return this.description;
+    }
+
+
+    public void addDiscount(String productName, double percentage){
+        this.discountPolicy.addDiscount(getProductByName(productName), percentage);
     }
 }

@@ -1,4 +1,4 @@
-package DomainLayer;
+package DomainLayer.TradingSystem;
 
 import java.io.File;
 import java.util.logging.FileHandler;

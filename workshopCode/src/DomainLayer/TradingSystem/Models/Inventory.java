@@ -1,5 +1,8 @@
-package DomainLayer.Models;
+package DomainLayer.TradingSystem.Models;
 
+import DomainLayer.TradingSystem.ProductItem;
+
+import java.util.Collection;
 import java.util.HashMap;
 
 public class Inventory {
@@ -12,4 +15,5 @@ public class Inventory {
     public HashMap<Product, Integer> getProducts() {
         return products;
     }
+
 }
