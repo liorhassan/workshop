@@ -170,7 +170,7 @@ public class Store {
         //this field save all the products that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
         if(!this.purchasePolicy.purchaseAccordingToPolicy(b)){
-            throw new RuntimeException("Purchase does not match store purchase policy");
+            throw new RuntimeException("Your purchase doesn’t match the store’s policy");
         }
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {
