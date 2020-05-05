@@ -46,16 +46,25 @@ public class StoreHandler {
         }
     }
 
-    public String UpdateInventory(String storeName, String productName, double productPrice, String productCategory, String productDes, int amount){
+    public String UpdateInventory(String storeName, String productName, double productPrice, String productCategory, String productDes, Integer amount){
         SystemLogger.getInstance().writeEvent(String.format("Update inventory command: store name - %s, product name - %s, product price - %f, product category - %s, product description - %s, amount - %d", storeName, productName, productPrice, productCategory, productDes, amount));
         try {
-            String[] args = {storeName, productName, productCategory, productDes};
+            String[] args = {storeName, productName};
             if (SystemFacade.getInstance().emptyString(args) || amount <= 0)
-                throw new IllegalArgumentException("Must enter store name, product info, and amount that is bigger than 0");
+                throw new IllegalArgumentException("Must enter store name, and product info");
             if (!SystemFacade.getInstance().storeExists(storeName))
                 throw new IllegalArgumentException("This store doesn't exist");
             if (!SystemFacade.getInstance().userHasEditPrivileges(storeName))
                 throw new IllegalArgumentException("Must have editing privileges");
+            String[] args2 = {productDes};
+            if(SystemFacade.getInstance().checkIfProductExists(storeName,productName)){
+                if((amount == null && SystemFacade.getInstance().emptyString(args2)) || (amount != null && amount <0))
+                    throw new IllegalArgumentException("Must enter amount bigger than 0 or product description");
+            }
+            else {
+                if(amount == null || SystemFacade.getInstance().emptyString(args2) || amount < 0)
+                    throw new IllegalArgumentException("Must enter amount bigger than 0 and product description");
+            }
             return SystemFacade.getInstance().updateInventory(storeName, productName, productPrice, productCategory, productDes, amount);
         }
         catch (Exception e) {

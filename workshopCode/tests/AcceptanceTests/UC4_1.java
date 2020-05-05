@@ -1,6 +1,5 @@
 package AcceptanceTests;
 
-import DomainLayer.*;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.AfterClass;
@@ -23,8 +22,8 @@ public class UC4_1 {
 
     @BeforeClass
     public static void init() throws Exception{
-        (new UsersHandler()).register("toya","shenhav");
-        (new UsersHandler()).login("toya","shenhav", false);
+        (new UsersHandler()).register("toya","toya");
+        (new UsersHandler()).login("toya","toya", false);
         (new StoreHandler()).openNewStore("Castro","clothing");
         (new UsersHandler()).logout();
         (new UsersHandler()).register("shenhav","toya");
@@ -67,10 +66,10 @@ public class UC4_1 {
     @Test
     public void emptyInput(){
         String result = handler.UpdateInventory("", "banana", 20, "Food", "yellow food", 1);
-        assertEquals("Must enter store name, product info, and amount that is bigger than 0", result);
+        assertEquals("Must enter store name, and product info", result);
         result = handler.UpdateInventory(null, "banana", 20, "Food", "yellow food", 1);
-        assertEquals("Must enter store name, product info, and amount that is bigger than 0", result);
+        assertEquals("Must enter store name, and product info", result);
         result = handler.UpdateInventory("FoxHome", "", 20, "Clothing", "yellow food", 1);
-        assertEquals("Must enter store name, product info, and amount that is bigger than 0", result);
+        assertEquals("Must enter store name, and product info", result);
     }
 }
