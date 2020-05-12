@@ -1,0 +1,221 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./../css/EntryWindow.css">
+    <link rel="stylesheet" href="./../css/HomeRegisterd.css">
+
+</head>
+
+<body class="d-flex flex-column h-100">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">Trading System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Shopping Cart</a>
+                </li>
+                <li class="nav-item" style="margin-left: 10pt;">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">Menu</button>
+                        <div class="dropdown-menu" id="menu_dropDown">
+                            <a class="dropdown-item">Open store</a>
+                            <a class="dropdown-item">View purchasing history</a>
+                            <a class="dropdown-item">Manage my stores</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item" style="margin-left: 600pt;">
+                    <a class="nav-link" href="HomeGuest.html">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Fixed home bar  -->
+    <main role="main" class="flex-shrink-0">
+        <div class="container">
+            <form class="form-inline mt-5">
+                <!--<label class="sr-only" for="inlineFormInputName2">Product</label> -->
+                <!-- <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputProduct" placeholder="Product"> -->
+
+                <!-- <select class="form-control mb-2 mr-sm-2" id="inlineFormInputCategory" placeholder="Category"> -->
+                <div class="input-group mb-2 mr-sm-2">
+                    <input type="text" class="form-control" placeholder="Product"
+                        varia-label="Text input with dropdown button">
+                    <div class="input-group-append">
+                        <select class="custom-select" id = "category-drop">
+                            <option selected>Caterory</option>
+                            <option value="1">Clothes</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                          </select>
+                        
+                    </div>
+                </div>
+
+                <!-- <label class="sr-only" for="inlineFormInputGroupKeyWords">KeyWords</label> -->
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">#</div>
+                    </div>
+                    <input type="text" class="form-control" id="inlineFormInputGroupKeyWords" placeholder="key words">
+                </div>
+
+                <button type="search" class="btn btn-primary mb-2">Search</button>
+            </form>
+
+        </div>
+    </main>
+
+    <div class="row" id = "search-part">
+        <div class="col-md-8 order-md-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Products</span>
+                <span class="badge badge-secondary badge-pill">3</span>
+            </h4>
+            <ul class="list-group mb-3" id="search-results">
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                <a href="#" class="card-link">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed" >
+                        <div>
+                            <h6 class="my-0">Product name</h6>
+                            <small class="text-muted">Brief description</small>
+                        </div>
+                        <span class="text-muted">$12</span>
+                    </li>
+                </a>
+                
+                                                                                                    
+            </ul>
+
+            
+        </div>
+        <div class="col-md-4 order-md-1" id="filter-results">
+            <h4 class="mb-3">Filter Results</h4>
+            <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">Min Price</div>
+                </div>
+                <input type="text" class="form-control" >
+            </div>
+            <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">Max Price</div>
+                </div>
+                <input type="text" class="form-control" >
+            </div>
+            <div class="input-group-append" style="margin-bottom: 10pt;">
+                <select class="custom-select" id = "category-drop">
+                    <option selected>Caterory</option>
+                    <option value="1">Clothes</option>
+                    <option value="2">Games</option>
+                    <option value="3">Tech</option>
+                  </select>
+            </div>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Filter</button>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

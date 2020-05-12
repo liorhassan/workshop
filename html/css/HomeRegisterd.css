@@ -1,0 +1,40 @@
+#menu_dropDown {
+position: absolute;
+    transform: translate3d(199px, 38px, 0px);
+    top: 5px;
+    left: 115pt;
+    will-change: transform;
+}
+
+#search-part{
+    width: -webkit-fill-available;
+}
+
+#filter-results {
+    max-width: 250pt;
+    margin-left: 20pt;
+}
+
+#search-results {
+    max-height: 300pt;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.card-link+.card-link {
+    margin-left: 0;
+}
+
+#category-drop{
+    align-items: center;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
