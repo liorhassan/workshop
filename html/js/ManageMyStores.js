@@ -26,6 +26,13 @@ document.addEventListener("DOMContentLoaded", function () {
     //     .then(response => response.json())
     //     .then(setMyStores)
     setMyStores(stores);
+
+    // When the user clicks on <span> (x), close the modal
+    document.getElementsByClassName("close").forEach(model => {
+        model.addEventListener("click", function () {
+            model.style.display = "none";
+        })
+    })
 });
 
 function setMyStores(stores) {
@@ -78,6 +85,9 @@ function setMyStores(stores) {
 
         currStore.options.forEach(currAction=>{
             const a = document.createElement("a");
+            a.addEventListener("click",function(){
+                showPopUp(currAction);
+            })
             a.classList.add("dropdown-item");
             a.append(document.createTextNode(currAction));
 
@@ -96,8 +106,26 @@ function setMyStores(stores) {
 }
     
 
+actionToModel={
+    "Add Manager":"addManagerModal",
+    "Add Owner":"addOwnerModal",
+    "Remove Manager":"removeManagerModal",
+    "Edit Permissions":"editPermissionsModal",
+    "Manage Supply":"manageSupplyModal",
+    "View Purchasing History":"viewPurchaseHistoryModal"
+}
 
+function showPopUp(action){
+    
+    document.getElementById(actionToModel[action]).style.display = "block";
+}
 
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+    if (event.target == document.getElementById("editModal")) {
+        document.getElementById("editModal").style.display = "none";
+    }
+}
 
 
 

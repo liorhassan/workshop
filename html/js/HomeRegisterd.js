@@ -1,30 +1,30 @@
 document.addEventListener("DOMContentLoaded", function () {
     const items = [
         {
-            "name": "paper",
+            "name": "Paper",
             "price": 15,
-            "store": "kravitz",
-            "description": "ffdfd"
+            "store": "Kravitz",
+            "description": "White and writeable"
         },
         {
-            "name": "pen",
+            "name": "Pen",
             "price": 25,
-            "store": "kravitz",
-            "description": "ffdfd"
+            "store": "Kravitz",
+            "description": "Goes well with the pen"
         },
 
         {
-            "name": "pineapple",
+            "name": "Pineapple",
             "price": 15,
-            "store": "kravitz",
-            "description": "ffdfd"
+            "store": "Kravitz",
+            "description": "Yes... Kravitz sells fruit two why are you so surprised?"
         },
 
         {
-            "name": "apple",
+            "name": "Apple",
             "price": 15,
-            "store": "kravitz",
-            "description": "ffdfd"
+            "store": "Kravitz",
+            "description": "We "
         }
     ]
 
@@ -39,9 +39,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // fetch("localhost:8000/searchResults")
     //     .then(response => response.json())
     //     .then(setSearchResults)
-    setCateegories(categories);
+    setCategories(categories);
+
+    
+
+    // When the user clicks on <span> (x), close the modal
+    document.getElementsByClassName("close")[0].addEventListener("click", function () {
+        document.getElementById("editModal").style.display = "none";
+    })
+
 
 });
+
 
 function setSearchResults(items) {
     const numOfItems = document.getElementById("num-of-items");
@@ -58,6 +67,10 @@ function setSearchResults(items) {
         element.classList.add("d-flex");
         element.classList.add("justify-content-between");
         element.classList.add("lh-condensed");
+
+        element.addEventListener("click",function(){
+            showPopUp(currItem);
+        });
         
         const element_div = document.createElement("div");
         
@@ -82,39 +95,49 @@ function setSearchResults(items) {
         searchResults.appendChild(element);
     })
 }
-    function setCateegories(categories) {
 
-        const category_drop1 = document.getElementById("category-drop1");
-        const category_drop2 = document.getElementById("category-drop2");
-        category_drop1.innerHTML = "";
-        category_drop2.innerHTML = "";
+function setCategories(categories) {
 
-        const main_item1 = document.createElement("option");
-        main_item1.selected = true;
-        main_item1.append(document.createTextNode("Category"));
-        category_drop1.appendChild(main_item1);
-        const main_item2 = document.createElement("option");
-        main_item2.selected = true;
-        main_item2.append(document.createTextNode("Category"));
-        category_drop2.appendChild(main_item2);
+    const category_drop1 = document.getElementById("category-drop1");
+    const category_drop2 = document.getElementById("category-drop2");
+    category_drop1.innerHTML = "";
+    category_drop2.innerHTML = "";
 
-        var val = 1;
-        categories.forEach(currCat=>{
-            const item1 = document.createElement("option");
-            item1.value=val;
-            item1.append(document.createTextNode(currCat));
-            category_drop1.appendChild(item1);
-            const item2 = document.createElement("option");
-            item2.value=val;
-            item2.append(document.createTextNode(currCat));
-            category_drop2.appendChild(item2);
-            val++;
-        })
+    const main_item1 = document.createElement("option");
+    main_item1.selected = true;
+    main_item1.append(document.createTextNode("Category"));
+    category_drop1.appendChild(main_item1);
+    const main_item2 = document.createElement("option");
+    main_item2.selected = true;
+    main_item2.append(document.createTextNode("Category"));
+    category_drop2.appendChild(main_item2);
+
+    var val = 1;
+    categories.forEach(currCat=>{
+        const item1 = document.createElement("option");
+        item1.value=val;
+        item1.append(document.createTextNode(currCat));
+        category_drop1.appendChild(item1);
+        const item2 = document.createElement("option");
+        item2.value=val;
+        item2.append(document.createTextNode(currCat));
+        category_drop2.appendChild(item2);
+        val++;
+    })
+}
+
+function showPopUp(item){
+    document.getElementById("product-name").innerHTML = "Name: " + item.name;
+    document.getElementById("product-store").innerHTML = "Store: " + item.store;
+    document.getElementById("product-price").innerHTML = "Price: " + item.price;
+    document.getElementById("product-description").innerHTML = "Description: " + item.description;
+
+    document.getElementById("editModal").style.display = "block";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+    if (event.target == document.getElementById("editModal")) {
+        document.getElementById("editModal").style.display = "none";
     }
-
-
-
-
-
-
-
+}
