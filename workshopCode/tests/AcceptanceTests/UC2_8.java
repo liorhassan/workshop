@@ -22,6 +22,7 @@ public class UC2_8 {
     @BeforeClass
     public static void init(){
         UC3_2.init(); // user toya is logged in
+        (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).register("maor", "1234");
         (new UsersHandler()).login("toya", "1234", false);
         (new StoreHandler()).openNewStore("Castro", "clothes for women and men");
@@ -48,25 +49,58 @@ public class UC2_8 {
 
     @Test
     public void valid() {
+        (new UsersHandler()).login("noy", "1234", false);
         shoppingCartHandler.AddToShoppingBasket("Castro", "jeans skirt", 2);
         shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Cream ocean", 5);
         String result = shoppingCartHandler.purchaseCart();
         assertEquals("Purchasing completed successfully", result);
+        (new UsersHandler()).logout();
     }
 
 
     @Test
     public void productNotInStock() {
+
+        (new UsersHandler()).login("maor", "1234", false);
         shoppingCartHandler.AddToShoppingBasket("Castro", "white T-shirt", 3);
         (new UsersHandler()).logout();
-        (new UsersHandler()).login("maor", "1234", false);
+        (new UsersHandler()).login("toya", "1234", false);
         shoppingCartHandler.AddToShoppingBasket("Castro", "white T-shirt", 2);
         shoppingCartHandler.purchaseCart();
         (new UsersHandler()).logout();
-        (new UsersHandler()).login("toya", "1234", false);
+        (new UsersHandler()).login("maor", "1234", false);
         String result = shoppingCartHandler.purchaseCart();
         assertEquals("There is currently no stock of 3 white T-shirt products", result);
+        (new UsersHandler()).logout();
 
-}
+    }
+
+
+    @Test
+    public void paymentFail() {
+        (new UsersHandler()).login("toya", "1234", false);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "Michael kors bag", 2);
+        //Store s = SystemFacade.getInstance().getStoreByName("Castro");
+        //int c = s.getInventory().get(s.getProductByName("Michael kors bag"));
+        String result = shoppingCartHandler.purchaseCart();
+        assertEquals("Payment failed", result);
+        //TODO: check if products back to stock
+
+    }
+
+    @Test
+    public void supplementFail() {
+        (new UsersHandler()).logout();
+        (new UsersHandler()).login("zuzu", "1234", false);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Cream ocean", 2);
+        //Store s = SystemFacade.getInstance().getStoreByName("Lalin");
+        //int c = s.getInventory().get(s.getProductByName("Body Cream ocean"));
+        String result = shoppingCartHandler.purchaseCart();
+        assertEquals("supplement failed", result);
+        (new UsersHandler()).logout();
+        //TODO: check if products back to stock
+
+
+    }
 
 }
