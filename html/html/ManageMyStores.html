@@ -13,12 +13,13 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="./../css/ManageMyStores.css">
+    <script src="../js/ManageMyStores.js"></script>
 
 </head>
 
 <body class="d-flex flex-column h-100">
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="#">Trading System</a>
+        <a class="navbar-brand">Trading System</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -26,53 +27,55 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
+                    <a class="nav-link" href="HomeRegisterd.html">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Shopping Cart</a>
+                    <a class="nav-link" href="ShoppingCart.html">Shopping Cart</a>
                 </li>
-                <li class="nav-item" style="margin-left: 10pt;">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">Menu</button>
-                        <div class="dropdown-menu" id="menu_dropDown">
-                            <a class="dropdown-item">Open store</a>
-                            <a class="dropdown-item">View purchasing history</a>
-                            <a class="dropdown-item">Manage my stores</a>
-                        </div>
-                    </div>
+                <li class="nav-item active">
+                    <a class="nav-link" href="ManageMyStores.html">Manage Stores <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item" style="margin-left: 600pt;">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Purchase History</a>
+                </li>
+                <li class="nav-item" style="margin-left: 510pt;">
                     <a class="nav-link" href="HomeGuest.html">Logout</a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <form class="form-signin">
-        <div class="form-group row">
-            <label for="myStores" class="col-sm-2 col-form-label">MyStores</label>
-            <div class="col-sm-10">
-                <select class="custom-select" id = "myStores">
-                    <option selected></option>
-                    <option value="1">Fox</option>
-                    <option value="2">Castro</option>
-                    <option value="3">Bug</option>
-                  </select>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="myStores" class="col-sm-2 col-form-label">My Stores</label>
-            <div class="col-sm-10">
-                <select class="custom-select" id = "myStores">
-                    <option selected></option>
-                    <option value="1">Fox</option>
-                    <option value="2">Castro</option>
-                    <option value="3">Bug</option>
-                  </select>
-            </div>
-          
-    </form>
+    <main role="main" class="container">
+        <div class="p-3 bg-white rounded shadow-sm" id="stores">
+            <button type="search" class="btn btn-primary mb-2">Open New Store</button>
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">My Stores</span>
+                <span class="badge badge-secondary badge-pill" id="num-of-stores">3</span>
+            </h4>
+            <ul class="list-group mb-3" id="stores-list">
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <div>
+                        <h6 class="my-0">Store name</h6>
+                        <small class="text-muted">Title</small>
+                    </div>
+                    <span>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
+                            <div class="dropdown-menu" id="menu_dropDown">
+                                <a class="dropdown-item">Add manager</a>
+                                <a class="dropdown-item">Add owner</a>
+                                <a class="dropdown-item">Remove manager</a>
+                                <a class="dropdown-item">Edit permissions</a>
+                                <a class="dropdown-item">Manage supply</a>
+                                <a class="dropdown-item">View purchasing history</a>
+                            </div>
+                        </div>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </main>
 </body>
 
 </html>
+

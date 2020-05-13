@@ -25,7 +25,7 @@ position: absolute;
     margin-left: 0;
 }
 
-#category-drop{
+.custom-select {
     align-items: center;
     margin-bottom: 0;
     font-size: 1rem;
@@ -37,4 +37,13 @@ position: absolute;
     background-color: #e9ecef;
     border: 1px solid #ced4da;
     border-radius: .25rem;
+}
+
+#search-bar {
+    margin-left: 250pt;
+    margin-top: 60pt;
+}
+
+.nav-item {
+    white-space: nowrap;;
 }
