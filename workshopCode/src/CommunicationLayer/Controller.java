@@ -36,6 +36,58 @@ public class Controller{
         final HttpServer server = HttpServer.create(new InetSocketAddress(HOSTNAME, PORT), 1);
 
         //-----------------------------------------UsersHandler cases------------------------------------------
+        server.createContext("/", he -> {
+            String pathToRoot = new File("html\\").getAbsolutePath();
+            String path = he.getRequestURI().getPath();
+            try {
+                path = path.substring(1);
+                path = path.replaceAll("//", "/");
+                if (path.length() == 0)
+                    path = "html\\HomeGuest.html";
+
+                boolean fromFile = new File(pathToRoot + path).exists();
+                InputStream in = fromFile ? new FileInputStream(pathToRoot + path)
+                        : ClassLoader.getSystemClassLoader().getResourceAsStream(pathToRoot + path);
+
+                ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                OutputStream gout =  new DataOutputStream(bout);
+                byte[] tmp = new byte[4096];
+                int r;
+                while ((r=in.read(tmp)) >= 0)
+                    gout.write(tmp, 0, r);
+                gout.flush();
+                gout.close();
+                in.close();
+                byte[] data = bout.toByteArray();
+
+                if (path.endsWith(".js"))
+                    he.getResponseHeaders().set("Content-Type", "text/javascript");
+                else if (path.endsWith(".html"))
+                    he.getResponseHeaders().set("Content-Type", "text/html");
+                else if (path.endsWith(".css"))
+                    he.getResponseHeaders().set("Content-Type", "text/css");
+                else if (path.endsWith(".json"))
+                    he.getResponseHeaders().set("Content-Type", "application/json");
+                else if (path.endsWith(".svg"))
+                    he.getResponseHeaders().set("Content-Type", "image/svg+xml");
+                if (he.getRequestMethod().equals("HEAD")) {
+                    he.getResponseHeaders().set("Content-Length", "" + data.length);
+                    he.sendResponseHeaders(200, -1);
+                    return;
+                }
+
+                he.sendResponseHeaders(200, data.length);
+                he.getResponseBody().write(data);
+                he.getResponseBody().close();
+            } catch (NullPointerException t) {
+                System.err.println("Error retrieving: " + path);
+            } catch (Throwable t) {
+                System.err.println("Error retrieving: " + path);
+                t.printStackTrace();
+            }
+
+        });
+
         server.createContext("/tradingSystem", he -> {
             final Headers headers = he.getResponseHeaders();
             String line;
@@ -43,7 +95,7 @@ public class Controller{
 
             try {
 
-                File newFile = new File("C:\\Users\\noyez\\OneDrive\\Desktop\\workshop\\html\\html\\ShoppingCart.html");
+                File newFile = new File("C:\\Nofar\\שנה ג\\סמסטר ו\\סדנא\\workshop\\html\\html\\ShoppingCart.html");
                 System.out.println(newFile.getPath());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(newFile)));
 
@@ -55,7 +107,7 @@ public class Controller{
                 e.printStackTrace();
             }
 
-            headers.add("html", "application/json");
+            headers.add("html", "text/html");
 //            headers.set("login", String.format("application/json; charset=%s", UTF8));
             he.sendResponseHeaders(STATUS_OK, response.length());
             OutputStream os = he.getResponseBody();

@@ -1,37 +1,37 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const items = [
-        {
-            "name": "paper",
-            "price": 15,
-            "store": "kravitz",
-            "amount": 3
-        },
-        {
-            "name": "pen",
-            "price": 25,
-            "store": "kravitz",
-            "amount": 3
-        },
+//    const items = [
+//        {
+//            "name": "paper",
+//            "price": 15,
+//            "store": "kravitz",
+//            "amount": 3
+//        },
+//        {
+//            "name": "pen",
+//            "price": 25,
+//            "store": "kravitz",
+//            "amount": 3
+//        },
+//
+//        {
+//            "name": "pineapple",
+//            "price": 15,
+//            "store": "kravitz",
+//            "amount": 3
+//        },
+//
+//        {
+//            "name": "apple",
+//            "price": 15,
+//            "store": "kravitz",
+//            "amount": 3
+//        }
+//    ]
 
-        {
-            "name": "pineapple",
-            "price": 15,
-            "store": "kravitz",
-            "amount": 3
-        },
-
-        {
-            "name": "apple",
-            "price": 15,
-            "store": "kravitz",
-            "amount": 3
-        }
-    ]
-
-    // fetch("localhost:8000/cart")
-    //     .then(response => response.json())
-    //     .then(setItemsToCart)
-    setItemsToCart(items)
+     fetch("http://localhost:8080/tradingSystem/cart")
+         .then(response => response.json())
+         .then(setItemsToCart)
+//    setItemsToCart(items)
 
     document.getElementById("editbtn").addEventListener("click", function () {
         // items[0].amount = 20
@@ -53,9 +53,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // TODO: send msg to server with the updated product item
         //       and get back the items in the cart (updated)
-        items[0].amount = quantityUpdate;
-        items[0].name = productNameUpdate;
-        items[0].store = storeNameUpdate;
+//        items[0].amount = quantityUpdate;
+//        items[0].name = productNameUpdate;
+//        items[0].store = storeNameUpdate;
         // ******************************************************
 
         document.getElementById("editModal").style.display = "none";
