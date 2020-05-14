@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONObject;
 
 public class ShoppingCartHandler {
 
@@ -23,13 +24,13 @@ public class ShoppingCartHandler {
                 throw new IllegalArgumentException("The product doesn’t exist in your shopping cart");
             if (!SystemFacade.getInstance().isProductAvailable(storeName, productName, amount))
                 throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
-            String output = SystemFacade.getInstance().editShoppingCart(storeName, productName, amount);
-            return output;
+            return SystemFacade.getInstance().editShoppingCart(storeName, productName, amount);
         }
         catch (Exception e){
 
             SystemLogger.getInstance().writeError("Edit shopping cart error: " + e.getMessage());
-            return e.getMessage();
+            return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -44,11 +45,13 @@ public class ShoppingCartHandler {
             if (!SystemFacade.getInstance().isProductAvailable(storeName, productName, amount))
                 throw new IllegalArgumentException("The product isn't available in the store with the requested amount");
             SystemFacade.getInstance().addToShoppingBasket(storeName, productName, amount);
-            return "Items have been added to basket";
+            return createJSONMsg("SUCCESS", "Items have been added to basket");
+            //return "Items have been added to basket";
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Add to shopping basket error: " + e.getMessage());
-            return e.getMessage();
+            return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -68,13 +71,22 @@ public class ShoppingCartHandler {
             }
 
             SystemFacade.getInstance().addPurchaseToHistory();
-            return "Purchasing completed successfully";
+            return createJSONMsg("SUCCESS", "Purchasing completed successfully");
+
+//            return "Purchasing completed successfully";
         }
 
         catch (Exception e) {
             SystemFacade.getInstance().emptyCart();
             SystemLogger.getInstance().writeError("Purchase Cart error: " + e.getMessage());
-            return e.getMessage();
+            return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
+    }
+
+    public String createJSONMsg(String type, String content) {
+        JSONObject response = new JSONObject();
+        response.put(type, content);
+        return response.toJSONString();
     }
 }

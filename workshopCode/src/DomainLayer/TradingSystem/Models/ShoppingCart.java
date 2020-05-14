@@ -54,21 +54,28 @@ public class ShoppingCart {
     public String edit(Store store, String product, int amount){
         Basket basket = baskets.get(store);
         List<ProductItem> items = basket.getProductItems();
+        JSONObject response = new JSONObject();
         for(ProductItem pi : items){
             if(pi.getProduct().getName().equals(product)) {
                 if (amount == 0) {
                     items.remove(pi);
                     if (items.isEmpty())
                         baskets.remove(store);
-                    return "The product has been updated successfully";
+                    response.put("SUCCESS", "The product has been updated successfully");
+                    return response.toJSONString();
+                    //return "The product has been updated successfully";
                 }
                 else  {
                     pi.setAmount(amount);
-                    return "The product has been updated successfully";
+                    response.put("SUCCESS", "The product has been updated successfully");
+                    return response.toJSONString();
+                    //return "The product has been updated successfully";
                 }
             }
         }
-        return "The product doesn’t exist in your shopping cart";
+        response.put("ERROR", "The product doesn’t exist in your shopping cart");
+        return response.toJSONString();
+        //return "The product doesn’t exist in your shopping cart";
     }
 
     public boolean isProductInCart(String product, Store store){
