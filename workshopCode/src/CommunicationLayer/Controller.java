@@ -92,6 +92,7 @@ public class Controller{
 
         //-----------------------------------------UsersHandler cases------------------------------------------
         //accept: {userName:"", password:"", adminMode: true/false}
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/login", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -114,6 +115,7 @@ public class Controller{
         });
 
         //accept: {userName:"", password:""}
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/register", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -149,6 +151,7 @@ public class Controller{
         });
 
         //accept: {userName: ""}
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/addAdmin", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -169,6 +172,7 @@ public class Controller{
 
         //-----------------------------------------StoreHandler cases------------------------------------------
         //accept: {storeName:"", description:""}
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/openNewStore", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -190,6 +194,7 @@ public class Controller{
         });
 
         //accept: {userName: "", storeName:"", amount: ""}
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/addStoreOwner", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -212,6 +217,7 @@ public class Controller{
 
 
         //-----------------------------------------ShoppingCartHandler cases------------------------------------------
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/cart", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -237,6 +243,7 @@ public class Controller{
         });
 
         //accept: {store: "", product:"", amount: ""}
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/editCart", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -258,6 +265,7 @@ public class Controller{
         });
 
         //accept: {store: "", product:"", amount: ""}
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/addToShoppingBasket", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -278,6 +286,7 @@ public class Controller{
             }
         });
 
+        //retrieve: {SUCCESS/ERROR: msg}
         server.createContext("/tradingSystem/purchaseCart", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
