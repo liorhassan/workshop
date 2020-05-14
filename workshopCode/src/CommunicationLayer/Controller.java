@@ -484,6 +484,77 @@ public class Controller{
             }
         });
         //-----------------------------------------PurchaseHistory cases------------------------------------------
+        //accept: {store:""}
+        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}],[{...},...]]  OR  {ERROR: msg}
+        server.createContext("/tradingSystem/storePurchaseHistory", he -> {
+            try {
+                final Headers headers = he.getResponseHeaders();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store"))? ((String)requestJson.get("store")): null;
+                String response = purchaseHistoryHandler.ViewPurchaseHistoryOfStore(storeName);
+                headers.set("storePurchaseHistory", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {store:""}
+        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}],[{...},...]]  OR  {ERROR: msg}
+        server.createContext("/tradingSystem/storePurchaseHistoryAdmin", he -> {
+            try {
+                final Headers headers = he.getResponseHeaders();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store"))? ((String)requestJson.get("store")): null;
+                String response = purchaseHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(storeName);
+                headers.set("storePurchaseHistoryAdmin", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } finally {
+                he.close();
+            }
+        });
+
+        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}, {...}], ...]  OR  {ERROR: msg}
+        server.createContext("/tradingSystem/userPurchaseHistory", he -> {
+            try {
+                final Headers headers = he.getResponseHeaders();
+//                byte[] requestByte = he.getRequestBody().readAllBytes();
+//                JSONParser parser = new JSONParser();
+//                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
+                String response = purchaseHistoryHandler.viewLoggedInUserPurchaseHistory();
+                headers.set("userPurchaseHistory", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {user:""}
+        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}, ...], ...]  OR  {ERROR: msg}
+        server.createContext("/tradingSystem/userPurchaseHistoryAdmin", he -> {
+            try {
+                final Headers headers = he.getResponseHeaders();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
+                String userName = (requestJson.containsKey("user"))? ((String)requestJson.get("user")): null;
+                String response = purchaseHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(userName);
+                headers.set("usePurchaseHistoryAdmin", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } finally {
+                he.close();
+            }
+        });
 
         //-----------------------------------------Other cases----------------------------------------------------
         //retrieve: {name:"", type:"", options:["",..]}

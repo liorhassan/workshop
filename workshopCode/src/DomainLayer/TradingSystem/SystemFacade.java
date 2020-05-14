@@ -110,8 +110,7 @@ public class SystemFacade {
                 JSONObject curr = new JSONObject();
                 curr.put("name", p.getName());
                 curr.put("price", p.getPrice());
-                //TODO: ADD STORE TO PRODUCT !!
-                curr.put("store", "");
+                curr.put("store", s.getName());
                 curr.put("description", p.getDescription());
                 matching.add(curr);
             }
@@ -308,30 +307,40 @@ public class SystemFacade {
     public String getUserPurchaseHistory(String userName) {
         UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
         JSONArray historyArray = new JSONArray();
-        String historyOutput = "Shopping history:" + "\n";
-
-        int counter = 1;
-        for (Purchase p : purchaseHistory.getUserPurchases()) {
-            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
-            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
-            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
-            counter++;
+        for(Purchase p: purchaseHistory.getUserPurchases()){
+            historyArray.add(p.getPurchasedProducts().viewOnlyProducts());
         }
-        return historyOutput;
+        return historyArray.toJSONString();
+//        String historyOutput = "Shopping history:" + "\n";
+//
+//        int counter = 1;
+//        for (Purchase p : purchaseHistory.getUserPurchases()) {
+//            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
+//            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
+//            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
+//            counter++;
+//        }
+//        return historyOutput;
     }
 
     // function for handling Use Case 4.10 and 6.4 - written by Nufar
     public String getStorePurchaseHistory(String storeName) {
         StorePurchaseHistory purchaseHistory = this.stores.get(storeName).getPurchaseHistory();
-        String historyOutput = "Shopping history of the store:" + "\n";
-        int counter = 1;
+        JSONArray historyArray = new JSONArray();
         for (Purchase p : purchaseHistory.getStorePurchases()) {
-            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
-            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
-            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
-            counter++;
+            historyArray.add(p.getPurchasedProducts().viewOnlyProducts());
         }
-        return historyOutput;
+        return historyArray.toJSONString();
+//        String historyOutput = "Shopping history of the store:" + "\n";
+//        int counter = 1;
+//        for (Purchase p : purchaseHistory.getStorePurchases()) {
+//            historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
+//            historyOutput = historyOutput + p.getPurchasedProducts().viewOnlyProducts();
+//            historyOutput = historyOutput + "\n" + "total money paid: " + p.getTotalCheck();
+//            counter++;
+//        }
+//        return historyOutput;
+
     }
 
     // function for handling Use Case 4.6 - written by Noy

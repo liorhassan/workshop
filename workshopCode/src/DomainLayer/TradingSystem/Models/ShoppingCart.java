@@ -95,7 +95,8 @@ public class ShoppingCart {
     public String viewOnlyProducts() {
         if (baskets.isEmpty())
             throw new RuntimeException("There are no products to view");
-        return view().substring(28);
+        return view();//TODO:??????????????????
+        //return view().substring(28);
     }
 
     public void computeCartPrice() {
