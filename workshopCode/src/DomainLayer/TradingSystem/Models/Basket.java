@@ -1,6 +1,8 @@
 package DomainLayer.TradingSystem.Models;
 
 import DomainLayer.TradingSystem.ProductItem;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +34,27 @@ public class Basket {
         this.productItems = productItems;
     }
 
-    public String viewBasket() {
-        if (productItems.isEmpty())                          // if no products return nothig (במיוחד בשביל הפונקציה של ההצגה של השופינגכארט)
-            return "";
-        String output = "Store name: " + this.store.getName() + "\n";
+    public JSONArray viewBasket() {
+//        if (productItems.isEmpty())                          // if no products return nothig (במיוחד בשביל הפונקציה של ההצגה של השופינגכארט)
+//            return "";
+//        String output = "Store name: " + this.store.getName() + "\n";
+//        for (ProductItem pi : productItems) {
+//            output = output + "Product name: " + pi.getProduct().getName() + " price: " + pi.getProduct().getPrice() + " amount: " + pi.getAmount() + "\n";
+//        }
+//        return output;
+        JSONArray basketArray = new JSONArray();
+        if(productItems.isEmpty())
+            return basketArray;
+
         for (ProductItem pi : productItems) {
-            output = output + "Product name: " + pi.getProduct().getName() + " price: " + pi.getProduct().getPrice() + " amount: " + pi.getAmount() + "\n";
+            JSONObject currProduct = new JSONObject();
+            currProduct.put("name", pi.getProduct().getName());
+            currProduct.put("price", pi.getProduct().getPrice());
+            currProduct.put("store", this.store.getName());
+            currProduct.put("amount", pi.getAmount());
+            basketArray.add(currProduct);
         }
-        return output;
+        return basketArray;
     }
 
 

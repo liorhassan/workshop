@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONObject;
 
 public class StoreHandler {
 
@@ -42,7 +43,10 @@ public class StoreHandler {
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Add store owner error: " + e.getMessage());
-            return e.getMessage();
+            JSONObject response = new JSONObject();
+            response.put("ERROR", e.getMessage());
+            return response.toJSONString();
+            //return e.getMessage();
         }
     }
 

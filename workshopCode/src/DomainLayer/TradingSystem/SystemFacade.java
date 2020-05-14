@@ -5,6 +5,7 @@ import ExternalSystems.PaymentCollectionStub;
 import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.Security.SecurityFacade;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -399,7 +400,9 @@ public class SystemFacade {
         store.addStoreOwner(appointed_user, owning);
         appointed_user.addOwnedStore(store, owning);
 
-        return "Username has been added as one of the store owners successfully";
+        JSONObject response = new JSONObject();
+        response.put("SUCCESS", "Username has been added as one of the store owners successfully");
+        return response.toJSONString();
     }
 
     public HashMap<String, User> getUsers() {

@@ -1,6 +1,8 @@
 package DomainLayer.TradingSystem.Models;
 
 import DomainLayer.TradingSystem.ProductItem;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.HashMap;
@@ -35,13 +37,18 @@ public class ShoppingCart {
     }
 
     public String view(){
-        String output = "Your ShoppingCart details: \n";
-        if(baskets.isEmpty())
-            return output + "empty!";
-        for(Basket b : baskets.values()){
-            output = output + b.viewBasket();
+//        String output = "Your ShoppingCart details: \n";
+//        JSONObject response = new JSONObject();
+        JSONArray response = new JSONArray();
+        if(!baskets.isEmpty()){
+            for (Basket b : baskets.values()) {
+                JSONArray currBasket = b.viewBasket();
+                Iterator itr = currBasket.iterator();
+                while(itr.hasNext())
+                    response.add(itr.next());
+            }
         }
-        return output;
+        return response.toJSONString();
     }
 
     public String edit(Store store, String product, int amount){
