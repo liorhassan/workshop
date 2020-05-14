@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONObject;
 
 
 public class ViewInfoHandler {
@@ -17,10 +18,12 @@ public class ViewInfoHandler {
                 throw new RuntimeException("This store doesn't exist in this trading system");
             }
             return SystemFacade.getInstance().viewStoreInfo(storeName);
+            //return SystemFacade.getInstance().viewStoreInfo(storeName);
 
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("View Store Info error: " + e.getMessage());
-            return e.getMessage();
+            return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -38,7 +41,13 @@ public class ViewInfoHandler {
             return SystemFacade.getInstance().viewProductInfo(storeName, productName);
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("View Product Info error: " + e.getMessage());
-            return e.getMessage();
+            return createJSONMsg("ERROR", e.getMessage());
         }
+    }
+
+    public String createJSONMsg(String type, String content) {
+        JSONObject response = new JSONObject();
+        response.put(type, content);
+        return response.toJSONString();
     }
 }

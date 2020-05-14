@@ -5,6 +5,7 @@ import ExternalSystems.PaymentCollectionStub;
 import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.Security.SecurityFacade;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -96,7 +97,8 @@ public class SystemFacade {
         boolean searchName = name == null ? false : !name.equals("");
         boolean searchCategory = category == null ? false : !category.equals("");
         boolean searchKKeywords = keywords == null ? false : !String.join("",keywords).equals("");
-        List<Product> matching=  new ArrayList<>();
+        //List<Product> matching=  new ArrayList<>();
+        JSONArray matching = new JSONArray();
         for(Store s : stores.values()){
             for(Product p : s.getProducts()){
                 if(searchName&&!p.getName().contains(name))
@@ -105,13 +107,20 @@ public class SystemFacade {
                     continue;
                 if(searchKKeywords&&!p.getKeyWords().containsAll(Arrays.asList(keywords)))
                     continue;
-                matching.add(p);
+                JSONObject curr = new JSONObject();
+                curr.put("name", p.getName());
+                curr.put("price", p.getPrice());
+                //TODO: ADD STORE TO PRODUCT !!
+                curr.put("store", "");
+                curr.put("description", p.getDescription());
+                matching.add(curr);
             }
         }
         if(matching.size()==0)
            throw new RuntimeException("There are no products that match these parameters");
         lastSearchResult = matching;
-        return productListToString(lastSearchResult);
+        return matching.toJSONString();
+        //return productListToString(lastSearchResult);
     }
 
     private String productListToString(List<Product> products){
@@ -125,7 +134,8 @@ public class SystemFacade {
     //function for handling UseCase 2.5
     public String filterResults(Integer minPrice, Integer maxPrice, String category){
         boolean searchCategory = category == null ? false : !category.equals("");
-        List<Product> matching = new ArrayList<>();
+        //List<Product> matching = new ArrayList<>();
+        JSONArray matching = new JSONArray();
         for(Product p : lastSearchResult){
             if(searchCategory&&!category.equals(p.getCategory().name()))
                 continue;
@@ -133,11 +143,18 @@ public class SystemFacade {
                 continue;
             if(maxPrice!=null&&p.getPrice()>maxPrice)
                 continue;
-            matching.add(p);
+            JSONObject curr = new JSONObject();
+            curr.put("name", p.getName());
+            curr.put("price", p.getPrice());
+            //TODO: ADD STORE TO PRODUCT !!
+            curr.put("store", "");
+            curr.put("description", p.getDescription());
+            matching.add(curr);
         }
         if(matching.size()==0)
             throw new RuntimeException("There are no products that match this search filter");
-        return productListToString(matching);
+        return matching.toJSONString();
+        //return productListToString(matching);
     }
 
     //function for handling UseCase 2.6
@@ -209,11 +226,16 @@ public class SystemFacade {
     public String removeManager(String username,String storename){
         Store store = stores.get(storename);
         User user = users.get(username);
+        JSONObject response = new JSONObject();
         if(store != null && user != null) {
             store.removeManager(user);
-            return "Manager removed successfully!";
+            response.put("SUCCESS", "Manager removed successfully!");
+            return response.toJSONString();
+            //return "Manager removed successfully!";
         }
-        return "Manager wasn't removed";
+        response.put("ERROR", "Manager wasn't removed");
+        return response.toJSONString();
+        //return "Manager wasn't removed";
     }
 
     //helper function for Use Case 4.7
@@ -285,7 +307,9 @@ public class SystemFacade {
     // function for handling Use Case 3.7 + 6.4 - written by Nufar
     public String getUserPurchaseHistory(String userName) {
         UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
+        JSONArray historyArray = new JSONArray();
         String historyOutput = "Shopping history:" + "\n";
+
         int counter = 1;
         for (Purchase p : purchaseHistory.getUserPurchases()) {
             historyOutput = historyOutput + "\n" + "Purchase #" + counter + ":" + "\n";
@@ -329,21 +353,38 @@ public class SystemFacade {
 
         Store s = getStoreByName(storeName);
         Collection<Product> products = s.getProducts();
-        String storeInfo = "Store name: " + s.getName() +
-                " description: "  + s.getDescription() +
-                "\n products:\n";
-
+        JSONObject response = new JSONObject();
+        response.put("name", s.getName());
+        response.put("description", s.getDescription());
+        JSONArray productsArray = new JSONArray();
         for (Product currProduct : products) {
-            storeInfo = storeInfo.concat("  " + currProduct.getName() + "- " + currProduct.getPrice() + "$\n");
+           JSONObject curr = new JSONObject();
+           curr.put("productName", currProduct.getName());
+           curr.put("price", currProduct.getPrice());
+           productsArray.add(curr);
         }
-        return storeInfo;
+        response.put("products", productsArray);
+        return response.toJSONString();
+//        String storeInfo = "Store name: " + s.getName() +
+//                " description: "  + s.getDescription() +
+//                "\n products:\n";
+//
+//        for (Product currProduct : products) {
+//            storeInfo = storeInfo.concat("  " + currProduct.getName() + "- " + currProduct.getPrice() + "$\n");
+//        }
+//        return storeInfo;
     }
 
     // function for handling Use Case 2.4 - written by Noy
     public String viewProductInfo(String storeName, String productName){
         Store s = getStoreByName(storeName);
         Product p = s.getProductByName(productName);
-        return (p.getName() + ": " + p.getDescription() + "\nprice: " + p.getPrice() + "$");
+        JSONObject response = new JSONObject();
+        response.put("name", p.getName());
+        response.put("description", p.getDescription());
+        response.put("price", p.getPrice());
+        return response.toJSONString();
+//        return (p.getName() + ": " + p.getDescription() + "\nprice: " + p.getPrice() + "$");
     }
 
     // function for handling Use Case 2.8 - written by Noy
@@ -503,4 +544,36 @@ public class SystemFacade {
         s.addDiscount(productName, percentage);
     }
 
+    public String myStores(){
+        JSONArray response = new JSONArray();
+        HashMap<Store, StoreOwning> ownings = this.activeUser.getStoreOwnings();
+        HashMap<Store, StoreManaging> managements = this.activeUser.getStoreManagements();
+        if(!ownings.isEmpty()){
+            for(Store s: ownings.keySet()){
+                JSONObject currStore = new JSONObject();
+                currStore.put("name", s.getName());
+                currStore.put("type", "Owner");
+                JSONArray options = new JSONArray();
+                for(Permission p: ownings.get(s).getPermission())
+                    options.add(p);
+                currStore.put("options", options);
+                response.add(currStore);
+            }
+        }
+
+        if(!managements.isEmpty()){
+            for(Store s: managements.keySet()){
+                JSONObject currStore = new JSONObject();
+                currStore.put("name", s.getName());
+                currStore.put("type", "Manager");
+                JSONArray options = new JSONArray();
+                for(Permission p: managements.get(s).getPermission())
+                    options.add(p);
+                currStore.put("options", options);
+                response.add(currStore);
+            }
+        }
+
+        return response.toJSONString();
+    }
 }

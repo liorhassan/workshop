@@ -44,6 +44,9 @@ public class User {
     public HashMap<Store, StoreOwning> getStoreOwnings() {
         return storeOwnings;
     }
+    public HashMap<Store, StoreManaging> getStoreManagements() {
+        return storeManagements;
+    }
 
     public boolean hasEditPrivileges(String storeName) {
         for (Store s: storeManagements.keySet()) {

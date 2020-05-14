@@ -69,16 +69,22 @@ public class StoreHandler {
                 if(amount == null || SystemFacade.getInstance().emptyString(args2) || amount < 0)
                     throw new IllegalArgumentException("Must enter amount bigger than 0 and product description");
             }
-            return SystemFacade.getInstance().updateInventory(storeName, productName, productPrice, productCategory, productDes, amount);
+            return  createJSONMsg("SUCCESS", SystemFacade.getInstance().updateInventory(storeName, productName, productPrice, productCategory, productDes, amount));
+            //return SystemFacade.getInstance().updateInventory(storeName, productName, productPrice, productCategory, productDes, amount);
         }
         catch (Exception e) {
             SystemLogger.getInstance().writeError("Update inventory error: " + e.getMessage());
-            return e.getMessage();
+            return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
     public void resetStores(){
         SystemFacade.getInstance().resetStores();
+    }
+
+    public String getMyStores(){
+        return SystemFacade.getInstance().myStores();
     }
 
     public String addDiscount(String storeName, String productName, double percentage){
@@ -103,4 +109,12 @@ public class StoreHandler {
             return e.getMessage();
         }
     }
+
+    public String createJSONMsg(String type, String content) {
+        JSONObject response = new JSONObject();
+        response.put(type, content);
+        return response.toJSONString();
+    }
+
+
 }
