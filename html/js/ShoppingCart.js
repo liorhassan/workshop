@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
      fetch("http://localhost:8080/tradingSystem/cart")
          .then(response => response.json())
          .then(setItemsToCart)
-//    setItemsToCart(items)
 
     document.getElementById("editbtn").addEventListener("click", function () {
         // items[0].amount = 20
@@ -51,21 +50,62 @@ document.addEventListener("DOMContentLoaded", function () {
         var storeNameUpdate = document.getElementById("storeNameUpdate").value;
         var quantityUpdate = document.getElementById("quantityUpdate").value;
 
-        // TODO: send msg to server with the updated product item
-        //       and get back the items in the cart (updated)
-//        items[0].amount = quantityUpdate;
-//        items[0].name = productNameUpdate;
-//        items[0].store = storeNameUpdate;
-        // ******************************************************
+        // TODO: send msg to server with the updated product item and get back the items in the cart (updated)
+        fetch("http://localhost:8080/tradingSystem/editCart", {
+            method: "POST",
+            body: JSON.stringify({store:storeNameUpdate, product:productNameUpdate, amount:quantityUpdate })
+        })
+         .then(response => {
+             if (response.ok) {
+                 return response.json();
+             } else {
+                 return response.text();
+             }
+          })
+         .then((responseMsg) => {
+                 //setItemsToCart(items);
+             if (responseMsg.SUCCESS) {
+                fetch("http://localhost:8080/tradingSystem/cart")
+                         .then(response => response.json())
+                         .then(setItemsToCart)
+                  Swal.fire(
+                        'Congratulations!',
+                        responseMsg.SUCCESS,
+                        'success')
+             } else {
+                  Swal.fire(
+                     'OOPS!',
+                     responseMsg,
+                     'error')
+             }
+         })
 
         document.getElementById("editModal").style.display = "none";
-        setItemsToCart(items);
     })
 
     document.getElementById("purchasebtn").addEventListener("click", function () {
-        // TODO: send msg to server to purchase cart
+         fetch("http://localhost:8080/tradingSystem/purchaseCart")
+             .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+             })
+             .then((responseMsg) => {
+                 if (responseMsg.SUCCESS) {
+                     Swal.fire(
+                           'Congratulations!',
+                           responseMsg.SUCCESS,
+                           'success')
+                 } else {
+                     Swal.fire(
+                        'OOPS!',
+                        responseMsg,
+                        'error')
+                 }
+             })
     })
-        
 
 });
 
@@ -79,7 +119,6 @@ function setItemsToCart(items) {
     const shoppingCart = document.getElementById("shopCartContainer");
     shoppingCart.innerHTML = "";
 
-    
     // TODO: get from server total price and put in var "total"
     document.getElementById("totalPriceContainer").innerHTML = "";
     var total = "100$";

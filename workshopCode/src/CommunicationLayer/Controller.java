@@ -357,7 +357,7 @@ public class Controller{
                 //JSONObject requestJson =  (JSONObject)parser.parse("{store: Pull&Bear, product: skirt, amount: 5}");
                 String storeName = (requestJson.containsKey("store"))? ((String)requestJson.get("store")): null;
                 String productName = (requestJson.containsKey("product"))? ((String)requestJson.get("product")): null;
-                int amount = (requestJson.containsKey("amount"))? ((Integer)requestJson.get("amount")): null;
+                int amount = (requestJson.containsKey("amount"))? Integer.parseInt((String)requestJson.get("amount")): null;
                 String response = cartHandler.editCart(storeName, productName, amount);
                 headers.set("editCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
