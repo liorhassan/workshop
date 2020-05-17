@@ -17,6 +17,9 @@ public class Store {
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
     private DiscountPolicy discountPolicy;
+    private HashMap<Product, DiscountPolicy> discountPolicyPerProduct;
+    private DiscountPolicy discountPolicyForStore;
+
     private PurchasePolicy purchasePolicy;
     private HashMap<Basket, List<ProductItem>> reservedProducts;
 
