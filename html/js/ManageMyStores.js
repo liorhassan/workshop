@@ -28,11 +28,15 @@ document.addEventListener("DOMContentLoaded", function () {
     setMyStores(stores);
 
     // When the user clicks on <span> (x), close the modal
-    document.getElementsByClassName("close").forEach(model => {
-        model.addEventListener("click", function () {
-            model.style.display = "none";
-        })
-    })
+    var x_buttons = document.getElementsByClassName("close");
+    for (let x_button of x_buttons) {
+        x_button.addEventListener("click", function () {
+            var modals = document.getElementsByClassName("modal");
+            for (let modal of modals) {
+                model.style.display = "none";
+            }
+        });
+    }
 });
 
 function setMyStores(stores) {
