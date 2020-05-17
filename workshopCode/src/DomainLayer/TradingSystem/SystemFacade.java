@@ -184,11 +184,13 @@ public class SystemFacade {
                 this.adminMode = true;
                 activeUser = user;
         }
+        NotificationSystem.getInstance().attach(username);
     }
 
     //function for handling UseCase 3.1
     public String logout(){
         activeUser = new User();
+        NotificationSystem.getInstance().dettach(this.activeUser.getUsername());
         return "You have been successfully logged out!";
     }
 
@@ -437,8 +439,12 @@ public class SystemFacade {
         //handle Store-Purchase-History
         sc.addStoresPurchaseHistory();
 
+        //notify all stores owners that products have been purchased in their store
+        sc.notifyOwners();
+
         //finally - empty the shopping cart
         this.activeUser.emptyCart();
+
     }
 
 
@@ -451,6 +457,7 @@ public class SystemFacade {
         StoreOwning owning = new StoreOwning(activeUser);
         store.addStoreOwner(appointed_user, owning);
         appointed_user.addOwnedStore(store, owning);
+
 
         return "Username has been added as one of the store owners successfully";
 
@@ -582,6 +589,27 @@ public class SystemFacade {
                 currStore.put("options", options);
                 response.add(currStore);
             }
+        }
+
+        return response.toJSONString();
+    }
+
+    public String getAllProducts(){
+        JSONArray response = new JSONArray();
+        for(Store s: this.stores.values()) {
+            JSONArray curr = s.getAllProducts();
+            for(int i = 0; i < curr.size(); i++)
+                response.add(curr.get(i));
+        }
+
+        return response.toJSONString();
+    }
+
+    public String getAllCategories(){
+        Category[] categories = Category.values();
+        JSONArray response = new JSONArray();
+        for(int i = 0; i < categories.length; i++) {
+            response.add(categories[i].name());
         }
 
         return response.toJSONString();

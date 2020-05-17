@@ -47,4 +47,13 @@ public class ViewInfoHandler {
         }
     }
 
+
+    public String getAllProduct() {
+        return SystemFacade.getInstance().getAllProducts();
+    }
+
+    public String getAllCategories() {
+        return SystemFacade.getInstance().getAllCategories();
+    }
+
 }
