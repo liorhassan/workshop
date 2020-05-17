@@ -160,7 +160,11 @@ public class ShoppingCart {
         return this.cartTotalPrice;
     }
 
-
+    public void notifyOwners(){
+        for(Store s: baskets.keySet()) {
+            s.notifyOwners(baskets.get(s), this.user.getUsername());
+        }
+    }
 }
 
 
