@@ -14,7 +14,8 @@ public class UsersHandler {
 
         if (!SecurityFacade.getInstance().CorrectPassword(username, password)) {
             SystemLogger.getInstance().writeError("Invalid password");
-            return createJSONMsg("ERROR", "This password is incorrect");
+            throw new RuntimeException("This password is incorrect");
+            //return createJSONMsg("ERROR", "This password is incorrect");
             //return "This password is incorrect";
         }
         try {
@@ -31,7 +32,8 @@ public class UsersHandler {
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Login error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
@@ -48,7 +50,8 @@ public class UsersHandler {
         SystemLogger.getInstance().writeEvent("Register command: " + username);
         if (!SecurityFacade.getInstance().validPassword(password)) {
             SystemLogger.getInstance().writeError("Invalid password");
-            return createJSONMsg("ERROR", "This password is not valid. Please choose a different one");
+            throw new RuntimeException("This password is not valid. Please choose a different one");
+            //return createJSONMsg("ERROR", "This password is not valid. Please choose a different one");
         }
         try {
             String[] args = {username};
@@ -63,7 +66,8 @@ public class UsersHandler {
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Register error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
@@ -92,7 +96,8 @@ public class UsersHandler {
             //return"done";
         }
         catch (Exception e){
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }

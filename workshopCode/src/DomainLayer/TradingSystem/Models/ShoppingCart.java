@@ -73,8 +73,9 @@ public class ShoppingCart {
                 }
             }
         }
-        response.put("ERROR", "The product doesn’t exist in your shopping cart");
-        return response.toJSONString();
+        throw new RuntimeException("The product doesn’t exist in your shopping cart");
+        //response.put("ERROR", "The product doesn’t exist in your shopping cart");
+        //return response.toJSONString();
         //return "The product doesn’t exist in your shopping cart";
     }
 

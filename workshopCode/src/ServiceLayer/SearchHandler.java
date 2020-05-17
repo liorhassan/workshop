@@ -32,9 +32,7 @@ public class SearchHandler {
             return SystemFacade.getInstance().searchProducts(name, category, keywords);
         } catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("Search product error: " + e.getMessage());
-            JSONObject response = new JSONObject();
-            response.put("ERROR", e.getMessage());
-            return response.toJSONString();
+            throw new RuntimeException(e.getMessage());
             //return e.getMessage();
         }
     }
@@ -45,9 +43,7 @@ public class SearchHandler {
             return SystemFacade.getInstance().filterResults(minPrice, maxPrice, category);
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("Filter results error: " + e.getMessage());
-            JSONObject response = new JSONObject();
-            response.put("ERROR", e.getMessage());
-            return response.toJSONString();
+            throw new RuntimeException(e.getMessage());
             //return e.getMessage();
         }
     }

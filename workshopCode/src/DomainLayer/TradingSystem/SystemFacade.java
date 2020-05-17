@@ -450,9 +450,8 @@ public class SystemFacade {
         store.addStoreOwner(appointed_user, owning);
         appointed_user.addOwnedStore(store, owning);
 
-        JSONObject response = new JSONObject();
-        response.put("SUCCESS", "Username has been added as one of the store owners successfully");
-        return response.toJSONString();
+        return "Username has been added as one of the store owners successfully";
+
     }
 
     public HashMap<String, User> getUsers() {

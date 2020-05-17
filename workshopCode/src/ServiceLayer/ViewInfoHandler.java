@@ -22,7 +22,8 @@ public class ViewInfoHandler {
 
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("View Store Info error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
@@ -41,13 +42,9 @@ public class ViewInfoHandler {
             return SystemFacade.getInstance().viewProductInfo(storeName, productName);
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("View Product Info error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
         }
     }
 
-    public String createJSONMsg(String type, String content) {
-        JSONObject response = new JSONObject();
-        response.put(type, content);
-        return response.toJSONString();
-    }
 }

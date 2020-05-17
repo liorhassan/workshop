@@ -17,11 +17,12 @@ public class StoreHandler {
                 throw new IllegalArgumentException("Must enter store name and description");
             if (SystemFacade.getInstance().storeExists(storeName))
                 throw new RuntimeException("Store name already exists, please choose a different one");
-            return SystemFacade.getInstance().openNewStore(storeName,storeDescription);
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().openNewStore(storeName,storeDescription));
         }
         catch (RuntimeException e){
             SystemLogger.getInstance().writeError("Open new store error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -39,13 +40,11 @@ public class StoreHandler {
                 throw new RuntimeException("You must be this store owner for this action");
             if(SystemFacade.getInstance().checkIfUserIsOwner(storeName, username))
                 throw new RuntimeException("This username is already one of the store's owners");
-            return SystemFacade.getInstance().appointOwner(username, storeName);
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().appointOwner(username, storeName));
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Add store owner error: " + e.getMessage());
-            JSONObject response = new JSONObject();
-            response.put("ERROR", e.getMessage());
-            return response.toJSONString();
+            throw new RuntimeException(e.getMessage());
             //return e.getMessage();
         }
     }
@@ -74,7 +73,8 @@ public class StoreHandler {
         }
         catch (Exception e) {
             SystemLogger.getInstance().writeError("Update inventory error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
@@ -103,10 +103,12 @@ public class StoreHandler {
                 throw new IllegalArgumentException("The product isn't available in this store");
             }
             SystemFacade.getInstance().addDiscount(storeName, productName, percentage);
-            return "discount have been added to the store";
+            return createJSONMsg("SUCCESS", "discount have been added to the store");
+            //return "discount have been added to the store";
         }
         catch(Exception e){
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
         }
     }
 

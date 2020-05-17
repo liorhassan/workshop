@@ -33,8 +33,7 @@ public class Controller{
 
     private static final Charset UTF8 = StandardCharsets.UTF_8;
     private static final int STATUS_OK = 200;
-    private static final int STATUS_NOT_OK = 300;
-    private static final int STATUS_METHOD_NOT_ALLOWED = 400;
+    private static final int STATUS_METHOD_NOT_ALLOWED = 405;
 
     public static void main(String[] args) throws IOException{
         final HttpServer server = HttpServer.create(new InetSocketAddress(HOSTNAME, PORT), 1);
@@ -94,10 +93,10 @@ public class Controller{
 
         //-----------------------------------------UsersHandler cases------------------------------------------
         //accept: {userName:"", password:"", adminMode: true/false}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/login", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
@@ -111,16 +110,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch (Exception e){
+                headers.set("login", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {userName:"", password:""}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/register", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -132,28 +134,34 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch (Exception e){
+                headers.set("login", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/logout", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
-                byte[] requestByte = he.getRequestBody().readAllBytes();
+                //byte[] requestByte = he.getRequestBody().readAllBytes();
                 //JSONParser parser = new JSONParser();
                 //JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
                 String response = usersHandler.logout();
                 headers.set("logout", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
+            } catch(Exception e) {
+                headers.set("logout", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {userName: ""}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addAdmin", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
@@ -173,10 +181,10 @@ public class Controller{
         });
         //-----------------------------------------SearchHandler cases------------------------------------------
         //accept: {name: "", category:"", keyWords:["", "", ""]}
-        //retrieve: [{name:"", price:"", store:"", description:""}, ..]  OR  {ERROR: msg}
+        //retrieve: [{name:"", price:"", store:"", description:""}, ..]  OR  ERROR
         server.createContext("/tradingSystem/search", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -192,16 +200,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("search", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {maxPrice:Integer, minPrice:Integer, category:""}
-        //retrieve: [{name:"", price:"", store:"", description:""}, ..]  OR  {ERROR: msg}
+        //retrieve: [{name:"", price:"", store:"", description:""}, ..]  OR ERROR
         server.createContext("/tradingSystem/filter", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -215,6 +226,9 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("filter", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, e.getMessage());
             } finally {
                 he.close();
             }
@@ -224,10 +238,10 @@ public class Controller{
 
         //-----------------------------------------StoreHandler cases------------------------------------------
         //accept: {store:"", description:""}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/openNewStore", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
@@ -240,16 +254,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("openNewStore", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {user: "", store:"", amount: ""}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addStoreOwner", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
@@ -262,16 +279,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("addStoreOwner", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {store:"", product: "", price:"", category:"", desc:"", amount:int}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/updateInventory", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
@@ -289,16 +309,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("updateInventory", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //-----------------------------------------ShoppingCartHandler cases------------------------------------------
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/cart", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 //JSONParser parser = new JSONParser();
                 //JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -315,16 +338,19 @@ public class Controller{
                 String response = cartHandler.viewCart();
                 headers.set("viewCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
+            } catch(Exception e) {
+                headers.set("viewCart", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {store: "", product:"", amount: ""}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/editCart", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -337,16 +363,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("editCart", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {store: "", product:"", amount: ""}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addToShoppingBasket", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -359,32 +388,38 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("addToShoppingBasket", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/purchaseCart", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 //JSONParser parser = new JSONParser();
                 //JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
                 String response = cartHandler.purchaseCart();
                 headers.set("purchaseCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
-            } finally {
+            } catch(Exception e) {
+                headers.set("purchaseCart", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            }finally {
                 he.close();
             }
         });
 
         //-----------------------------------------StoreManagerHandler cases------------------------------------------
         //accept: {user: "", store:""}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addStoreManager", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -395,16 +430,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("addStoreManager", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {user: "", store:""}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/removeStoreManager", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -415,16 +453,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("removeStoreManager", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {user: "", store:"", permission: ["", "",..]}
-        //retrieve: {SUCCESS/ERROR: msg}
+        //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/editPermission", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -439,6 +480,9 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("editPermission", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
@@ -446,10 +490,10 @@ public class Controller{
 
         //-----------------------------------------ViewInfoHandler cases------------------------------------------
         //accept: {store:""}
-        //retrieve: {name:"", description:"", products:[{productName:"", price:Integer}]}  OR  {ERROR: msg}
+        //retrieve: {name:"", description:"", products:[{productName:"", price:Integer}]}  OR ERROR
         server.createContext("/tradingSystem/storeInfo", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -459,16 +503,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("storeInfo", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {store:"", product:""}
-        //retrieve: {name:"", description:"", price:Integer}  OR  {ERROR: msg}
+        //retrieve: {name:"", description:"", price:Integer}  OR ERROR
         server.createContext("/tradingSystem/productInfo", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -479,16 +526,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("productInfo", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
         //-----------------------------------------PurchaseHistory cases------------------------------------------
         //accept: {store:""}
-        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}],[{...},...]]  OR  {ERROR: msg}
+        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}],[{...},...]]  OR ERROR
         server.createContext("/tradingSystem/storePurchaseHistory", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -498,16 +548,19 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("storePurchaseHistory", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {store:""}
-        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}],[{...},...]]  OR  {ERROR: msg}
+        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}],[{...},...]]  OR ERROR
         server.createContext("/tradingSystem/storePurchaseHistoryAdmin", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -517,31 +570,37 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("storePurchaseHistoryAdmin", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
-        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}, {...}], ...]  OR  {ERROR: msg}
+        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}, {...}], ...]  OR ERROR
         server.createContext("/tradingSystem/userPurchaseHistory", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
 //                byte[] requestByte = he.getRequestBody().readAllBytes();
 //                JSONParser parser = new JSONParser();
 //                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
                 String response = purchaseHistoryHandler.viewLoggedInUserPurchaseHistory();
                 headers.set("userPurchaseHistory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
+            } catch(Exception e) {
+                headers.set("userPurchaseHistory", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
         //accept: {user:""}
-        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}, ...], ...]  OR  {ERROR: msg}
+        //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}, ...], ...]  OR ERROR
         server.createContext("/tradingSystem/userPurchaseHistoryAdmin", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
@@ -551,6 +610,9 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
+            } catch(Exception e) {
+                headers.set("userPurchaseHistoryAdmin", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
@@ -579,6 +641,12 @@ public class Controller{
     public static void sendResponse(HttpExchange he, String response) throws IOException {
         final byte[] ResponseBytes = response.getBytes(UTF8);
         he.sendResponseHeaders(STATUS_OK, ResponseBytes.length);
+        he.getResponseBody().write(ResponseBytes);
+    }
+
+    public static void sendERROR(HttpExchange he, String response) throws IOException {
+        final byte[] ResponseBytes = response.getBytes(UTF8);
+        he.sendResponseHeaders(STATUS_METHOD_NOT_ALLOWED, ResponseBytes.length);
         he.getResponseBody().write(ResponseBytes);
     }
 

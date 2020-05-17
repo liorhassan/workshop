@@ -28,7 +28,8 @@ public class StoreManagerHandler {
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Add manager error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
@@ -51,7 +52,8 @@ public class StoreManagerHandler {
             //return SystemFacade.getInstance().removeManager(username,storename);
         } catch(Exception e) {
             SystemLogger.getInstance().writeError("Remove manager error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
@@ -96,7 +98,8 @@ public class StoreManagerHandler {
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Edit Permissions error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }

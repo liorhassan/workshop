@@ -29,7 +29,8 @@ public class ShoppingCartHandler {
         catch (Exception e){
 
             SystemLogger.getInstance().writeError("Edit shopping cart error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
@@ -50,7 +51,8 @@ public class ShoppingCartHandler {
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Add to shopping basket error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
@@ -79,7 +81,8 @@ public class ShoppingCartHandler {
         catch (Exception e) {
             SystemFacade.getInstance().emptyCart();
             SystemLogger.getInstance().writeError("Purchase Cart error: " + e.getMessage());
-            return createJSONMsg("ERROR", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
