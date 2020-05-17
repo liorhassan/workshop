@@ -33,22 +33,59 @@ document.addEventListener("DOMContentLoaded", function () {
     //     .then(setSearchResults)
     setSearchResults(items);
 
-
-    const categories = ["Clothes","Food","Tech","Gardening"]
+    const categories = ["Clothing","Food","Tech","Gardening"]
 
     // fetch("localhost:8000/searchResults")
     //     .then(response => response.json())
     //     .then(setSearchResults)
     setCategories(categories);
 
-    
-
     // When the user clicks on <span> (x), close the modal
     document.getElementsByClassName("close")[0].addEventListener("click", function () {
         document.getElementById("editModal").style.display = "none";
     })
 
+    document.getElementById("search-button").addEventListener("click", function() {
+        var name = document.getElementById("product-name").value;
+        var selected = document.getElementById("category-drop1").selectedIndex;
+        var category = (selected ==  0) ? "" : document.getElementById("category-drop1").options[selected].text;
+        var keyWords = document.getElementById("key-words").value.split(" ");
+        if (keyWords == "")
+            keyWords = [];
+    
+        fetch("http://localhost:8080/tradingSystem/search", {
+            method: "POST",
+            body: JSON.stringify({name: name, category: category, keywords: keyWords})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+          })
+          .then(setSearchResults)
+    })
 
+    document.getElementById("filter-button").addEventListener("click", function() {
+        var min_price = document.getElementById("min-price").value;
+        var max_price = document.getElementById("max-price").value;
+        var selected = document.getElementById("category-drop2").selectedIndex;
+        var category = (selected ==  0) ? "" : document.getElementById("category-drop2").options[selected].text;
+    
+        fetch("http://localhost:8080/tradingSystem/filter", {
+            method: "POST",
+            body: JSON.stringify({maxPrice: max_price, minPrice: min_price, category: category})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+          })
+          .then(setSearchResults)
+    })
 });
 
 
@@ -127,10 +164,32 @@ function setCategories(categories) {
 }
 
 function showPopUp(item){
-    document.getElementById("product-name").innerHTML = "Name: " + item.name;
+    document.getElementById("model-product-name").innerHTML = "Name: " + item.name;
     document.getElementById("product-store").innerHTML = "Store: " + item.store;
     document.getElementById("product-price").innerHTML = "Price: " + item.price;
     document.getElementById("product-description").innerHTML = "Description: " + item.description;
+    document.getElementById("product-amount").value = 0;
+
+    document.getElementById("add-to-cart").addEventListener("click", function() {
+        var product_name = item.name;
+        var product_store = item.store;
+        var product_amount = document.getElementById("product-amount").value;
+    
+        fetch("http://localhost:8080/tradingSystem/addToShoppingBasket", {
+            method: "POST",
+            body: JSON.stringify({store: product_store, product:product_name, amount: product_amount})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+          })
+        
+          document.getElementById("editModal").style.display = "none";
+
+    })
 
     document.getElementById("editModal").style.display = "block";
 }

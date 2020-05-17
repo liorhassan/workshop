@@ -21,6 +21,23 @@ position: absolute;
     overflow-y: scroll;
 }
 
+#search-bar {
+    margin-left: 250pt;
+    margin-top: 60pt;
+}
+
+#product-description {
+    overflow-y: scroll;
+}
+
+#filter-button {
+    color: white;
+}
+
+#search-button {
+    color: white;
+}
+
 .card-link+.card-link {
     margin-left: 0;
 }
@@ -39,19 +56,9 @@ position: absolute;
     border-radius: .25rem;
 }
 
-#search-bar {
-    margin-left: 250pt;
-    margin-top: 60pt;
-}
-
 .nav-item {
     white-space: nowrap;;
 }
-
-#product-description {
-    overflow-y: scroll;
-}
-
 
 /* The Modal (background) */
 .modal {

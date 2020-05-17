@@ -48,7 +48,7 @@
         <div class="container" id="search-bar">
             <form class="form-inline mt-5">
                 <div class="input-group mb-2 mr-sm-2">
-                    <input type="text" class="form-control" placeholder="Product"
+                    <input type="text" class="form-control" id="product-name" placeholder="Product"
                         varia-label="Text input with dropdown button">
                     <div class="input-group-append">
                         <select class="custom-select" id="category-drop1">
@@ -64,12 +64,11 @@
                     <div class="input-group-prepend">
                         <div class="input-group-text">#</div>
                     </div>
-                    <input type="text" class="form-control" id="inlineFormInputGroupKeyWords" placeholder="key words">
+                    <input type="text" class="form-control" id="key-words" placeholder="key words">
                 </div>
 
-                <button type="search" class="btn btn-primary mb-2">Search</button>
+                <a class="btn btn-primary mb-2" id="search-button">Search</a>
             </form>
-
         </div>
     </main>
 
@@ -88,13 +87,13 @@
                 <div class="input-group-prepend">
                     <div class="input-group-text">Min Price</div>
                 </div>
-                <input type="text" class="form-control">
+                <input id="min-price" type="number" min=0 class="form-control">
             </div>
             <div class="input-group mb-2 mr-sm-2">
                 <div class="input-group-prepend">
                     <div class="input-group-text">Max Price</div>
                 </div>
-                <input type="text" class="form-control">
+                <input id="max-price" type="number" min=0 class="form-control">
             </div>
             <div class="input-group-append" style="margin-bottom: 10pt;">
                 <select class="custom-select" id="category-drop2">
@@ -104,8 +103,7 @@
                     <option value="3">Tech</option>
                 </select>
             </div>
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Filter</button>
-            </form>
+            <button class="btn btn-primary btn-lg btn-block" id="filter-button">Filter</button>
         </div>
     </div>
 
@@ -118,12 +116,19 @@
                 </button>
             </div>
             <div id="editCartElements" class="">
-                <p id="product-name"></p>
+                <p id="model-product-name"></p>
                 <p id="product-store"></p>
                 <p id="product-price"></p>
                 <p id="product-description"></p>
-                
-                <button id="confirmEditbtn" class="btn btn-primary">Add To Shopping Cart</button>
+
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">Amount</div>
+                    </div>
+                    <input id="product-amount" type="number" min=0 class="form-control">
+                </div>
+
+                <button id="add-to-cart" class="btn btn-primary">Add To Shopping Cart</button>
             </div>
         </div>
 

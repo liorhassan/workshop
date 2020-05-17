@@ -94,6 +94,7 @@ public class SystemFacade {
 
     //function for handling UseCase 2.5
     public String searchProducts(String name, String category, String[] keywords){
+        lastSearchResult.clear();
         boolean searchName = name == null ? false : !name.equals("");
         boolean searchCategory = category == null ? false : !category.equals("");
         boolean searchKKeywords = keywords == null ? false : !String.join("",keywords).equals("");
@@ -112,12 +113,13 @@ public class SystemFacade {
                 curr.put("price", p.getPrice());
                 curr.put("store", s.getName());
                 curr.put("description", p.getDescription());
+                lastSearchResult.add(p);
                 matching.add(curr);
             }
         }
         if(matching.size()==0)
            throw new RuntimeException("There are no products that match these parameters");
-        lastSearchResult = matching;
+//        lastSearchResult = matching;
         return matching.toJSONString();
         //return productListToString(lastSearchResult);
     }
