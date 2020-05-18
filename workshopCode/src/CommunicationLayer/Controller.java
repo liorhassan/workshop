@@ -639,6 +639,31 @@ public class Controller{
                 he.close();
             }
         });
+
+        //retrieve: [{name:"", price:"", store:"", description:""}, ..]
+        server.createContext("/tradingSystem/allProducts", he -> {
+            try {
+                final Headers headers = he.getResponseHeaders();
+                String response = viewInfoHandler.getAllProduct();
+                headers.set("allProducts", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } finally {
+                he.close();
+            }
+        });
+
+        //retrieve: {"", "", ...}
+        server.createContext("/tradingSystem/allCategories", he -> {
+            try {
+                final Headers headers = he.getResponseHeaders();
+                String response = viewInfoHandler.getAllCategories();
+                headers.set("allCategories", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } finally {
+                he.close();
+            }
+        });
+
         server.start();
     }
 
