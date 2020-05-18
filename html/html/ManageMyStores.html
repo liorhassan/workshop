@@ -47,7 +47,7 @@
 
     <main role="main" class="container">
         <div class="p-3 bg-white rounded shadow-sm" id="stores">
-            <button type="search" class="btn btn-primary mb-2">Open New Store</button>
+            <button id="new-store-button" class="btn btn-primary mb-2">Open New Store</button>
             <h4 class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted">My Stores</span>
                 <span class="badge badge-secondary badge-pill" id="num-of-stores">3</span>
@@ -77,6 +77,23 @@
     </main>
 
 
+    <div id="openStoreModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Open Store</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <input id="StoreNameInput" type="text" class="form-control" placeholder="Store Name">
+                <textarea id="StoreDescInput" type="text" class="form-control" placeholder="Store Decription"></textarea>
+                <button id="confirm-open-store-btn" class="btn btn-primary">Open The Store</button>
+            </div>
+        </div>
+
+    </div>
+
     <div id="addManagerModal" class="modal"> -->
         <div class="modal-content">
             <div class="modal-header">
@@ -86,12 +103,8 @@
                 </button>
             </div>
             <div id="editCartElements" class="">
-                <p id="product-name"></p>
-                <p id="product-store"></p>
-                <p id="product-price"></p>
-                <p id="product-description"></p>
-                
-                <button id="confirmEditbtn" class="btn btn-primary">Add To Shopping Cart</button>
+                <input id="new-manager-name" type="text" class="form-control" placeholder="User name">
+                <button id="add-manager-button" class="btn btn-primary">Add Manager</button>
             </div>
         </div>
 

@@ -1,3 +1,4 @@
+var activeStore;
 document.addEventListener("DOMContentLoaded", function () {
     const stores = [
         {
@@ -27,17 +28,66 @@ document.addEventListener("DOMContentLoaded", function () {
     //     .then(setMyStores)
     setMyStores(stores);
 
+    document.getElementById("new-store-button").addEventListener("click",function(){
+        showPopUp("Open Store");
+    });
+
+    initOpenStoreModel();
+    
+    initAddManagerModel();
+
     // When the user clicks on <span> (x), close the modal
     var x_buttons = document.getElementsByClassName("close");
     for (let x_button of x_buttons) {
         x_button.addEventListener("click", function () {
             var modals = document.getElementsByClassName("modal");
             for (let modal of modals) {
-                model.style.display = "none";
+                modal.style.display = "none";
             }
         });
     }
 });
+
+function initOpenStoreModel() {   
+    document.getElementById("confirm-open-store-btn").addEventListener("click",function(){
+        var store_name = document.getElementById("StoreNameInput").value;
+        var store_description  = document.getElementById("StoreDescInput").value;
+        fetch("/tradingSystem/openNewStore", {
+            method: "POST",
+            body: JSON.stringify({store: store_name, description: store_description})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        document.getElementById("StoreNameInput").value = "";
+        document.getElementById("StoreDescInput").value = "";
+        document.getElementById("openStoreModal").style.display = "none";
+    })
+}
+
+function initAddManagerModel() {   
+    document.getElementById("add-manager-button").addEventListener("click",function(){
+        var store_name = activeStore.name;
+        var username  = document.getElementById("new-manager-name").value;
+        fetch("http://localhost:8080/tradingSystem/addStoreManager", {
+            method: "POST",
+            body: JSON.stringify( {user: username, store:store_name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        document.getElementById("new-manager-name").value = "";
+        document.getElementById("addManagerModal").style.display = "none";
+    })
+}
 
 function setMyStores(stores) {
     const numOfStores = document.getElementById("num-of-stores");
@@ -90,6 +140,7 @@ function setMyStores(stores) {
         currStore.options.forEach(currAction=>{
             const a = document.createElement("a");
             a.addEventListener("click",function(){
+                activeStore = currStore;
                 showPopUp(currAction);
             })
             a.classList.add("dropdown-item");
@@ -111,6 +162,7 @@ function setMyStores(stores) {
     
 
 actionToModel={
+    "Open Store":"openStoreModal",
     "Add Manager":"addManagerModal",
     "Add Owner":"addOwnerModal",
     "Remove Manager":"removeManagerModal",
@@ -126,8 +178,9 @@ function showPopUp(action){
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
-    if (event.target == document.getElementById("editModal")) {
-        document.getElementById("editModal").style.display = "none";
+    var models = this.document.getElementsByClassName("modal");
+    for(let model of models){
+        //model.style.display = "none";
     }
 }
 

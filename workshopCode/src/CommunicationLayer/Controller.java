@@ -196,15 +196,6 @@ public class Controller {
                 for (int i = 0; 0 < keys.size(); i++)
                     keywords[i] = (String) keys.get(i);
 
-                String e = usersHandler.register("noy", "1234");
-                String d = usersHandler.login("noy", "1234", false);
-                String c = storeHandler.openNewStore("kravitz", "writing tools");
-                storeHandler.openNewStore("Pull&Bear", "clothes");
-                String f = storeHandler.UpdateInventory("kravitz", "pilot", 10, "Clothing", "black pen", 100);
-                String g = storeHandler.UpdateInventory("kravitz", "banana", 7, "Food", "yellow yummy banana", 50);
-                storeHandler.UpdateInventory("Pull&Bear", "skirt", 50, "Clothing", "skirt", 5);
-                usersHandler.logout();
-
                 String response = searchHandler.searchProduct(name, category, keywords);
                 headers.set("search", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -254,8 +245,8 @@ public class Controller {
                 //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
-                //JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
-                JSONObject requestJson = (JSONObject) parser.parse("{\"store\":\"Pull&Bear\", \"description\":\"clothes\"}");
+                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
+                //JSONObject requestJson = (JSONObject) parser.parse("{\"store\":\"Pull&Bear\", \"description\":\"clothes\"}");
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 String description = (requestJson.containsKey("description")) ? (String) requestJson.get("description") : null;
                 String response = storeHandler.openNewStore(storeName, description);
@@ -649,6 +640,16 @@ public class Controller {
         server.createContext("/tradingSystem/allProducts", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
+
+                String e = usersHandler.register("noy", "1234");
+                String d = usersHandler.login("noy", "1234", false);
+                String c = storeHandler.openNewStore("kravitz", "writing tools");
+                storeHandler.openNewStore("Pull&Bear", "clothes");
+                String f = storeHandler.UpdateInventory("kravitz", "pilot", 10, "Clothing", "black pen", 100);
+                String g = storeHandler.UpdateInventory("kravitz", "banana", 7, "Food", "yellow yummy banana", 50);
+                storeHandler.UpdateInventory("Pull&Bear", "skirt", 50, "Clothing", "skirt", 5);
+                usersHandler.logout();
+
                 String response = viewInfoHandler.getAllProduct();
                 headers.set("allProducts", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);

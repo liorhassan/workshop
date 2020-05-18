@@ -28,17 +28,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     ]
 
-    // fetch("localhost:8000/searchResults")
-    //     .then(response => response.json())
-    //     .then(setSearchResults)
-    setSearchResults(items);
+     fetch("http://localhost:8080/tradingSystem/allProducts")
+         .then(response => response.json())
+         .then(setSearchResults)
+   // setSearchResults(items);
 
-    const categories = ["Clothing","Food","Tech","Gardening"]
+    //const categories = ["Clothing","Food","Tech","Gardening"]
 
-    // fetch("localhost:8000/searchResults")
-    //     .then(response => response.json())
-    //     .then(setSearchResults)
-    setCategories(categories);
+     fetch("http://localhost:8080/tradingSystem/allCategories")
+         .then(response => response.json())
+         .then(setCategories)
+    //setCategories(categories);
 
     // When the user clicks on <span> (x), close the modal
     document.getElementsByClassName("close")[0].addEventListener("click", function () {
