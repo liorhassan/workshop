@@ -2,10 +2,7 @@ package DomainLayer.TradingSystem.Models;
 
 import DomainLayer.TradingSystem.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Store {
 
@@ -16,9 +13,10 @@ public class Store {
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
-    private DiscountPolicy discountPolicy;
-    private HashMap<Product, DiscountPolicy> discountPolicyPerProduct;
-    private DiscountPolicy discountPolicyForStore;
+    private List<DicountPolicy> discountPolicy;
+    private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
+    private List<DiscountBInterface> discountsOnBaskets;
+
 
     private PurchasePolicy purchasePolicy;
     private HashMap<Basket, List<ProductItem>> reservedProducts;
@@ -32,7 +30,9 @@ public class Store {
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
-        this.discountPolicy = new DiscountPolicy();
+        this.discountPolicy = new ArrayList<>();
+        this.discountsOnBaskets = new ArrayList<>();
+        this.discountsOnProducts = new HashMap<>();
         this.purchasePolicy = new PurchasePolicy();
         this.reservedProducts= new HashMap<>();
     }
@@ -200,13 +200,43 @@ public class Store {
         }
     }
 
-    public double calculateTotalCheck(Basket b){
+    public double calculateTotalCheck(Basket b, List<DiscountBInterface> discounts){
         double total = 0;
-        for (ProductItem pi: b.getProductItems()) {
-            total += (pi.getAmount() * pi.getProduct().getPrice());
+        if(discounts.size()>0) {
+            for (ProductItem pi : b.getProductItems()) {
+                boolean found = false;
+                for (DiscountBInterface disc : discounts) {
+                    if (disc instanceof DiscountBaseProduct){
+                        if(((DiscountBaseProduct) disc).getProductName().equals(pi.getProduct().getName())){
+                            total = total + disc.calc(b, pi.getProduct().getPrice());
+                            discounts.remove(disc);
+                            found = true;
+                        }
+                    }
+                }
+                if(!found){
+                    total = total + pi.getAmount() * pi.getProduct().getPrice();
+                }
+            }
+            if(discounts.size()> 0){
+                for(DiscountBInterface disc : discounts){
+                    if(disc.canGet(total)) {
+                        total = disc.calc(b, total);
+                    }
+                }
+            }
         }
-        double discount = this.discountPolicy.calcProductDiscount(b);
-        return total - discount;
+        else{
+            total = b.calcPrice();
+        }
+
+        for(DiscountBInterface dis :discountsOnBaskets){
+            if(!discounts.contains(dis)){
+                    total = dis.calc(b, total);
+            }
+        }
+
+        return total;
     }
 
 
@@ -229,5 +259,17 @@ public class Store {
 
     public void addDiscount(String productName, double percentage){
         this.discountPolicy.addDiscount(getProductByName(productName), percentage);
+    }
+
+    public List<DiscountBInterface> getDiscountsOnBasket(Basket basket){
+        List<DiscountBInterface> output = new ArrayList<>();
+        for(DiscountBaseProduct dis : discountsOnProducts.values()){
+            if(dis.canGet(basket.getProductAmount(dis.getProductName())))
+                output.add(dis);
+        }
+        for(DicountPolicy disP : discountPolicy){
+            output = disP.checkDiscounts(output, basket);
+        }
+        return output;
     }
 }

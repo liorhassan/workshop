@@ -1,7 +1,10 @@
 package DomainLayer.TradingSystem;
 
+import DomainLayer.TradingSystem.Models.Basket;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.Store;
+
+import java.util.List;
 
 public class DiscountBaseProduct implements DiscountBInterface {
 
@@ -33,13 +36,15 @@ public class DiscountBaseProduct implements DiscountBInterface {
     }
 
     @Override
-    public boolean canGet(int amount) {
+    public boolean canGet( double amount) {
         if(amount>minAmount)
             return true;
         return false;
     }
 
-    public  double calc(int amount, double price){
+    @Override
+    public  double calc(Basket basket, double price){
+        int amount = basket.getProductAmount(productName);
         double sum = 0;
         if (!onAllTheAmount){
             for(int i = amount; i>0; i--){

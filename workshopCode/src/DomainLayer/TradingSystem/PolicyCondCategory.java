@@ -30,7 +30,7 @@ public class PolicyCondCategory implements DicountPolicy {
                 if(amount == 0){
                     continue;
                 }
-                if ((basket.getStore().getProductByName(((DiscountBaseProduct) dis).getProductName()).getCategory() == category && dis.canGet(amount)) {
+                if ((basket.getStore().getProductByName(((DiscountBaseProduct) dis).getProductName()).getCategory() == category && dis.canGet(amount))) {
                     output.add(dis);
                 }
             }

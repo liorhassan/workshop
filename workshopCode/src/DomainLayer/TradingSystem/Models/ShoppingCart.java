@@ -1,5 +1,6 @@
 package DomainLayer.TradingSystem.Models;
 
+import DomainLayer.TradingSystem.DiscountBInterface;
 import DomainLayer.TradingSystem.ProductItem;
 
 import java.util.*;
@@ -88,7 +89,8 @@ public class ShoppingCart {
         double totalPrice = 0;
         for (Basket currBasket : this.baskets.values()) {
             Store currStore = currBasket.getStore();
-            totalPrice += currStore.calculateTotalCheck(currBasket);
+            List<DiscountBInterface> discounts = currBasket.getStore().getDiscountsOnBasket(currBasket);
+            totalPrice += currStore.calculateTotalCheck(currBasket, discounts);
         }
         this.cartTotalPrice = totalPrice;
     }

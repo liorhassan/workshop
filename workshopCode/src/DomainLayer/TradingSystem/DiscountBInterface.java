@@ -1,6 +1,10 @@
 package DomainLayer.TradingSystem;
 
+import DomainLayer.TradingSystem.Models.Basket;
+
 public interface DiscountBInterface {
-    public boolean canGet(int basketPrice);
-    public double calc(int basketPrice);
+    public boolean canGet(double param);
+    public double calc(Basket basket, double price);
 }
+
+

@@ -16,8 +16,8 @@ public class PolicyCondProduct implements DicountPolicy {
 
 
     @Override
-    public List<DiscountBInterface> checkDiscounts(List<DiscountBInterface> discounts, Basket basket) {
-        List<DiscountBInterface> output = new ArrayList<>();
+    public List<DiscountBaseProduct> checkDiscounts(List<DiscountBaseProduct> discounts, Basket basket) {
+        List<DiscountBaseProduct> output = new ArrayList<>();
         int amount = 0;
         for (ProductItem pi : basket.getProductItems()) {
             if (pi.getProduct().equals(basket.getStore().getProductByName(productName))) {
@@ -28,12 +28,11 @@ public class PolicyCondProduct implements DicountPolicy {
         if(amount == 0){
             return output;
         }
-        for (DiscountBInterface dis : discounts){
-            if(dis instanceof DiscountBaseProduct){
-                if(((DiscountBaseProduct) dis).getProductName().equals(productName) && dis.canGet(amount)){
+        for (DiscountBaseProduct dis : discounts){
+
+                if(dis.getProductName().equals(productName) && dis.canGet(amount)){
                     output.add(dis);
                 }
-            }
         }
         return output;
     }

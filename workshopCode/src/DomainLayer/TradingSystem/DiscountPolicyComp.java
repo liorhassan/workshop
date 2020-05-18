@@ -22,12 +22,44 @@ public class DiscountPolicyComp {
 
     }
 
+    public List<DiscountBInterface> checkDiscounts(List<DiscountBInterface> discounts, Basket basket) {
+        List<DiscountBInterface> disc1 = discount_operand1.checkDiscounts(discounts, basket);
+        List<DiscountBInterface> disc2 = discount_operand2.checkDiscounts(discounts, basket);
+        List<DiscountBInterface> output = new ArrayList<>();
 
-
-    public void addDiscount(Product p, Double percentage) {
-        discountPerProduct.put(p, (percentage/100));
+        switch(operator){
+            case OR:
+                output = disc1;
+                for(DiscountBInterface dis : disc2){
+                    if(!output.contains(dis))
+                        output.add(dis);
+                }
+                break;
+            case AND:
+                for(DiscountBInterface dis : disc2){
+                    if(disc1.contains(dis))
+                        output.add(dis);
+                }
+                break;
+            case XOR:
+                for(DiscountBInterface dis : disc2){
+                    if(!disc1.contains(dis))
+                        output.add(dis);
+                }
+                for(DiscountBInterface dis : disc1){
+                    if(!disc2.contains(dis))
+                        output.add(dis);
+                }
+                break;
+        }
+        return output;
     }
 
+
+    //public void addDiscount(Product p, Double percentage) {
+    //   discountPerProduct.put(p, (percentage/100));
+    //}
+/*
     public double calcProductDiscount(Basket b){
         double totalDisc = 0;
         for(ProductItem pi: b.getProductItems()){
@@ -39,5 +71,7 @@ public class DiscountPolicyComp {
         }
         return totalDisc;
     }
+
+ */
 }
 

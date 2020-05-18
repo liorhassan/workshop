@@ -1,5 +1,7 @@
 package DomainLayer.TradingSystem;
 
+import DomainLayer.TradingSystem.Models.Basket;
+
 public class DiscountBaseBasket implements DiscountBInterface {
 
     private int sum;
@@ -13,14 +15,14 @@ public class DiscountBaseBasket implements DiscountBInterface {
         this.onPrice = onPrice;
     }
     @Override
-    public boolean canGet(int basketPrice){
-        if(basketPrice>sum){
+    public boolean canGet(double price ){
+        if (price > sum) {
             return true;
         }
         return false;
     }
     @Override
-    public double calc(double basketPrice){
+    public double calc(Basket basket, double basketPrice){
         return (basketPrice - (basketPrice * (discount/100)));
     }
 }
