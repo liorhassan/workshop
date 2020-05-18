@@ -12,18 +12,19 @@ public class UsersHandler {
 
         SystemLogger.getInstance().writeEvent("Login command: " + username);
 
-        if (!SecurityFacade.getInstance().CorrectPassword(username, password)) {
-            SystemLogger.getInstance().writeError("Invalid password");
-            throw new RuntimeException("This password is incorrect");
-            //return createJSONMsg("ERROR", "This password is incorrect");
-            //return "This password is incorrect";
-        }
+
         try {
             String[] args ={username, password};
             if(SystemFacade.getInstance().emptyString(args))
                 throw new IllegalArgumentException("The username is invalid");
             if (! SystemFacade.getInstance().userExists(username))
                 throw new IllegalArgumentException("This user is not registered");
+            if (!SecurityFacade.getInstance().CorrectPassword(username, password)) {
+                SystemLogger.getInstance().writeError("Invalid password");
+                throw new RuntimeException("This password is incorrect");
+                //return createJSONMsg("ERROR", "This password is incorrect");
+                //return "This password is incorrect";
+            }
             if(mood && !(SystemFacade.getInstance().checkIfUserIsAdmin(username)))
                 throw new IllegalArgumentException("this user is not a system admin");
             SystemFacade.getInstance().login(username, mood);
@@ -81,7 +82,8 @@ public class UsersHandler {
 
     }
 
-    public String addAdmin(String username) {
+    public String
+    addAdmin(String username) {
         try {
             String[] args = {username};
             if (SystemFacade.getInstance().emptyString(args))
@@ -97,8 +99,8 @@ public class UsersHandler {
         }
         catch (Exception e){
             throw new RuntimeException(e.getMessage());
-            //return createJSONMsg("ERROR", e.getMessage());
-            //return e.getMessage();
+//            return createJSONMsg("ERROR", e.getMessage());
+//            return e.getMessage();
         }
     }
 

@@ -175,7 +175,11 @@ public class Controller{
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
-            } finally {
+            }
+            catch (Exception e) {
+                sendERROR(he, e.getMessage());
+            }
+            finally {
                 he.close();
             }
         });

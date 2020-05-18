@@ -13,6 +13,8 @@
     integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
     crossorigin="anonymous"></script>
   <link rel="stylesheet" href="/css/EntryWindow.css">
+  <script src="/js/EntryWindow.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
@@ -43,7 +45,7 @@
   <!-- Fixed home bar  -->
 
 
-  <form class="form-signin">
+  <div class="form-signin">
 
     <div class="form-label-group">
       <input type="username" id="inputUsername" class="form-control" placeholder="Username" required="" autofocus="">
@@ -57,12 +59,12 @@
 
     <div class="checkbox mb-3">
       <label>
-        <input type="checkbox" value="AdminMode"> Admin Mode
+        <input id="isAdmin" type="checkbox" value="AdminMode"> Admin Mode
       </label>
     </div>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-    <button class="btn btn-lg btn-secondary btn-block" type="submit">Sign up</button>
-  </form>
+    <button id="loginBtn" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <button id="registerBtn" class="btn btn-lg btn-secondary btn-block" type="submit">Sign up</button>
+  </div>
 
 
 </body>
