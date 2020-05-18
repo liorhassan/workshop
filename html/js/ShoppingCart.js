@@ -1,32 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-//    const items = [
-//        {
-//            "name": "paper",
-//            "price": 15,
-//            "store": "kravitz",
-//            "amount": 3
-//        },
-//        {
-//            "name": "pen",
-//            "price": 25,
-//            "store": "kravitz",
-//            "amount": 3
-//        },
-//
-//        {
-//            "name": "pineapple",
-//            "price": 15,
-//            "store": "kravitz",
-//            "amount": 3
-//        },
-//
-//        {
-//            "name": "apple",
-//            "price": 15,
-//            "store": "kravitz",
-//            "amount": 3
-//        }
-//    ]
 
      fetch("http://localhost:8080/tradingSystem/cart")
          .then(response => response.json())
