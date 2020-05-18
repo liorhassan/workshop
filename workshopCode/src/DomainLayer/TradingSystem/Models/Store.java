@@ -16,9 +16,8 @@ public class Store {
     private List<DicountPolicy> discountPolicy;
     private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
     private List<DiscountBInterface> discountsOnBaskets;
+    private List<PurchasePolicy> purchasePolicies;
 
-
-    private PurchasePolicy purchasePolicy;
     private HashMap<Basket, List<ProductItem>> reservedProducts;
 
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
@@ -33,7 +32,7 @@ public class Store {
         this.discountPolicy = new ArrayList<>();
         this.discountsOnBaskets = new ArrayList<>();
         this.discountsOnProducts = new HashMap<>();
-        this.purchasePolicy = new PurchasePolicy();
+        this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
     }
 
@@ -171,8 +170,9 @@ public class Store {
     public void reserveBasket(Basket b){
         //this field save all the products that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
-        if(!this.purchasePolicy.purchaseAccordingToPolicy(b)){
-            throw new RuntimeException("Your purchase doesn’t match the store’s policy");
+        for(PurchasePolicy p : purchasePolicies){
+            if(!p.purchaseAccordingToPolicy(b))
+                throw new RuntimeException("Your purchase doesn’t match the store’s policy");
         }
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {
@@ -257,9 +257,25 @@ public class Store {
     }
 
 
-    public void addDiscount(String productName, double percentage){
-        this.discountPolicy.addDiscount(getProductByName(productName), percentage);
+    public void addDiscountForProduct(String productName, int percentage, int limit, boolean onAll){
+        Product p = this.getProductByName(productName);
+        if(p != null)
+            discountsOnProducts.put(p, new DiscountBaseProduct(productName, limit, percentage, onAll));
+
     }
+
+    public void addDiscountForBasket(int percentage, int limit, boolean onprice){
+
+            discountsOnBaskets.add(new DiscountBaseBasket( limit, percentage, onprice));
+
+    }
+
+    public void addDiscountPolicy(int percentage, int limit, boolean onprice){
+
+        discountsOnBaskets.add(new DiscountBaseBasket( limit, percentage, onprice));
+
+    }
+
 
     public List<DiscountBInterface> getDiscountsOnBasket(Basket basket){
         List<DiscountBInterface> output = new ArrayList<>();

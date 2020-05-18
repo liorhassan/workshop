@@ -1,6 +1,6 @@
 package DomainLayer.TradingSystem;
 
-public enum DiscountOperator {
+public enum PolicyOperator {
     OR,
     XOR,
     AND,
