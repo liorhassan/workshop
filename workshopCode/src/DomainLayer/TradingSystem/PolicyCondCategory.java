@@ -6,11 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PolicyCondCategory implements DicountPolicy {
-    private boolean deserve;
     private Category category;
 
-    public PolicyCondCategory(boolean deserve, Category category) {
-        this.deserve = deserve;
+    public PolicyCondCategory( Category category) {
         this.category = category;
     }
 

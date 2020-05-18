@@ -3,6 +3,8 @@ package ServiceLayer;
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
 
+import java.util.List;
+
 public class StoreHandler {
 
     public String openNewStore(String storeName, String storeDescription){
@@ -77,7 +79,7 @@ public class StoreHandler {
         SystemFacade.getInstance().resetStores();
     }
 
-    public String addDiscount(String storeName, String productName, double percentage){
+    public String addDiscountForProduct(String storeName, String productName, int percentage, int amount, boolean onAll){
         try{
             String[] args = {storeName, productName};
             if(SystemFacade.getInstance().emptyString(args)){
@@ -86,17 +88,46 @@ public class StoreHandler {
             if(percentage > 100 || percentage < 0){
                 throw new IllegalArgumentException("Invalid percentage value: must be between 0 and 100");
             }
+            if(amount >= 0){
+                throw new IllegalArgumentException("Invalid amount value: must be more then 0 ");
+            }
             if(!SystemFacade.getInstance().storeExists(storeName)){
-                throw new IllegalArgumentException("The store doesn't exist in the trading system");
+                throw new IllegalArgumentException("The store doesn't exist");
             }
-            if(!SystemFacade.getInstance().checkIfProductExists(storeName, productName)){
-                throw new IllegalArgumentException("The product isn't available in this store");
+            if(!SystemFacade.getInstance().checkIfProductExists(storeName, productName) && !SystemFacade.getInstance().productHasDiscount(storeName, productName)){
+                throw new IllegalArgumentException("Cant add the discount on this product");
             }
-            SystemFacade.getInstance().addDiscount(storeName, productName, percentage);
-            return "discount have been added to the store";
+            SystemFacade.getInstance().addDiscountOnProduct(storeName, productName, percentage, amount, onAll);
+            return "The discount has been added successfully";
         }
         catch(Exception e){
             return e.getMessage();
         }
     }
+
+    public String addDiscountForProduct(String storeName,  int percentage, int amount, boolean onPrice) {
+        try {
+            String[] args = {storeName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if (percentage > 100 || percentage < 0) {
+                throw new IllegalArgumentException("Invalid percentage value: must be between 0 and 100");
+            }
+            if (amount >= 0) {
+                throw new IllegalArgumentException("Invalid amount value: must be more then 0 ");
+            }
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+
+            SystemFacade.getInstance().addDiscountOnBasket(storeName, percentage, amount, onPrice);
+            return "The discount has been added successfully";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+
+    }
+
+    public String addDiscountPolicyIf(List<String> condition,  )
 }

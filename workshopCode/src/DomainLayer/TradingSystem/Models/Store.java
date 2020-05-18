@@ -14,6 +14,7 @@ public class Store {
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
     private List<DicountPolicy> discountPolicy;
+
     private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
     private List<DiscountBInterface> discountsOnBaskets;
     private List<PurchasePolicy> purchasePolicies;
@@ -48,7 +49,9 @@ public class Store {
     public void setName(String name) {
         this.name = name;
     }
-
+    public HashMap<Product, DiscountBaseProduct> getDiscountsOnProducts() {
+        return discountsOnProducts;
+    }
 
     public Collection<Product> getProducts(){
         return  products.getProducts().keySet();

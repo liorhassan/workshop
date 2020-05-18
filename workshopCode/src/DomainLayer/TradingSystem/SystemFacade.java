@@ -495,9 +495,21 @@ public class SystemFacade {
         return adminMode;
     }
 
-    public void addDiscount(String storeName, String productName, double percentage){
+    public void addDiscountOnProduct(String storeName, String productName, int percentage, int amount, boolean onAll){
         Store s = getStoreByName(storeName);
-        s.addDiscount(productName, percentage);
+        s.addDiscountForProduct(productName, percentage, amount, onAll);
+    }
+
+    public void addDiscountOnBasket(String storeName, int percentage, int amount, boolean onAll){
+        Store s = getStoreByName(storeName);
+        s.addDiscountForBasket(percentage, amount, onAll);
+    }
+    public boolean productHasDiscount(String storeName, String productName){
+        Store s = getStoreByName(storeName);
+        Product p = s.getProductByName(productName);
+        if(s.getDiscountsOnProducts().containsKey(p))
+            return true;
+        return false;
     }
 
 }
