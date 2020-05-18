@@ -98,7 +98,7 @@ public class UsersHandler {
             //return"done";
         }
         catch (Exception e){
-            throw new RuntimeException(e.getMessage());
+                throw new RuntimeException(e.getMessage());
 //            return createJSONMsg("ERROR", e.getMessage());
 //            return e.getMessage();
         }

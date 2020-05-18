@@ -2,10 +2,10 @@
 // })
 
 function getCustomerHistory() {
-    const customerName = document.getElementById("customerName");
+    const customerName = document.getElementById("customerName").value;
     fetch('http://localhost:8080/tradingSystem/userPurchaseHistoryAdmin', {
         method: 'POST',
-        body: JSON.stringify({ user: customerName.value })
+        body: JSON.stringify({ user: customerName })
     })
         .then(response => {
             if (response.ok) {
@@ -31,15 +31,15 @@ function getCustomerHistory() {
             }
         })
 
-    customerName.value = "";
+    document.getElementById("customerName").value = "";
     closeModal("viewCustomerModal");
 }
 
 function getStoreHistory() {
-    const storeName = document.getElementById("storeName");
+    const storeName = document.getElementById("storeName").value;
     fetch('http://localhost:8080/tradingSystem/storePurchaseHistoryAdmin', {
         method: 'POST',
-        body: JSON.stringify({ store: storeName.value })
+        body: JSON.stringify({ store: storeName })
     })
         .then(response => {
             if (response.ok) {
@@ -65,7 +65,7 @@ function getStoreHistory() {
             }
         })
 
-    storeName.value = "";
+    document.getElementById("storeName").value = "";
     closeModal("viewCustomerModal");
 }
 
@@ -110,7 +110,7 @@ function setHistory(items) {
 }
 
 function addAdmin() {
-    const userName = document.getElementById("userName");
+    const userName = document.getElementById("userName").value;
     fetch("http://localhost:8080/tradingSystem/addAdmin", {
         method: 'POST',
         body: JSON.stringify({ userName: userName })
@@ -131,11 +131,11 @@ function addAdmin() {
             } else {
                 Swal.fire(
                     'OOPS!',
-                    errorMsg,
+                    response,
                     'error')
             }
         })
-    userName.value = "";
+    document.getElementById("userName").value = ""
     closeModal("addAdminModal");
 }
 
