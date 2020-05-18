@@ -28,5 +28,6 @@ public class PurchasePolicyComp implements PurchasePolicy{
             case XOR:
                 return ((result1 || result2) && !(result1 && result2));
         }
+        return false;
     }
 }
