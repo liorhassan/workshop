@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+    var webSocket = new WebSocket( "ws://localhost:8080/WebSocketServer/socketEndPoint");
+
     document.getElementById("loginBtn").addEventListener("click", function () {
 
         var inputUsername = document.getElementById("inputUsername").value;
@@ -29,6 +32,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             window.location.href = "/html/HomeGuest.html";
                         }
 
+                        webSocket.onopen = function () { webSocket.send(inputUsername)};
+
+                        webSocket.onmessage = function(msg) { alert(msg)};
+
+                        //disconnect() { webSocket.close}
                           })
              } else {
                   Swal.fire(

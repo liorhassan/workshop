@@ -95,6 +95,8 @@ public class Store {
     public void removeManager(User user) {
         managements.remove(user);
         user.removeStoreManagement(this);
+        NotificationSystem.getInstance().notify(user.getUsername(), "You have been no longer " + name + "'s manager");
+
     }
 
     public boolean hasProduct(String productName) {

@@ -35,7 +35,10 @@ public class Controller {
     private static final int STATUS_OK = 200;
     private static final int STATUS_METHOD_NOT_ALLOWED = 405;
 
+    private static Client clientSocket;
+
     public static void main(String[] args) throws IOException {
+        clientSocket = new Client();
         final HttpServer server = HttpServer.create(new InetSocketAddress(HOSTNAME, PORT), 1);
 
         //-----------------------------------------Handle HTML\JS Requests------------------------------------------
@@ -126,7 +129,6 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{userName: noy, password: 123}");
                 String userName = (requestJson.containsKey("userName")) ? (String) requestJson.get("userName") : null;
                 String password = (requestJson.containsKey("password")) ? (String) (requestJson.get("password")) : null;
                 String response = usersHandler.register(userName, password);
