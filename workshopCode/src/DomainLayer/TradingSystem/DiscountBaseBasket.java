@@ -17,6 +17,12 @@ public class DiscountBaseBasket implements DiscountBInterface {
         this.discount = discount;
         this.onPrice = onPrice;
     }
+
+
+    public int getDiscountID() {
+        return discountID;
+    }
+
     @Override
     public boolean canGet(double price ){
         if (price > sum) {

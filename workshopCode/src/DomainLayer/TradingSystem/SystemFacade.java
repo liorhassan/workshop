@@ -639,4 +639,9 @@ public class SystemFacade {
             return s.getProductsJS();
         return new JSONArray().toJSONString();
     }
+
+    public String viewDiscounts(String storeName){
+        Store store = getStoreByName(storeName);
+        return store.viewDiscount();
+    }
 }

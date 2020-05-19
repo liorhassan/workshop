@@ -8,6 +8,7 @@ import java.util.List;
 
 public class DiscountBaseProduct implements DiscountBInterface {
 
+
     private int discountID;
     private String productName;
     private int minAmount;
@@ -35,6 +36,11 @@ public class DiscountBaseProduct implements DiscountBInterface {
 
     public boolean isOnAllTheAmount() {
         return onAllTheAmount;
+    }
+
+
+    public int getDiscountID() {
+        return discountID;
     }
 
     @Override

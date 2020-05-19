@@ -283,12 +283,25 @@ public class Store {
 
     public void addDiscountPolicy(int percentage, int limit, boolean onprice){
 
-        discountsOnBaskets.add(new DiscountBaseBasket( limit, percentage, onprice));
+        //discountsOnBaskets.add(new DiscountBaseBasket( limit, percentage, onprice));
 
     }
 
     public String viewDiscount(){
-        JASONArray discountsdes = new JSONArray();
+        JSONArray discountsdes = new JSONArray();
+        for(DiscountBInterface dis :discountsOnBaskets){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId: ", dis.getDiscountID());
+            curr.put("discountString: ", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+        for(DiscountBInterface dis :discountsOnProducts.values()){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId: ", dis.getDiscountID());
+            curr.put("discountString: ", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+        return discountsdes.toJSONString();
     }
 
 

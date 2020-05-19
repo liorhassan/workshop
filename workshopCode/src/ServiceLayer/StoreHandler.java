@@ -2,6 +2,8 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONObject;
+
 
 public class StoreHandler {
 
@@ -16,11 +18,12 @@ public class StoreHandler {
                 throw new IllegalArgumentException("Must enter store name and description");
             if (SystemFacade.getInstance().storeExists(storeName))
                 throw new RuntimeException("Store name already exists, please choose a different one");
-            return SystemFacade.getInstance().openNewStore(storeName,storeDescription);
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().openNewStore(storeName,storeDescription));
         }
         catch (RuntimeException e){
             SystemLogger.getInstance().writeError("Open new store error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -38,11 +41,12 @@ public class StoreHandler {
                 throw new RuntimeException("You must be this store owner for this action");
             if(SystemFacade.getInstance().checkIfUserIsOwner(storeName, username))
                 throw new RuntimeException("This username is already one of the store's owners");
-            return SystemFacade.getInstance().appointOwner(username, storeName);
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().appointOwner(username, storeName));
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Add store owner error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -65,19 +69,19 @@ public class StoreHandler {
                 if(amount == null || SystemFacade.getInstance().emptyString(args2) || amount < 0)
                     throw new IllegalArgumentException("Must enter amount bigger than 0 and product description");
             }
-            return SystemFacade.getInstance().updateInventory(storeName, productName, productPrice, productCategory, productDes, amount);
+            return  createJSONMsg("SUCCESS", SystemFacade.getInstance().updateInventory(storeName, productName, productPrice, productCategory, productDes, amount));
+            //return SystemFacade.getInstance().updateInventory(storeName, productName, productPrice, productCategory, productDes, amount);
         }
         catch (Exception e) {
             SystemLogger.getInstance().writeError("Update inventory error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
-    public void resetStores(){
-        SystemFacade.getInstance().resetStores();
-    }
+    public String addDiscountForProduct(String storeName, String productName, int percentage, int amount, boolean onAll){
 
-    public String addDiscount(String storeName, String productName, double percentage){
         try{
             String[] args = {storeName, productName};
             if(SystemFacade.getInstance().emptyString(args)){
@@ -86,17 +90,82 @@ public class StoreHandler {
             if(percentage > 100 || percentage < 0){
                 throw new IllegalArgumentException("Invalid percentage value: must be between 0 and 100");
             }
+            if(amount >= 0){
+                throw new IllegalArgumentException("Invalid amount value: must be more then 0 ");
+            }
             if(!SystemFacade.getInstance().storeExists(storeName)){
-                throw new IllegalArgumentException("The store doesn't exist in the trading system");
+                throw new IllegalArgumentException("The store doesn't exist");
             }
-            if(!SystemFacade.getInstance().checkIfProductExists(storeName, productName)){
-                throw new IllegalArgumentException("The product isn't available in this store");
+            if(!SystemFacade.getInstance().checkIfProductExists(storeName, productName) && !SystemFacade.getInstance().productHasDiscount(storeName, productName)){
+                throw new IllegalArgumentException("Cant add the discount on this product");
             }
-            SystemFacade.getInstance().addDiscount(storeName, productName, percentage);
-            return "discount have been added to the store";
+            SystemFacade.getInstance().addDiscountOnProduct(storeName, productName, percentage, amount, onAll);
+            return createJSONMsg("SUCCESS","The discount has been added successfully");
+
+        }
+        catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
+        }
+    }
+
+    public String addDiscountForProduct(String storeName,  int percentage, int amount, boolean onPrice) {
+        try {
+            String[] args = {storeName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if (percentage > 100 || percentage < 0) {
+                throw new IllegalArgumentException("Invalid percentage value: must be between 0 and 100");
+            }
+            if (amount >= 0) {
+                throw new IllegalArgumentException("Invalid amount value: must be more then 0 ");
+            }
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+
+            SystemFacade.getInstance().addDiscountOnBasket(storeName, percentage, amount, onPrice);
+            return createJSONMsg("SUCCESS","The discount has been added successfully");
+
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+
+    }
+
+    public String viewDiscounts(String storeName){
+        try {
+            String[] args = {storeName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+            return createJSONMsg("SUCCESS",SystemFacade.getInstance().viewDiscounts(storeName));
         }
         catch(Exception e){
             return e.getMessage();
         }
     }
+
+    public String getStoreProducts(String storeName) {
+        return SystemFacade.getInstance().getAllProducts(storeName);
+    }
+
+    public void resetStores(){
+        SystemFacade.getInstance().resetStores();
+    }
+
+    public String getMyStores(){
+        return SystemFacade.getInstance().myStores();
+    }
+
+    public String createJSONMsg(String type, String content) {
+        JSONObject response = new JSONObject();
+        response.put(type, content);
+        return response.toJSONString();
+    }
+
 }
