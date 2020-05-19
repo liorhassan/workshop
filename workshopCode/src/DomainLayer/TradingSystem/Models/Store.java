@@ -15,7 +15,7 @@ public class Store {
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
-    private List<DicountPolicy> discountPolicy;
+    private List<DiscountPolicy> discountPolicies;
 
     private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
     private List<DiscountBInterface> discountsOnBaskets;
@@ -33,7 +33,7 @@ public class Store {
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
-        this.discountPolicy = new ArrayList<>();
+        this.discountPolicies = new ArrayList<>();
         this.discountsOnBaskets = new ArrayList<>();
         this.discountsOnProducts = new HashMap<>();
         this.purchasePolicies = new ArrayList<>();
@@ -72,7 +72,17 @@ public class Store {
         return products.getProducts();
     }
 
-
+    public DiscountBInterface getDiscountById(int discountId){
+        for (DiscountBInterface dis : discountsOnProducts.values()) {
+            if (dis.getDiscountID() == discountId)
+                return dis;
+        }
+        for (DiscountBInterface dis : discountsOnBaskets) {
+            if (dis.getDiscountID() == discountId)
+                return dis;
+        }
+        return null;
+    }
 
     public Product getProductByName(String productName){
         for (Product p : products.getProducts().keySet()) {
@@ -281,10 +291,8 @@ public class Store {
 
     }
 
-    public void addDiscountPolicy(int percentage, int limit, boolean onprice){
-
-        //discountsOnBaskets.add(new DiscountBaseBasket( limit, percentage, onprice));
-
+    public void addDiscountPolicy(DiscountPolicy discountPolicy){
+        discountPolicies.add(discountPolicy);
     }
 
     public String viewDiscount(){
@@ -311,7 +319,7 @@ public class Store {
             if(dis.canGet(basket.getProductAmount(dis.getProductName())))
                 output.add(dis);
         }
-        for(DicountPolicy disP : discountPolicy){
+        for(DiscountPolicy disP : discountPolicies){
             output = disP.checkDiscounts(output, basket);
         }
         return output;

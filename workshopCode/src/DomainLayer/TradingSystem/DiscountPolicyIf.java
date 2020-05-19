@@ -2,15 +2,14 @@ package DomainLayer.TradingSystem;
 
 import DomainLayer.TradingSystem.Models.Basket;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class DiscountPolicyIf implements DicountPolicy{
+public class DiscountPolicyIf implements DiscountPolicy {
     private DiscountBInterface result;
-    private DicountPolicy condition;
+    private DiscountPolicy condition;
 
 
-    public DiscountPolicyIf(DiscountBInterface result, DicountPolicy condition){
+    public DiscountPolicyIf(DiscountBInterface result, DiscountPolicy condition){
         this.condition = condition;
         this.result = result;
     }

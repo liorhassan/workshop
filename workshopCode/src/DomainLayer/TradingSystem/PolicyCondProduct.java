@@ -5,11 +5,11 @@ import DomainLayer.TradingSystem.Models.Basket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolicyCondProduct implements DicountPolicy {
+public class PolicyCondProduct implements DiscountPolicy {
 
     private String productName;
 
-    public PolicyCondProduct(boolean deserve, String product) {
+    public PolicyCondProduct( String product) {
 
         this.productName = product;
     }
