@@ -12,7 +12,11 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/css/EntryWindow.css">
+    <!--  <link rel="stylesheet" href="/css/EntryWindow.css">  -->
+
+    <link rel="stylesheet" href="./../css/HomeRegisterd.css">
+    <script src="../js/HomeGuest.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
@@ -40,39 +44,94 @@
     </nav>
     <!-- Fixed home bar  -->
     <main role="main" class="flex-shrink-0">
-        <div class="container">
+        <div class="container" id="search-bar">
             <form class="form-inline mt-5">
-                <!--<label class="sr-only" for="inlineFormInputName2">Product</label> -->
-                <!-- <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputProduct" placeholder="Product"> -->
-
-                <!-- <select class="form-control mb-2 mr-sm-2" id="inlineFormInputCategory" placeholder="Category"> -->
                 <div class="input-group mb-2 mr-sm-2">
-                    <input type="text" class="form-control" placeholder="Product"
-                        varia-label="Text input with dropdown button">
+                    <input type="text" class="form-control" id="product-name" placeholder="Product"
+                           varia-label="Text input with dropdown button">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">Category</button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item">Clothes</a>
-                            <a class="dropdown-item">Another action</a>
-                            <a class="dropdown-item">Something else here</a>
-                        </div>
+                        <select class="custom-select" id="category-drop1">
+                            <option selected>Caterory</option>
+                            <option value="1">Clothes</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+
                     </div>
                 </div>
-
-                <!-- <label class="sr-only" for="inlineFormInputGroupKeyWords">KeyWords</label> -->
                 <div class="input-group mb-2 mr-sm-2">
                     <div class="input-group-prepend">
                         <div class="input-group-text">#</div>
                     </div>
-                    <input type="text" class="form-control" id="inlineFormInputGroupKeyWords" placeholder="key words">
+                    <input type="text" class="form-control" id="key-words" placeholder="key words">
                 </div>
 
-                <button type="search" class="btn btn-primary mb-2">Search</button>
+                <a class="btn btn-primary mb-2" id="search-button">Search</a>
             </form>
-
         </div>
     </main>
+
+    <div class="row" id="search-part">
+        <div class="col-md-8 order-md-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Products</span>
+                <span class="badge badge-secondary badge-pill" id="num-of-items">3</span>
+            </h4>
+            <ul class="list-group mb-3" id="search-results"></ul>
+
+        </div>
+        <div class="col-md-4 order-md-1" id="filter-results">
+            <h4 class="mb-3">Filter Results</h4>
+            <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">Min Price</div>
+                </div>
+                <input id="min-price" type="number" min=0 class="form-control">
+            </div>
+            <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">Max Price</div>
+                </div>
+                <input id="max-price" type="number" min=0 class="form-control">
+            </div>
+            <div class="input-group-append" style="margin-bottom: 10pt;">
+                <select class="custom-select" id="category-drop2">
+                    <option selected>Caterory</option>
+                    <option value="1">Clothes</option>
+                    <option value="2">Games</option>
+                    <option value="3">Tech</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-lg btn-block" id="filter-button">Filter</button>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Product's info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <p id="model-product-name"></p>
+                <p id="product-store"></p>
+                <p id="product-price"></p>
+                <p id="product-description"></p>
+
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">Amount</div>
+                    </div>
+                    <input id="product-amount" type="number" min=0 class="form-control">
+                </div>
+
+                <button id="add-to-cart" class="btn btn-primary">Add To Shopping Cart</button>
+            </div>
+        </div>
+
+    </div>
 
 
 </body>

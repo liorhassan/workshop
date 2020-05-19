@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             window.location.href = "/html/AdminWindow.html";
                         }
                         else{
-                            window.location.href = "/html/HomeGuest.html";
+                            window.location.href = "/html/HomeRegisterd.html";
                         }
 
                         webSocket.send(inputUsername);
