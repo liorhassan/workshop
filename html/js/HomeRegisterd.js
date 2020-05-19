@@ -28,21 +28,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     ]
 
-     fetch("http://localhost:8080/tradingSystem/allProducts")
+    fetch("http://localhost:8080/tradingSystem/allProducts")
          .then(response => response.json())
          .then(setSearchResults)
-   // setSearchResults(items);
-
-    //const categories = ["Clothing","Food","Tech","Gardening"]
-
-     fetch("http://localhost:8080/tradingSystem/allCategories")
+   
+    fetch("http://localhost:8080/tradingSystem/allCategories")
          .then(response => response.json())
          .then(setCategories)
-    //setCategories(categories);
-
-    // When the user clicks on <span> (x), close the modal
+   
     document.getElementsByClassName("close")[0].addEventListener("click", function () {
-        document.getElementById("editModal").style.display = "none";
+    document.getElementById("editModal").style.display = "none";
     })
 
     document.getElementById("search-button").addEventListener("click", function() {
@@ -59,12 +54,17 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => {
             if (response.ok) {
-                return response.json();
+                response.json().then(setSearchResults);
             } else {
-                return response.text();
+                response.text().then(responseMsg=>{
+                    Swal.fire(
+                        'OOPS!',
+                        responseMsg,
+                        'error')
+                })
             }
-          })
-          .then(setSearchResults)
+        })
+        
     })
 
     document.getElementById("filter-button").addEventListener("click", function() {
@@ -72,19 +72,23 @@ document.addEventListener("DOMContentLoaded", function () {
         var max_price = document.getElementById("max-price").value;
         var selected = document.getElementById("category-drop2").selectedIndex;
         var category = (selected ==  0) ? "" : document.getElementById("category-drop2").options[selected].text;
-    
+        var temp = JSON.stringify({maxPrice: max_price, minPrice: min_price, category: category});
         fetch("http://localhost:8080/tradingSystem/filter", {
             method: "POST",
             body: JSON.stringify({maxPrice: max_price, minPrice: min_price, category: category})
         })
         .then(response => {
             if (response.ok) {
-                return response.json();
+                response.json().then(setSearchResults);
             } else {
-                return response.text();
+                response.text().then(responseMsg=>{
+                    Swal.fire(
+                        'OOPS!',
+                        responseMsg,
+                        'error')
+                })
             }
-          })
-          .then(setSearchResults)
+        })
     })
 });
 
@@ -185,9 +189,22 @@ function showPopUp(item){
             } else {
                 return response.text();
             }
-          })
-        
-          document.getElementById("editModal").style.display = "none";
+        })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
+
+        document.getElementById("editModal").style.display = "none";
 
     })
 

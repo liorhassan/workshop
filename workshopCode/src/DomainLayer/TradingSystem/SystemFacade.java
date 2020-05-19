@@ -7,6 +7,7 @@ import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.Security.SecurityFacade;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -329,10 +330,14 @@ public class SystemFacade {
 
     // function for handling Use Case 4.10 and 6.4 - written by Nufar
     public String getStorePurchaseHistory(String storeName) {
+        JSONParser parser = new JSONParser();
         StorePurchaseHistory purchaseHistory = this.stores.get(storeName).getPurchaseHistory();
         JSONArray historyArray = new JSONArray();
         for (Purchase p : purchaseHistory.getStorePurchases()) {
-            historyArray.add(p.getPurchasedProducts().viewOnlyProducts());
+            try {
+                JSONArray currPurch = (JSONArray) parser.parse(p.getPurchasedProducts().viewOnlyProducts());
+                historyArray.add(currPurch);
+            }catch(Exception e){System.out.println(e.getMessage());};
         }
         return historyArray.toJSONString();
 //        String historyOutput = "Shopping history of the store:" + "\n";
