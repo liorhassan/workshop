@@ -109,7 +109,7 @@ public class StoreHandler {
         }
     }
 
-    public String addDiscountForProduct(String storeName,  int percentage, int amount, boolean onPrice) {
+    public String addDiscountForBasket(String storeName,  int percentage, int amount, boolean onPrice) {
         try {
             String[] args = {storeName};
             if (SystemFacade.getInstance().emptyString(args)) {
