@@ -24,9 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     ]
 
-    // fetch("localhost:8000/myStores")
-    //     .then(response => response.json())
-    //     .then(setMyStores)
+    //  fetch("http://localhost:8080/tradingSystem/myStores")
+    //      .then(response => response.json())
+    //      .then(setMyStores)
     setMyStores(stores);
 
     document.getElementById("new-store-button").addEventListener("click",function(){
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     initRemoveManagerModel()
 
-    //initManageSupplyModel();
+    initManageSupplyModel();
     
 
     fetch("http://localhost:8080/tradingSystem/allCategories")
@@ -195,6 +195,48 @@ function initRemoveManagerModel() {
     })
 }
 
+function initManageSupplyModel(){
+    document.getElementById("edited-product-name").addEventListener("blur",updateProoductSupplyField);
+    document.getElementById("updateSpplyBtn").addEventListener("click",function(){
+        var prod_name = document.getElementById("edited-product-name").value;
+        var prod_price = document.getElementById("update-product-price").value;
+        var prod_cat = document.getElementById("update-product-category").value;
+        var prod_desc = document.getElementById("update-store-desc").value;
+        var prod_amount = document.getElementById("update-product-amount").value;
+        fetch("http://localhost:8080/tradingSystem/updateInventory", {
+            method: "POST",
+            body: JSON.stringify( {store:activeStore.name, product: prod_name, price:prod_price, category:prod_cat, desc:prod_desc, amount:prod_amount})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
+        document.getElementById("edited-product-name").value = "";
+        document.getElementById("update-product-price").value = "";
+        document.getElementById("update-product-category").value = "";
+        document.getElementById("update-store-desc").value = "";
+        document.getElementById("update-product-amount").value = "";
+        document.getElementById("manageSupplyModal").style.display = "none";
+        
+    })
+}
+
 function updateSupplyProducts(products){
     activeProducts = products;
     var option_menu = document.getElementById("store-product-list");
@@ -321,10 +363,9 @@ function setCategories(categories) {
     main_item1.append(document.createTextNode("Category"));
     category_drop1.appendChild(main_item1);
 
-    var val = 1;
     categories.forEach(currCat=>{
         const item1 = document.createElement("option");
-        item1.value=val;
+        item1.value=currCat;
         item1.append(document.createTextNode(currCat));
         category_drop1.appendChild(item1);
     })
@@ -372,11 +413,24 @@ function showPopUp(action){
     document.getElementById(actionToModel[action]).style.display = "block";
 }
 
+function updateProoductSupplyField(){
+    var prod_name = document.getElementById("edited-product-name").value;
+    for( let prod of activeProducts){
+        if(prod.name == prod_name){
+            document.getElementById("update-product-price").value = prod.price;
+            document.getElementById("update-product-category").value = prod.category;
+            document.getElementById("update-store-desc").value = prod.description;
+            document.getElementById("update-product-amount").value = prod.amount;
+        }
+    }
+}
+
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
     var models = this.document.getElementsByClassName("modal");
     for(let model of models){
-        //model.style.display = "none";
+        if(model == event.target)
+            model.style.display = "none";
     }
 }
 

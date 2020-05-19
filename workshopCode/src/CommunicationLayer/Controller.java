@@ -294,13 +294,16 @@ public class Controller {
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
 
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
-                int price = (requestJson.containsKey("price")) ? (int) requestJson.get("price") : null;
+                String productName = (requestJson.containsKey("product")) ? (String) requestJson.get("product") : null;
+                Integer price = (requestJson.containsKey("price")) ? Integer.parseInt(requestJson.get("price").toString()) : null;
                 String category = (requestJson.containsKey("category")) ? (String) requestJson.get("category") : null;
                 String desc = (requestJson.containsKey("desc")) ? (String) requestJson.get("desc") : null;
-                int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amount") : null;
+                Integer amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
 
-                String response = storeHandler.UpdateInventory(storeName, userName, price, category, desc, amount);
+
+                usersHandler.login("noy", "1234", false);
+                String response = storeHandler.UpdateInventory(storeName, productName, price, category, desc, amount);
+                usersHandler.logout();
                 headers.set("updateInventory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -705,7 +708,19 @@ public class Controller {
         server.createContext("/tradingSystem/myStores", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
+
+                String e = usersHandler.register("noy", "1234");
+                String d = usersHandler.login("noy", "1234", false);
+                String c = storeHandler.openNewStore("kravitz", "writing tools");
+                storeHandler.openNewStore("Pull&Bear", "clothes");
+                String f = storeHandler.UpdateInventory("kravitz", "pilot", 10, "Clothing", "black pen", 100);
+                String g = storeHandler.UpdateInventory("kravitz", "banana", 7, "Food", "yellow yummy banana", 50);
+                storeHandler.UpdateInventory("Pull&Bear", "skirt", 50, "Clothing", "skirt", 5);
+
                 String response = storeHandler.getMyStores();
+
+                usersHandler.logout();
+
                 headers.set("editPermissions", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } finally {
