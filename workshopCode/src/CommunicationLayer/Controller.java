@@ -229,7 +229,7 @@ public class Controller {
                 e.printStackTrace();
             } catch (Exception e) {
                 headers.set("filter", String.format("application/json; charset=%s", UTF8));
-                sendResponse(he, e.getMessage());
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
@@ -260,7 +260,7 @@ public class Controller {
             }
         });
 
-        //accept: {user: "", store:"", amount: ""}
+        //accept: {user: "", store:""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addStoreOwner", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -271,7 +271,7 @@ public class Controller {
                 //JSONObject requestJson =  (JSONObject)parser.parse("{\"user\":\"noy\", \"store\":\"Pull&Bear\"}");
                 String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                String response = storeHandler.openNewStore(userName, storeName);
+                String response = storeHandler.addStoreOwner(userName, storeName);
                 headers.set("addStoreOwner", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -580,7 +580,23 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+                
+                usersHandler.register("noy", "1234");
+                usersHandler.login("noy", "1234", false);
+                storeHandler.openNewStore("Castro", "clothes");
+                storeHandler.openNewStore("Mango", "clothes");
+                storeHandler.UpdateInventory("Castro", "shoes", 200, "Clothing", "black shoes", 100);
+                storeHandler.UpdateInventory("Mango", "shirt", 70, "Clothing", "yellow shirt", 50);
+                storeHandler.UpdateInventory("Mango", "skirt", 50, "Clothing", "skirt", 5);
+                cartHandler.AddToShoppingBasket("Mango", "skirt", 1);
+                cartHandler.purchaseCart();
+                cartHandler.AddToShoppingBasket("Mango", "skirt", 1);
+                cartHandler.purchaseCart();
+
                 String response = purchaseHistoryHandler.ViewPurchaseHistoryOfStore(storeName);
+                
+                usersHandler.logout();
+                
                 headers.set("storePurchaseHistory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {

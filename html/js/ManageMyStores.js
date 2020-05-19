@@ -1,4 +1,5 @@
 var activeStore;
+var activeProducts;
 document.addEventListener("DOMContentLoaded", function () {
     const stores = [
         {
@@ -36,6 +37,17 @@ document.addEventListener("DOMContentLoaded", function () {
     
     initAddManagerModel();
 
+    initAddOwnerModel();
+
+    initRemoveManagerModel()
+
+    initManageSupplyModel();
+    
+
+    fetch("http://localhost:8080/tradingSystem/allCategories")
+         .then(response => response.json())
+         .then(setCategories)
+
     // When the user clicks on <span> (x), close the modal
     var x_buttons = document.getElementsByClassName("close");
     for (let x_button of x_buttons) {
@@ -63,6 +75,19 @@ function initOpenStoreModel() {
                 return response.text();
             }
         })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
         document.getElementById("StoreNameInput").value = "";
         document.getElementById("StoreDescInput").value = "";
         document.getElementById("openStoreModal").style.display = "none";
@@ -84,8 +109,123 @@ function initAddManagerModel() {
                 return response.text();
             }
         })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
         document.getElementById("new-manager-name").value = "";
         document.getElementById("addManagerModal").style.display = "none";
+    })
+}
+
+function initAddOwnerModel() {   
+    document.getElementById("add-owner-button").addEventListener("click",function(){
+        var store_name = activeStore.name;
+        var username  = document.getElementById("new-owner-name").value;
+        fetch("http://localhost:8080/tradingSystem/addStoreOwner", {
+            method: "POST",
+            body: JSON.stringify( {user: username, store:store_name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
+
+        document.getElementById("new-owner-name").value = "";
+        document.getElementById("addOwnerModal").style.display = "none";
+    })
+}
+
+function initRemoveManagerModel() {   
+    document.getElementById("remove-manager-button").addEventListener("click",function(){
+        var store_name = activeStore.name;
+        var username  = document.getElementById("remove-manager-name").value;
+        fetch("http://localhost:8080/tradingSystem/removeStoreManager", {
+            method: "POST",
+            body: JSON.stringify( {user: username, store:store_name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
+
+        document.getElementById("remove-manager-button").value = "";
+        document.getElementById("removeManagerModal").style.display = "none";
+    })
+}
+
+
+
+function updatePurchaseHistory(history){
+    var historyList = document.getElementById("history-list");
+    historyList.innerHTML = "<br>";
+    //history.innerHTML = "";
+    history.forEach(purchase=>{
+        purchase.forEach(prod=>{
+            const element = document.createElement("li");
+            element.classList.add("list-group-item");
+            element.classList.add("d-flex");
+            element.classList.add("justify-content-between");
+            element.classList.add("lh-condensed");
+            const element_div = document.createElement("div");
+            const product_name = document.createElement("h6");
+            product_name.classList.add("my-0");
+            product_name.append(document.createTextNode(prod.name));
+            const amount = document.createElement("small");
+            amount.classList.add("text-muted");
+            amount.append(document.createTextNode("Amount: "+prod.amount));
+            element_div.appendChild(product_name);
+            element_div.appendChild(amount);
+            const price = document.createElement("span");
+            price.classList.add("text-muted");
+            price.append(document.createTextNode("$" + prod.price));
+            element.appendChild(element_div);
+            element.appendChild(price); 
+            historyList.appendChild(element);
+        })
+        const break_element = document.createElement("br");
+        historyList.appendChild(break_element);
     })
 }
 
@@ -159,7 +299,26 @@ function setMyStores(stores) {
         stores_list.appendChild(element);
     })
 }
-    
+
+
+function setCategories(categories) {
+
+    const category_drop1 = document.getElementById("update-product-category");
+    category_drop1.innerHTML = "";
+
+    const main_item1 = document.createElement("option");
+    main_item1.selected = true;
+    main_item1.append(document.createTextNode("Category"));
+    category_drop1.appendChild(main_item1);
+
+    var val = 1;
+    categories.forEach(currCat=>{
+        const item1 = document.createElement("option");
+        item1.value=val;
+        item1.append(document.createTextNode(currCat));
+        category_drop1.appendChild(item1);
+    })
+}
 
 actionToModel={
     "Open Store":"openStoreModal",
@@ -172,7 +331,20 @@ actionToModel={
 }
 
 function showPopUp(action){
-    
+    if(action == "View Purchasing History"){
+        fetch("http://localhost:8080/tradingSystem/storePurchaseHistory", {
+            method: "POST",
+            body: JSON.stringify({store:activeStore.name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then(updatePurchaseHistory)
+    }
     document.getElementById(actionToModel[action]).style.display = "block";
 }
 
