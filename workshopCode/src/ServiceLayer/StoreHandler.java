@@ -112,6 +112,10 @@ public class StoreHandler {
         }
     }
 
+    public String getStoreProducts(String storeName) {
+        return SystemFacade.getInstance().getAllProducts(storeName);
+    }
+
     public String createJSONMsg(String type, String content) {
         JSONObject response = new JSONObject();
         response.put(type, content);

@@ -715,8 +715,30 @@ public class Controller {
             }
         });
 
+        //accept: {store:""}
+        //retrieve: [{name:"", description:"", price:int, amount:Integer}, ...]
+        server.createContext("/tradingSystem/getStoreProducts", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+                String response = storeHandler.getStoreProducts(storeName);
+                headers.set("getStoreProducts", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } finally {
+                he.close();
+            }
+        });
+
+
         server.start();
     }
+
+
 
     public static void sendResponse(HttpExchange he, String response) throws IOException {
         final byte[] ResponseBytes = response.getBytes(UTF8);

@@ -258,4 +258,17 @@ public class Store {
 
         return products;
     }
+
+    public String getProductsJS(){
+        JSONArray products = new JSONArray();
+        for(Product p: getInventory().keySet()) {
+            JSONObject curr = new JSONObject();
+            curr.put("name", p.getName());
+            curr.put("description", p.getDescription());
+            curr.put("price", p.getPrice());
+            curr.put("amount", getInventory().get(p));
+            products.add(curr);
+        }
+        return products.toJSONString();
+    }
 }

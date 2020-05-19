@@ -620,4 +620,11 @@ public class SystemFacade {
 
         return response.toJSONString();
     }
+
+    public String getAllProducts(String store) {
+        Store s = getStoreByName(store);
+        if(s != null)
+            return s.getProductsJS();
+        return new JSONArray().toJSONString();
+    }
 }
