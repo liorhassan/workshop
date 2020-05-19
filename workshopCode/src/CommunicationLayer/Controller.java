@@ -721,7 +721,7 @@ public class Controller {
         });
 
         //accept: {store:""}
-        //retrieve: [{name:"", description:"", price:int, amount:Integer}, ...]
+        //retrieve: [{name:"", description:"", price:int, amount:Integer, category:""}, ...]
         server.createContext("/tradingSystem/getStoreProducts", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
@@ -729,6 +729,16 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+
+                String e = usersHandler.register("noy", "1234");
+                String d = usersHandler.login("noy", "1234", false);
+                String c = storeHandler.openNewStore("Castro", "clothes");
+                storeHandler.openNewStore("Mango", "clothes");
+                String f = storeHandler.UpdateInventory("Castro", "shoes", 50, "Clothing", "black shoes", 100);
+                String g = storeHandler.UpdateInventory("Castro", "shirt", 70, "Clothing", "yellow shirt", 50);
+                storeHandler.UpdateInventory("Mango", "skirt", 50, "Clothing", "skirt", 5);
+                usersHandler.logout();
+
                 String response = storeHandler.getStoreProducts(storeName);
                 headers.set("getStoreProducts", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);

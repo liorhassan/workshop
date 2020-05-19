@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     initRemoveManagerModel()
 
-    initManageSupplyModel();
+    //initManageSupplyModel();
     
 
     fetch("http://localhost:8080/tradingSystem/allCategories")
@@ -195,7 +195,17 @@ function initRemoveManagerModel() {
     })
 }
 
-
+function updateSupplyProducts(products){
+    activeProducts = products;
+    var option_menu = document.getElementById("store-product-list");
+    option_menu.innerHTML = "";
+    products.forEach(prod=>{
+        const option = document.createElement("option");
+        option.value = prod.name;
+        option.append(document.createTextNode(prod.name));
+        option_menu.appendChild(option);
+    })
+}
 
 function updatePurchaseHistory(history){
     var historyList = document.getElementById("history-list");
@@ -344,6 +354,20 @@ function showPopUp(action){
             }
         })
         .then(updatePurchaseHistory)
+    }
+    if(action == "Manage Supply"){
+        fetch("http://localhost:8080/tradingSystem/getStoreProducts", {
+            method: "POST",
+            body: JSON.stringify({store:activeStore.name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then(updateSupplyProducts)
     }
     document.getElementById(actionToModel[action]).style.display = "block";
 }

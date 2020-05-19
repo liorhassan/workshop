@@ -351,6 +351,7 @@ public class Store {
             curr.put("description", p.getDescription());
             curr.put("price", p.getPrice());
             curr.put("amount", getInventory().get(p));
+            curr.put("description", p.getCategory().name());
             products.add(curr);
         }
         return products.toJSONString();
