@@ -1,10 +1,6 @@
-document.addEventListener("DOMContentLoaded", function () {
 
-    var webSocket = new WebSocket( "ws://localhost:8088");
-//    var webSocket = new WebSocket( "ws://localhost:8090/WebSocketServer/client");
-    webSocket.onmessage = function(msgEvent) {
-                            alert(msgEvent.data)
-                       };
+
+document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("loginBtn").addEventListener("click", function () {
 
@@ -37,8 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
 
                         webSocket.send(inputUsername);
-                        //disconnect() { webSocket.close}
-                          })
+                        })
                   webSocket.send(inputUsername);
              } else {
                   Swal.fire(
