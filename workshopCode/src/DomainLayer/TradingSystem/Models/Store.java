@@ -4,10 +4,7 @@ import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Store {
 
@@ -18,9 +15,14 @@ public class Store {
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
-    private DiscountPolicy discountPolicy;
-    private PurchasePolicy purchasePolicy;
+    private List<DicountPolicy> discountPolicy;
+
+    private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
+    private List<DiscountBInterface> discountsOnBaskets;
+    private List<PurchasePolicy> purchasePolicies;
+
     private HashMap<Basket, List<ProductItem>> reservedProducts;
+    private int discountID_counter;
 
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
         this.name = name;
@@ -31,9 +33,12 @@ public class Store {
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
-        this.discountPolicy = new DiscountPolicy();
-        this.purchasePolicy = new PurchasePolicy();
+        this.discountPolicy = new ArrayList<>();
+        this.discountsOnBaskets = new ArrayList<>();
+        this.discountsOnProducts = new HashMap<>();
+        this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
+        this.discountID_counter = 0;
     }
 
 
@@ -48,7 +53,9 @@ public class Store {
     public void setName(String name) {
         this.name = name;
     }
-
+    public HashMap<Product, DiscountBaseProduct> getDiscountsOnProducts() {
+        return discountsOnProducts;
+    }
 
     public Collection<Product> getProducts(){
         return  products.getProducts().keySet();
@@ -173,8 +180,9 @@ public class Store {
     public void reserveBasket(Basket b){
         //this field save all the products that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
-        if(!this.purchasePolicy.purchaseAccordingToPolicy(b)){
-            throw new RuntimeException("Your purchase doesn’t match the store’s policy");
+        for(PurchasePolicy p : purchasePolicies){
+            if(!p.purchaseAccordingToPolicy(b))
+                throw new RuntimeException("Your purchase doesn’t match the store’s policy");
         }
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {
@@ -202,13 +210,43 @@ public class Store {
         }
     }
 
-    public double calculateTotalCheck(Basket b){
+    public double calculateTotalCheck(Basket b, List<DiscountBInterface> discounts){
         double total = 0;
-        for (ProductItem pi: b.getProductItems()) {
-            total += (pi.getAmount() * pi.getProduct().getPrice());
+        if(discounts.size()>0) {
+            for (ProductItem pi : b.getProductItems()) {
+                boolean found = false;
+                for (DiscountBInterface disc : discounts) {
+                    if (disc instanceof DiscountBaseProduct){
+                        if(((DiscountBaseProduct) disc).getProductName().equals(pi.getProduct().getName())){
+                            total = total + disc.calc(b, pi.getProduct().getPrice());
+                            discounts.remove(disc);
+                            found = true;
+                        }
+                    }
+                }
+                if(!found){
+                    total = total + pi.getAmount() * pi.getProduct().getPrice();
+                }
+            }
+            if(discounts.size()> 0){
+                for(DiscountBInterface disc : discounts){
+                    if(disc.canGet(total)) {
+                        total = disc.calc(b, total);
+                    }
+                }
+            }
         }
-        double discount = this.discountPolicy.calcProductDiscount(b);
-        return total - discount;
+        else{
+            total = b.calcPrice();
+        }
+
+        for(DiscountBInterface dis :discountsOnBaskets){
+            if(!discounts.contains(dis)){
+                    total = dis.calc(b, total);
+            }
+        }
+
+        return total;
     }
 
 
@@ -229,8 +267,54 @@ public class Store {
     }
 
 
-    public void addDiscount(String productName, double percentage){
-        this.discountPolicy.addDiscount(getProductByName(productName), percentage);
+    public void addDiscountForProduct(String productName, int percentage, int limit, boolean onAll){
+        Product p = this.getProductByName(productName);
+        if(p != null)
+            discountsOnProducts.put(p, new DiscountBaseProduct(discountID_counter, productName, limit, percentage, onAll));
+        discountID_counter ++;
+    }
+
+    public void addDiscountForBasket(int percentage, int limit, boolean onprice){
+
+        discountsOnBaskets.add(new DiscountBaseBasket(discountID_counter, limit, percentage, onprice));
+        discountID_counter ++;
+
+    }
+
+    public void addDiscountPolicy(int percentage, int limit, boolean onprice){
+
+        //discountsOnBaskets.add(new DiscountBaseBasket( limit, percentage, onprice));
+
+    }
+
+    public String viewDiscount(){
+        JSONArray discountsdes = new JSONArray();
+        for(DiscountBInterface dis :discountsOnBaskets){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId: ", dis.getDiscountID());
+            curr.put("discountString: ", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+        for(DiscountBInterface dis :discountsOnProducts.values()){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId: ", dis.getDiscountID());
+            curr.put("discountString: ", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+        return discountsdes.toJSONString();
+    }
+
+
+    public List<DiscountBInterface> getDiscountsOnBasket(Basket basket){
+        List<DiscountBInterface> output = new ArrayList<>();
+        for(DiscountBaseProduct dis : discountsOnProducts.values()){
+            if(dis.canGet(basket.getProductAmount(dis.getProductName())))
+                output.add(dis);
+        }
+        for(DicountPolicy disP : discountPolicy){
+            output = disP.checkDiscounts(output, basket);
+        }
+        return output;
     }
 
     public void notifyOwners(Basket b, String userName) {
@@ -257,5 +341,18 @@ public class Store {
         }
 
         return products;
+    }
+
+    public String getProductsJS(){
+        JSONArray products = new JSONArray();
+        for(Product p: getInventory().keySet()) {
+            JSONObject curr = new JSONObject();
+            curr.put("name", p.getName());
+            curr.put("description", p.getDescription());
+            curr.put("price", p.getPrice());
+            curr.put("amount", getInventory().get(p));
+            products.add(curr);
+        }
+        return products.toJSONString();
     }
 }

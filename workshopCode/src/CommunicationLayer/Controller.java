@@ -313,58 +313,62 @@ public class Controller {
             }
         });
 
-        //accept: {store:"", product:"", percent:int, amount:int, forAll:boolean}
-        //retrieve: {SUCCESS: msg} OR ERROR
-        server.createContext("/tradingSystem/discountForProduct", he -> {
+        //accept: {store:""}
+        //retrieve: [{discountId:int, discountString:""},..]
+        server.createContext("/tradingSystem/getDiscounts", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
-                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                String product = (requestJson.containsKey("product")) ? (String) requestJson.get("product") : null;
-                int percent = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
-                int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amout") : null;
-                boolean forAll = (requestJson.containsKey("forAll")) ? (boolean) requestJson.get("forAll") : null;
                 String response = "";
-//                String response = storeHandler.addDiscountForProduct(storeName, product, percent, amount, forAll);
-                headers.set("discountForProduct", String.format("application/json; charset=%s", UTF8));
+//                String response = storeHandler.getDiscounts(storeName);
+                headers.set("getDiscounts", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
             } catch (Exception e) {
-                headers.set("discountForProduct", String.format("application/json; charset=%s", UTF8));
+                headers.set("getDiscounts", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
-        //accept: {store:"", sun:int, discount:int, onPrice:boolean}
-        //retrieve: {SUCCESS: msg} OR ERROR
-        server.createContext("/tradingSystem/discountForBasket", he -> {
+
+        server.createContext("/tradingSystem/addDiscount", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
-                JSONParser parser = new JSONParser();
-                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
-                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                int sum = (requestJson.containsKey("sum")) ? (int) requestJson.get("sum") : null;
-                int discount = (requestJson.containsKey("discount")) ? (int) requestJson.get("discount") : null;
-                boolean onPrice = (requestJson.containsKey("onPrice")) ? (boolean) requestJson.get("onPrice") : null;
                 String response = "";
-//                String response = storeHandler.addDiscountForBasket(storeName, sum, discount, onPrice);
-                headers.set("discountForProduct", String.format("application/json; charset=%s", UTF8));
+//                String response = storeHandler.addDiscount(new String(requestByte));
+                headers.set("addDiscount", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
-            } catch (ParseException e) {
-                e.printStackTrace();
             } catch (Exception e) {
-                headers.set("discountForProduct", String.format("application/json; charset=%s", UTF8));
+                headers.set("addDiscount", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
+
+        server.createContext("/tradingSystem/addDiscountPolicy", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                String response = "";
+//                String response = storeHandler.addDiscountPolicy(new String(requestByte));
+                headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (Exception e) {
+                headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
         //-----------------------------------------ShoppingCartHandler cases------------------------------------------
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/cart", he -> {
@@ -703,13 +707,36 @@ public class Controller {
                 String response = viewInfoHandler.getAllCategories();
                 headers.set("allCategories", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
+
             } finally {
                 he.close();
             }
         });
 
+        //accept: {store:""}
+        //retrieve: [{name:"", description:"", price:int, amount:Integer}, ...]
+        server.createContext("/tradingSystem/getStoreProducts", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+                String response = storeHandler.getStoreProducts(storeName);
+                headers.set("getStoreProducts", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } finally {
+                he.close();
+            }
+        });
+
+
         server.start();
     }
+
+
 
     public static void sendResponse(HttpExchange he, String response) throws IOException {
         final byte[] ResponseBytes = response.getBytes(UTF8);

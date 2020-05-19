@@ -562,9 +562,21 @@ public class SystemFacade {
         return adminMode;
     }
 
-    public void addDiscount(String storeName, String productName, double percentage){
+    public void addDiscountOnProduct(String storeName, String productName, int percentage, int amount, boolean onAll){
         Store s = getStoreByName(storeName);
-        s.addDiscount(productName, percentage);
+        s.addDiscountForProduct(productName, percentage, amount, onAll);
+    }
+
+    public void addDiscountOnBasket(String storeName, int percentage, int amount, boolean onAll){
+        Store s = getStoreByName(storeName);
+        s.addDiscountForBasket(percentage, amount, onAll);
+    }
+    public boolean productHasDiscount(String storeName, String productName){
+        Store s = getStoreByName(storeName);
+        Product p = s.getProductByName(productName);
+        if(s.getDiscountsOnProducts().containsKey(p))
+            return true;
+        return false;
     }
 
     public String myStores(){
@@ -619,5 +631,17 @@ public class SystemFacade {
         }
 
         return response.toJSONString();
+    }
+
+    public String getAllProducts(String store) {
+        Store s = getStoreByName(store);
+        if(s != null)
+            return s.getProductsJS();
+        return new JSONArray().toJSONString();
+    }
+
+    public String viewDiscounts(String storeName){
+        Store store = getStoreByName(storeName);
+        return store.viewDiscount();
     }
 }
