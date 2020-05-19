@@ -35,10 +35,11 @@ public class Controller {
     private static final int STATUS_OK = 200;
     private static final int STATUS_METHOD_NOT_ALLOWED = 405;
 
-    private static Client clientSocket;
+    private static ClientWebSocket clientWS;
 
     public static void main(String[] args) throws IOException {
-        clientSocket = new Client();
+        clientWS = new ClientWebSocket();
+        clientWS.start();
         final HttpServer server = HttpServer.create(new InetSocketAddress(HOSTNAME, PORT), 1);
 
         //-----------------------------------------Handle HTML\JS Requests------------------------------------------

@@ -1,6 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    var webSocket = new WebSocket( "ws://localhost:8080/WebSocketServer/socketEndPoint");
+    var webSocket = new WebSocket( "ws://localhost:8088");
+//    var webSocket = new WebSocket( "ws://localhost:8090/WebSocketServer/client");
+    webSocket.onmessage = function(msgEvent) {
+                            alert(msgEvent.data)
+                       };
 
     document.getElementById("loginBtn").addEventListener("click", function () {
 
@@ -32,12 +36,10 @@ document.addEventListener("DOMContentLoaded", function () {
                             window.location.href = "/html/HomeGuest.html";
                         }
 
-                        webSocket.onopen = function () { webSocket.send(inputUsername)};
-
-                        webSocket.onmessage = function(msg) { alert(msg)};
-
+                        webSocket.send(inputUsername);
                         //disconnect() { webSocket.close}
                           })
+                  webSocket.send(inputUsername);
              } else {
                   Swal.fire(
                      'OOPS!',

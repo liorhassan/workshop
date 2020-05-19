@@ -197,7 +197,7 @@ public class SystemFacade {
 
     //function for handling Use Case 2.7
     public String viewSoppingCart(){
-
+        NotificationSystem.getInstance().notify("noy", "noyyyyyy");//!!!!!!!!!!!!
         return activeUser.getShoppingCart().view();
     }
 

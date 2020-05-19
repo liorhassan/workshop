@@ -40,8 +40,11 @@ public class NotificationSystem {
     }
 
     public String getByUsername(String userName) {
-        if(!notification.get(userName).isEmpty())
-            return notification.get(userName).get(0);
+        if (!notification.get(userName).isEmpty()){
+            String response = notification.get(userName).get(0);
+            notification.get(userName).remove(0);
+            return response;
+        }
         return null;
     }
 
@@ -49,12 +52,5 @@ public class NotificationSystem {
         return notification.containsKey(userName);
     }
 
-//    public void notifySuspended(String userName) {
-//        Client userSocket = webSockets.get(userName);
-//        for(String msg: notification.get(userName)){
-//            //TODO: SEND MSG VVIA SOCKET
-//        }
-//
-//        notification.remove(userName);
-//    }
+
 }
