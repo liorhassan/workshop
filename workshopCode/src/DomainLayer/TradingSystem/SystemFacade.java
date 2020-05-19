@@ -644,4 +644,95 @@ public class SystemFacade {
         Store store = getStoreByName(storeName);
         return store.viewDiscount();
     }
+
+    public DiscountBInterface searchDiscountById(String storeName, int discountId){
+        DiscountBInterface discount = getStoreByName(storeName).getDiscountById(discountId);
+        return discount;
+    }
+
+
+    public DiscountPolicy buildDiscountPolicy(JSONObject policy, String storeName) {
+            DiscountPolicy newPolicy = null;
+            String type = (policy.containsKey("type")) ? ((String) policy.get("type")) : null;
+            if(type.equals("If")){
+                JSONObject condition = (policy.containsKey("condition")) ? ((JSONObject) policy.get("condition")) : null;
+                int discountId = (policy.containsKey("discountId")) ? ((int) policy.get("discountId")) : null;
+                DiscountBInterface discount = searchDiscountById(storeName, discountId);
+                if(discount == null){
+                    throw new IllegalArgumentException("invalid discountId");
+                }
+                newPolicy = new DiscountPolicyIf(discount, buildDiscountPolicy(condition, storeName));
+            }
+            else if(type.equals("Comp")){
+                String operator = (policy.containsKey("operator")) ? ((String) policy.get("operator")) : null;
+                JSONObject operand1 = (policy.containsKey("operand1")) ? ((JSONObject) policy.get("operand1")) : null;
+                JSONObject operand2 = (policy.containsKey("operand2")) ? ((JSONObject) policy.get("operand2")) : null;
+                String[] args = {operator};
+                if(emptyString(args)){
+                    throw new IllegalArgumentException("invalid operator");
+                }
+                PolicyOperator polOperator = parseOperator(operator);
+                newPolicy = new DiscountPolicyComp(buildDiscountPolicy(operand1, storeName), buildDiscountPolicy(operand2, storeName), polOperator);
+            }
+            else if(type.equals("simpleCategory")){
+                String category = (policy.containsKey("category")) ? ((String) policy.get("category")) : null;
+                String[] args = {category};
+                if(emptyString(args)){
+                    throw new IllegalArgumentException("invalid category");
+                }
+                Category cat = Category.valueOf(category);
+                newPolicy = new PolicyCondCategory(cat);
+            }
+            else if(type.equals("simpleProduct")){
+                String product = (policy.containsKey("productName")) ? ((String) policy.get("productName")) : null;
+                String[] args = {product};
+                if(emptyString(args) || checkIfProductExists(storeName, product)){
+                    throw new IllegalArgumentException("invalid product name");
+                }
+
+                newPolicy = new PolicyCondProduct(product);
+            }
+            return newPolicy;
+
+    }
+
+    private PolicyOperator parseOperator(String operator) {
+        if (operator.equals("OR")) {
+            return PolicyOperator.OR;
+        }
+        if (operator.equals("AND")) {
+            return PolicyOperator.AND;
+        }
+        if (operator.equals("XOR")) {
+            return PolicyOperator.XOR;
+        }
+        return null;
+    }
+
+
+    public String addDiscountPolicy(String jsonString) {
+        try {
+            JSONParser parser = new JSONParser();
+            JSONObject requestJson = (JSONObject) parser.parse(jsonString);
+            String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+            String[] args = {storeName};
+            Store store = getStoreByName(storeName);
+            if(emptyString(args) || getStoreByName(storeName) == null){
+                throw new IllegalArgumentException("store doesnt exist");
+            }
+            DiscountPolicy discount = buildDiscountPolicy(requestJson, storeName);
+            if(discount == null){
+                throw new IllegalArgumentException("cant add the discount policy");
+            }
+            else{
+                store.addDiscountPolicy(discount);
+            }
+            return "the discount policy added successfully";
+
+            }
+         catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
 }

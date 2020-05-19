@@ -5,7 +5,7 @@ import DomainLayer.TradingSystem.Models.Basket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolicyCondCategory implements DicountPolicy {
+public class PolicyCondCategory implements DiscountPolicy {
     private Category category;
 
     public PolicyCondCategory( Category category) {

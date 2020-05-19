@@ -2,7 +2,10 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 
 public class StoreHandler {
@@ -109,7 +112,7 @@ public class StoreHandler {
         }
     }
 
-    public String addDiscountForProduct(String storeName,  int percentage, int amount, boolean onPrice) {
+    public String addDiscountForBasket(String storeName,  int percentage, int amount, boolean onPrice) {
         try {
             String[] args = {storeName};
             if (SystemFacade.getInstance().emptyString(args)) {
@@ -148,6 +151,17 @@ public class StoreHandler {
         catch(Exception e){
             return e.getMessage();
         }
+    }
+
+    public String addDiscountPolicy(String discountPolicy){
+        try{
+
+            SystemFacade.getInstance().addDiscountPolicy(policy);
+            if()
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+
     }
 
     public String getStoreProducts(String storeName) {

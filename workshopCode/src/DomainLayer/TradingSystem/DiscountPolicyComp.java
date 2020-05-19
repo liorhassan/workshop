@@ -3,15 +3,15 @@ import java.util.ArrayList;
 import java.util.List;
 import DomainLayer.TradingSystem.Models.Basket;
 
-public class DiscountPolicyComp implements DicountPolicy {
+public class DiscountPolicyComp implements DiscountPolicy {
 
     //private HashMap<Product, Double> discountPerProduct;
 
-    private DicountPolicy discount_operand1;
-    private DicountPolicy discount_operand2;
+    private DiscountPolicy discount_operand1;
+    private DiscountPolicy discount_operand2;
     private PolicyOperator operator;
 
-    public DiscountPolicyComp(DicountPolicy discount_operands1, DicountPolicy discount_operands2, PolicyOperator operator, DiscountBInterface result){
+    public DiscountPolicyComp(DiscountPolicy discount_operands1, DiscountPolicy discount_operands2, PolicyOperator operator){
         //this.discountPerProduct = new HashMap<>();
         this.discount_operand1 = discount_operands1;
         this.discount_operand1 = discount_operands2;
@@ -23,6 +23,8 @@ public class DiscountPolicyComp implements DicountPolicy {
         List<DiscountBInterface> disc1 = discount_operand1.checkDiscounts(discounts, basket);
         List<DiscountBInterface> disc2 = discount_operand2.checkDiscounts(discounts, basket);
         List<DiscountBInterface> output = new ArrayList<>();
+
+
 
         switch(operator){
             case OR:
