@@ -2,6 +2,8 @@ package DomainLayer.TradingSystem.Models;
 
 import DomainLayer.TradingSystem.DiscountBInterface;
 import DomainLayer.TradingSystem.ProductItem;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.HashMap;
@@ -36,33 +38,46 @@ public class ShoppingCart {
     }
 
     public String view(){
-        String output = "Your ShoppingCart details: \n";
-        if(baskets.isEmpty())
-            return output + "empty!";
-        for(Basket b : baskets.values()){
-            output = output + b.viewBasket();
+//        String output = "Your ShoppingCart details: \n";
+//        JSONObject response = new JSONObject();
+        JSONArray response = new JSONArray();
+        if(!baskets.isEmpty()){
+            for (Basket b : baskets.values()) {
+                JSONArray currBasket = b.viewBasket();
+                Iterator itr = currBasket.iterator();
+                while(itr.hasNext())
+                    response.add(itr.next());
+            }
         }
-        return output;
+        return response.toJSONString();
     }
 
     public String edit(Store store, String product, int amount){
         Basket basket = baskets.get(store);
         List<ProductItem> items = basket.getProductItems();
+        JSONObject response = new JSONObject();
         for(ProductItem pi : items){
             if(pi.getProduct().getName().equals(product)) {
                 if (amount == 0) {
                     items.remove(pi);
                     if (items.isEmpty())
                         baskets.remove(store);
-                    return "The product has been updated successfully";
+                    response.put("SUCCESS", "The product has been updated successfully");
+                    return response.toJSONString();
+                    //return "The product has been updated successfully";
                 }
                 else  {
                     pi.setAmount(amount);
-                    return "The product has been updated successfully";
+                    response.put("SUCCESS", "The product has been updated successfully");
+                    return response.toJSONString();
+                    //return "The product has been updated successfully";
                 }
             }
         }
-        return "The product doesn’t exist in your shopping cart";
+        throw new RuntimeException("The product doesn’t exist in your shopping cart");
+        //response.put("ERROR", "The product doesn’t exist in your shopping cart");
+        //return response.toJSONString();
+        //return "The product doesn’t exist in your shopping cart";
     }
 
     public boolean isProductInCart(String product, Store store){
@@ -82,7 +97,8 @@ public class ShoppingCart {
     public String viewOnlyProducts() {
         if (baskets.isEmpty())
             throw new RuntimeException("There are no products to view");
-        return view().substring(28);
+        return view();//TODO:??????????????????
+        //return view().substring(28);
     }
 
     public void computeCartPrice() {
@@ -146,7 +162,11 @@ public class ShoppingCart {
         return this.cartTotalPrice;
     }
 
-
+    public void notifyOwners(){
+        for(Store s: baskets.keySet()) {
+            s.notifyOwners(baskets.get(s), this.user.getUsername());
+        }
+    }
 }
 
 

@@ -1,6 +1,8 @@
 package DomainLayer.TradingSystem.Models;
 
 import DomainLayer.TradingSystem.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -100,6 +102,8 @@ public class Store {
     public void removeManager(User user) {
         managements.remove(user);
         user.removeStoreManagement(this);
+        NotificationSystem.getInstance().notify(user.getUsername(), "You have been no longer " + name + "'s manager");
+
     }
 
     public boolean hasProduct(String productName) {
@@ -152,6 +156,7 @@ public class Store {
     public void addStoreOwner(User newOwner, StoreOwning storeOwning) {
         if (!ownerships.containsKey(newOwner))
             this.ownerships.put(newOwner, storeOwning);
+        NotificationSystem.getInstance().notify(newOwner.getUsername(), "You have been appointed as " + name + "'s store owner");
     }
 
     //reserve a specific product
@@ -297,5 +302,44 @@ public class Store {
             output = disP.checkDiscounts(output, basket);
         }
         return output;
+    }
+
+    public void notifyOwners(Basket b, String userName) {
+        String msg = userName + "bought some groceries from the store " + name + " you own: ";
+        for(ProductItem pi: b.getProductItems()) {
+            msg += pi.getProduct().getName() + ", ";
+        }
+        msg.substring(0, msg.length() - 2);
+        msg += ".";
+        for(User u: ownerships.keySet()) {
+            NotificationSystem.getInstance().notify(u.getUsername(), msg);
+        }
+    }
+
+    public JSONArray getAllProducts(){
+        JSONArray products = new JSONArray();
+        for(Product p: getInventory().keySet()) {
+            JSONObject curr = new JSONObject();
+            curr.put("name", p.getName());
+            curr.put("price", p.getPrice());
+            curr.put("store", this.name);
+            curr.put("description", p.getDescription());
+            products.add(curr);
+        }
+
+        return products;
+    }
+
+    public String getProductsJS(){
+        JSONArray products = new JSONArray();
+        for(Product p: getInventory().keySet()) {
+            JSONObject curr = new JSONObject();
+            curr.put("name", p.getName());
+            curr.put("description", p.getDescription());
+            curr.put("price", p.getPrice());
+            curr.put("amount", getInventory().get(p));
+            products.add(curr);
+        }
+        return products.toJSONString();
     }
 }

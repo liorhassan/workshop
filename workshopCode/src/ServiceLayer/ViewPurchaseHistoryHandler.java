@@ -2,6 +2,8 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class ViewPurchaseHistoryHandler {
 
@@ -20,7 +22,8 @@ public class ViewPurchaseHistoryHandler {
         }
         catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("View user purchase history as admin error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -39,7 +42,9 @@ public class ViewPurchaseHistoryHandler {
         }
         catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("View store purchase history as admin error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -54,7 +59,8 @@ public class ViewPurchaseHistoryHandler {
         }
         catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("View User Purchase History error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -75,7 +81,9 @@ public class ViewPurchaseHistoryHandler {
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("View Store Purchase History error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 }

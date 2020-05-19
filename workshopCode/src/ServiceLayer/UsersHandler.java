@@ -3,6 +3,8 @@ package ServiceLayer;
 import DomainLayer.Security.SecurityFacade;
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class UsersHandler {
 
@@ -10,31 +12,38 @@ public class UsersHandler {
 
         SystemLogger.getInstance().writeEvent("Login command: " + username);
 
-        if (!SecurityFacade.getInstance().CorrectPassword(username, password)) {
-            SystemLogger.getInstance().writeError("Invalid password");
-            return "This password is incorrect";
-        }
+
         try {
             String[] args ={username, password};
             if(SystemFacade.getInstance().emptyString(args))
                 throw new IllegalArgumentException("The username is invalid");
             if (! SystemFacade.getInstance().userExists(username))
                 throw new IllegalArgumentException("This user is not registered");
+            if (!SecurityFacade.getInstance().CorrectPassword(username, password)) {
+                SystemLogger.getInstance().writeError("Invalid password");
+                throw new RuntimeException("This password is incorrect");
+                //return createJSONMsg("ERROR", "This password is incorrect");
+                //return "This password is incorrect";
+            }
             if(mood && !(SystemFacade.getInstance().checkIfUserIsAdmin(username)))
                 throw new IllegalArgumentException("this user is not a system admin");
             SystemFacade.getInstance().login(username, mood);
-            return "You have been successfully logged in!";
+            return createJSONMsg("SUCCESS", "You have been successfully logged in!");
+            //return "You have been successfully logged in!";
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Login error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
 
     public String logout(){
         SystemLogger.getInstance().writeEvent("Logout command");
-        return SystemFacade.getInstance().logout();
+        return createJSONMsg("SUCCESS", SystemFacade.getInstance().logout());
+        //return SystemFacade.getInstance().logout();
     }
 
 
@@ -42,7 +51,8 @@ public class UsersHandler {
         SystemLogger.getInstance().writeEvent("Register command: " + username);
         if (!SecurityFacade.getInstance().validPassword(password)) {
             SystemLogger.getInstance().writeError("Invalid password");
-            return "This password is not valid. Please choose a different one";
+            throw new RuntimeException("This password is not valid. Please choose a different one");
+            //return createJSONMsg("ERROR", "This password is not valid. Please choose a different one");
         }
         try {
             String[] args = {username};
@@ -52,11 +62,14 @@ public class UsersHandler {
                 throw new IllegalArgumentException("This username already exists in the system. Please choose a different one");
             SystemFacade.getInstance().register(username);
             SecurityFacade.getInstance().addUser(username, password);
-            return "You have been successfully registered!";
+            return createJSONMsg("SUCCESS", "You have been successfully registered!");
+            //return "You have been successfully registered!";
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Register error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -69,7 +82,8 @@ public class UsersHandler {
 
     }
 
-    public String addAdmin(String username) {
+    public String
+    addAdmin(String username) {
         try {
             String[] args = {username};
             if (SystemFacade.getInstance().emptyString(args))
@@ -80,13 +94,21 @@ public class UsersHandler {
                 throw new IllegalArgumentException("This username is already admin");
 
             SystemFacade.getInstance().addAdmin(username);
-            return"done";
+            return createJSONMsg("SUCCESS", "done");
+            //return"done";
         }
         catch (Exception e){
-            return e.getMessage();
+                throw new RuntimeException(e.getMessage());
+//            return createJSONMsg("ERROR", e.getMessage());
+//            return e.getMessage();
         }
     }
 
+    public String createJSONMsg(String type, String content) {
+        JSONObject response = new JSONObject();
+        response.put(type, content);
+        return response.toJSONString();
+    }
 
 }
 

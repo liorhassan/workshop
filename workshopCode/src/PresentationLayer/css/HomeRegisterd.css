@@ -1,0 +1,113 @@
+#menu_dropDown {
+position: absolute;
+    transform: translate3d(199px, 38px, 0px);
+    top: 5px;
+    left: 115pt;
+    will-change: transform;
+}
+
+#search-part{
+    width: -webkit-fill-available;
+}
+
+#filter-results {
+    max-width: 250pt;
+    margin-left: 20pt;
+}
+
+#search-results {
+    max-height: 300pt;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+#search-bar {
+    margin-left: 250pt;
+    margin-top: 60pt;
+}
+
+#product-description {
+    overflow-y: scroll;
+}
+
+#filter-button {
+    color: white;
+}
+
+#search-button {
+    color: white;
+}
+
+.card-link+.card-link {
+    margin-left: 0;
+}
+
+.custom-select {
+    align-items: center;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
+
+.nav-item {
+    white-space: nowrap;;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 35%; /* Could be more or less, depending on screen size */
+  }
+  
+  #editCartElements {
+    display: flex!important;
+    flex-direction: column!important;
+    justify-content: space-evenly!important;
+    align-self: center;
+    height: 40vh;
+    width: 85%;
+  }
+  
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button {  
+     opacity: 1;
+  }

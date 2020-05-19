@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -22,11 +23,14 @@ public class StoreManagerHandler {
                 throw new RuntimeException("You must be a store owner for this action");
             if(SystemFacade.getInstance().checkIfUserIsManager(storeName, username))
                 throw new RuntimeException("This username is already one of the store's managers");
-            return SystemFacade.getInstance().appointManager(username, storeName);
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().appointManager(username, storeName));
+            //return SystemFacade.getInstance().appointManager(username, storeName);
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Add manager error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -45,9 +49,12 @@ public class StoreManagerHandler {
             if(!SystemFacade.getInstance().isUserAppointer(username,storename))
                 throw new RuntimeException("This username is not one of this store's managers appointed by you");
             return SystemFacade.getInstance().removeManager(username,storename);
+            //return SystemFacade.getInstance().removeManager(username,storename);
         } catch(Exception e) {
             SystemLogger.getInstance().writeError("Remove manager error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -86,15 +93,24 @@ public class StoreManagerHandler {
             if(!(SystemFacade.getInstance().checkIfUserIsManager(storeName, userName) && SystemFacade.getInstance().isUserAppointer(userName, storeName))){
                 throw new RuntimeException("You can't edit this user's privileges");
             }
-            return SystemFacade.getInstance().editPermissions(userName, permissions, storeName);
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().editPermissions(userName, permissions, storeName));
+            //return SystemFacade.getInstance().editPermissions(userName, permissions, storeName);
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Edit Permissions error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
         }
     }
 
     private String argToString(String arg){
         return arg != null ? arg : "";
+    }
+
+    public String createJSONMsg(String type, String content) {
+        JSONObject response = new JSONObject();
+        response.put(type, content);
+        return response.toJSONString();
     }
 }

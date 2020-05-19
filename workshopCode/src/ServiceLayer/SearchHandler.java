@@ -7,6 +7,7 @@ import com.softcorporation.suggester.Suggestion;
 import com.softcorporation.suggester.dictionary.BasicDictionary;
 import com.softcorporation.suggester.util.BasicSuggesterConfiguration;
 import com.softcorporation.suggester.util.SuggesterException;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,6 @@ public class SearchHandler {
     public String searchProduct(String name, String category, String[] keywords) {
         SystemLogger.getInstance().writeEvent(String.format("Search product command: name - %s, category - %s, keywords - %s", argToString(name), argToString(category), argArrayToString(keywords)));
         try {
-            String[] args = {name, category, argArrayToString(keywords)};
-            if (SystemFacade.getInstance().allEmptyString(args))
-                throw new IllegalArgumentException("Must enter search parameter");
 
             // create dictionary for spell checking
             List<String> localDictionary = SystemFacade.getInstance().getProductsNamesAndKeywords();
@@ -28,10 +26,14 @@ public class SearchHandler {
                 for (int i = 0; i < keywords.length; i++)
                     keywords[i] = spellcheckAndCorrect(keywords[i], localDictionary);
             }
+            String[] args = {name, category, argArrayToString(keywords)};
+            if (SystemFacade.getInstance().allEmptyString(args))
+                throw new IllegalArgumentException("Must enter search parameter");
             return SystemFacade.getInstance().searchProducts(name, category, keywords);
         } catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("Search product error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
         }
     }
 
@@ -41,7 +43,8 @@ public class SearchHandler {
             return SystemFacade.getInstance().filterResults(minPrice, maxPrice, category);
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("Filter results error: " + e.getMessage());
-            return e.getMessage();
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
         }
     }
 
