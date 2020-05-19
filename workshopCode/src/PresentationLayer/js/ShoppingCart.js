@@ -69,12 +69,12 @@ document.addEventListener("DOMContentLoaded", function () {
                      Swal.fire(
                            'Congratulations!',
                            responseMsg.SUCCESS,
-                           'success')
+                           'success').then(setItemsToCart)
                  } else {
                      Swal.fire(
                         'OOPS!',
                         responseMsg,
-                        'error')
+                        'error').then(setItemsToCart)
                  }
              })
     })
