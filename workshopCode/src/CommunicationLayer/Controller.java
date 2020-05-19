@@ -105,7 +105,6 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{userName: noy, password: 123, adminMode: true}");
                 String userName = (requestJson.containsKey("userName")) ? (String) requestJson.get("userName") : null;
                 String password = (requestJson.containsKey("password")) ? (String) (requestJson.get("password")) : null;
                 boolean adminMode = (requestJson.containsKey("adminMode")) ? (boolean) (requestJson.get("adminMode")) : false;
@@ -149,9 +148,6 @@ public class Controller {
         server.createContext("/tradingSystem/logout", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                //byte[] requestByte = he.getRequestBody().readAllBytes();
-                //JSONParser parser = new JSONParser();
-                //JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
                 String response = usersHandler.logout();
                 headers.set("logout", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -171,7 +167,6 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{\"userName\":\"noy\"}");
                 String userName = (requestJson.containsKey("userName")) ? (String) requestJson.get("userName") : null;
                 String response = usersHandler.addAdmin(userName);
                 headers.set("addAdmin", String.format("application/json; charset=%s", UTF8));
@@ -195,7 +190,6 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{\"userName\":\"noy\"}");
                 String name = (requestJson.containsKey("name")) ? (String) requestJson.get("name") : null;
                 String category = (requestJson.containsKey("category")) ? (String) requestJson.get("category") : null;
                 JSONArray keys = (requestJson.containsKey("keywords")) ? ((JSONArray) requestJson.get("keywords")) : new JSONArray();
@@ -224,7 +218,6 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{\"userName\":\"noy\"}");
                 Integer maxPrice = (requestJson.containsKey("maxPrice")) ? Integer.parseInt(requestJson.get("maxPrice").toString()) : null;
                 Integer minPrice = (requestJson.containsKey("minPrice")) ? Integer.parseInt(requestJson.get("minPrice").toString()) : null;
                 String category = (requestJson.containsKey("category")) ? (String) requestJson.get("category") : null;
@@ -249,11 +242,9 @@ public class Controller {
         server.createContext("/tradingSystem/openNewStore", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
-                //JSONObject requestJson = (JSONObject) parser.parse("{\"store\":\"Pull&Bear\", \"description\":\"clothes\"}");
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 String description = (requestJson.containsKey("description")) ? (String) requestJson.get("description") : null;
                 String response = storeHandler.openNewStore(storeName, description);
@@ -274,7 +265,6 @@ public class Controller {
         server.createContext("/tradingSystem/addStoreOwner", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
@@ -299,7 +289,6 @@ public class Controller {
         server.createContext("/tradingSystem/updateInventory", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
@@ -324,17 +313,63 @@ public class Controller {
             }
         });
 
+        //accept: {store:"", product:"", percent:int, amount:int, forAll:boolean}
+        //retrieve: {SUCCESS: msg} OR ERROR
+        server.createContext("/tradingSystem/discountForProduct", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                String product = (requestJson.containsKey("product")) ? (String) requestJson.get("product") : null;
+                int percent = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
+                int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amout") : null;
+                boolean forAll = (requestJson.containsKey("forAll")) ? (boolean) requestJson.get("forAll") : null;
+                String response = "";
+//                String response = storeHandler.addDiscountForProduct(storeName, product, percent, amount, forAll);
+                headers.set("discountForProduct", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("discountForProduct", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {store:"", sun:int, discount:int, onPrice:boolean}
+        //retrieve: {SUCCESS: msg} OR ERROR
+        server.createContext("/tradingSystem/discountForBasket", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                int sum = (requestJson.containsKey("sum")) ? (int) requestJson.get("sum") : null;
+                int discount = (requestJson.containsKey("discount")) ? (int) requestJson.get("discount") : null;
+                boolean onPrice = (requestJson.containsKey("onPrice")) ? (boolean) requestJson.get("onPrice") : null;
+                String response = "";
+//                String response = storeHandler.addDiscountForBasket(storeName, sum, discount, onPrice);
+                headers.set("discountForProduct", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("discountForProduct", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
         //-----------------------------------------ShoppingCartHandler cases------------------------------------------
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/cart", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                byte[] requestByte = he.getRequestBody().readAllBytes();
-                //JSONParser parser = new JSONParser();
-                //JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{\"viewCart\": \"\"}");
-                String e = usersHandler.register("noy", "1234");
-                String d = usersHandler.login("noy", "1234", false);
                 String c = storeHandler.openNewStore("kravitz", "writing tools");
                 storeHandler.openNewStore("Pull&Bear", "clothes");
                 String f = storeHandler.UpdateInventory("kravitz", "pilot", 10, "Clothing", "black pen", 100);
@@ -361,7 +396,6 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{store: Pull&Bear, product: skirt, amount: 5}");
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
                 String productName = (requestJson.containsKey("product")) ? ((String) requestJson.get("product")) : null;
                 int amount = (requestJson.containsKey("amount")) ? Integer.parseInt((String) requestJson.get("amount")) : null;
@@ -386,7 +420,6 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{store: Pull&Bear, product: skirt, amount: 5}");
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
                 String productName = (requestJson.containsKey("product")) ? ((String) requestJson.get("product")) : null;
                 int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
@@ -407,9 +440,6 @@ public class Controller {
         server.createContext("/tradingSystem/purchaseCart", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                byte[] requestByte = he.getRequestBody().readAllBytes();
-                //JSONParser parser = new JSONParser();
-                //JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
                 String response = cartHandler.purchaseCart();
                 headers.set("purchaseCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -589,9 +619,6 @@ public class Controller {
         server.createContext("/tradingSystem/userPurchaseHistory", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-//                byte[] requestByte = he.getRequestBody().readAllBytes();
-//                JSONParser parser = new JSONParser();
-//                JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
                 String response = purchaseHistoryHandler.viewLoggedInUserPurchaseHistory();
                 headers.set("userPurchaseHistory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -630,14 +657,9 @@ public class Controller {
         server.createContext("/tradingSystem/myStores", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
-                byte[] requestByte = he.getRequestBody().readAllBytes();
-                JSONParser parser = new JSONParser();
-                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String response = storeHandler.getMyStores();
                 headers.set("editPermissions", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
-            } catch (ParseException e) {
-                e.printStackTrace();
             } finally {
                 he.close();
             }
