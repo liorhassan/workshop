@@ -20,6 +20,7 @@ public class Store {
     private List<PurchasePolicy> purchasePolicies;
 
     private HashMap<Basket, List<ProductItem>> reservedProducts;
+    private int discountID_counter;
 
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
         this.name = name;
@@ -35,6 +36,7 @@ public class Store {
         this.discountsOnProducts = new HashMap<>();
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
+        this.discountID_counter = 0;
     }
 
 
@@ -263,13 +265,14 @@ public class Store {
     public void addDiscountForProduct(String productName, int percentage, int limit, boolean onAll){
         Product p = this.getProductByName(productName);
         if(p != null)
-            discountsOnProducts.put(p, new DiscountBaseProduct(productName, limit, percentage, onAll));
-
+            discountsOnProducts.put(p, new DiscountBaseProduct(discountID_counter, productName, limit, percentage, onAll));
+        discountID_counter ++;
     }
 
     public void addDiscountForBasket(int percentage, int limit, boolean onprice){
 
-            discountsOnBaskets.add(new DiscountBaseBasket( limit, percentage, onprice));
+        discountsOnBaskets.add(new DiscountBaseBasket(discountID_counter, limit, percentage, onprice));
+        discountID_counter ++;
 
     }
 
@@ -277,6 +280,10 @@ public class Store {
 
         discountsOnBaskets.add(new DiscountBaseBasket( limit, percentage, onprice));
 
+    }
+
+    public String viewDiscount(){
+        JASONArray discountsdes = new JSONArray();
     }
 
 

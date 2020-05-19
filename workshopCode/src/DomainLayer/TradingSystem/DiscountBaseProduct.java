@@ -8,12 +8,14 @@ import java.util.List;
 
 public class DiscountBaseProduct implements DiscountBInterface {
 
+    private int discountID;
     private String productName;
     private int minAmount;
     private int discount;
     private boolean onAllTheAmount; // or on the minAmount + 1
 
-    public DiscountBaseProduct(String productName, int amount, int discount, boolean onAll) {
+    public DiscountBaseProduct(int discountID, String productName, int amount, int discount, boolean onAll) {
+        this.discountID = discountID;
         this.productName= productName;
         this.minAmount= amount;
         this.discount = discount;
@@ -62,5 +64,18 @@ public class DiscountBaseProduct implements DiscountBInterface {
         }
 
         return sum;
+    }
+
+    @Override
+    public String discountDescription() {
+        String output = "";
+        if(onAllTheAmount){
+            output = "discount of: " + discount + "% on product: " + productName + " if the amount more then: " + minAmount;
+        }
+        else{
+            int amount = minAmount+1;
+            output = "discount of: " + discount + "% on product: " + productName + " on the : " + amount + "product" ;
+        }
+        return output;
     }
 }
