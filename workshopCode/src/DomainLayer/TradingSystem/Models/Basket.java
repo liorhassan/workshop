@@ -30,6 +30,25 @@ public class Basket {
         return productItems;
     }
 
+    public int getProductAmount(String productName){
+        int amount = 0;
+        for (ProductItem pi : getProductItems()) {
+            if (pi.getProduct().equals(getStore().getProductByName(productName))) {
+                amount = pi.getAmount();
+                break;
+            }
+        }
+        return amount;
+    }
+
+    public double calcPrice(){
+        double total = 0;
+        for (ProductItem pi: getProductItems()) {
+            total += (pi.getAmount() * pi.getProduct().getPrice());
+        }
+        return total;
+    }
+
     public void setProductItems(List<ProductItem> productItems) {
         this.productItems = productItems;
     }
