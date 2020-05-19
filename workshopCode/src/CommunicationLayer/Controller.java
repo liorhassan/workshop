@@ -44,7 +44,7 @@ public class Controller {
 
         //-----------------------------------------Handle HTML\JS Requests------------------------------------------
         server.createContext("/", he -> {
-            String pathToRoot = new File("html\\").getAbsolutePath().concat("\\");
+            String pathToRoot = new File("workshopCode\\src\\PresentationLayer\\").getAbsolutePath().concat("\\");
             String path = he.getRequestURI().getPath();
             try {
                 path = path.substring(1);
