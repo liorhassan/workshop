@@ -107,8 +107,8 @@ public class StoreHandler {
 
         }
         catch(Exception e){
+            SystemLogger.getInstance().writeError("Add Discount For product: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
-            //return e.getMessage();
         }
     }
 
@@ -132,7 +132,8 @@ public class StoreHandler {
             return createJSONMsg("SUCCESS","The discount has been added successfully");
 
         } catch (Exception e) {
-            return e.getMessage();
+            SystemLogger.getInstance().writeError("Add Discount For Basket error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
 
     }
@@ -149,19 +150,21 @@ public class StoreHandler {
             return createJSONMsg("SUCCESS",SystemFacade.getInstance().viewDiscounts(storeName));
         }
         catch(Exception e){
-            return e.getMessage();
+            SystemLogger.getInstance().writeError("View Discounts error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     public String addDiscountPolicy(String discountPolicy){
         try{
 
-            SystemFacade.getInstance().addDiscountPolicy(policy);
-            if()
+            String result = SystemFacade.getInstance().addDiscountPolicy(discountPolicy);
+            return createJSONMsg("SUCCESS", result);
         }
-        catch (ParseException e) {
-            e.printStackTrace();
-
+        catch (Exception e) {
+            SystemLogger.getInstance().writeError("Add Discount Policy error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public String getStoreProducts(String storeName) {
