@@ -680,7 +680,19 @@ public class Controller {
         server.createContext("/tradingSystem/myStores", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
+
+                String e = usersHandler.register("noy", "1234");
+                String d = usersHandler.login("noy", "1234", false);
+                String c = storeHandler.openNewStore("kravitz", "writing tools");
+                storeHandler.openNewStore("Pull&Bear", "clothes");
+                String f = storeHandler.UpdateInventory("kravitz", "pilot", 10, "Clothing", "black pen", 100);
+                String g = storeHandler.UpdateInventory("kravitz", "banana", 7, "Food", "yellow yummy banana", 50);
+                storeHandler.UpdateInventory("Pull&Bear", "skirt", 50, "Clothing", "skirt", 5);
+
                 String response = storeHandler.getMyStores();
+
+                usersHandler.logout();
+
                 headers.set("editPermissions", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } finally {

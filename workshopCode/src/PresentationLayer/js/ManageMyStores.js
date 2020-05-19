@@ -24,9 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     ]
 
-    // fetch("localhost:8000/myStores")
-    //     .then(response => response.json())
-    //     .then(setMyStores)
+    //  fetch("http://localhost:8080/tradingSystem/myStores")
+    //      .then(response => response.json())
+    //      .then(setMyStores)
     setMyStores(stores);
 
     document.getElementById("new-store-button").addEventListener("click",function(){
