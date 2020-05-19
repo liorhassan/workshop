@@ -335,51 +335,57 @@ public class Controller {
             }
         });
 
-        //accept: {product:"", store:"", amount:int, discount:int, forAll:boolean}
-        server.createContext("/tradingSystem/addDiscountForProduct", he -> {
+        //accept: {type:"onBasket", subtype:"onProductsAmount", amount:int, percent:int}
+        //accept: {type:"onBasket", subtype:"onCost", price:int, percent:int} --> onCost = true
+        //accept: {type:"onProduct", sutType:"revealed", productName:"", percent:int} --> amount = 0 --> onAll = true
+        //accept: {type:"onProduct", sutType:"conditional", productName:"", amount:int, percent:int, onProducts:boolean, onNextProduct:boolean} --> onAll = onProducts
+        server.createContext("/tradingSystem/addDiscount", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                String productName = (requestJson.containsKey("product")) ? (String) requestJson.get("product") : null;
+                String response = "";
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amount") : null;
-                int discount = (requestJson.containsKey("discount")) ? (int) requestJson.get("discount") : null;
-                boolean forAll = (requestJson.containsKey("forAll")) ? (boolean) requestJson.get("forAll") : null;
+                String type = (requestJson.containsKey("type")) ? (String) requestJson.get("type") : null;
+                String subtype = (requestJson.containsKey("subtype")) ? (String) requestJson.get("subtype") : null;
+                if(type.equals("onBasket")) {
+                    if(subtype.equals("onProductsAmount")) {
+                        int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amount") : null;
+                        int discount = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
+                        response = storeHandler.addDiscountForBasket(storeName, discount, amount, false);
+                    }
+                    else{
+                        int price = (requestJson.containsKey("price")) ? (int) requestJson.get("price") : null;
+                        int discount = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
+                        response = storeHandler.addDiscountForBasket(storeName, discount, price, false);
+                    }
+                }
+                else{
+                    if(subtype.equals("revealed")) {
+                        String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
+                        int percent = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
+                        response = storeHandler.addDiscountForProduct(storeName, productName, percent, 0, true);
+                    }
+                    else{
+                        String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
+                        int percent = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
+                        int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amount") : null;
+                        boolean onAll = (requestJson.containsKey("onProducts")) ? (boolean) requestJson.get("onProducts") : null;
+                        response = storeHandler.addDiscountForProduct(storeName, productName, percent, amount, onAll);
+                    }
+                }
 
-                String response = storeHandler.addDiscountForProduct(storeName, productName, amount, discount, forAll);
-                headers.set("addDiscountForProduct", String.format("application/json; charset=%s", UTF8));
+                headers.set("addDiscount", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {
-                headers.set("addDiscountForProduct", String.format("application/json; charset=%s", UTF8));
+                headers.set("addDiscount", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
         });
 
-        //accept: {store:"", percentage:int, amount:int, onPrice:boolean}
-        server.createContext("/tradingSystem/addDiscountForBasket", he -> {
-            final Headers headers = he.getResponseHeaders();
-            try {
-                byte[] requestByte = he.getRequestBody().readAllBytes();
-                JSONParser parser = new JSONParser();
-                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                int percentage = (requestJson.containsKey("percentage")) ? (int) requestJson.get("percentage") : null;
-                int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amount") : null;
-                boolean onPrice = (requestJson.containsKey("onPrice")) ? (boolean) requestJson.get("onPrice") : null;
-                String response = storeHandler.addDiscountForBasket(storeName, percentage, amount, onPrice);
-                headers.set("addDiscountForBasket", String.format("application/json; charset=%s", UTF8));
-                sendResponse(he, response);
-            } catch (Exception e) {
-                headers.set("addDiscountForBasket", String.format("application/json; charset=%s", UTF8));
-                sendERROR(he, e.getMessage());
-            } finally {
-                he.close();
-            }
-        });
 
 
         server.createContext("/tradingSystem/addDiscountPolicy", he -> {
