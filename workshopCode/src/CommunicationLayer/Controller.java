@@ -377,13 +377,6 @@ public class Controller {
         server.createContext("/tradingSystem/cart", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                String c = storeHandler.openNewStore("kravitz", "writing tools");
-                storeHandler.openNewStore("Pull&Bear", "clothes");
-                String f = storeHandler.UpdateInventory("kravitz", "pilot", 10, "Clothing", "black pen", 100);
-                storeHandler.UpdateInventory("Pull&Bear", "skirt", 50, "Clothing", "skirt", 5);
-                usersHandler.logout();
-                String a = cartHandler.AddToShoppingBasket("kravitz", "pilot", 5);
-                String b = cartHandler.AddToShoppingBasket("Pull&Bear", "skirt", 2);
                 String response = cartHandler.viewCart();
                 headers.set("viewCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
