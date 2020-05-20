@@ -110,5 +110,9 @@ public class UsersHandler {
         return response.toJSONString();
     }
 
+    public String isLoggedIn(){
+        return SystemFacade.getInstance().checkIfActiveUserSubscribed() ? createJSONMsg("loggedin","True") : createJSONMsg("loggedin","False");
+    }
+
 }
 

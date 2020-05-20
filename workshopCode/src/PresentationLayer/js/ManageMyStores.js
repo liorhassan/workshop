@@ -1,33 +1,16 @@
 var activeStore;
 var activeProducts;
 document.addEventListener("DOMContentLoaded", function () {
-    const stores = [
-        {
-            "name": "Castro",
-            "type": "Owner",
-            "options": ["Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History"]
-        },
-        {
-            "name": "Mango",
-            "type": "Manager",
-            "options": ["Manage Supply", "View Purchasing History"]
-        },
-        {
-            "name": "Delta",
-            "type": "Owner",
-            "options": ["Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History"]
-        },
-        {
-            "name": "Zara",
-            "type": "Manager",
-            "options": ["View Purchasing History"]
-        }
-    ]
 
-    //  fetch("http://localhost:8080/tradingSystem/myStores")
-    //      .then(response => response.json())
-    //      .then(setMyStores)
-    setMyStores(stores);
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    .then(response=>response.json())
+    .then(updateNavBar);
+    
+
+
+     fetch("http://localhost:8080/tradingSystem/myStores")
+         .then(response => response.json())
+          .then(setMyStores)
 
     document.getElementById("new-store-button").addEventListener("click",function(){
         showPopUp("Open Store");
@@ -88,9 +71,13 @@ function initOpenStoreModel() {
                    'error')
             }
         })
+        fetch("http://localhost:8080/tradingSystem/myStores")
+         .then(response => response.json())
+          .then(setMyStores);
         document.getElementById("StoreNameInput").value = "";
         document.getElementById("StoreDescInput").value = "";
         document.getElementById("openStoreModal").style.display = "none";
+        
     })
 }
 
@@ -331,10 +318,13 @@ function setMyStores(stores) {
 
         currStore.options.forEach(currAction=>{
             const a = document.createElement("a");
-            a.addEventListener("click",function(){
+            // if(currAction=="Add New Discount")
+            //     a.href="/html/discountsWindow";
+            // else
+                a.addEventListener("click",function(){
                 activeStore = currStore;
                 showPopUp(currAction);
-            })
+                })
             a.classList.add("dropdown-item");
             a.append(document.createTextNode(currAction));
 
@@ -410,6 +400,8 @@ function showPopUp(action){
         })
         .then(updateSupplyProducts)
     }
+    if(action == "Add New Discount")
+        window.location.href = "http://localhost:8080/html/discountsWindow.html";
     document.getElementById(actionToModel[action]).style.display = "block";
 }
 

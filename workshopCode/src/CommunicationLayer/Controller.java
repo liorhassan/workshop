@@ -301,9 +301,9 @@ public class Controller {
                 Integer amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
 
 
-                usersHandler.login("noy", "1234", false);
+
                 String response = storeHandler.UpdateInventory(storeName, productName, price, category, desc, amount);
-                usersHandler.logout();
+
                 headers.set("updateInventory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -615,23 +615,9 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
-                
-                usersHandler.register("noy", "1234");
-                usersHandler.login("noy", "1234", false);
-                storeHandler.openNewStore("Castro", "clothes");
-                storeHandler.openNewStore("Mango", "clothes");
-                storeHandler.UpdateInventory("Castro", "shoes", 200, "Clothing", "black shoes", 100);
-                storeHandler.UpdateInventory("Mango", "shirt", 70, "Clothing", "yellow shirt", 50);
-                storeHandler.UpdateInventory("Mango", "skirt", 50, "Clothing", "skirt", 5);
-                cartHandler.AddToShoppingBasket("Mango", "skirt", 1);
-                cartHandler.purchaseCart();
-                cartHandler.AddToShoppingBasket("Mango", "skirt", 1);
-                cartHandler.purchaseCart();
 
                 String response = purchaseHistoryHandler.ViewPurchaseHistoryOfStore(storeName);
-                
-                usersHandler.logout();
-                
+
                 headers.set("storePurchaseHistory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -709,17 +695,7 @@ public class Controller {
             try {
                 final Headers headers = he.getResponseHeaders();
 
-                String e = usersHandler.register("noy", "1234");
-                String d = usersHandler.login("noy", "1234", false);
-                String c = storeHandler.openNewStore("kravitz", "writing tools");
-                storeHandler.openNewStore("Pull&Bear", "clothes");
-                String f = storeHandler.UpdateInventory("kravitz", "pilot", 10, "Clothing", "black pen", 100);
-                String g = storeHandler.UpdateInventory("kravitz", "banana", 7, "Food", "yellow yummy banana", 50);
-                storeHandler.UpdateInventory("Pull&Bear", "skirt", 50, "Clothing", "skirt", 5);
-
                 String response = storeHandler.getMyStores();
-
-                usersHandler.logout();
 
                 headers.set("editPermissions", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -728,20 +704,12 @@ public class Controller {
             }
         });
 
+
+
         //retrieve: [{name:"", price:"", store:"", description:""}, ..]
         server.createContext("/tradingSystem/allProducts", he -> {
             try {
                 final Headers headers = he.getResponseHeaders();
-
-                String e = usersHandler.register("noy", "1234");
-                String d = usersHandler.login("noy", "1234", false);
-                String c = storeHandler.openNewStore("kravitz", "writing tools");
-                storeHandler.openNewStore("Pull&Bear", "clothes");
-                String f = storeHandler.UpdateInventory("kravitz", "pilot", 10, "Clothing", "black pen", 100);
-                String g = storeHandler.UpdateInventory("kravitz", "banana", 7, "Food", "yellow yummy banana", 50);
-                storeHandler.UpdateInventory("Pull&Bear", "skirt", 50, "Clothing", "skirt", 5);
-                usersHandler.logout();
-
                 String response = viewInfoHandler.getAllProduct();
                 headers.set("allProducts", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -763,6 +731,19 @@ public class Controller {
             }
         });
 
+        //retrieve: {"", "", ...}
+        server.createContext("/tradingSystem/isLoggedIn", he -> {
+            try {
+                final Headers headers = he.getResponseHeaders();
+                String response = usersHandler.isLoggedIn();
+                headers.set("isLoggedIn", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+
+            } finally {
+                he.close();
+            }
+        });
+
         //accept: {store:""}
         //retrieve: [{name:"", description:"", price:int, amount:Integer, category:""}, ...]
         server.createContext("/tradingSystem/getStoreProducts", he -> {
@@ -772,15 +753,6 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
-
-                String e = usersHandler.register("noy", "1234");
-                String d = usersHandler.login("noy", "1234", false);
-                String c = storeHandler.openNewStore("Castro", "clothes");
-                storeHandler.openNewStore("Mango", "clothes");
-                String f = storeHandler.UpdateInventory("Castro", "shoes", 50, "Clothing", "black shoes", 100);
-                String g = storeHandler.UpdateInventory("Castro", "shirt", 70, "Clothing", "yellow shirt", 50);
-                storeHandler.UpdateInventory("Mango", "skirt", 50, "Clothing", "skirt", 5);
-                usersHandler.logout();
 
                 String response = storeHandler.getStoreProducts(storeName);
                 headers.set("getStoreProducts", String.format("application/json; charset=%s", UTF8));
