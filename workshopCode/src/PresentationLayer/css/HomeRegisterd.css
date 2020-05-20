@@ -22,7 +22,7 @@ position: absolute;
 }
 
 #search-bar {
-    margin-left: 250pt;
+    max-width: fit-content;
     margin-top: 60pt;
 }
 

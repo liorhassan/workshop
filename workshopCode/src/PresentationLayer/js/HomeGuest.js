@@ -1,32 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const items = [
-        {
-            "name": "Paper",
-            "price": 15,
-            "store": "Kravitz",
-            "description": "White and writeable"
-        },
-        {
-            "name": "Pen",
-            "price": 25,
-            "store": "Kravitz",
-            "description": "Goes well with the pen"
-        },
-
-        {
-            "name": "Pineapple",
-            "price": 15,
-            "store": "Kravitz",
-            "description": "Yes... Kravitz sells fruit two why are you so surprised?"
-        },
-
-        {
-            "name": "Apple",
-            "price": 15,
-            "store": "Kravitz",
-            "description": "We "
-        }
-    ]
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    .then(response=>response.json())
+    .then(updateNavBar);
+    
 
     fetch("http://localhost:8080/tradingSystem/allProducts")
          .then(response => response.json())

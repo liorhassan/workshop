@@ -590,7 +590,7 @@ public class SystemFacade {
                 currStore.put("type", "Owner");
                 JSONArray options = new JSONArray();
                 for(Permission p: ownings.get(s).getPermission())
-                    options.add(p);
+                    options.add(p.getAllowedAction());
                 currStore.put("options", options);
                 response.add(currStore);
             }

@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    .then(response=>response.json())
+    .then(updateNavBar);
+    
 
      fetch("http://localhost:8080/tradingSystem/cart")
          .then(response => response.json())
