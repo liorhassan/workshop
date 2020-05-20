@@ -39,18 +39,14 @@ public class NotificationSystem {
         }
     }
 
-    public String getByUsername(String userName) {
-        if (!notification.get(userName).isEmpty()){
-            String response = notification.get(userName).get(0);
-            notification.get(userName).remove(0);
-            return response;
+    public List<String> getByUsername(String userName) {
+        if(notification.containsKey(userName)) {
+            return notification.get(userName);
         }
-        return null;
+        return new LinkedList<>();
     }
 
-    public boolean isLoggedIn(String userName) {
-        return notification.containsKey(userName);
-    }
+
 
 
 }

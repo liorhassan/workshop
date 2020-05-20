@@ -186,7 +186,6 @@ public class SystemFacade {
                 activeUser = user;
         }
         NotificationSystem.getInstance().attach(username);
-        NotificationSystem.getInstance().notify(username, "hello");
     }
 
     //function for handling UseCase 3.1
@@ -198,7 +197,6 @@ public class SystemFacade {
 
     //function for handling Use Case 2.7
     public String viewSoppingCart(){
-        NotificationSystem.getInstance().notify("noy", "noyyyyyy");//!!!!!!!!!!!!
         return activeUser.getShoppingCart().view();
     }
 

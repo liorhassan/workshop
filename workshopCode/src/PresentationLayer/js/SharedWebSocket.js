@@ -20,8 +20,3 @@ self.addEventListener("connect", function(e) {
 
 
 
-//    var webSocket = new WebSocket( "ws://localhost:8088");
-////    var webSocket = new WebSocket( "ws://localhost:8090/WebSocketServer/client");
-//    webSocket.onmessage = function(msgEvent) {
-//                            alert(msgEvent.data)
-//                       };

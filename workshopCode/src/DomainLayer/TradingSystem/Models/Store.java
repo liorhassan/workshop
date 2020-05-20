@@ -299,14 +299,14 @@ public class Store {
         JSONArray discountsdes = new JSONArray();
         for(DiscountBInterface dis :discountsOnBaskets){
             JSONObject curr = new JSONObject();
-            curr.put("discountId: ", dis.getDiscountID());
-            curr.put("discountString: ", dis.discountDescription());
+            curr.put("discountId", dis.getDiscountID());
+            curr.put("discountString", dis.discountDescription());
             discountsdes.add(curr);
         }
         for(DiscountBInterface dis :discountsOnProducts.values()){
             JSONObject curr = new JSONObject();
-            curr.put("discountId: ", dis.getDiscountID());
-            curr.put("discountString: ", dis.discountDescription());
+            curr.put("discountId", dis.getDiscountID());
+            curr.put("discountString", dis.discountDescription());
             discountsdes.add(curr);
         }
         return discountsdes.toJSONString();
@@ -326,7 +326,7 @@ public class Store {
     }
 
     public void notifyOwners(Basket b, String userName) {
-        String msg = userName + "bought some groceries from the store " + name + " you own: ";
+        String msg = userName + " bought some products from the store " + name + " you own: ";
         for(ProductItem pi: b.getProductItems()) {
             msg += pi.getProduct().getName() + ", ";
         }
