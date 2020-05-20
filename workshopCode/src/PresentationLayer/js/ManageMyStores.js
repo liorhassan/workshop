@@ -313,7 +313,7 @@ function setMyStores(stores) {
         action_button.setAttribute("aria-expanded", "false");
 
         const action_dropdown = document.createElement("div");
-        action_dropdown.id = "menu_dropDown";
+
         action_dropdown.classList.add("dropdown-menu");
 
         currStore.options.forEach(currAction=>{
@@ -402,6 +402,10 @@ function showPopUp(action){
     }
     if(action == "Add New Discount")
         window.location.href = "http://localhost:8080/html/discountsWindow.html";
+
+    if(action == "Add new Discount Policy")
+            window.location.href = "http://localhost:8080/html/PolicyWindow.html";
+
     document.getElementById(actionToModel[action]).style.display = "block";
 }
 

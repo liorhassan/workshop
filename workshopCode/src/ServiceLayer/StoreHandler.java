@@ -147,7 +147,7 @@ public class StoreHandler {
             if (!SystemFacade.getInstance().storeExists(storeName)) {
                 throw new IllegalArgumentException("The store doesn't exist");
             }
-            return createJSONMsg("SUCCESS",SystemFacade.getInstance().viewDiscounts(storeName));
+            return SystemFacade.getInstance().viewDiscounts(storeName);
         }
         catch(Exception e){
             SystemLogger.getInstance().writeError("View Discounts error: " + e.getMessage());

@@ -395,8 +395,8 @@ public class Controller {
             final Headers headers = he.getResponseHeaders();
             try {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
-                String response = "";
-//                String response = storeHandler.addDiscountPolicy(new String(requestByte));
+  //              String response = "";
+              String response = storeHandler.addDiscountPolicy(new String(requestByte));
                 headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {
