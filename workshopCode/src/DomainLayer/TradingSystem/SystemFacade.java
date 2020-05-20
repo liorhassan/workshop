@@ -735,4 +735,21 @@ public class SystemFacade {
         }
     }
 
+    public String checkAmountInInventory(String productName, String storeName) {
+        Store s = getStoreByName(storeName);
+        if(s != null) {
+            Product p = s.getProductByName(productName);
+            if(p!= null) {
+                Integer amount = s.getInventory().get(p);
+                if(amount != null) {
+                    return String.valueOf(amount);
+                }
+             }
+        }
+        return "";
+    }
+
+    public String getCartTotalPrice(){
+        return String.valueOf(this.activeUser.getShoppingCart().getTotalCartPrice());
+    }
 }
