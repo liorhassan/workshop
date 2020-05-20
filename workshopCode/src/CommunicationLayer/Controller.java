@@ -354,27 +354,27 @@ public class Controller {
                 String subtype = (requestJson.containsKey("subtype")) ? (String) requestJson.get("subtype") : null;
                 if(type.equals("onBasket")) {
                     if(subtype.equals("onProductsAmount")) {
-                        int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amount") : null;
-                        int discount = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
+                        int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
+                        int discount = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
                         response = storeHandler.addDiscountForBasket(storeName, discount, amount, false);
                     }
                     else{
-                        int price = (requestJson.containsKey("price")) ? (int) requestJson.get("price") : null;
-                        int discount = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
+                        int price = (requestJson.containsKey("price")) ? Integer.parseInt( requestJson.get("price").toString()): null;
+                        int discount = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
                         response = storeHandler.addDiscountForBasket(storeName, discount, price, false);
                     }
                 }
                 else{
                     if(subtype.equals("revealed")) {
                         String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
-                        int percent = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
+                        int percent = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
                         response = storeHandler.addDiscountForProduct(storeName, productName, percent, 0, true);
                     }
                     else{
                         String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
-                        int percent = (requestJson.containsKey("percent")) ? (int) requestJson.get("percent") : null;
-                        int amount = (requestJson.containsKey("amount")) ? (int) requestJson.get("amount") : null;
-                        boolean onAll = (requestJson.containsKey("onProducts")) ? (boolean) requestJson.get("onProducts") : null;
+                        int percent = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
+                        int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
+                        boolean onAll = (requestJson.containsKey("onProducts")) ? Boolean.parseBoolean(requestJson.get("onProducts").toString()): null;
                         response = storeHandler.addDiscountForProduct(storeName, productName, percent, amount, onAll);
                     }
                 }

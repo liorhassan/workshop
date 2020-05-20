@@ -2,199 +2,207 @@
 
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-            crossorigin="anonymous"></script>
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-            crossorigin="anonymous"></script>
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-            crossorigin="anonymous"></script>
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/discountsWindow.css">
     <script src="../js/discountsWindow.js"></script>
+    <script src="../js/NavibarManager.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 </head>
 
 
 <body data-gr-c-s-loaded="true">
 
-<!-- Fixed home bar  -->
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-    <a class="navbar-brand" href="#">Trading System</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+    <!-- Fixed home bar  -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand">Trading System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav mr-auto">
-            <li name="menu-nav" class="nav-item">
-                <a class="nav-link" href="./HomeGuest.html">Home</a>
-            </li>
-            <li name="menu-nav" class="nav-item">
-                <a class="nav-link" href="./ShoppingCart.html">Shopping Cart</a>
-            </li>
-            <li name="menu-nav" class="nav-item active">
-                <a class="nav-link" href="./EntryWindow.html">Login/Register<span
-                        class="sr-only">(current)</span></a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<!-- Fixed home bar  -->
-<main role="main" class="main">
-    <div class="container">
-        <div>
-            <section class="jumbotron text-center">
-                <h2>Make a new discount</h2>
-            </section>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon3">Please enter a store name</span>
-                </div>
-                <input type="text" id="storeName" aria-describedby="basic-addon3">
-            </div>
-            <ul class="nav nav-pills mb-3" id="discountType" role="tablist">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" id="basketOptions" data-toggle="tab" href="#Basket" role="tab"
-                       aria-controls="Basket" aria-selected="false"
-                       onclick="resetActiveTabsButThis(this)">Basket</a>
+                    <a class="nav-link" href="HomeRegisterd.html">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="productOptions" data-toggle="tab" href="#Product" role="tab"
-                       aria-controls="Product" aria-selected="false"
-                       onclick="resetActiveTabsButThis(this)">Product</a>
+                    <a class="nav-link" href="ShoppingCart.html">Shopping Cart</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="ManageMyStores.html">Manage Stores <span
+                            class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Purchase History</a>
+                </li>
+                <li class="nav-item" style="margin-left: 510pt;">
+                    <a class="nav-link" href="HomeGuest.html">Logout</a>
                 </li>
             </ul>
-            <div class="tab-content" id="discountTypeContent">
-                <div class="tab-pane fade" id="basket" role="tabpanel" aria-labelledby="basket-tab">
-                    <ul class="nav nav-pills mb-3" id="subPropBasket" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link" id="basketAmountOptions" data-toggle="tab" href="#basketAmountDiv"
-                               role="tab" aria-controls="basketAmount" aria-selected="false">By-amount discount</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="priceBasketOptions" data-toggle="tab" href="#priceBasketDiv"
-                               role="tab" aria-controls="priceBasket" aria-selected="false">By-product discount</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="tab-pane fade" id="product" role="tabpanel" aria-labelledby="product-tab">
-                    <ul class="nav nav-pills mb-3" id="subPropProduct" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link" id="revealedOption" data-toggle="tab" href="#revealedDiv" role="tab"
-                               aria-controls="revealed" aria-selected="false">Revealed</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="conditionalOptions" data-toggle="tab" href="#conditionalDiv"
-                               role="tab" aria-controls="conditional" aria-selected="false">Conditional</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="tab-content" id="basketSubPropContent">
-                <div class="tab-pane fade" id="basketAmountDiv" role="tabpanel" aria-labelledby="amountBasket-tab">
-                    <label for="basketAmountNumber">Basket discount by amount</label>
-                    <div class="columndForm input-group mb-3">
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Please enter an amount:</span>
-                            </div>
-                            <input type="number" id="basketAmountNumber" aria-describedby="basic-addon3">
-                        </div>
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Discount percentage</span>
-                            </div>
-                            <input type="number" id="basketAmountPercentNumber" aria-describedby="basic-addon3">
-                        </div>
+        </div>
+    </nav>
+    <!-- Fixed home bar  -->
+    <main role="main" class="main">
+        <div class="container">
+            <div>
+                <section class="jumbotron text-center">
+                    <h2>Make a new discount</h2>
+                </section>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon3">Please enter a store name</span>
                     </div>
-                    <button onclick="addBasketAmount()">Add Discount</button>
+                    <input type="text" id="storeName" aria-describedby="basic-addon3">
+                </div>
+                <ul class="nav nav-pills mb-3" id="discountType" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link" id="basketOptions" data-toggle="tab" href="#Basket" role="tab"
+                            aria-controls="Basket" aria-selected="false"
+                            onclick="resetActiveTabsButThis(this)">Basket</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="productOptions" data-toggle="tab" href="#Product" role="tab"
+                            aria-controls="Product" aria-selected="false"
+                            onclick="resetActiveTabsButThis(this)">Product</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="discountTypeContent">
+                    <div class="tab-pane fade" id="basket" role="tabpanel" aria-labelledby="basket-tab">
+                        <ul class="nav nav-pills mb-3" id="subPropBasket" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link" id="basketAmountOptions" data-toggle="tab" href="#basketAmountDiv"
+                                    role="tab" aria-controls="basketAmount" aria-selected="false">By-amount discount</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="priceBasketOptions" data-toggle="tab" href="#priceBasketDiv"
+                                    role="tab" aria-controls="priceBasket" aria-selected="false">By-product discount</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="product" role="tabpanel" aria-labelledby="product-tab">
+                        <ul class="nav nav-pills mb-3" id="subPropProduct" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link" id="revealedOption" data-toggle="tab" href="#revealedDiv" role="tab"
+                                    aria-controls="revealed" aria-selected="false">Revealed</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="conditionalOptions" data-toggle="tab" href="#conditionalDiv"
+                                    role="tab" aria-controls="conditional" aria-selected="false">Conditional</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tab-content" id="basketSubPropContent">
+                    <div class="tab-pane fade" id="basketAmountDiv" role="tabpanel" aria-labelledby="amountBasket-tab">
+                        <label for="basketAmountNumber">Basket discount by amount</label>
+                        <div class="columndForm input-group mb-3">
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Please enter an amount:</span>
+                                </div>
+                                <input type="number" min=1 id="basketAmountNumber" aria-describedby="basic-addon3">
+                            </div>
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Discount percentage</span>
+                                </div>
+                                <input type="number" id="basketAmountPercentNumber" aria-describedby="basic-addon3">
+                            </div>
+                        </div>
+                        <button onclick="addBasketAmount()">Add Discount</button>
 
+                    </div>
+                    <div class="tab-pane fade" id="priceBasketDiv" role="tabpanel" aria-labelledby="priceBasket-tab">
+                        <label for="basketPriceNumber">Basket discount by price</label>
+                        <div class="columndForm input-group mb-3">
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Please enter a price:</span>
+                                </div>
+                                <input type="number" id="basketPriceNumber" aria-describedby="basic-addon3">
+                            </div>
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Discount percentage</span>
+                                </div>
+                                <input type="number" id="basketPricePercentNumber" aria-describedby="basic-addon3">
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+
+                        </div>
+                        <button onclick="addBasketPrice()">Add Discount</button>
+                    </div>
                 </div>
-                <div class="tab-pane fade" id="priceBasketDiv" role="tabpanel" aria-labelledby="priceBasket-tab">
-                    <label for="basketPriceNumber">Basket discount by price</label>
-                    <div class="columndForm input-group mb-3">
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Please enter a price:</span>
+                <div class="tab-content" id="productSubPropContent">
+                    <div class="tab-pane fade" id="revealedDiv" role="tabpanel" aria-labelledby="revealed-tab">
+                        <label>Product discount - revealed</label>
+                        <div class="columndForm input-group mb-3">
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Product name</span>
+                                </div>
+                                <input type="text" id="revealedProductName" aria-describedby="basic-addon3">
                             </div>
-                            <input type="number" id="basketPriceNumber" aria-describedby="basic-addon3">
-                        </div>
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Discount percentage</span>
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Discount percentage</span>
+                                </div>
+                                <input type="number" id="revealedDiscountPercents" aria-describedby="basic-addon3">
                             </div>
-                            <input type="number" id="basketPricePercentNumber" aria-describedby="basic-addon3">
                         </div>
+                        <button onclick="addProductReveal()">Add Discount</button>
                     </div>
-                    <div class="input-group mb-3">
-                       
+                    <div class="tab-pane fade" id="conditionalDiv" role="tabpanel" aria-labelledby="conditional-tab">
+                        <label>Product discount - conditional</label>
+                        <div class="columndForm input-group mb-3">
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Product name</span>
+                                </div>
+                                <input type="text" id="conditionalProductName" aria-describedby="basic-addon3">
+                            </div>
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Amount</span>
+                                </div>
+                                <input type="number" min=1 id="conditionalAmount" aria-describedby="basic-addon3">
+                            </div>
+                            <div class="wrappedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon3">Discount percentage</span>
+                                </div>
+                                <input type="number" id="conditionalDiscountPercents" aria-describedby="basic-addon3">
+                            </div>
+                            <div class="wrappedInput">
+                                <div class="input-group-text">
+                                    <input name="productCondition" type="radio"
+                                        aria-label="Radio button for following text input">
+                                </div>
+                                <label>all products</label>
+                            </div>
+                            <div class="wrappedInput">
+                                <div class="input-group-text">
+                                    <input name="productCondition" type="radio"
+                                        aria-label="Radio button for following text input">
+                                </div>
+                                <label>next product</label>
+                            </div>
+                        </div>
+                        <button onclick="addProductConditional()">Add Discount</button>
                     </div>
-                    <button onclick="addBasketPrice()">Add Discount</button>
-                </div>
-            </div>
-            <div class="tab-content" id="productSubPropContent">
-                <div class="tab-pane fade" id="revealedDiv" role="tabpanel" aria-labelledby="revealed-tab">
-                    <label>Product discount - revealed</label>
-                    <div class="columndForm input-group mb-3">
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Product name</span>
-                            </div>
-                            <input type="text" id="revealedProductName" aria-describedby="basic-addon3">
-                        </div>
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Discount percentage</span>
-                            </div>
-                            <input type="number" id="revealedDiscountPercents" aria-describedby="basic-addon3">
-                        </div>
-                    </div>
-                    <button onclick="addProductReveal()">Add Discount</button>
-                </div>
-                <div class="tab-pane fade" id="conditionalDiv" role="tabpanel" aria-labelledby="conditional-tab">
-                    <label>Product discount - conditional</label>
-                    <div class="columndForm input-group mb-3">
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Product name</span>
-                            </div>
-                            <input type="text" id="conditionalProductName" aria-describedby="basic-addon3">
-                        </div>
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Amount</span>
-                            </div>
-                            <input type="number" id="conditionalAmount" aria-describedby="basic-addon3">
-                        </div>
-                        <div class="wrappedInput">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon3">Discount percentage</span>
-                            </div>
-                            <input type="number" id="conditionalDiscountPercents" aria-describedby="basic-addon3">
-                        </div>
-                        <div class="wrappedInput">
-                            <div class="input-group-text">
-                                <input name="productCondition" type="radio"
-                                       aria-label="Radio button for following text input">
-                            </div>
-                            <label>all products</label>
-                        </div>
-                        <div class="wrappedInput">
-                            <div class="input-group-text">
-                                <input name="productCondition" type="radio"
-                                       aria-label="Radio button for following text input">
-                            </div>
-                            <label>next product</label>
-                        </div>
-                    </div>
-                    <button onclick="addProductConditional()">Add Discount</button>
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
 
 </body>

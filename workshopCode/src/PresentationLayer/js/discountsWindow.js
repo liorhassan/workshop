@@ -1,14 +1,28 @@
 function addNewDiscount(data) {
-    data.storeName = document.getElementById("storeName").value;
+    data.store = document.getElementById("storeName").value;
     fetch("http://localhost:8080/tradingSystem/addDiscount", {
         method: "POST",
         body: JSON.stringify(data)
     })
         .then(response => {
-            return response.json();
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
         })
         .then(data => {
-            console.log(data);
+            if (data.SUCCESS) {
+                Swal.fire(
+                    'Congratulations!',
+                    data.SUCCESS,
+                    'success')
+            } else {
+                Swal.fire(
+                    'OOPS...',
+                    data,
+                    'error')
+            }
         })
 }
 
@@ -18,7 +32,7 @@ function addBasketAmount() {
 
     const data = {
         type: "onBasket",
-        subType: "onProductsAmount",
+        subtype: "onProductsAmount",
         amount: amount,
         percent: percent
     }
@@ -31,7 +45,7 @@ function addBasketPrice() {
 
     const data = {
         type: "onBasket",
-        subType: "onCost",
+        subtype: "onCost",
         price: price,
         percent: percent
     }
@@ -44,9 +58,9 @@ function addProductReveal() {
 
     const data = {
         type: "onProduct",
-        subType: "revealed",
+        subtype: "revealed",
         productName: name,
-        percents: percents
+        percent: percents
     }
 
     addNewDiscount(data);
@@ -60,17 +74,15 @@ function addProductConditional() {
 
     const data = {
         type: "onProduct",
-        subType: "conditional",
+        subtype: "conditional",
         productName: name,
         amount: amount,
-        percents: percents,
-        onProduct: radioBtn[0].checked ? true : false,
+        percent: percents,
+        onProducts: radioBtn[0].checked ? true : false,
         onNextProduct: radioBtn[1].checked ? true : false,
     }
-    console.log(data);
 
-
-    // addNewDiscount(data);
+    addNewDiscount(data);
 }
 
 function resetActiveTabsButThis(clickedTab) {
