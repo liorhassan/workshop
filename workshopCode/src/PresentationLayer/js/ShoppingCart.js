@@ -1,3 +1,4 @@
+const window_name = "ShoppingCart";
 document.addEventListener("DOMContentLoaded", function () {
     fetch("http://localhost:8080/tradingSystem/isLoggedIn")
     .then(response=>response.json())

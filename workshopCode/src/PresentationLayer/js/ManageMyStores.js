@@ -1,3 +1,4 @@
+const window_name = "ManageMyStores";
 var activeStore;
 var activeProducts;
 document.addEventListener("DOMContentLoaded", function () {

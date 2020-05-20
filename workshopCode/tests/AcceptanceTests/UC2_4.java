@@ -26,8 +26,8 @@ public class UC2_4 {
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).login("noy", "1234", false);
         (new StoreHandler()).openNewStore("Lalin", "beauty products");
-        (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 1);
-        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 1);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40.0, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 1);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 1);
     }
 
 

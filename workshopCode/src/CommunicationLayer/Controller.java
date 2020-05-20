@@ -218,8 +218,8 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                Integer maxPrice = (requestJson.containsKey("maxPrice")) ? Integer.parseInt(requestJson.get("maxPrice").toString()) : null;
-                Integer minPrice = (requestJson.containsKey("minPrice")) ? Integer.parseInt(requestJson.get("minPrice").toString()) : null;
+                Integer maxPrice = (requestJson.containsKey("maxPrice")) && (!requestJson.get("maxPrice").toString().equals("")) ? Integer.parseInt(requestJson.get("maxPrice").toString()) : null;
+                Integer minPrice = (requestJson.containsKey("minPrice")) && (!requestJson.get("minPrice").toString().equals("")) ? Integer.parseInt(requestJson.get("minPrice").toString()) : null;
                 String category = (requestJson.containsKey("category")) ? (String) requestJson.get("category") : null;
 
                 String response = searchHandler.filterResults(minPrice, maxPrice, category);
@@ -295,10 +295,10 @@ public class Controller {
 
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 String productName = (requestJson.containsKey("product")) ? (String) requestJson.get("product") : null;
-                Integer price = (requestJson.containsKey("price")) ? Integer.parseInt(requestJson.get("price").toString()) : null;
+                Double price = (requestJson.containsKey("price")) && (!requestJson.get("price").toString().equals("")) ? Double.parseDouble(requestJson.get("price").toString()) : null;
                 String category = (requestJson.containsKey("category")) ? (String) requestJson.get("category") : null;
                 String desc = (requestJson.containsKey("desc")) ? (String) requestJson.get("desc") : null;
-                Integer amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
+                Integer amount = (requestJson.containsKey("amount")) && (!requestJson.get("amount").toString().equals("")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
 
 
 
