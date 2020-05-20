@@ -1,0 +1,20 @@
+.main {
+    margin: 60px 2vw 0 2vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.policyDiv {
+    display: flex;
+    flex-direction: column;
+}
+
+.policy-part {
+    display: flex;
+    flex-direction: row;
+}
+
+.input-group {
+
+    width: fit-content !important;  
+}

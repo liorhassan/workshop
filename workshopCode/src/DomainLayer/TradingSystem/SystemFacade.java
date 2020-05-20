@@ -654,7 +654,7 @@ public class SystemFacade {
             String type = (policy.containsKey("type")) ? ((String) policy.get("type")) : null;
             if(type.equals("If")){
                 JSONObject condition = (policy.containsKey("condition")) ? ((JSONObject) policy.get("condition")) : null;
-                int discountId = (policy.containsKey("discountId")) ? ((int) policy.get("discountId")) : null;
+                int discountId = (policy.containsKey("discountId")) ? Integer.parseInt(policy.get("discountId").toString()) : null;
                 DiscountBInterface discount = searchDiscountById(storeName, discountId);
                 if(discount == null){
                     throw new IllegalArgumentException("invalid discountId");
@@ -684,7 +684,7 @@ public class SystemFacade {
             else if(type.equals("simpleProduct")){
                 String product = (policy.containsKey("productName")) ? ((String) policy.get("productName")) : null;
                 String[] args = {product};
-                if(emptyString(args) || checkIfProductExists(storeName, product)){
+                if(emptyString(args) || !checkIfProductExists(storeName, product)){
                     throw new IllegalArgumentException("invalid product name");
                 }
 
