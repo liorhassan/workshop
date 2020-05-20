@@ -14,20 +14,26 @@ function addNewDiscount(data) {
 
 function addBasketAmount() {
     const amount = document.getElementById("basketAmountNumber").value;
+    const percent = document.getElementById("basketAmountPercentNumber").value;
+
     const data = {
         type: "onBasket",
         subType: "onProductsAmount",
-        amount: amount
+        amount: amount,
+        percent: percent
     }
     addNewDiscount(data);
 }
 
 function addBasketPrice() {
     const price = document.getElementById("basketPriceNumber").value;
+    const percent = document.getElementById("basketPricePercentNumber").value;
+
     const data = {
         type: "onBasket",
         subType: "onCost",
-        price: price
+        price: price,
+        percent: percent
     }
     addNewDiscount(data);
 }
