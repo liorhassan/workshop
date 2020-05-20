@@ -87,6 +87,12 @@ public class ShoppingCartHandler {
         }
     }
 
+
+    public String getCartTotalPrice(){
+        return SystemFacade.getInstance().getCartTotalPrice();
+    }
+
+
     public String createJSONMsg(String type, String content) {
         JSONObject response = new JSONObject();
         response.put(type, content);

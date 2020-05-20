@@ -121,7 +121,7 @@ public class StoreHandler {
             if (percentage > 100 || percentage < 0) {
                 throw new IllegalArgumentException("Invalid percentage value: must be between 0 and 100");
             }
-            if (amount <= 0) {
+            if (amount < 0) {
                 throw new IllegalArgumentException("Invalid amount value: must be more then 0 ");
             }
             if (!SystemFacade.getInstance().storeExists(storeName)) {
@@ -177,6 +177,10 @@ public class StoreHandler {
 
     public String getMyStores(){
         return SystemFacade.getInstance().myStores();
+    }
+
+    public String checkAmountInInventory(String productName, String storeName) {
+        return SystemFacade.getInstance().checkAmountInInventory(productName, storeName);
     }
 
     public String createJSONMsg(String type, String content) {
