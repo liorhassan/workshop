@@ -22,28 +22,37 @@ public class UC2_8 {
     @BeforeClass
     public static void init(){
         UC3_2.init(); // user toya is logged in
-        (new UsersHandler()).register("noy", "1234");
-        (new UsersHandler()).register("maor", "1234");
-        (new UsersHandler()).login("toya", "1234", false);
         (new StoreHandler()).openNewStore("Castro", "clothes for women and men");
         (new StoreHandler()).openNewStore("Lalin", "beauty products");
-        (new StoreHandler()).UpdateInventory("Castro", "white T-shirt", 25, "Clothing", "white T-shirt for men", 3);
-        (new StoreHandler()).UpdateInventory("Castro", "jeans skirt", 50, "Clothing", "mini jeans skirt for women", 4);
+        (new StoreHandler()).UpdateInventory("Castro", "white T-shirt", 5, "Clothing", "white T-shirt for men", 50);
+        (new StoreHandler()).UpdateInventory("Castro", "jeans skirt", 50, "Clothing", "mini jeans skirt for women", 50);
+        (new StoreHandler()).UpdateInventory("Castro", "Michael Kors bag", 1000, "Clothing", "bag", 50);
         (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
-        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 20);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
+        (new UsersHandler()).logout();
+        (new UsersHandler()).register("noy", "1234");
+        (new UsersHandler()).register("maor", "1234");
+        (new UsersHandler()).register("rachel", "1234");
+        (new UsersHandler()).register("zuzu", "1234");
     }
 
     @AfterClass
     public static void clean(){
-        (new UsersHandler()).logout();
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
     }
 
     @Test
     public void emptyCart() {
-        String result = shoppingCartHandler.purchaseCart();
-        assertEquals("The shopping cart is empty", result);
+        (new UsersHandler()).login("noy", "1234", false);
+        try {
+            shoppingCartHandler.purchaseCart();
+        }
+        catch(Exception e){
+            assertEquals("The shopping cart is empty", e.getMessage());
+        }
+        (new UsersHandler()).logout();
+
     }
 
 
@@ -53,7 +62,7 @@ public class UC2_8 {
         shoppingCartHandler.AddToShoppingBasket("Castro", "jeans skirt", 2);
         shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Cream ocean", 5);
         String result = shoppingCartHandler.purchaseCart();
-        assertEquals("Purchasing completed successfully", result);
+        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\"}", result);
         (new UsersHandler()).logout();
     }
 
@@ -62,15 +71,19 @@ public class UC2_8 {
     public void productNotInStock() {
 
         (new UsersHandler()).login("maor", "1234", false);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-shirt", 3);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-shirt", 50);
         (new UsersHandler()).logout();
         (new UsersHandler()).login("toya", "1234", false);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-shirt", 2);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-shirt", 50);
         shoppingCartHandler.purchaseCart();
         (new UsersHandler()).logout();
         (new UsersHandler()).login("maor", "1234", false);
-        String result = shoppingCartHandler.purchaseCart();
-        assertEquals("There is currently no stock of 3 white T-shirt products", result);
+        try {
+            shoppingCartHandler.purchaseCart();
+        }
+        catch(Exception e) {
+            assertEquals("There is currently no stock of 50 white T-shirt products", e.getMessage());
+        }
         (new UsersHandler()).logout();
 
     }
@@ -78,29 +91,89 @@ public class UC2_8 {
 
     @Test
     public void paymentFail() {
-        (new UsersHandler()).login("toya", "1234", false);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "Michael kors bag", 2);
-        //Store s = SystemFacade.getInstance().getStoreByName("Castro");
-        //int c = s.getInventory().get(s.getProductByName("Michael kors bag"));
-        String result = shoppingCartHandler.purchaseCart();
-        assertEquals("Payment failed", result);
-        //TODO: check if products back to stock
 
+        (new UsersHandler()).login("rachel", "1234", false);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "Michael Kors bag", 2);
+        try {
+            shoppingCartHandler.purchaseCart();
+        }
+        catch (Exception e) {
+            assertEquals("Payment failed", e.getMessage());
+        }
+        String amountInInventory = (new StoreHandler()).checkAmountInInventory("Michael Kors bag", "Castro");
+        assertEquals("50", amountInInventory);
+        (new UsersHandler()).logout();
     }
 
     @Test
     public void supplementFail() {
-        (new UsersHandler()).logout();
         (new UsersHandler()).login("zuzu", "1234", false);
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Cream ocean", 2);
-        //Store s = SystemFacade.getInstance().getStoreByName("Lalin");
-        //int c = s.getInventory().get(s.getProductByName("Body Cream ocean"));
-        String result = shoppingCartHandler.purchaseCart();
-        assertEquals("supplement failed", result);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
+
+        try{
+            shoppingCartHandler.purchaseCart();
+        }
+        catch(Exception e) {
+            assertEquals("supplement failed", e.getMessage());
+        }
         (new UsersHandler()).logout();
-        //TODO: check if products back to stock
-
-
+        String amountInInventory = (new StoreHandler()).checkAmountInInventory("Body Scrub musk", "Lalin");
+        assertEquals("50", amountInInventory);
+        (new UsersHandler()).logout();
     }
+
+    @Test
+    public void revealedDiscountForProduct() {
+        (new UsersHandler()).login("toya", "1234", false);
+        (new StoreHandler()).addDiscountForProduct("Lalin", "Body Scrub musk", 10, 0, true);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
+        String result = shoppingCartHandler.getCartTotalPrice();
+        shoppingCartHandler.purchaseCart();
+        assertEquals("90", result);
+        (new UsersHandler()).logout();
+    }
+
+    @Test
+    public void conditionalDiscountForProduct() {
+        (new UsersHandler()).login("toya", "1234", false);
+        (new StoreHandler()).addDiscountForProduct("Lalin", "Body Scrub musk", 10, 3, true);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
+        String result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("100", result);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 1);
+        result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("135", result);
+        shoppingCartHandler.purchaseCart();
+        (new UsersHandler()).logout();
+    }
+
+
+    @Test
+    public void onCostDiscountForBasket() {
+        (new UsersHandler()).login("toya", "1234", false);
+        (new StoreHandler()).addDiscountForBasket("Lalin",  10, 100, true);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 1);
+        String result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("50", result);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
+        result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("120", result);
+        (new UsersHandler()).logout();
+    }
+
+    @Test
+    public void onProductAmountDiscountForBasket() {
+        (new UsersHandler()).login("toya", "1234", false);
+        (new StoreHandler()).addDiscountForBasket("Lalin",  10, 2, false);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 1);
+        String result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("50", result);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
+        result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("120", result);
+        (new UsersHandler()).logout();
+    }
+
+
 
 }
