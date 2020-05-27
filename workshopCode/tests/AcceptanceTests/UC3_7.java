@@ -1,36 +1,38 @@
 package AcceptanceTests;
 
-import DomainLayer.SystemHandler;
-import ServiceLayer.ViewUserPurchaseHistory;
-import org.junit.*;
-
-import java.util.HashMap;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.UsersHandler;
+import ServiceLayer.ViewPurchaseHistoryHandler;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class UC3_7 {
 
-    private ViewUserPurchaseHistory command;
+    private ViewPurchaseHistoryHandler historyHandlerhandler;
 
     @BeforeClass
-    public static void init() throws Exception{
-        SystemHandler.getInstance().register("nufi");
-        SystemHandler.getInstance().login("nufi");
+    public static void init() throws Exception {
+        (new UsersHandler()).register("nufi", "1234");
+        (new UsersHandler()).login("nufi", "1234", false);
     }
 
     @Before
     public void setUp() throws Exception {
-        command = new ViewUserPurchaseHistory();
+        historyHandlerhandler = new ViewPurchaseHistoryHandler();
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        SystemHandler.getInstance().setUsers(new HashMap<>());
+        (new UsersHandler()).resetUsers();
     }
 
     @Test
     public void valid() {
-        String result = command.execute();
+        String result = historyHandlerhandler.viewLoggedInUserPurchaseHistory();
         assertEquals("Shopping history:"+"\n", result);
     }
 }

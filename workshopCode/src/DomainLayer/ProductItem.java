@@ -1,5 +1,8 @@
 package DomainLayer;
 
+import DomainLayer.Models.Basket;
+import DomainLayer.Models.Product;
+
 public class ProductItem {
 
     private Product product;
