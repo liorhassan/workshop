@@ -20,7 +20,7 @@ public class UserPurchaseHistory {
         return this.purchases;
     }
 
-    public void addPurchaseToHistory(Purchase newPurchase) {
+    public void add(Purchase newPurchase) {
         this.purchases.add(newPurchase);
     }
 }
