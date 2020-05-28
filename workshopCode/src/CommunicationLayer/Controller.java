@@ -697,7 +697,7 @@ public class Controller {
 
                 String response = storeHandler.getMyStores();
 
-                headers.set("editPermissions", String.format("application/json; charset=%s", UTF8));
+                headers.set("myStores", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } finally {
                 he.close();

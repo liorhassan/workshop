@@ -74,4 +74,9 @@ public class User {
     public void emptyCart(){
         this.shoppingCart = new ShoppingCart(this);
     }
+
+    public void addPurchaseToHistory(Purchase newPurchase) {
+        this.purchaseHistory.add(newPurchase);
+    }
+
 }

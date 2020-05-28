@@ -1,6 +1,8 @@
 package AcceptanceTests;
 
 import ServiceLayer.*;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -50,25 +52,28 @@ public class UC4_10 {
     }
 
     @Test
-    public void valid() {
+    public void valid() throws ParseException {
         //noy - store owner
         String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
-        String expectedResult = "Shopping history of the store:\n\nPurchase #1:\nStore name: Lalin\n" +
-                "Product name: Body Cream ocean price: 40.0 amount: 5" +
-                "\n\ntotal money paid: 200.0";
-        assertEquals(expectedResult, result);
+        JSONParser parser = new JSONParser();
+        String expected = "[[{\"name\":\"Body Cream ocean\", \"price\":40.0, \"store\":\"Lalin\", \"amount\":5}]]";
+        assertEquals(parser.parse(expected), parser.parse(result));
 
         //rachel - store manager with the required permissions
         (new UsersHandler()).logout();
         (new UsersHandler()).login("rachel", "1234", false);
         result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
-        assertEquals(expectedResult, result);
+        assertEquals(parser.parse(expected), parser.parse(result));
     }
 
     @Test
     public void storeDoesntExists() {
-        String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Swear");
-        assertEquals("This store doesn't exist", result);
+        try{
+            storePurchaseHistory.ViewPurchaseHistoryOfStore("Swear");
+        }
+        catch(Exception e){
+            assertEquals("This store doesn't exist", e.getMessage());
+        }
     }
 
     @Test
@@ -76,20 +81,32 @@ public class UC4_10 {
         //zuzu - neither a manager nor a store owner
         (new UsersHandler()).logout();
         (new UsersHandler()).login("zuzu", "1234", false);
-        String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
-        assertEquals("You are not allowed to view this store's purchasing history", result);
+        try{
+            storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
+        }
+        catch(Exception e){
+            assertEquals("You are not allowed to view this store's purchasing history", e.getMessage());
+        }
 
         //maor - manager without required permission
         (new UsersHandler()).logout();
         (new UsersHandler()).login("maor", "1234", false);
-        result = storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
-        assertEquals("You are not allowed to view this store's purchasing history", result);
+        try{
+            storePurchaseHistory.ViewPurchaseHistoryOfStore("Lalin");
+        }
+        catch(Exception e){
+            assertEquals("You are not allowed to view this store's purchasing history", e.getMessage());
+        }
     }
 
     @Test
     public void emptyStore() {
-        String result = storePurchaseHistory.ViewPurchaseHistoryOfStore("");
-        assertEquals("Must enter store name", result);
+        try{
+             storePurchaseHistory.ViewPurchaseHistoryOfStore("");
+        }
+        catch(Exception e){
+            assertEquals("Must enter store name", e.getMessage());
+        }
     }
 
 }
