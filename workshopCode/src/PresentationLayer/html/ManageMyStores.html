@@ -150,12 +150,32 @@
                 </button>
             </div>
             <div id="editCartElements" class="">
-                <p id="product-name"></p>
-                <p id="product-store"></p>
-                <p id="product-price"></p>
-                <p id="product-description"></p>
-                
-                <button id="confirmEditbtn" class="btn btn-primary">Add To Shopping Cart</button>
+                <input type="text" id="perm-username" class="form-control" placeholder="Username"/>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="manageSupplyPermOpt">
+                    <label class="form-check-label" for="manageSupplyPermOpt">
+                      Manage Supply
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="viewHistoryPermOpt">
+                    <label class="form-check-label" for="viewHistoryPermOpt">
+                      View Purchase History
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="addDiscPermOpt">
+                    <label class="form-check-label" for="addDiscPermOpt">
+                      Add New Discount
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="addDiscPolPermOpt">
+                    <label class="form-check-label" for="addDiscPolPermOpt">
+                      Add New Discount Policy
+                    </label>
+                  </div>
+                <button id="editPermBtn" class="btn btn-primary">Update Permissions</button>
             </div>
         </div>
 

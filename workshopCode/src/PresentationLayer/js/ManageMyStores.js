@@ -17,6 +17,52 @@ document.addEventListener("DOMContentLoaded", function () {
         showPopUp("Open Store");
     });
 
+    document.getElementById("editPermBtn").addEventListener("click",function(){
+        store_name = activeStore.name;
+        user_name = document.getElementById("perm-username").value;
+        permissions = []
+        if(document.getElementById("manageSupplyPermOpt").checked)
+            permissions.push("Manage Supply")
+        if(document.getElementById("viewHistoryPermOpt").checked)
+            permissions.push("View Purchasing History")
+        if(document.getElementById("addDiscPermOpt").checked)
+            permissions.push("Add New Discount")
+        if(document.getElementById("addDiscPolPermOpt").checked)
+            permissions.push("Add New Discount Policy")
+        var sfy = JSON.stringify({user: user_name, store: store_name, permission: permissions});
+        fetch("http://localhost:8080/tradingSystem/editPermission", {
+            method: "POST",
+            body: JSON.stringify({user: user_name, store: store_name, permission: permissions})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
+        document.getElementById("perm-username").value = "";
+        document.getElementById("manageSupplyPermOpt").checked = false;
+        document.getElementById("viewHistoryPermOpt").checked = false;
+        document.getElementById("addDiscPermOpt").checked = false;
+        document.getElementById("addDiscPolPermOpt").checked = false;
+        document.getElementById("editPermissionsModal").style.display = "none";
+        
+    })
+
     initOpenStoreModel();
     
     initAddManagerModel();
@@ -48,7 +94,7 @@ function initOpenStoreModel() {
     document.getElementById("confirm-open-store-btn").addEventListener("click",function(){
         var store_name = document.getElementById("StoreNameInput").value;
         var store_description  = document.getElementById("StoreDescInput").value;
-        fetch("/tradingSystem/openNewStore", {
+        fetch("http://localhost:8080/tradingSystem/openNewStore", {
             method: "POST",
             body: JSON.stringify({store: store_name, description: store_description})
         })
