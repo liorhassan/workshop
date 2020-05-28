@@ -310,10 +310,14 @@ public class SystemFacade {
 
     // function for handling Use Case 3.7 + 6.4 - written by Nufar
     public String getUserPurchaseHistory(String userName) {
+        JSONParser parser = new JSONParser();
         UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
         JSONArray historyArray = new JSONArray();
         for(Purchase p: purchaseHistory.getUserPurchases()){
-            historyArray.add(p.getPurchasedProducts().viewOnlyProducts());
+            try {
+                JSONArray h = (JSONArray) parser.parse(p.getPurchasedProducts().viewOnlyProducts());
+                historyArray.add(h);
+            }catch(Exception e){System.out.println(e.getMessage());};
         }
         return historyArray.toJSONString();
 //        String historyOutput = "Shopping history:" + "\n";
@@ -605,7 +609,7 @@ public class SystemFacade {
                 currStore.put("type", "Manager");
                 JSONArray options = new JSONArray();
                 for(Permission p: managements.get(s).getPermission())
-                    options.add(p);
+                    options.add(p.getAllowedAction());
                 currStore.put("options", options);
                 response.add(currStore);
             }
