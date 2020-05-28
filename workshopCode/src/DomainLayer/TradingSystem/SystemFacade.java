@@ -186,6 +186,7 @@ public class SystemFacade {
                 activeUser = user;
         }
         NotificationSystem.getInstance().attach(username);
+        NotificationSystem.getInstance().notify(username, "hey");
     }
 
     //function for handling UseCase 3.1
