@@ -2,6 +2,7 @@ var nav_curr_mapping={
     MainSearch:["",""],
     ShoppingCart:["",""],
     ManageMyStores:["",""],
+    PurchaseHistory:["",""]
 }
 const active_lables = [" active"," <span class=\"sr-only\">(current)</span>"];
 function updateNavBar(isLoggedIn){
@@ -11,7 +12,8 @@ function updateNavBar(isLoggedIn){
         nav_curr_mapping.ManageMyStores = active_lables;
     if(window_name == "ShoppingCart")
         nav_curr_mapping.ShoppingCart = active_lables;
-    
+    if(window_name == "UserPurchaseHistory")
+        nav_curr_mapping.PurchaseHistory = active_lables;
     if(isLoggedIn.loggedin=="True"){
         document.getElementById("navbarCollapse").innerHTML=`<ul class=\"navbar-nav mr-auto\"> \
         <li class=\"nav-item${nav_curr_mapping.MainSearch[0]}\"> \
@@ -23,8 +25,8 @@ function updateNavBar(isLoggedIn){
         <li class=\"nav-item${nav_curr_mapping.ManageMyStores[0]}\">\
             <a class=\"nav-link\" href=\"/html/ManageMyStores.html\">Manage Stores${nav_curr_mapping.ManageMyStores[1]}</a>\
         </li>\
-        <li class=\"nav-item\">\
-            <a class=\"nav-link\" href=\"#\">Purchase History</a>\
+        <li class=\"nav-item${nav_curr_mapping.PurchaseHistory[0]}\">\
+            <a class=\"nav-link\" href=\"UserPurchaseHistory.html\">Purchase History${nav_curr_mapping.PurchaseHistory[1]}</a>\
         </li>\
         </ul>\
         <ul class = \"navbar-nav navbar-right\">\
