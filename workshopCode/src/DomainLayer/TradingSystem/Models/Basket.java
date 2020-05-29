@@ -1,5 +1,8 @@
 package DomainLayer.TradingSystem.Models;
 
+import DomainLayer.TradingSystem.DiscountBInterface;
+import DomainLayer.TradingSystem.DiscountPolicyComp;
+import DomainLayer.TradingSystem.DiscountPolicyIf;
 import DomainLayer.TradingSystem.ProductItem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,12 +14,20 @@ public class Basket {
 
     private Store store;
     private List<ProductItem> productItems;
+    private double price;
+    List<DiscountBInterface> discountsOnProducts;
 
     public Basket(Store store) {
         this.store = store;
         productItems = new ArrayList<>();
+        discountsOnProducts = new ArrayList<>();
+        price = 0;
     }
 
+
+    public List<DiscountBInterface> getDiscountsOnProducts() {
+        return discountsOnProducts;
+    }
 
     public Store getStore() {
         return store;
@@ -41,13 +52,29 @@ public class Basket {
         return amount;
     }
 
-    public double calcPrice(){
-        double total = 0;
-        for (ProductItem pi: getProductItems()) {
-            total += (pi.getAmount() * pi.getProduct().getPrice());
+    public void deserveDiscounts(){
+        for(DiscountBInterface dis : store.getDiscountsOnProducts()){
+            if(dis.canGet(this)){
+                discountsOnProducts.add(dis);
+            }
         }
-        return total;
+        for (DiscountBInterface policy : store.getDiscountPolicies()){
+            if(policy instanceof DiscountPolicyIf){
+                if(policy.canGet(this)){
+                    if(!discountsOnProducts.contains(((DiscountPolicyIf) policy).getResult())){
+                        this.discountsOnProducts.add(((DiscountPolicyIf) policy).getResult());
+                    }
+                }
+            }
+            else(policy instanceof DiscountPolicyComp){
+
+            }
+        }
     }
+
+
+
+
 
     public void setProductItems(List<ProductItem> productItems) {
         this.productItems = productItems;

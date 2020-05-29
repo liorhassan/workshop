@@ -15,10 +15,9 @@ public class Store {
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
-    private List<DiscountPolicy> discountPolicies;
-
-    private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
-    private List<DiscountBInterface> discountsOnBaskets;
+    private List<DiscountBInterface> discountPolicies;
+    private List<DiscountBInterface> discountsOnProducts;
+    private List<DiscountBInterface> discountsOnBasketPrice;
     private List<PurchasePolicy> purchasePolicies;
 
     private HashMap<Basket, List<ProductItem>> reservedProducts;
@@ -34,8 +33,8 @@ public class Store {
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
-        this.discountsOnBaskets = new ArrayList<>();
-        this.discountsOnProducts = new HashMap<>();
+        this.discountsOnBasketPrice = new ArrayList<>();
+        this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
         this.discountID_counter = 0;
@@ -53,8 +52,15 @@ public class Store {
     public void setName(String name) {
         this.name = name;
     }
-    public HashMap<Product, DiscountBaseProduct> getDiscountsOnProducts() {
+    public List<DiscountBInterface> getDiscountsOnProducts() {
         return discountsOnProducts;
+    }
+
+    public List<DiscountBInterface> getDiscountsOnBasketPrice() {
+        return discountsOnBasketPrice;
+    }
+    public List<DiscountBInterface> getDiscountPolicies() {
+        return discountPolicies;
     }
 
     public Collection<Product> getProducts(){
@@ -73,11 +79,11 @@ public class Store {
     }
 
     public DiscountBInterface getDiscountById(int discountId){
-        for (DiscountBInterface dis : discountsOnProducts.values()) {
+        for (DiscountBInterface dis : discountsOnProducts) {
             if (dis.getDiscountID() == discountId)
                 return dis;
         }
-        for (DiscountBInterface dis : discountsOnBaskets) {
+        for (DiscountBInterface dis : discountsOnBasketPrice) {
             if (dis.getDiscountID() == discountId)
                 return dis;
         }
@@ -286,7 +292,7 @@ public class Store {
 
     public void addDiscountForBasket(int percentage, int limit, boolean onprice){
 
-        discountsOnBaskets.add(new DiscountBaseBasket(discountID_counter, limit, percentage, onprice));
+        discountsOnBaskets.add(new DiscountBasketPriceOrAmount(discountID_counter, limit, percentage, onprice));
         discountID_counter ++;
 
     }
@@ -297,13 +303,13 @@ public class Store {
 
     public String viewDiscount(){
         JSONArray discountsdes = new JSONArray();
-        for(DiscountBInterface dis :discountsOnBaskets){
+        for(DiscountBInterface dis :discountsOnBasketPrice){
             JSONObject curr = new JSONObject();
             curr.put("discountId", dis.getDiscountID());
             curr.put("discountString", dis.discountDescription());
             discountsdes.add(curr);
         }
-        for(DiscountBInterface dis :discountsOnProducts.values()){
+        for(DiscountBInterface dis :discountsOnProducts){
             JSONObject curr = new JSONObject();
             curr.put("discountId", dis.getDiscountID());
             curr.put("discountString", dis.discountDescription());

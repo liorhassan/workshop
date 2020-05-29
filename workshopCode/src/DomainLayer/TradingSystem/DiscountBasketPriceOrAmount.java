@@ -2,30 +2,50 @@ package DomainLayer.TradingSystem;
 
 import DomainLayer.TradingSystem.Models.Basket;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class DiscountBaseBasket implements DiscountBInterface {
+
+public class DiscountBasketPriceOrAmount implements DiscountBInterface {
 
     private int discountID;
     private int sum;
     private int discount;
     private boolean onPrice;        //or amount of products in the basket
+    private boolean simple;
 
 
-    public DiscountBaseBasket(int discountID, int sum, int discount, boolean onPrice) {
+    public DiscountBasketPriceOrAmount(int discountID, int sum, int discount, boolean onPrice) {
         this.discountID = discountID;
         this.sum = sum;
         this.discount = discount;
         this.onPrice = onPrice;
+        this.simple = true;
     }
 
+    public boolean isSimple() {
+        return simple;
+    }
+
+    public List<DiscountBInterface> relevantDiscounts (Basket basket){
+        List<DiscountBInterface> output = new ArrayList<>();
+        output.add(this);
+        return output;
+    }
 
     public int getDiscountID() {
         return discountID;
     }
 
     @Override
-    public boolean canGet(double price ){
-        if (price > sum) {
+    public boolean canGet(Basket basket ){
+        if(onPrice){
+            int param =
+        }
+        else{
+
+        }
+        if (param > sum) {
             return true;
         }
         return false;

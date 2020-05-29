@@ -4,26 +4,37 @@ import DomainLayer.TradingSystem.Models.Basket;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.Store;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class DiscountBaseProduct implements DiscountBInterface {
+public class DiscountCondBasketProducts implements DiscountBInterface {
 
 
     private int discountID;
-    private String productName;
+    private Product productCondition;
     private int minAmount;
+    private Product discountProduct;
     private int discount;
-    private boolean onAllTheAmount; // or on the minAmount + 1
+    private boolean simple;
 
-    public DiscountBaseProduct(int discountID, String productName, int amount, int discount, boolean onAll) {
+    public DiscountCondBasketProducts(int discountID, Product productCondition, Product discountProduct, int amount, int discount, boolean onAll) {
         this.discountID = discountID;
-        this.productName= productName;
+        this.discountProduct= discountProduct;
+        this.productCondition = productCondition;
         this.minAmount= amount;
         this.discount = discount;
-        this.onAllTheAmount = onAll;
+        this.simple = true;
     }
-    public String getProductName() {
-        return productName;
+
+    public boolean isSimple() {
+        return simple;
+    }
+
+    public Product getProductCondition() {
+        return productCondition;
+    }
+    public Product getProductDiscount() {
+        return discountProduct;
     }
 
     public int getMinAmount() {
@@ -33,18 +44,26 @@ public class DiscountBaseProduct implements DiscountBInterface {
     public int getDiscount() {
         return discount;
     }
-
+    /*
     public boolean isOnAllTheAmount() {
         return onAllTheAmount;
     }
-
+    */
 
     public int getDiscountID() {
         return discountID;
     }
 
     @Override
-    public boolean canGet( double amount) {
+    public List<DiscountBInterface> relevantDiscounts (Basket basket){
+        List<DiscountBInterface> output = new ArrayList<>();
+        output.add(this);
+        return output;
+    }
+
+    @Override
+    public boolean canGet( Basket basket) {
+        int amount = basket.getProductAmount(productCondition.getName());
         if(amount>minAmount)
             return true;
         return false;
@@ -76,7 +95,7 @@ public class DiscountBaseProduct implements DiscountBInterface {
     public String discountDescription() {
         String output = "";
         if(onAllTheAmount){
-            output = "discount of: " + discount + "% on product: " + productName + " if the amount more then: " + minAmount;
+            output = "discount of: " + discount + "% on product: " + discountProduct.getName() + " if the amount of " + productCondition.getName() + " is more then: " + minAmount;
         }
         else{
             int amount = minAmount+1;
