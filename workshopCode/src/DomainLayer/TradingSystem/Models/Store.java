@@ -5,6 +5,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.function.DoubleBinaryOperator;
 
 public class Store {
 
@@ -19,6 +20,7 @@ public class Store {
     private List<DiscountBInterface> discountsOnProducts;
     private DiscountBInterface discountsOnBasketPrice;
     private List<PurchasePolicy> purchasePolicies;
+    private boolean doubleDiscounts;                    //on products and basketPrice
 
     private HashMap<Basket, List<ProductItem>> reservedProducts;
     private int discountID_counter;
@@ -38,6 +40,7 @@ public class Store {
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
         this.discountID_counter = 0;
+        this.doubleDiscounts = true;
     }
 
 
@@ -67,6 +70,10 @@ public class Store {
         return  products.getProducts().keySet();
     }
 
+    public void setDoubleDiscounts(boolean doubleDiscounts){
+        this.doubleDiscounts = doubleDiscounts;
+    }
+
     public boolean checkIfProductAvailable(String product, int amount){
         Product p = getProductByName(product);
         if(p == null)
@@ -83,7 +90,7 @@ public class Store {
             if (dis.getDiscountID() == discountId)
                 return dis;
         }
-        for (DiscountBInterface dis : discountsOnBasketPrice) {
+        for (DiscountBInterface dis : discountPolicies) {
             if (dis.getDiscountID() == discountId)
                 return dis;
         }
@@ -226,43 +233,26 @@ public class Store {
         }
     }
 
-    public double calculateTotalCheck(Basket b, List<DiscountBInterface> discounts){
-        double total = 0;
-        if(discounts.size()>0) {
-            for (ProductItem pi : b.getProductItems()) {
-                boolean found = false;
-                for (DiscountBInterface disc : discounts) {
-                    if (disc instanceof DiscountBaseProduct){
-                        if(((DiscountBaseProduct) disc).getProductName().equals(pi.getProduct().getName())){
-                            total = total + disc.calc(b, pi.getProduct().getPrice());
-                            discounts.remove(disc);
-                            found = true;
-                        }
+    public double calculateTotalCheck(Basket b) {
+        double priceAfterDiscount = b.calcBasketPrice();
+        double PriceBeforDiscount = b.calcBasketPriceBeforeDiscount();
+
+        if (doubleDiscounts || (priceAfterDiscount == PriceBeforDiscount)) {
+            if (discountsOnBasketPrice != null) {
+                if (discountsOnBasketPrice.isSimple()) {
+                    if (discountsOnBasketPrice.canGet(b)) {
+                        priceAfterDiscount = ((DiscountSimple) discountsOnBasketPrice).calc(b);
                     }
                 }
-                if(!found){
-                    total = total + pi.getAmount() * pi.getProduct().getPrice();
-                }
-            }
-            if(discounts.size()> 0){
-                for(DiscountBInterface disc : discounts){
-                    if(disc.canGet(total)) {
-                        total = disc.calc(b, total);
+                else {
+                    List<DiscountBInterface> chosen = ((DiscountPolicy) discountsOnBasketPrice).filterDiscounts(b);
+                    for (DiscountBInterface dis : chosen) {
+                        priceAfterDiscount = ((DiscountSimple) dis).calc(b);
                     }
                 }
             }
         }
-        else{
-            total = b.calcPrice();
-        }
-
-        for(DiscountBInterface dis :discountsOnBaskets){
-            if(!discounts.contains(dis)){
-                    total = dis.calc(b, total);
-            }
-        }
-
-        return total;
+        return priceAfterDiscount;
     }
 
 
@@ -303,7 +293,7 @@ public class Store {
 
     public String viewDiscount(){
         JSONArray discountsdes = new JSONArray();
-        for(DiscountBInterface dis :discountsOnBasketPrice){
+        for(DiscountBInterface dis :discountPolicies){
             JSONObject curr = new JSONObject();
             curr.put("discountId", dis.getDiscountID());
             curr.put("discountString", dis.discountDescription());
@@ -318,18 +308,6 @@ public class Store {
         return discountsdes.toJSONString();
     }
 
-
-    public List<DiscountBInterface> getDiscountsOnBasket(Basket basket){
-        List<DiscountBInterface> output = new ArrayList<>();
-        for(DiscountBaseProduct dis : discountsOnProducts.values()){
-            if(dis.canGet(basket.getProductAmount(dis.getProductName())))
-                output.add(dis);
-        }
-        for(DiscountPolicy disP : discountPolicies){
-            output = disP.checkDiscounts(output, basket);
-        }
-        return output;
-    }
 
     public void notifyOwners(Basket b, String userName) {
         String msg = userName + " bought some products from the store " + name + " you own: ";

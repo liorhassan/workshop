@@ -7,7 +7,7 @@ import DomainLayer.TradingSystem.Models.Store;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscountCondBasketProducts implements DiscountBInterface {
+public class DiscountCondBasketProducts extends DiscountSimple {
 
 
     private int discountID;
@@ -69,26 +69,10 @@ public class DiscountCondBasketProducts implements DiscountBInterface {
         return false;
     }
 
-    @Override
-    public  double calc(Basket basket, double price){
-        int amount = basket.getProductAmount(productName);
-        double sum = 0;
-        if (!onAllTheAmount){
-            for(int i = amount; i>0; i--){
-                if( i%(minAmount+1) == 0 ){
-                    sum = sum + (price - (price * (discount/100)));
-                }
-                else{
-                    sum = sum + price;
-                }
-            }
-        }
-
-        else{
-            sum = (price * amount) - ((price * amount) * (discount/100));
-        }
-
-        return sum;
+    public  double calc(Basket basket){
+        ProductItem pi = basket.getProductItemByProduct(discountProduct);
+        double price = pi.getAmount() * (pi.getProduct().getPrice() - (pi.getProduct().getPrice()*discount / 100));
+        return  price;
     }
 
     @Override

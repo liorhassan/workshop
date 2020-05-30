@@ -6,7 +6,7 @@ import DomainLayer.TradingSystem.Models.Product;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscountRevealedProduct  implements DiscountBInterface{
+public class DiscountRevealedProduct  extends DiscountSimple{
     private int discountId;
     private Product product;
     private int discount;
@@ -37,9 +37,10 @@ public class DiscountRevealedProduct  implements DiscountBInterface{
         return false;
     }
 
-    @Override
-    public double calc(Basket basket, double price) {
-        return 0;
+    public double calc(Basket basket) {
+        ProductItem pi = basket.getProductItemByProduct(product);
+        double price = pi.getAmount() * (pi.getProduct().getPrice() - (pi.getProduct().getPrice()*discount / 100));
+        return  price;
     }
 
     @Override
@@ -50,6 +51,10 @@ public class DiscountRevealedProduct  implements DiscountBInterface{
     @Override
     public int getDiscountID() {
         return discountId;
+    }
+
+    public Product getProductDiscount() {
+        return product;
     }
     @Override
     public int getDiscountPercent() {

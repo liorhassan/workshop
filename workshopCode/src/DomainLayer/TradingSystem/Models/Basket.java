@@ -1,9 +1,6 @@
 package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.TradingSystem.DiscountBInterface;
-import DomainLayer.TradingSystem.DiscountCondBasketProducts;
-import DomainLayer.TradingSystem.DiscountPolicy;
-import DomainLayer.TradingSystem.ProductItem;
+import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -81,20 +78,50 @@ public class Basket {
 
     public void calcProductPrice(){
         for( DiscountBInterface dis : discountsOnProducts){
-            if(dis instanceof DiscountCondBasketProducts){
-                ProductItem pi = getProductItemByProduct(((DiscountCondBasketProducts) dis).getProductDiscount());
-                if(priceOfProdAfterDiscount.containsKey(pi)){
-                    double price = priceOfProdAfterDiscount.get(pi);
-                    Double newPrice = dis.calc(basket);
-                    if(newPrice < price){
-                        priceOfProdAfterDiscount.replace(pi, newPrice);
-                    }
+
+            ProductItem pi = getProductItemByProduct(((DiscountSimple) dis).getProductDiscount());
+            Double newPrice = ((DiscountSimple)dis).calc(this);
+            if(priceOfProdAfterDiscount.containsKey(pi)){
+                double price = priceOfProdAfterDiscount.get(pi);
+                if(newPrice < price){
+                    priceOfProdAfterDiscount.replace(pi, newPrice);
                 }
             }
+            else{
+                priceOfProdAfterDiscount.put(pi, newPrice);
+            }
+
         }
     }
     public double calcBasketPrice(){
+        double totalPrice = 0;
+        collectDiscounts();
+        calcProductPrice();
+        for (ProductItem pi: productItems){
+            if(priceOfProdAfterDiscount.containsKey(pi)){
+                totalPrice = totalPrice + priceOfProdAfterDiscount.get(pi);
+            }
+            else{
+                double price = pi.getAmount() * pi.getProduct().getPrice();
+                totalPrice = totalPrice + price;
+            }
+        }
+        this.price = totalPrice;
+        return totalPrice;
+    }
 
+    public double calcBasketPriceBeforeDiscount(){
+        double totalPrice = 0;
+        for (ProductItem pi: productItems){
+            double price = pi.getAmount() * pi.getProduct().getPrice();
+            totalPrice = totalPrice + price;
+        }
+
+        return totalPrice;
+    }
+
+    public void setPrice(double price){
+        this.price = price;
     }
 
 
