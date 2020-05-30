@@ -36,7 +36,9 @@ public class DiscountBasketPriceOrAmount implements DiscountBInterface {
     public int getDiscountID() {
         return discountID;
     }
-
+    public int getDiscountPercent() {
+        return discount;
+    }
     @Override
     public boolean canGet(Basket basket ){
         if(onPrice){

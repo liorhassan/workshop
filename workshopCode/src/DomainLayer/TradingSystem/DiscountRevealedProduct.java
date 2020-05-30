@@ -51,4 +51,9 @@ public class DiscountRevealedProduct  implements DiscountBInterface{
     public int getDiscountID() {
         return discountId;
     }
+    @Override
+    public int getDiscountPercent() {
+        return discount;
+    }
+
 }

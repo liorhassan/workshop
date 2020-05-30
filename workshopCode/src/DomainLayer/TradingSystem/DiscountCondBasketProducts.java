@@ -41,7 +41,7 @@ public class DiscountCondBasketProducts implements DiscountBInterface {
         return minAmount;
     }
 
-    public int getDiscount() {
+    public int getDiscountPercent() {
         return discount;
     }
     /*
@@ -93,14 +93,8 @@ public class DiscountCondBasketProducts implements DiscountBInterface {
 
     @Override
     public String discountDescription() {
-        String output = "";
-        if(onAllTheAmount){
-            output = "discount of: " + discount + "% on product: " + discountProduct.getName() + " if the amount of " + productCondition.getName() + " is more then: " + minAmount;
-        }
-        else{
-            int amount = minAmount+1;
-            output = "discount of: " + discount + "% on product: " + productName + " on the : " + amount + "product" ;
-        }
+        String output = "discount of: " + discount + "% on product: " + discountProduct.getName() + " if the amount of " + productCondition.getName() + " is more then: " + minAmount;
+
         return output;
     }
 }

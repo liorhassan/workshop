@@ -5,7 +5,7 @@ import DomainLayer.TradingSystem.Models.Basket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscountPolicyIf implements DiscountBInterface {
+public class DiscountPolicyIf extends DiscountPolicy  {
     private int discountID;
     private DiscountBInterface result;
     private DiscountBInterface condition;
@@ -49,18 +49,48 @@ public class DiscountPolicyIf implements DiscountBInterface {
 
     public List<DiscountBInterface> relevantDiscounts (Basket basket){
         List<DiscountBInterface> output = new ArrayList<>();
-        List<DiscountBInterface> conditionDiscounts = condition.relevantDiscounts(basket);
         List<DiscountBInterface> resultDiscounts = condition.relevantDiscounts(basket);
-        if(canGet(basket)){
-            output = conditionDiscounts;
-            output.addAll(resultDiscounts);
-        }
+        output = resultDiscounts;
+
         return output;
     }
+
+    public List<DiscountBInterface> filterDiscounts (Basket basket){
+        List<DiscountBInterface> chosenDiscounts = new ArrayList<>();
+        if((condition.isSimple() && basket.getDiscountsOnProducts().contains(condition)) || (!condition.isSimple() && condition.canGet(basket))){
+            if(DiscountPolicy.class.isAssignableFrom(result.getClass()) ) {
+                chosenDiscounts =  ((DiscountPolicy) result).filterDiscounts(basket);
+            }
+            else {
+                chosenDiscounts.add(result);
+            }
+        }
+        else{
+            if(result.isSimple() && basket.getDiscountsOnProducts().contains(result)){
+                basket.getDiscountsOnProducts().remove(result);
+            }
+            else if (!result.isSimple()) {
+                List<DiscountBInterface> discounts_to_delete = result.relevantDiscounts(basket);
+                for (DiscountBInterface dis : discounts_to_delete) {
+                    if (basket.getDiscountsOnProducts().contains(dis)) {
+                        basket.getDiscountsOnProducts().remove(dis);
+                    }
+                }
+            }
+
+        }
+        return chosenDiscounts;
+    }
+
 
     @Override
     public int getDiscountID() {
         return discountID;
+    }
+
+    @Override
+    public int getDiscountPercent() {
+        return 0;
     }
 
 }

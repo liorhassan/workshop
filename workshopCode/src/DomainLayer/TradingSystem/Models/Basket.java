@@ -1,13 +1,14 @@
 package DomainLayer.TradingSystem.Models;
 
 import DomainLayer.TradingSystem.DiscountBInterface;
-import DomainLayer.TradingSystem.DiscountPolicyComp;
-import DomainLayer.TradingSystem.DiscountPolicyIf;
+import DomainLayer.TradingSystem.DiscountCondBasketProducts;
+import DomainLayer.TradingSystem.DiscountPolicy;
 import DomainLayer.TradingSystem.ProductItem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Basket {
@@ -15,13 +16,16 @@ public class Basket {
     private Store store;
     private List<ProductItem> productItems;
     private double price;
-    List<DiscountBInterface> discountsOnProducts;
+    private List<DiscountBInterface> discountsOnProducts;
+    private HashMap<ProductItem, Double> priceOfProdAfterDiscount;
+
 
     public Basket(Store store) {
         this.store = store;
         productItems = new ArrayList<>();
         discountsOnProducts = new ArrayList<>();
         price = 0;
+        priceOfProdAfterDiscount = new HashMap<>();
     }
 
 
@@ -41,6 +45,15 @@ public class Basket {
         return productItems;
     }
 
+    public ProductItem getProductItemByProduct(Product product){
+        for(ProductItem pi : productItems){
+            if(pi.getProduct().equals(product)){
+                return pi;
+            }
+        }
+        return null;
+    }
+
     public int getProductAmount(String productName){
         int amount = 0;
         for (ProductItem pi : getProductItems()) {
@@ -52,24 +65,36 @@ public class Basket {
         return amount;
     }
 
-    public void deserveDiscounts(){
+    public void collectDiscounts(){
         for(DiscountBInterface dis : store.getDiscountsOnProducts()){
             if(dis.canGet(this)){
                 discountsOnProducts.add(dis);
             }
         }
-        for (DiscountBInterface policy : store.getDiscountPolicies()){
-            if(policy instanceof DiscountPolicyIf){
-                if(policy.canGet(this)){
-                    if(!discountsOnProducts.contains(((DiscountPolicyIf) policy).getResult())){
-                        this.discountsOnProducts.add(((DiscountPolicyIf) policy).getResult());
+        for (DiscountPolicy policy : store.getDiscountPolicies()){
+            if(policy.canGet(this)){
+                policy.filterDiscounts(this);
+            }
+        }
+
+    }
+
+    public void calcProductPrice(){
+        for( DiscountBInterface dis : discountsOnProducts){
+            if(dis instanceof DiscountCondBasketProducts){
+                ProductItem pi = getProductItemByProduct(((DiscountCondBasketProducts) dis).getProductDiscount());
+                if(priceOfProdAfterDiscount.containsKey(pi)){
+                    double price = priceOfProdAfterDiscount.get(pi);
+                    Double newPrice = dis.calc(basket);
+                    if(newPrice < price){
+                        priceOfProdAfterDiscount.replace(pi, newPrice);
                     }
                 }
             }
-            else(policy instanceof DiscountPolicyComp){
-
-            }
         }
+    }
+    public double calcBasketPrice(){
+
     }
 
 

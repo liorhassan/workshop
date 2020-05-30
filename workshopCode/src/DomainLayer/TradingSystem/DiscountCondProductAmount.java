@@ -35,7 +35,7 @@ public class DiscountCondProductAmount implements DiscountBInterface{
         return minAmount;
     }
 
-    public int getDiscount() {
+    public int getDiscountPercent() {
         return discount;
     }
 

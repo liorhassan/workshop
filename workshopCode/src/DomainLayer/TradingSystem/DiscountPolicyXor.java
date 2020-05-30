@@ -1,9 +1,10 @@
 package DomainLayer.TradingSystem;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import DomainLayer.TradingSystem.Models.Basket;
 
-public class DiscountPolicyXor implements DiscountBInterface {
+public class DiscountPolicyXor extends DiscountPolicy {
 
     //private HashMap<Product, Double> discountPerProduct;
     private int discountID;
@@ -25,41 +26,6 @@ public class DiscountPolicyXor implements DiscountBInterface {
         return simple;
     }
 
-    @Override
-    public List<DiscountBInterface> checkDiscounts(List<DiscountBInterface> discounts, Basket basket) {
-        List<DiscountBInterface> disc1 = discount_operand1.checkDiscounts(discounts, basket);
-        List<DiscountBInterface> disc2 = discount_operand2.checkDiscounts(discounts, basket);
-        List<DiscountBInterface> output = new ArrayList<>();
-
-
-
-        switch(operator){
-            case OR:
-                output = disc1;
-                for(DiscountBInterface dis : disc2){
-                    if(!output.contains(dis))
-                        output.add(dis);
-                }
-                break;
-            case AND:
-                for(DiscountBInterface dis : disc2){
-                    if(disc1.contains(dis))
-                        output.add(dis);
-                }
-                break;
-            case XOR:
-                for(DiscountBInterface dis : disc2){
-                    if(!disc1.contains(dis))
-                        output.add(dis);
-                }
-                for(DiscountBInterface dis : disc1){
-                    if(!disc2.contains(dis))
-                        output.add(dis);
-                }
-                break;
-        }
-        return output;
-    }
 
 
     @Override
@@ -69,19 +35,57 @@ public class DiscountPolicyXor implements DiscountBInterface {
         }
         return false;
     }
-    public List<DiscountBInterface> relevantDiscounts(Basket basket){
-        if(discount_operand1.isSimple() && !(discount_operand1 instanceof DiscountBasketPriceOrAmount)){
-            basket.getDiscountsOnProducts().contains()
-        }
-        List<DiscountBInterface> discountsForOperand1 = discount_operand1.relevantDiscounts(basket);
-        List<DiscountBInterface> discountsForOperand2 = discount_operand2.relevantDiscounts(basket);
 
+    public List<DiscountBInterface> filterDiscounts(Basket basket){
+        List<DiscountBInterface> chosenDiscounts = new ArrayList<>();
+        if(discount_operand1.isSimple() && discount_operand2.isSimple()){
+            if(basket.getDiscountsOnProducts().contains(discount_operand1) && basket.getDiscountsOnProducts().contains(discount_operand2)){
+                if(discount_operand1.getDiscountPercent()>=discount_operand2.getDiscountPercent()){
+                    chosenDiscounts.add(discount_operand1);
+                    basket.getDiscountsOnProducts().remove(discount_operand2);
+                }
+                else{
+                    chosenDiscounts.add(discount_operand2);
+                    basket.getDiscountsOnProducts().remove(discount_operand1);
+                }
+            }
+        }
+        else{
+            List<DiscountBInterface> chosenIn1 = new ArrayList<>();
+            List<DiscountBInterface> chosenIn2 = new ArrayList<>();
+            if(DiscountPolicy.class.isAssignableFrom(discount_operand1.getClass()))
+                chosenIn1 = ((DiscountPolicy) discount_operand1).filterDiscounts(basket);
+            else
+                chosenIn1.add(discount_operand1);
+            if(DiscountPolicy.class.isAssignableFrom(discount_operand2.getClass()))
+                chosenIn2 = ((DiscountPolicy) discount_operand2).filterDiscounts(basket);
+            else
+                chosenIn2.add(discount_operand1);
+            if(chosenIn1.size() >= chosenIn2.size()){
+                chosenDiscounts = chosenIn1;
+                for (DiscountBInterface dis : chosenIn2){
+                    if(basket.getDiscountsOnProducts().contains(dis))
+                        basket.getDiscountsOnProducts().remove(dis);
+                }
+            }
+            else{
+                chosenDiscounts = chosenIn2;
+                for (DiscountBInterface dis : chosenIn1){
+                    if(basket.getDiscountsOnProducts().contains(dis))
+                        basket.getDiscountsOnProducts().remove(dis);
+                }
+            }
+        }
+        return chosenDiscounts;
     }
 
-    public List<DiscountBInterface> relevantDiscounts (List<DiscountBInterface> discounts){
-        List<DiscountBInterface> discountsForOperand1 = discount_operand1.relevantDiscounts(discounts);
-        List<DiscountBInterface> discountsForOperand2 = discount_operand2.relevantDiscounts(discounts);
-
+    public List<DiscountBInterface> relevantDiscounts (Basket basket){
+        List<DiscountBInterface> output = new ArrayList<>();
+        List<DiscountBInterface> discountsForOperand1 = discount_operand1.relevantDiscounts(basket);
+        List<DiscountBInterface> discountsForOperand2 = discount_operand2.relevantDiscounts(basket);
+        output = discountsForOperand1;
+        output.addAll(discountsForOperand2);
+        return output;
     }
 
     @Override
@@ -97,6 +101,11 @@ public class DiscountPolicyXor implements DiscountBInterface {
     @Override
     public int getDiscountID() {
         return discountID;
+    }
+
+    @Override
+    public int getDiscountPercent() {
+        return 0;
     }
 }
 

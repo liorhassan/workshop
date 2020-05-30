@@ -15,9 +15,9 @@ public class Store {
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
-    private List<DiscountBInterface> discountPolicies;
+    private List<DiscountPolicy> discountPolicies;
     private List<DiscountBInterface> discountsOnProducts;
-    private List<DiscountBInterface> discountsOnBasketPrice;
+    private DiscountBInterface discountsOnBasketPrice;
     private List<PurchasePolicy> purchasePolicies;
 
     private HashMap<Basket, List<ProductItem>> reservedProducts;
@@ -33,7 +33,7 @@ public class Store {
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
-        this.discountsOnBasketPrice = new ArrayList<>();
+        this.discountsOnBasketPrice = null;
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
@@ -56,10 +56,10 @@ public class Store {
         return discountsOnProducts;
     }
 
-    public List<DiscountBInterface> getDiscountsOnBasketPrice() {
+    public DiscountBInterface getDiscountsOnBasketPrice() {
         return discountsOnBasketPrice;
     }
-    public List<DiscountBInterface> getDiscountPolicies() {
+    public List<DiscountPolicy> getDiscountPolicies() {
         return discountPolicies;
     }
 

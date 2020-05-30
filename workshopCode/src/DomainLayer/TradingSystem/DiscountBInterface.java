@@ -9,6 +9,7 @@ public interface DiscountBInterface {
     public double calc(Basket basket, double price);
     public String discountDescription();
     public int getDiscountID();
+    public int getDiscountPercent();
     public boolean isSimple();
     public List<DiscountBInterface> relevantDiscounts (Basket basket);
 }
