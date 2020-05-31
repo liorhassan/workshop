@@ -6,19 +6,18 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class ClientWebSocket extends WebSocketServer {
 
     private static int TCP_PORT = 8088;
     private static String username;
-    private Set<WebSocket> conns;
+    private HashMap<WebSocket, String> connsPerUser;
 
     public ClientWebSocket() {
         super(new InetSocketAddress(TCP_PORT));
-        conns = new HashSet<>();
+        connsPerUser = new HashMap<>();
     }
 
     @Override
@@ -28,6 +27,7 @@ public class ClientWebSocket extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+//        NotificationSystem.getInstance().dettach(connsPerUser.get(conn));
         System.out.println("Closed connection to " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
@@ -35,6 +35,8 @@ public class ClientWebSocket extends WebSocketServer {
     public void onMessage(WebSocket conn, String message) {
         System.out.println("Message from client: " + message);
         this.username= message;
+//        NotificationSystem.getInstance().attach(message, conn);
+//        connsPerUser.put(conn, message);
         List<String> notification = NotificationSystem.getInstance().getByUsername(this.username);
         if(!notification.isEmpty()){
                     String response = "";
