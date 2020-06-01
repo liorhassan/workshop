@@ -30,4 +30,10 @@
     var worker = new SharedWorker("/../js/SharedWebSocket.js");
     worker.port.start();
     worker.port.postMessage("start");
-    worker.port.postMessage("defineOnMsg");
+    worker.port.on("message" ,function(eventMsg){
+          alert(eventMsg);
+    });
+    worker.on("message" ,function(eventMsg){
+          alert(eventMsg);
+    });
+

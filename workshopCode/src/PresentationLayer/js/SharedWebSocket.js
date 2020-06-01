@@ -52,13 +52,8 @@ self.addEventListener("connect", function(e) {
         if (e.data === "start") {
             if (ws === null) {
                 ws = new WebSocket(url);
-
+                ws.on("message", msg => {alert(msg.data)});
             }
-        }
-        else if(e.data == "defineOnMsg"){
-            ws.onmessage = function(msgEvent) {
-                                alert(msgEvent.data)
-                           });
         }else{
             ws.send(e.data);
         }
