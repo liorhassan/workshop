@@ -1,12 +1,10 @@
 package DomainLayer.TradingSystem.Models;
 
 import DataAccessLayer.PersistenceController;
-import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
