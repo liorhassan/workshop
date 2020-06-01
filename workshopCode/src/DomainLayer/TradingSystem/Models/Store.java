@@ -5,13 +5,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Store {
 
     private Inventory inventory;
     private String name;
-    private HashMap<User, StoreManaging> managements;
-    private HashMap<User, StoreOwning> ownerships;
+    private ConcurrentHashMap<User, StoreManaging> managements;
+    private ConcurrentHashMap<User, StoreOwning> ownerships;
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
@@ -29,8 +30,8 @@ public class Store {
         this.description = description;
         this.storeFirstOwner = firstOwner;
         this.inventory = new Inventory();
-        this.managements = new HashMap<>();
-        this.ownerships = new HashMap<>();
+        this.managements = new ConcurrentHashMap<>();
+        this.ownerships = new ConcurrentHashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
@@ -63,7 +64,7 @@ public class Store {
 
 
 
-    public HashMap<Product, Integer> getInventory() {
+    public ConcurrentHashMap<Product, Integer> getInventory() {
         return inventory.getProducts();
     }
 
@@ -133,15 +134,15 @@ public class Store {
         }
     }
 
-    public HashMap<User, StoreManaging> getManagements() {
+    public ConcurrentHashMap<User, StoreManaging> getManagements() {
         return managements;
     }
 
-    public HashMap<User, StoreOwning> getOwnerships() {
+    public ConcurrentHashMap<User, StoreOwning> getOwnerships() {
         return ownerships;
     }
 
-    public void setManagements(HashMap<User, StoreManaging> managements) {
+    public void setManagements(ConcurrentHashMap<User, StoreManaging> managements) {
         this.managements = managements;
     }
 

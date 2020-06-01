@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class SystemFacade {
@@ -18,28 +19,35 @@ public class SystemFacade {
         return ourInstance;
     }
 
-    private User activeUser;
-    private boolean adminMode;
-    private HashMap<String, User> users;
-    private HashMap<String, Store> stores;
+    private HashMap<UUID,Session> active_sessions;
+    private ConcurrentHashMap<String, User> users;
+    private ConcurrentHashMap<String, Store> stores;
     private List<User> adminsList;
-    private List<Product> lastSearchResult;
     private PaymentCollectionStub PC;
     private ProductSupplyStub PS;
 
     private SystemFacade() {
-        users = new HashMap<>();
-        stores = new HashMap<>();
+        active_sessions = new HashMap<>();
+        users = new ConcurrentHashMap<>();
+        stores = new ConcurrentHashMap<>();
         adminsList = new ArrayList<>();
-        activeUser = new User();  //guest
-        lastSearchResult = new ArrayList<>();
         PC = new PaymentCollectionStub();
         PS = new ProductSupplyStub();
+        initSystem();
+    }
+
+    private void initSystem(){
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
         SecurityFacade.getInstance().addUser("Admin159", "951");
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
+    }
+
+    public UUID createNewSeesion(){
+        Session newSession = new Session();
+        active_sessions.put(newSession.getSession_id(), newSession);
+        return newSession.getSession_id();
     }
 
     public User getUserByName(String username) {
@@ -50,19 +58,15 @@ public class SystemFacade {
         return stores.get(storeName);
     }
 
-    public User getActiveUser() {
-        return activeUser;
-    }
-
-    public HashMap<String, Store> getStores() {
+    public ConcurrentHashMap<String, Store> getStores() {
         return stores;
     }
 
-    public void setStores(HashMap<String, Store> stores) {
+    public void setStores(ConcurrentHashMap<String, Store> stores) {
         this.stores = stores;
     }
 
-    public void setUsers(HashMap<String, User> newUsers) {
+    public void setUsers(ConcurrentHashMap<String, User> newUsers) {
         users = newUsers;
     }
 
@@ -70,10 +74,7 @@ public class SystemFacade {
     public void resetUsers(){
         users.clear();
         adminsList.clear();
-        User firstAdmin = new User();
-        firstAdmin.setUsername("Admin159");
-        this.adminsList.add(firstAdmin);
-        this.users.put("Admin159", firstAdmin);
+        initSystem();
     }
 
     public void resetStores(){
@@ -94,8 +95,13 @@ public class SystemFacade {
     }
 
     //function for handling UseCase 2.5
-    public String searchProducts(String name, String category, String[] keywords){
-        lastSearchResult.clear();
+    public String searchProducts(UUID session_id, String name, String category, String[] keywords){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+
+        se.clearSearchResults();
+
         boolean searchName = name == null ? false : !name.equals("");
         boolean searchCategory = category == null ? false : !category.equals("");
         boolean searchKKeywords = keywords == null ? false : !String.join("",keywords).equals("");
@@ -114,7 +120,7 @@ public class SystemFacade {
                 curr.put("price", p.getPrice());
                 curr.put("store", s.getName());
                 curr.put("description", p.getDescription());
-                lastSearchResult.add(p);
+                se.addToSearchResults(p);
                 matching.add(curr);
             }
         }
@@ -475,7 +481,7 @@ public class SystemFacade {
 
     }
 
-    public HashMap<String, User> getUsers() {
+    public ConcurrentHashMap<String, User> getUsers() {
         return users;
     }
 

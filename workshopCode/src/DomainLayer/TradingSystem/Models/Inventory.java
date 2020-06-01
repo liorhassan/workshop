@@ -4,15 +4,16 @@ import DomainLayer.TradingSystem.ProductItem;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Inventory {
-    private HashMap<Product,Integer> products;
+    private ConcurrentHashMap<Product,Integer> products;
 
     public Inventory() {
-        this.products = new HashMap<>();
+        this.products = new ConcurrentHashMap<>();
     }
 
-    public HashMap<Product, Integer> getProducts() {
+    public ConcurrentHashMap<Product, Integer> getProducts() {
         return products;
     }
 
