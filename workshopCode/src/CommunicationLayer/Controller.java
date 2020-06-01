@@ -1,13 +1,6 @@
 package CommunicationLayer;
 
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-
 import ServiceLayer.*;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -16,6 +9,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class Controller {
@@ -37,7 +37,8 @@ public class Controller {
 
     private static ClientWebSocket clientWS;
 
-    public static void main(String[] args) throws IOException {
+    public static void start() throws IOException {
+
         clientWS = new ClientWebSocket();
         clientWS.start();
         final HttpServer server = HttpServer.create(new InetSocketAddress(HOSTNAME, PORT), 1);

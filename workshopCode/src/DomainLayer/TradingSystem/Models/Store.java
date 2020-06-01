@@ -1,23 +1,31 @@
 package DomainLayer.TradingSystem.Models;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
-public class Store {
+public class Store implements Serializable {
 
     private Inventory products;
+
     private String name;
     private HashMap<User, StoreManaging> managements;
     private HashMap<User, StoreOwning> ownerships;
+
     private String description;
+
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
+
     private List<DiscountPolicy> discountPolicies;
 
     private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
+
     private List<DiscountBInterface> discountsOnBaskets;
     private List<PurchasePolicy> purchasePolicies;
 
@@ -40,7 +48,6 @@ public class Store {
         this.reservedProducts= new HashMap<>();
         this.discountID_counter = 0;
     }
-
 
     public User getStoreFirstOwner() {
         return storeFirstOwner;
@@ -129,7 +136,11 @@ public class Store {
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        products.getProducts().put(new Product(productName, productCategory, productDescription, productPrice), amount);
+        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name);
+        products.getProducts().put(p, amount);
+
+        // save to DB
+        PersistenceController.create(p);
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
@@ -139,6 +150,7 @@ public class Store {
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
                 products.getProducts().put(p, amount);
+                PersistenceController.update(p);
                 break;
             }
         }
