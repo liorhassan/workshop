@@ -544,7 +544,7 @@ public class Controller {
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
-                JSONArray perm = requestJson.containsKey("permissions") ? (JSONArray) requestJson.get("permissions") : new JSONArray();
+                JSONArray perm = requestJson.containsKey("permission") ? (JSONArray) requestJson.get("permission") : new JSONArray();
                 List<String> permissions = new LinkedList<>();
                 for (int i = 0; i < perm.size(); i++)
                     permissions.add((String) perm.get(i));
@@ -698,7 +698,7 @@ public class Controller {
 
                 String response = storeHandler.getMyStores();
 
-                headers.set("editPermissions", String.format("application/json; charset=%s", UTF8));
+                headers.set("myStores", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } finally {
                 he.close();

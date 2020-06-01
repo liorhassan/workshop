@@ -1,6 +1,7 @@
 package DomainLayer.TradingSystem.Models;
 
 import DataAccessLayer.PersistenceController;
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,21 +12,16 @@ import java.util.*;
 
 public class Store implements Serializable {
 
-    private Inventory products;
-
+    private Inventory inventory;
     private String name;
     private HashMap<User, StoreManaging> managements;
     private HashMap<User, StoreOwning> ownerships;
-
     private String description;
-
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
-
     private List<DiscountPolicy> discountPolicies;
 
     private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
-
     private List<DiscountBInterface> discountsOnBaskets;
     private List<PurchasePolicy> purchasePolicies;
 
@@ -36,7 +32,7 @@ public class Store implements Serializable {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
-        this.products = new Inventory();
+        this.inventory = new Inventory();
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
@@ -65,18 +61,13 @@ public class Store implements Serializable {
     }
 
     public Collection<Product> getProducts(){
-        return  products.getProducts().keySet();
+        return  inventory.getProducts().keySet();
     }
 
-    public boolean checkIfProductAvailable(String product, int amount){
-        Product p = getProductByName(product);
-        if(p == null)
-            return false;
-        return products.getProducts().get(p) >= amount;
-    }
+
 
     public HashMap<Product, Integer> getInventory() {
-        return products.getProducts();
+        return inventory.getProducts();
     }
 
     public DiscountBInterface getDiscountById(int discountId){
@@ -91,13 +82,7 @@ public class Store implements Serializable {
         return null;
     }
 
-    public Product getProductByName(String productName){
-        for (Product p : products.getProducts().keySet()) {
-            if (p.getName().equals(productName))
-                return p;
-        }
-        return null;
-    }
+
 
     public boolean isOwner(User user) {
         return ownerships.containsKey(user);
@@ -124,7 +109,7 @@ public class Store implements Serializable {
     }
 
     public boolean hasProduct(String productName) {
-        for (Product p : products.getProducts().keySet()){
+        for (Product p : inventory.getProducts().keySet()){
             if (p.getName().equals(productName))
                 return true;
         }
@@ -132,24 +117,24 @@ public class Store implements Serializable {
     }
 
     public Inventory getProductsInventory(){
-        return this.products;
+        return this.inventory;
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
         Product p = new Product(productName, productCategory, productDescription, productPrice, this.name);
-        products.getProducts().put(p, amount);
+        inventory.getProducts().put(p, amount);
 
         // save to DB
         PersistenceController.create(p);
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        for (Product p : products.getProducts().keySet()){
+        for (Product p : inventory.getProducts().keySet()){
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
-                products.getProducts().put(p, amount);
+                inventory.getProducts().put(p, amount);
                 PersistenceController.update(p);
                 break;
             }
@@ -169,8 +154,10 @@ public class Store implements Serializable {
     }
 
     public void addManager(User user, StoreManaging storeManaging){
-        if (!managements.containsKey(user))
+        if (!managements.containsKey(user)) {
             managements.put(user, storeManaging);
+            NotificationSystem.getInstance().notify(user.getUsername(), "You have been appointed as " + name + "'s store manager");
+        }
     }
 
     // before activating this function make sure the new Owner is registered!!!
@@ -181,26 +168,12 @@ public class Store implements Serializable {
         NotificationSystem.getInstance().notify(newOwner.getUsername(), "You have been appointed as " + name + "'s store owner");
     }
 
-    //reserve a specific product
-    //returns false if the product is unavailable in the inventory
-    public boolean reserveProduct(Product p, int amount){
-        if(checkIfProductAvailable(p.getName(), amount)){
-            int prevAmount = this.products.getProducts().get(p);
-            if(prevAmount == amount){
-                this.products.getProducts().remove(p);
-            }
-            else{
-                this.products.getProducts().replace(p, prevAmount - amount);
-            }
-            return true;
-        }
-        return false;
-    }
 
-    //for each products in the basket - checks if the product meets the purchase policy requirements
-    //if it does - reserve the product and adds it to the reserved products list
+
+    //for each inventory in the basket - checks if the product meets the purchase policy requirements
+    //if it does - reserve the product and adds it to the reserved inventory list
     public void reserveBasket(Basket b){
-        //this field save all the products that have been reserved
+        //this field save all the inventory that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
         for(PurchasePolicy p : purchasePolicies){
             if(!p.purchaseAccordingToPolicy(b))
@@ -210,7 +183,7 @@ public class Store implements Serializable {
         for (ProductItem pi : products) {
             Product p = pi.getProduct();
             int amount = pi.getAmount();
-            if(!reserveProduct(p, amount)){
+            if(!this.inventory.reserveProduct(p, amount)){
                 throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
             }
             this.reservedProducts.get(b).add(pi);
@@ -223,12 +196,7 @@ public class Store implements Serializable {
 
     public void unreserveBasket(Basket b){
         for(ProductItem pi: this.reservedProducts.get(b)){
-            if(products.getProducts().get(pi.getProduct()) != null){
-                products.getProducts().put(pi.getProduct(), products.getProducts().get(pi.getProduct()) + pi.getAmount());
-            }
-            else{
-                products.getProducts().put(pi.getProduct(), pi.getAmount());
-            }
+            this.inventory.unreserveProduct(pi.getProduct(), pi.getAmount());
         }
     }
 
@@ -290,7 +258,7 @@ public class Store implements Serializable {
 
 
     public void addDiscountForProduct(String productName, int percentage, int limit, boolean onAll){
-        Product p = this.getProductByName(productName);
+        Product p = this.inventory.getProductByName(productName);
         if(p != null)
             discountsOnProducts.put(p, new DiscountBaseProduct(discountID_counter, productName, limit, percentage, onAll));
         discountID_counter ++;
@@ -375,5 +343,18 @@ public class Store implements Serializable {
             products.add(curr);
         }
         return products.toJSONString();
+    }
+
+    public Product getProductByName(String name) {
+        return this.inventory.getProductByName(name);
+    }
+
+    public boolean checkIfProductAvailable(String productName, int amount) {
+        return this.inventory.checkIfProductAvailable(productName, amount);
+    }
+
+    //for store unit test
+    public void reserveProduct(Product p, int amount) {
+        this.inventory.reserveProduct(p, amount);
     }
 }

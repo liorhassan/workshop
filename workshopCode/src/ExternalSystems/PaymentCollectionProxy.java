@@ -12,7 +12,7 @@ public class PaymentCollectionProxy implements PaymentCollection {
     }
 
 
-    public boolean pay(ShoppingCart sc, User user) {
-        return this.paymentCollection.pay(sc, user);
+    public boolean pay(double totalPrice, User user) {
+        return this.paymentCollection.pay(totalPrice, user);
     }
 }

@@ -186,6 +186,7 @@ public class SystemFacade {
                 activeUser = user;
         }
         NotificationSystem.getInstance().attach(username);
+//        NotificationSystem.getInstance().notify(username, "hey");
     }
 
     //function for handling UseCase 3.1
@@ -309,10 +310,14 @@ public class SystemFacade {
 
     // function for handling Use Case 3.7 + 6.4 - written by Nufar
     public String getUserPurchaseHistory(String userName) {
+        JSONParser parser = new JSONParser();
         UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
         JSONArray historyArray = new JSONArray();
         for(Purchase p: purchaseHistory.getUserPurchases()){
-            historyArray.add(p.getPurchasedProducts().viewOnlyProducts());
+            try {
+                JSONArray h = (JSONArray) parser.parse(p.getPurchasedProducts().viewOnlyProducts());
+                historyArray.add(h);
+            }catch(Exception e){System.out.println(e.getMessage());};
         }
         return historyArray.toJSONString();
 //        String historyOutput = "Shopping history:" + "\n";
@@ -406,18 +411,19 @@ public class SystemFacade {
 
     // function for handling Use Case 2.8 - written by Noy
     public void reserveProducts() {
-        this.activeUser.getShoppingCart().reserveBaskets();
+        activeUser.getShoppingCart().reserveBaskets();
     }
 
     // function for handling Use Case 2.8 - written by Noy
     public void computePrice() {
-        this.activeUser.getShoppingCart().computeCartPrice();
+        activeUser.getShoppingCart().computeCartPrice();
     }
 
     // function for handling Use Case 2.8 - written by Noy
     public boolean payment() {
-        if(!PC.pay(this.activeUser.getShoppingCart(), this.activeUser)){
-            this.activeUser.getShoppingCart().unreserveProducts();
+        ShoppingCart sc = activeUser.getShoppingCart();
+        if(!PC.pay(sc.getTotalCartPrice(), activeUser)){
+            sc.unreserveProducts();
             return false;
         }
         return true;
@@ -426,8 +432,9 @@ public class SystemFacade {
 
     // function for handling Use Case 2.8 - written by Noy
     public boolean supply(){
-        if(!PS.supply(this.activeUser.getShoppingCart(), this.activeUser)) {
-            this.activeUser.getShoppingCart().unreserveProducts();
+        ShoppingCart sc = activeUser.getShoppingCart();
+        if(!PS.supply(sc.getBaskets(), activeUser)) {
+            sc.unreserveProducts();
             return false;
         }
         return true;
@@ -435,10 +442,11 @@ public class SystemFacade {
 
     // function for handling Use Case 2.8 - written by Noy
     public void addPurchaseToHistory() {
-        ShoppingCart sc = this.activeUser.getShoppingCart();
+        ShoppingCart sc = activeUser.getShoppingCart();
+
         //handle User-Purchase-History
         Purchase newPurchase = new Purchase(sc);
-        this.activeUser.getPurchaseHistory().addPurchaseToHistory(newPurchase);
+        activeUser.addPurchaseToHistory(newPurchase);
 
         //handle Store-Purchase-History
         sc.addStoresPurchaseHistory();
@@ -447,7 +455,7 @@ public class SystemFacade {
         sc.notifyOwners();
 
         //finally - empty the shopping cart
-        this.activeUser.emptyCart();
+        activeUser.emptyCart();
 
     }
 
@@ -601,7 +609,7 @@ public class SystemFacade {
                 currStore.put("type", "Manager");
                 JSONArray options = new JSONArray();
                 for(Permission p: managements.get(s).getPermission())
-                    options.add(p);
+                    options.add(p.getAllowedAction());
                 currStore.put("options", options);
                 response.add(currStore);
             }
