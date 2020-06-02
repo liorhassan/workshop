@@ -29,26 +29,33 @@ function addNewDiscount(data) {
 function addBasketAmount() {
     const amount = document.getElementById("basketAmountNumber").value;
     const percent = document.getElementById("basketAmountPercentNumber").value;
+    const radioBtn = document.getElementsByName("onPriceOrAmountOfProducts");
 
     const data = {
-        type: "onBasket",
-        subtype: "onProductsAmount",
-        amount: amount,
-        percent: percent
+        type: "simple",
+        subtype: "DiscountBasketPriceOrAmount",
+        amount: radioBtn,
+        percent: percent,
+        onPriceOrAmountOfProducts: radioBtn[0].checked ? true : false,
     }
     addNewDiscount(data);
 }
 
-function addBasketPrice() {
-    const price = document.getElementById("basketPriceNumber").value;
+function addCondBasketProdcts() {
+    const condName = document.getElementById("productConditionName").value;
+    const discountName = document.getElementById("discountProductName").value;
+    const amount = document.getElementById("conditionalBasketAmount").value;
     const percent = document.getElementById("basketPricePercentNumber").value;
 
     const data = {
-        type: "onBasket",
-        subtype: "onCost",
-        price: price,
-        percent: percent
+        type: "simple",
+        subtype: "DiscountCondBasketProdcts",
+        productConditionName: condName,
+        conditionAmount: amount,
+        discountProductName: discountName,
+        discountPercent: percent
     }
+
     addNewDiscount(data);
 }
 
@@ -57,29 +64,26 @@ function addProductReveal() {
     const percents = document.getElementById("revealedDiscountPercents").value;
 
     const data = {
-        type: "onProduct",
-        subtype: "revealed",
+        type: "simple",
+        subtype: "DiscountRevealedProduct",
         productName: name,
-        percent: percents
+        discountPercent: percents
     }
 
     addNewDiscount(data);
 }
 
-function addProductConditional() {
-    const name = document.getElementById("conditionalProductName").value;
+function addCondBasketProdcts() {
+    const condName = document.getElementById("productName").value;
     const amount = document.getElementById("conditionalAmount").value
     const percents = document.getElementById("conditionalDiscountPercents").value;
-    const radioBtn = document.getElementsByName("productCondition");
 
     const data = {
         type: "onProduct",
         subtype: "conditional",
-        productName: name,
-        amount: amount,
-        percent: percents,
-        onProducts: radioBtn[0].checked ? true : false,
-        onNextProduct: radioBtn[1].checked ? true : false,
+        productName: condName,
+        minAmount: amount,
+        discountPercent: percents,
     }
 
     addNewDiscount(data);
@@ -109,4 +113,9 @@ function resetActiveTabsButThis(clickedTab) {
             }
         }
     }
+}
+
+function setCompose(clickedTab) {
+    resetActiveTabsButThis(clickedTab);
+    createCompStatement(1,0,'Root')
 }
