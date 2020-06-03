@@ -1,5 +1,9 @@
-// document.addEventListener("DOMContentLoaded", function () {
-// })
+const window_name = "AdminView";
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    .then(response=>response.json())
+    .then(updateNavBar);
+})
 
 function getCustomerHistory() {
     const customerName = document.getElementById("customerName").value;

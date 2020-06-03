@@ -50,7 +50,7 @@ public class Controller {
                 path = path.substring(1);
                 path = path.replaceAll("//", "/");
                 if (path.length() == 0)
-                    path = "html\\HomeGuest.html";
+                    path = "html\\Main.html";
 
                 boolean fromFile = new File(pathToRoot + path).exists();
                 InputStream in = fromFile ? new FileInputStream(pathToRoot + path)
