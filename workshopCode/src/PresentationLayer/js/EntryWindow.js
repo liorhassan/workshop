@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
           })
          .then((responseMsg) => {
              if (responseMsg.SUCCESS) {
-                  worker.port.postMessage(inputUsername);
+                  
                   Swal.fire(
                         'Congratulations!',
                         responseMsg.SUCCESS,
