@@ -17,6 +17,11 @@ public class Product implements Serializable {
     @Column(name = "product_name", unique = true)
     private String name;
 
+    @Id
+    @Column(name = "product_storeName")
+    private String storeName;
+
+
     @Column(name = "product_category")
     private Category category;
 
@@ -26,16 +31,21 @@ public class Product implements Serializable {
     @Column(name = "product_price")
     private Double price;
 
-    @Column(name = "product_storeName")
-    private String storeName;
+    @Column(name = "quantity")
+    private int quantity;
 
-    public Product(String name, Category category, String description, Double price, String storeName) {
+    public Product(String name, Category category, String description, Double price, String storeName, int quantity) {
         this.name = name;
         this.category = category;
         this.description = description;
         this.price = price;
         this.storeName = storeName;
+        this.quantity = quantity;
     }
+
+    public int getQuantity() { return this.quantity;}
+
+    public void setQuantity(int newQnt) { this.quantity = newQnt; }
 
     public String getName() {
         return name;

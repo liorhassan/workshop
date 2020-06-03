@@ -1,13 +1,11 @@
 package DomainLayer.TradingSystem.Models;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import DataAccessLayer.PersistenceController;
+
 import java.io.Serializable;
 import java.util.HashMap;
 
-@Entity
-@Table(name = "Inventory")
-public class Inventory implements Serializable {
+public class Inventory {
 
     private HashMap<Product,Integer> products;
 
@@ -21,7 +19,7 @@ public class Inventory implements Serializable {
 
     public Product getProductByName(String productName){
         for (Product p : products.keySet()) {
-            if (p.getName().equals(productName))
+            if (p.getName().equals (productName))
                 return p;
         }
         return null;
@@ -41,9 +39,16 @@ public class Inventory implements Serializable {
             int prevAmount = this.products.get(p);
             if(prevAmount == amount){
                 this.products.remove(p);
+
+                // update database
+                PersistenceController.delete(p);
             }
             else{
                 this.products.replace(p, prevAmount - amount);
+                p.setQuantity(prevAmount - amount);
+
+                // update database
+                PersistenceController.update(p);
             }
             return true;
         }
@@ -52,10 +57,18 @@ public class Inventory implements Serializable {
 
     public void unreserveProduct(Product p, int amount) {
         if(products.get(p) != null){
-            products.put(p, products.get(p) + amount);
+            int newAmount = products.get(p) + amount;
+            products.put(p, newAmount);
+            p.setQuantity(newAmount);
         }
         else{
             products.put(p, amount);
+            p.setQuantity(amount);
         }
+        PersistenceController.update(p);
+    }
+
+    public void init() {
+        PersistenceController.
     }
 }

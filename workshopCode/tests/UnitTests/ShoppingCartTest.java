@@ -28,7 +28,7 @@ public class ShoppingCartTest {
     @Test
     public void addProduct() {
         assertTrue(sc.getBaskets().isEmpty());
-        Product p = new Product("Shirt",null,null,40.0, "Fox");
+        Product p = new Product("Shirt",null,null,40.0, "Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
         sc.addProduct("Shirt",store,1);
@@ -42,7 +42,7 @@ public class ShoppingCartTest {
     @Test
     public void view() {
         assertEquals("Your ShoppingCart details: \nempty!",sc.view());
-        Product p = new Product("Shirt",null,null,40.0,"Fox");
+        Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
         sc.addProduct("Shirt",store,1);
@@ -51,7 +51,7 @@ public class ShoppingCartTest {
 
     @Test
     public void edit() {
-        Product p = new Product("Shirt",null,null,40.0,"Fox");
+        Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
         sc.addProduct("Shirt",store,1);

@@ -5,6 +5,7 @@ import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.*;
 
@@ -23,6 +24,7 @@ public class Store implements Serializable {
     private List<DiscountBInterface> discountsOnBaskets;
     private List<PurchasePolicy> purchasePolicies;
 
+    @Transient
     private HashMap<Basket, List<ProductItem>> reservedProducts;
     private int discountID_counter;
 
@@ -31,6 +33,7 @@ public class Store implements Serializable {
         this.description = description;
         this.storeFirstOwner = firstOwner;
         this.inventory = new Inventory();
+        inventory.init();
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
@@ -119,7 +122,7 @@ public class Store implements Serializable {
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name);
+        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name, amount);
         inventory.getProducts().put(p, amount);
 
         // save to DB
@@ -133,6 +136,7 @@ public class Store implements Serializable {
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
                 inventory.getProducts().put(p, amount);
+                p.setQuantity(amount);
                 PersistenceController.update(p);
                 break;
             }
