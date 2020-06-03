@@ -50,6 +50,10 @@ public class SystemFacade {
         return newSession.getSession_id();
     }
 
+    public void closeSession(UUID session_id){
+        active_sessions.remove(session_id);
+    }
+
     public User getUserByName(String username) {
         return users.get(username);
     }

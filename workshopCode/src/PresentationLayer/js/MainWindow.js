@@ -12,4 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
             this.localStorage.removeItem("loggedInUserName");
         }
     },true);
+    window.onclose = functio(){
+        ws.send("test");
+        ws.close;
+    }
 });
