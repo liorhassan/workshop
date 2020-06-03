@@ -17,7 +17,7 @@ public class DiscountCondBasketProducts extends DiscountSimple {
     private int discount;
     private boolean simple;
 
-    public DiscountCondBasketProducts(int discountID, Product productCondition, Product discountProduct, int amount, int discount, boolean onAll) {
+    public DiscountCondBasketProducts(int discountID, Product productCondition, Product discountProduct, int amount, int discount) {
         this.discountID = discountID;
         this.discountProduct= discountProduct;
         this.productCondition = productCondition;

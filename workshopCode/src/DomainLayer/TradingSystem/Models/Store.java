@@ -16,9 +16,9 @@ public class Store {
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
-    private List<DiscountPolicy> discountPolicies;
+    private List<DiscountBInterface> discountPolicies;
     private List<DiscountBInterface> discountsOnProducts;
-    private DiscountBInterface discountsOnBasketPrice;
+    private List<DiscountBInterface> discountsOnBasket;
     private List<PurchasePolicy> purchasePolicies;
     private boolean doubleDiscounts;                    //on products and basketPrice
 
@@ -35,7 +35,8 @@ public class Store {
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
-        this.discountsOnBasketPrice = null;
+        this.discountsOnBasket = new ArrayList<>();
+
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
@@ -59,10 +60,7 @@ public class Store {
         return discountsOnProducts;
     }
 
-    public DiscountBInterface getDiscountsOnBasketPrice() {
-        return discountsOnBasketPrice;
-    }
-    public List<DiscountPolicy> getDiscountPolicies() {
+    public List<DiscountBInterface> getDiscountPolicies() {
         return discountPolicies;
     }
 
@@ -87,12 +85,50 @@ public class Store {
 
     public DiscountBInterface getDiscountById(int discountId){
         for (DiscountBInterface dis : discountsOnProducts) {
-            if (dis.getDiscountID() == discountId)
-                return dis;
+            if(dis instanceof DiscountSimple){
+                if (((DiscountSimple) dis).getDiscountID() == discountId)
+                    return dis;
+            }
         }
-        for (DiscountBInterface dis : discountPolicies) {
-            if (dis.getDiscountID() == discountId)
-                return dis;
+
+        for (DiscountBInterface dis : discountsOnProducts) {
+            if(dis instanceof DiscountSimple){
+                if (((DiscountSimple) dis).getDiscountID() == discountId)
+                    return dis;
+            }
+        }
+
+        return null;
+    }
+
+    public boolean hasRevDiscountOnProduct(String productName){
+        Product product = getProductByName(productName);
+        for(DiscountBInterface dis : discountsOnProducts){
+            if(dis instanceof DiscountCondProductAmount){
+                if(((DiscountRevealedProduct) dis).getProductDiscount().getName().equals(productName)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public DiscountBInterface searchIDInCompDiscount(DiscountBInterface discount, int discountId){
+
+        if(discount instanceof DiscountSimple){
+            if (((DiscountSimple) discount).getDiscountID() == discountId){
+                return discount;
+            }
+        }
+        else{
+            DiscountBInterface res1 = searchIDInCompDiscount(((DiscountPolicy) discount).getOperand1(), discountId);
+            DiscountBInterface res2 = searchIDInCompDiscount(((DiscountPolicy) discount).getOperand2(), discountId);
+            if(res1 != null){
+                return res1;
+            }
+            if(res2 != null){
+                return res2;
+            }
         }
         return null;
     }
@@ -235,24 +271,21 @@ public class Store {
 
     public double calculateTotalCheck(Basket b) {
         double priceAfterDiscount = b.calcBasketPrice();
-        double PriceBeforDiscount = b.calcBasketPriceBeforeDiscount();
+        double priceBeforDiscount = b.calcBasketPriceBeforeDiscount();
+        double tempPrice = priceAfterDiscount;
 
-        if (doubleDiscounts || (priceAfterDiscount == PriceBeforDiscount)) {
-            if (discountsOnBasketPrice != null) {
-                if (discountsOnBasketPrice.isSimple()) {
-                    if (discountsOnBasketPrice.canGet(b)) {
-                        priceAfterDiscount = ((DiscountSimple) discountsOnBasketPrice).calc(b);
-                    }
-                }
-                else {
-                    List<DiscountBInterface> chosen = ((DiscountPolicy) discountsOnBasketPrice).filterDiscounts(b);
-                    for (DiscountBInterface dis : chosen) {
-                        priceAfterDiscount = ((DiscountSimple) dis).calc(b);
+        if (doubleDiscounts || (priceAfterDiscount == priceBeforDiscount)) {
+            for (DiscountBInterface dis : discountsOnBasket) {
+                if (dis.canGet(b)) {
+                    double newPrice = ((DiscountSimple) dis).calc(b);
+                    if(newPrice< tempPrice){
+                        tempPrice = newPrice;
                     }
                 }
             }
         }
-        return priceAfterDiscount;
+        b.setPrice(tempPrice);
+        return tempPrice;
     }
 
 
@@ -273,36 +306,56 @@ public class Store {
     }
 
 
-    public void addDiscountForProduct(String productName, int percentage, int limit, boolean onAll){
+    public void addDiscountCondProductAmount(String productName, int percentage, int limit){
         Product p = this.getProductByName(productName);
         if(p != null)
-            discountsOnProducts.put(p, new DiscountBaseProduct(discountID_counter, productName, limit, percentage, onAll));
+            discountsOnProducts.add( new DiscountCondProductAmount(discountID_counter, limit, p, percentage));
         discountID_counter ++;
     }
+
+    public void addDiscountCondBasketProducts(String productDiscount, String productCond, int percentage, int limit){
+        Product pDiscount = this.getProductByName(productDiscount);
+        Product pCond = this.getProductByName(productCond);
+        if(pDiscount != null && pCond != null)
+            discountsOnProducts.add(new DiscountCondBasketProducts(discountID_counter, pCond, pDiscount,percentage, limit));
+        discountID_counter ++;
+    }
+
+    public void addDiscountRevealedForProduct(String productName, int percentage){
+        Product p = this.getProductByName(productName);
+        if(p != null)
+            discountsOnProducts.add(new DiscountRevealedProduct(discountID_counter, p, percentage));
+        discountID_counter ++;
+    }
+
+
 
     public void addDiscountForBasket(int percentage, int limit, boolean onprice){
-
-        discountsOnBaskets.add(new DiscountBasketPriceOrAmount(discountID_counter, limit, percentage, onprice));
+        discountsOnBasket.add(new DiscountBasketPriceOrAmount(discountID_counter, limit, percentage, onprice));
         discountID_counter ++;
-
     }
 
-    public void addDiscountPolicy(DiscountPolicy discountPolicy){
+    public void addDiscountPolicy(DiscountBInterface discountPolicy){
         discountPolicies.add(discountPolicy);
     }
 
     public String viewDiscount(){
         JSONArray discountsdes = new JSONArray();
-        for(DiscountBInterface dis :discountPolicies){
+        for(DiscountBInterface dis :discountsOnProducts){
             JSONObject curr = new JSONObject();
-            curr.put("discountId", dis.getDiscountID());
+            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
             curr.put("discountString", dis.discountDescription());
             discountsdes.add(curr);
         }
-        for(DiscountBInterface dis :discountsOnProducts){
+        for(DiscountBInterface dis :discountsOnBasket){
             JSONObject curr = new JSONObject();
-            curr.put("discountId", dis.getDiscountID());
+            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
             curr.put("discountString", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+        for(DiscountBInterface dis :discountsOnBasket){
+            JSONObject curr = new JSONObject();
+            curr.put("discountPolicyString", dis.discountDescription());
             discountsdes.add(curr);
         }
         return discountsdes.toJSONString();

@@ -12,7 +12,7 @@ public class DiscountRevealedProduct  extends DiscountSimple{
     private int discount;
     private boolean simple;
 
-    public DiscountRevealedProduct(Product product, int discount, int discountId) {
+    public DiscountRevealedProduct(int discountId, Product product, int discount) {
         this.product = product;
         this.discount = discount;
         this.discountId = discountId;
@@ -48,7 +48,6 @@ public class DiscountRevealedProduct  extends DiscountSimple{
         return "discount of: " + discount + "% on product: " + product.getName();
     }
 
-    @Override
     public int getDiscountID() {
         return discountId;
     }

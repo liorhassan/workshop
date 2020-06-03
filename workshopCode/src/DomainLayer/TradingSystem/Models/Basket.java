@@ -68,9 +68,9 @@ public class Basket {
                 discountsOnProducts.add(dis);
             }
         }
-        for (DiscountPolicy policy : store.getDiscountPolicies()){
+        for (DiscountBInterface policy : store.getDiscountPolicies()){
             if(policy.canGet(this)){
-                policy.filterDiscounts(this);
+                ((DiscountPolicy)policy).filterDiscounts(this);
             }
         }
 
@@ -123,7 +123,9 @@ public class Basket {
     public void setPrice(double price){
         this.price = price;
     }
-
+    public double getPrice(){
+        return  price;
+    }
 
 
 

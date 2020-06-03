@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiscountPolicyIf extends DiscountPolicy  {
-    private int discountID;
+    //private int discountID;
     private DiscountBInterface result;
     private DiscountBInterface condition;
     private boolean simple;
 
 
-    public DiscountPolicyIf(DiscountBInterface result, DiscountBInterface condition, int discountID){
-        this.discountID = discountID;
+    public DiscountPolicyIf(DiscountBInterface result, DiscountBInterface condition){
+        //this.discountID = discountID;
         this.condition = condition;
         this.result = result;
         this.simple = false;
@@ -36,10 +36,14 @@ public class DiscountPolicyIf extends DiscountPolicy  {
         return false;
     }
 
-    @Override
-    public double calc(Basket basket, double price) {
-        return 0;
+    public DiscountBInterface getOperand1(){
+        return condition;
     }
+
+    public DiscountBInterface getOperand2(){
+        return result;
+    }
+
 
     @Override
     public String discountDescription() {
@@ -83,10 +87,10 @@ public class DiscountPolicyIf extends DiscountPolicy  {
     }
 
 
-    @Override
-    public int getDiscountID() {
-        return discountID;
-    }
+
+    //public int getDiscountID() {
+    //    return discountID;
+    //}
 
     @Override
     public int getDiscountPercent() {

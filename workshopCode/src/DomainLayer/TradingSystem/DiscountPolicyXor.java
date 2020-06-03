@@ -7,17 +7,16 @@ import DomainLayer.TradingSystem.Models.Basket;
 public class DiscountPolicyXor extends DiscountPolicy {
 
     //private HashMap<Product, Double> discountPerProduct;
-    private int discountID;
+    //private int discountID;
     private DiscountBInterface discount_operand1;
     private DiscountBInterface discount_operand2;
-    private PolicyOperator operator;
+    //private PolicyOperator operator;
     private boolean simple;
 
-    public DiscountPolicyXor(int discountID, DiscountBInterface discount_operands1, DiscountBInterface discount_operands2, PolicyOperator operator){
-        this.discountID = discountID;
+    public DiscountPolicyXor( DiscountBInterface discount_operands1, DiscountBInterface discount_operands2){
+        //this.discountID = discountID;
         this.discount_operand1 = discount_operands1;
         this.discount_operand2 = discount_operands2;
-        this.operator = operator;
         this.simple = false;
 
     }
@@ -88,19 +87,23 @@ public class DiscountPolicyXor extends DiscountPolicy {
         return output;
     }
 
-    @Override
-    public double calc(Basket basket, double price) {
-        return 0;
-    }
 
     @Override
     public String discountDescription() {
         return discount_operand1.discountDescription() + " XOR " +discount_operand1.discountDescription();
     }
 
-    @Override
-    public int getDiscountID() {
-        return discountID;
+
+    //public int getDiscountID() {
+   //     return discountID;
+    //}
+
+    public DiscountBInterface getOperand1(){
+        return discount_operand1;
+    }
+
+    public DiscountBInterface getOperand2(){
+        return discount_operand2;
     }
 
     @Override

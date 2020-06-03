@@ -1,12 +1,13 @@
 package DomainLayer.TradingSystem;
 
 import DomainLayer.TradingSystem.Models.Basket;
+import DomainLayer.TradingSystem.Models.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class DiscountBasketPriceOrAmount implements DiscountBInterface {
+public class DiscountBasketPriceOrAmount extends DiscountSimple {
 
     private int discountID;
     private int sum;
@@ -40,21 +41,32 @@ public class DiscountBasketPriceOrAmount implements DiscountBInterface {
         return discount;
     }
     @Override
-    public boolean canGet(Basket basket ){
-        if(onPrice){
-            int param =
-        }
-        else{
-
-        }
-        if (param > sum) {
-            return true;
+    public boolean canGet(Basket basket ) {
+        if (onPrice) {
+            double price = basket.getPrice();
+            if (price > this.sum) {
+                return true;
+            }
+        } else {
+            int totalAmount = 0;
+            for (ProductItem pi : basket.getProductItems()) {
+                totalAmount = totalAmount + pi.getAmount();
+            }
+            if (totalAmount > sum) {
+                return true;
+            }
         }
         return false;
     }
+
     @Override
-    public double calc(Basket basket, double basketPrice){
-        return (basketPrice - (basketPrice * (discount/100)));
+    public Product getProductDiscount() {
+        return null;
+    }
+
+    public double calc(Basket basket){
+        double newPrice = (basket.getPrice() - (basket.getPrice() * (discount/100)));
+        return newPrice;
     }
 
     @Override
