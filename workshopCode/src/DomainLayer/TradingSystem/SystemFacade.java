@@ -44,13 +44,15 @@ public class SystemFacade {
         this.users.put("Admin159", firstAdmin);
     }
 
-    public UUID createNewSeesion(){
+    public UUID createNewSession(){
         Session newSession = new Session();
         active_sessions.put(newSession.getSession_id(), newSession);
         return newSession.getSession_id();
     }
 
     public void closeSession(UUID session_id){
+        if(!active_sessions.containsKey(session_id))
+            throw new IllegalArgumentException("Invalid Session ID");
         active_sessions.remove(session_id);
     }
 
@@ -144,11 +146,14 @@ public class SystemFacade {
     }
 
     //function for handling UseCase 2.5
-    public String filterResults(Integer minPrice, Integer maxPrice, String category){
+    public String filterResults(UUID session_id, Integer minPrice, Integer maxPrice, String category){
         boolean searchCategory = category == null ? false : !category.equals("");
         //List<Product> matching = new ArrayList<>();
         JSONArray matching = new JSONArray();
-        for(Product p : lastSearchResult){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        for(Product p : se.getLastSearchResult()){
             if(searchCategory&&!category.equals(p.getCategory().name()))
                 continue;
             if(minPrice!=null&&p.getPrice()<minPrice)
@@ -170,8 +175,11 @@ public class SystemFacade {
     }
 
     //function for handling UseCase 2.6
-    public void addToShoppingBasket(String store, String product, int amount){
-        activeUser.getShoppingCart().addProduct(product, stores.get(store), amount);
+    public void addToShoppingBasket(UUID session_id, String store, String product, int amount){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        se.getLoggedin_user().getShoppingCart().addProduct(product, stores.get(store), amount);
     }
 
     //helper function for UseCase 2.6
@@ -185,36 +193,41 @@ public class SystemFacade {
     }
 
     // function for handling UseCase 2.3
-    public void login(String username, boolean adminMode) {
+    public void login(UUID session_id, String username, boolean adminMode) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         User user = users.get(username);
-        if (!adminMode) {
-            this.adminMode = false;
-            activeUser = user;
-        }
-        else {
-                this.adminMode = true;
-                activeUser = user;
-        }
+        se.setAdminMode(adminMode);
+        se.setLoggedin_user(user);
         NotificationSystem.getInstance().notify(username, "hey");
     }
 
     //function for handling UseCase 3.1
-    public String logout(){
-        activeUser = new User();
-        NotificationSystem.getInstance().dettach(this.activeUser.getUsername());
+    public String logout(UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        NotificationSystem.getInstance().dettach(se.getLoggedin_user().getUsername());
+        se.setLoggedin_user(new User());
         return "You have been successfully logged out!";
     }
 
     //function for handling Use Case 2.7
-    public String viewSoppingCart(){
-        NotificationSystem.getInstance().notify(this.activeUser.getUsername(), "hello");
-        return activeUser.getShoppingCart().view();
+    public String viewSoppingCart(UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return se.getLoggedin_user().getShoppingCart().view();
     }
 
     // function for use case 2.7
-    public String editShoppingCart(String storeName, String productName, int amount){
+    public String editShoppingCart(UUID session_id, String storeName, String productName, int amount){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         Store store = stores.get(storeName);
-        return activeUser.getShoppingCart().edit(store, productName, amount);
+        return se.getLoggedin_user().getShoppingCart().edit(store, productName, amount);
 
     }
 
@@ -232,8 +245,11 @@ public class SystemFacade {
     }
 
     //helper function for Use Case 4.1
-    public boolean userHasEditPrivileges(String storeName){
-        return activeUser.hasEditPrivileges(storeName);
+    public boolean userHasEditPrivileges(UUID session_id, String storeName){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return se.getLoggedin_user().hasEditPrivileges(storeName);
     }
 
     // function for handling Use Case 4.7
@@ -252,16 +268,12 @@ public class SystemFacade {
         //return "Manager wasn't removed";
     }
 
-    //helper function for Use Case 4.7
-    public boolean isUserStoreOwner(String storename){
-        Store store = stores.get(storename);
-        if(store == null)
-            return false;
-        return store.isOwner(activeUser);
-    }
 
     //helper function for Use Case 4.7
-    public boolean isUserAppointer(String username, String storename){
+    public boolean isUserAppointer(UUID session_id, String username, String storename){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         Store store = stores.get(storename);
         User user = users.get(username);
         if(store == null || user == null)
@@ -269,15 +281,18 @@ public class SystemFacade {
         User appointer = store.getAppointer(user);
         if(appointer == null)
             return false;
-        return appointer.equals(activeUser);
+        return appointer.equals(se.getLoggedin_user());
     }
 
-    public String appointManager(String username, String storeName){
+    public String appointManager(UUID session_id, String username, String storeName){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         Store store = stores.get(storeName);
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreManaging managing = new StoreManaging(activeUser);
+        StoreManaging managing = new StoreManaging(se.getLoggedin_user());
         store.addManager(appointed_user, managing);
         appointed_user.addManagedStore(store, managing);
 
@@ -301,21 +316,28 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 3.2 written by Nufar
-    public String openNewStore(String storeName, String storeDescription) {
+    public String openNewStore(UUID session_id, String storeName, String storeDescription) {
+
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
 
         // update stores of the system and the user's data
         StoreOwning storeOwning = new StoreOwning();
-        Store newStore = new Store(storeName, storeDescription, this.activeUser, storeOwning);
+        Store newStore = new Store(storeName, storeDescription, se.getLoggedin_user(), storeOwning);
 
-        this.activeUser.addOwnedStore(newStore, storeOwning);
+        se.getLoggedin_user().addOwnedStore(newStore, storeOwning);
         this.stores.put(storeName, newStore);
 
         return "The new store is now open!";
     }
 
     // function for handling Use Case 3.7 - written by Nufar
-    public String getActiveUserPurchaseHistory() {
-        return getUserPurchaseHistory(this.activeUser.getUsername());
+    public String getActiveUserPurchaseHistory(UUID session_id) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return getUserPurchaseHistory(se.getLoggedin_user().getUsername());
     }
 
     // function for handling Use Case 3.7 + 6.4 - written by Nufar
@@ -420,19 +442,28 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void reserveProducts() {
-        activeUser.getShoppingCart().reserveBaskets();
+    public void reserveProducts(UUID session_id) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        se.getLoggedin_user().getShoppingCart().reserveBaskets();
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void computePrice() {
-        activeUser.getShoppingCart().computeCartPrice();
+    public void computePrice(UUID session_id) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        se.getLoggedin_user().getShoppingCart().computeCartPrice();
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public boolean payment() {
-        ShoppingCart sc = activeUser.getShoppingCart();
-        if(!PC.pay(sc.getTotalCartPrice(), activeUser)){
+    public boolean payment(UUID session_id) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        ShoppingCart sc = se.getLoggedin_user().getShoppingCart();
+        if(!PC.pay(sc.getTotalCartPrice(), se.getLoggedin_user())){
             sc.unreserveProducts();
             return false;
         }
@@ -441,9 +472,12 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public boolean supply(){
-        ShoppingCart sc = activeUser.getShoppingCart();
-        if(!PS.supply(sc.getBaskets(), activeUser)) {
+    public boolean supply(UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        ShoppingCart sc = se.getLoggedin_user().getShoppingCart();
+        if(!PS.supply(sc.getBaskets(), se.getLoggedin_user())) {
             sc.unreserveProducts();
             return false;
         }
@@ -451,12 +485,15 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void addPurchaseToHistory() {
-        ShoppingCart sc = activeUser.getShoppingCart();
+    public void addPurchaseToHistory(UUID session_id) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        ShoppingCart sc = se.getLoggedin_user().getShoppingCart();
 
         //handle User-Purchase-History
         Purchase newPurchase = new Purchase(sc);
-        activeUser.addPurchaseToHistory(newPurchase);
+        se.getLoggedin_user().addPurchaseToHistory(newPurchase);
 
         //handle Store-Purchase-History
         sc.addStoresPurchaseHistory();
@@ -465,18 +502,21 @@ public class SystemFacade {
         sc.notifyOwners();
 
         //finally - empty the shopping cart
-        activeUser.emptyCart();
+        se.getLoggedin_user().emptyCart();
 
     }
 
 
     // function for handling Use Case 4.3 - written by Nufar
-    public String appointOwner(String username, String storeName) {
+    public String appointOwner(UUID session_id, String username, String storeName) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         Store store = stores.get(storeName);
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreOwning owning = new StoreOwning(activeUser);
+        StoreOwning owning = new StoreOwning(se.getLoggedin_user());
         store.addStoreOwner(appointed_user, owning);
         appointed_user.addOwnedStore(store, owning);
 
@@ -489,29 +529,41 @@ public class SystemFacade {
         return users;
     }
 
-    public boolean checkIfActiveUserIsOwner(String storeName) {
+    public boolean checkIfActiveUserIsOwner(UUID session_id, String storeName) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         Store store = stores.get(storeName);
-        return store.isOwner(activeUser);
+        return store.isOwner(se.getLoggedin_user());
     }
 
     public boolean checkIfUserIsOwner(String storName, String userName) {
         return stores.get(storName).isOwner(this.users.get(userName));
     }
 
-    public boolean checkIfActiveUserIsManager(String storeName) {
-        return stores.get(storeName).isManager(this.activeUser);
+    public boolean checkIfActiveUserIsManager(UUID session_id, String storeName) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return stores.get(storeName).isManager(se.getLoggedin_user());
     }
 
     public boolean checkIfUserIsManager(String storName, String userName) {
         return stores.get(storName).isManager(this.users.get(userName));
     }
 
-    public boolean checkIfProductInCart(String storName, String productName) {
-        return activeUser.getShoppingCart().isProductInCart(productName, stores.get(storName));
+    public boolean checkIfProductInCart(UUID session_id, String storName, String productName) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return se.getLoggedin_user().getShoppingCart().isProductInCart(productName, stores.get(storName));
     }
 
-    public boolean checkIfActiveUserSubscribed() {
-        return activeUser.getUsername() != null;
+    public boolean checkIfActiveUserSubscribed(UUID session_id) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return se.getLoggedin_user().getUsername() != null;
     }
 
     public boolean checkIfUserIsAdmin( String userName) {
@@ -519,8 +571,11 @@ public class SystemFacade {
         return adminsList.contains(user);
     }
 
-    public boolean checkIfBasketExists(String storeName) {
-        return activeUser.getShoppingCart().isBasketExists(getStoreByName(storeName));
+    public boolean checkIfBasketExists(UUID session_id, String storeName) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return se.getLoggedin_user().getShoppingCart().isBasketExists(getStoreByName(storeName));
     }
 
     public void addAdmin(String userName){
@@ -528,8 +583,11 @@ public class SystemFacade {
         adminsList.add(user);
     }
 
-    public boolean checkIfInAdminMode() {
-        return this.adminMode;
+    public boolean checkIfInAdminMode(UUID session_id) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return se.isAdminMode();
     }
 
     public void resetAdmins(){
@@ -552,15 +610,21 @@ public class SystemFacade {
     }
 
 
-    public boolean cartIsEmpty(){
-        return this.activeUser.getShoppingCart().isEmpty();
+    public boolean cartIsEmpty(UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return se.getLoggedin_user().getShoppingCart().isEmpty();
     }
 
-    public boolean checkIfUserHavePermission(String storeName, String permission){
+    public boolean checkIfUserHavePermission(UUID session_id, String storeName, String permission){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         if(!storeExists(storeName))
             return false;
         Store s = getStoreByName(storeName);
-        return s.getManagements().get(this.activeUser).havePermission(permission);
+        return s.getManagements().get(se.getLoggedin_user()).havePermission(permission);
     }
 
     public boolean checkIfProductExists(String storeName, String productName) {
@@ -570,13 +634,13 @@ public class SystemFacade {
         return true;
     }
 
-    public void emptyCart(){
-        this.activeUser.emptyCart();
+    public void emptyCart(UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        se.getLoggedin_user().emptyCart();
     }
 
-    public boolean isAdminMode() {
-        return adminMode;
-    }
 
     public void addDiscountOnProduct(String storeName, String productName, int percentage, int amount, boolean onAll){
         Store s = getStoreByName(storeName);
@@ -595,10 +659,13 @@ public class SystemFacade {
         return false;
     }
 
-    public String myStores(){
+    public String myStores(UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         JSONArray response = new JSONArray();
-        HashMap<Store, StoreOwning> ownings = this.activeUser.getStoreOwnings();
-        HashMap<Store, StoreManaging> managements = this.activeUser.getStoreManagements();
+        HashMap<Store, StoreOwning> ownings = se.getLoggedin_user().getStoreOwnings();
+        HashMap<Store, StoreManaging> managements = se.getLoggedin_user().getStoreManagements();
         if(!ownings.isEmpty()){
             for(Store s: ownings.keySet()){
                 JSONObject currStore = new JSONObject();
@@ -765,7 +832,10 @@ public class SystemFacade {
         return "";
     }
 
-    public String getCartTotalPrice(){
-        return String.valueOf(this.activeUser.getShoppingCart().getTotalCartPrice());
+    public String getCartTotalPrice(UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return String.valueOf(se.getLoggedin_user().getShoppingCart().getTotalCartPrice());
     }
 }
