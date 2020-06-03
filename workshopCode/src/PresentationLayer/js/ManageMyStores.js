@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
                    responseMsg,
                    'error')
             }
-        })
+        });
         document.getElementById("perm-username").value = "";
         document.getElementById("manageSupplyPermOpt").checked = false;
         document.getElementById("viewHistoryPermOpt").checked = false;
@@ -351,6 +351,60 @@ function updatePurchaseHistory(history){
     })
 }
 
+function updateCandidatesWindow(candidates){
+    var candidatesList = document.getElementById("candidates-list");
+    candidatesList.innerHTML = "";
+    candidates.forEach(cand=>{
+        const element = document.createElement("li");
+        element.classList.add("list-group-item");
+        element.classList.add("d-flex");
+        element.classList.add("justify-content-between");
+        element.classList.add("lh-condensed");
+        const element_div = document.createElement("div");
+        const cand_name = document.createElement("h6");
+        cand_name.classList.add("my-0");
+        cand_name.append(document.createTextNode(cand.name));
+        element_div.appendChild(cand_name);
+        const app_button = document.createElement("button");
+        app_button.classList.add("btn");
+        app_button.classList.add("btn-primary");
+        app_button.append(document.createTextNode("Approve"));
+        app_button.addEventListener("click",function(){
+            fetch("http://localhost:8080/tradingSystem/approveCandidate", {
+                method: "POST",
+                body: JSON.stringify({user: user_name, store: store_name})
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            })
+            .then((responseMsg) => {
+                if (responseMsg.SUCCESS) {
+                    Swal.fire(
+                        'SUCCESS!',
+                        responseMsg.SUCCESS,
+                        'success');
+                        
+                    updateCandidates();
+                } else {
+                    Swal.fire(
+                    'OOPS!',
+                    responseMsg,
+                    'error')
+                }
+            })
+        })
+        const app_span = document.createElement("span");
+        app_span.appendChild(app_button);
+        element.appendChild(element_div);
+        element.appendChild(app_span); 
+        candidatesList.appendChild(element);
+    })
+}
+
 function setMyStores(stores) {
     const numOfStores = document.getElementById("num-of-stores");
     numOfStores.innerHTML = "";
@@ -401,13 +455,10 @@ function setMyStores(stores) {
 
         currStore.options.forEach(currAction=>{
             const a = document.createElement("a");
-            // if(currAction=="Add New Discount")
-            //     a.href="/html/discountsWindow";
-            // else
-                a.addEventListener("click",function(){
-                activeStore = currStore;
-                showPopUp(currAction);
-                })
+            a.addEventListener("click",function(){
+            activeStore = currStore;
+            showPopUp(currAction);
+            })
             a.classList.add("dropdown-item");
             a.append(document.createTextNode(currAction));
 
@@ -444,6 +495,22 @@ function setCategories(categories) {
     })
 }
 
+function updateCandidates() {
+    fetch("http://localhost:8080/tradingSystem/newOwnerCandidates", {
+            method: "POST",
+            body: JSON.stringify({store:activeStore.name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then(updateCandidatesWindow)
+}
+
+
 actionToModel={
     "Open Store":"openStoreModal",
     "Add Manager":"addManagerModal",
@@ -452,10 +519,14 @@ actionToModel={
     "Remove Owner":"removeOwnerModal",
     "Edit Permissions":"editPermissionsModal",
     "Manage Supply":"manageSupplyModal",
-    "View Purchasing History":"viewPurchaseHistoryModal"
+    "View Purchasing History":"viewPurchaseHistoryModal",
+    "Approve New Owner":"approveNewOwnerModal"
 }
 
 function showPopUp(action){
+    if(action == "Approve New Owner"){
+        updateCandidates();
+    }
     if(action == "View Purchasing History"){
         fetch("http://localhost:8080/tradingSystem/storePurchaseHistory", {
             method: "POST",
