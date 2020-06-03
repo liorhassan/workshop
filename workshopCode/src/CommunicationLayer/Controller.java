@@ -284,6 +284,30 @@ public class Controller {
             }
         });
 
+        //accept: {user: "", store:""}
+        //retrieve: {SUCCESS: msg} OR ERROR
+        server.createContext("/tradingSystem/removeStoreOwner", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
+                String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+                //String response = storeHandler.removeStoreOwner(userName, storeName);
+                String response = "";//TODO
+                headers.set("removeStoreOwner", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("removeStoreOwner", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
         //accept: {store:"", product: "", price:"", category:"", desc:"", amount:int}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/updateInventory", he -> {
@@ -532,6 +556,8 @@ public class Controller {
                 he.close();
             }
         });
+
+
 
         //accept: {user: "", store:"", permission: ["", "",..]}
         //retrieve: {SUCCESS: msg} OR ERROR

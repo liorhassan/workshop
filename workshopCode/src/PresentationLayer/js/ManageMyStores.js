@@ -69,7 +69,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     initAddOwnerModel();
 
-    initRemoveManagerModel()
+    initRemoveManagerModel();
+
+    initRemoveOwnerModel();
 
     initManageSupplyModel();
     
@@ -224,8 +226,42 @@ function initRemoveManagerModel() {
             }
         })
 
-        document.getElementById("remove-manager-button").value = "";
+        document.getElementById("remove-manager-name").value = "";
         document.getElementById("removeManagerModal").style.display = "none";
+    })
+}
+
+function initRemoveOwnerModel() {   
+    document.getElementById("remove-owner-button").addEventListener("click",function(){
+        var store_name = activeStore.name;
+        var username  = document.getElementById("remove-owner-name").value;
+        fetch("http://localhost:8080/tradingSystem/removeStoreOwner", {
+            method: "POST",
+            body: JSON.stringify( {user: username, store:store_name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
+
+        document.getElementById("remove-owner-name").value = "";
+        document.getElementById("removeOwnerModal").style.display = "none";
     })
 }
 
@@ -413,6 +449,7 @@ actionToModel={
     "Add Manager":"addManagerModal",
     "Add Owner":"addOwnerModal",
     "Remove Manager":"removeManagerModal",
+    "Remove Owner":"removeOwnerModal",
     "Edit Permissions":"editPermissionsModal",
     "Manage Supply":"manageSupplyModal",
     "View Purchasing History":"viewPurchaseHistoryModal"
