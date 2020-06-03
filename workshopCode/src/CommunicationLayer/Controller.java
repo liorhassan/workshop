@@ -272,7 +272,7 @@ public class Controller {
                 //JSONObject requestJson =  (JSONObject)parser.parse("{\"user\":\"noy\", \"store\":\"Pull&Bear\"}");
                 String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                //String response = storeHandler.approveOwnerCandidate(userName, storeName); TODO
+                //String response = storeHandler.approveOwnerCandidate(userName, storeName); TODO: implement missing functionality
                 String response = "";
                 headers.set("approveCandidate", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -319,7 +319,7 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                //String response = storeHandler.getOwnerCandidates(storeName); TODO
+                //String response = storeHandler.getOwnerCandidates(storeName); TODO: implement missing functionality
                 JSONArray ja = new JSONArray();
                 JSONObject jo1 = new JSONObject();
                 JSONObject jo2 = new JSONObject();
