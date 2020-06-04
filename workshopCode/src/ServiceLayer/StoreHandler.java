@@ -220,6 +220,17 @@ public class StoreHandler {
         }
     }
 
+    public String addPurchasePolicy(String purchasePolicy){
+        try{
+            String result = SystemFacade.getInstance().addPurchasePolicy(purchasePolicy);
+            return createJSONMsg("SUCCESS", result);
+        }
+        catch (Exception e) {
+            SystemLogger.getInstance().writeError("Add Discount Policy error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     public String getStoreProducts(String storeName) {
         return SystemFacade.getInstance().getAllProducts(storeName);
     }
