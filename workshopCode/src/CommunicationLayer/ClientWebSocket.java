@@ -4,6 +4,8 @@ import DomainLayer.TradingSystem.NotificationSystem;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -31,7 +33,10 @@ public class ClientWebSocket extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
-        conn.send("[\"shauli\",\"shauli\"]");
+
+        JSONObject sid = new JSONObject();
+        sid.put("session_id","shauli");
+        conn.send(sid.toJSONString());
     }
 
     @Override
