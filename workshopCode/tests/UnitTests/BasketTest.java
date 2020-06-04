@@ -1,8 +1,6 @@
 package UnitTests;
 
-import DomainLayer.TradingSystem.Models.Basket;
-import DomainLayer.TradingSystem.Models.Product;
-import DomainLayer.TradingSystem.Models.Store;
+import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.TradingSystem.ProductItem;
 import org.junit.After;
 import org.junit.Before;
@@ -19,7 +17,7 @@ public class BasketTest {
     @Before
     public void setUp() throws Exception {
         store = new Store("Fox",null,null,null);
-        basket = new Basket(store);
+        basket = new Basket(store, new ShoppingCart(new User()));
     }
 
     @After

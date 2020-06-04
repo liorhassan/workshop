@@ -17,13 +17,12 @@ public class Store implements Serializable {
     private Inventory inventory;
 
     @Id
-    @Column(name = "store_name", unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
-    @Column(name = "store_description")
+    @Column(name = "description")
     private String description;
 
-    @ManyToOne
     @JoinColumn(name = "firstOwner", referencedColumnName = "username")
     private User storeFirstOwner;
 

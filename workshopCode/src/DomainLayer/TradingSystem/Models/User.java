@@ -4,13 +4,15 @@ import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.StoreManaging;
 import DomainLayer.TradingSystem.StoreOwning;
 import DomainLayer.TradingSystem.UserPurchaseHistory;
+import org.hibernate.usertype.UserType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashMap;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
 
     @Transient
     private HashMap<Store, StoreManaging> storeManagements;
@@ -51,8 +53,10 @@ public class User {
         return shoppingCart;
     }
 
-    private void initCart() {
+    public void initCart() {
         this.shoppingCart = PersistenceController.readUserCart(this.username);
+        if(this.shoppingCart == null)
+            this.shoppingCart = new ShoppingCart(this);
     }
 
     public void removeStoreManagement(Store store) {

@@ -1,5 +1,6 @@
 package DomainLayer.TradingSystem.Models;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.DiscountBInterface;
 import DomainLayer.TradingSystem.ProductItem;
 import jdk.jfr.Enabled;
@@ -22,7 +23,6 @@ public class ShoppingCart {
 
     private HashMap<Store, Basket> baskets;
 
-    @OneToOne
     @JoinColumn(name="user", referencedColumnName = "username")
     private User user;
 
@@ -33,14 +33,30 @@ public class ShoppingCart {
 
     public ShoppingCart(User user) {
         this.user = user;
-        this.baskets = new HashMap<>();
+        initBaskets();
         this.isHistory = false;
     }
 
-    public void addProduct(String product, Store store, int amount){
-        if (!baskets.containsKey(store))
-            baskets.put(store, new Basket(store));
-        baskets.get(store).addProduct(store.getProductByName(product), amount);
+    private void initBaskets() {
+        this.baskets = new HashMap<>();
+        List<Basket> b = PersistenceController.readAllBasket(id);
+        for(Basket curr: b) {
+            baskets.put(curr.getStore(), curr);
+        }
+    }
+
+    public void addProduct(String product, Store store, int amount) {
+        if (!baskets.containsKey(store)) {
+            Basket b = new Basket(store, this);
+            b.addProduct(store.getProductByName(product), amount);
+            baskets.put(store, b);
+            //create Basket in DB
+            PersistenceController.create(b);
+        } else {
+            baskets.get(store).addProduct(store.getProductByName(product), amount);
+            //update DB
+            PersistenceController.update(baskets.get(store));
+        }
     }
 
     public User getUser() {
@@ -188,6 +204,8 @@ public class ShoppingCart {
             s.notifyOwners(baskets.get(s), this.user.getUsername());
         }
     }
+
+
 }
 
 

@@ -3,10 +3,24 @@ package DomainLayer.TradingSystem;
 import DomainLayer.TradingSystem.Models.Basket;
 import DomainLayer.TradingSystem.Models.Product;
 
-public class ProductItem {
+import javax.persistence.*;
+import java.io.Serializable;
 
+@Entity
+@Table(name = "prosuctItems")
+public class ProductItem implements Serializable {
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "productName", referencedColumnName = "name")
     private Product product;
+
+    @Column(name = "amount")
     private int amount;
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "basket", referencedColumnName = "id")
     private Basket basket;
 
 

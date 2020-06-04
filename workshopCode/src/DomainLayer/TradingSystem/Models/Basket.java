@@ -1,22 +1,43 @@
 package DomainLayer.TradingSystem.Models;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.ProductItem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
 
+
+@Entity
+@Table(name = "baskets")
 public class Basket {
 
+    @Id
+    @Column(name="id")
+    @GeneratedValue
+    private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "storename", referencedColumnName = "name")
     private Store store;
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "cart", referencedColumnName = "id")
+    private ShoppingCart sc;
+
     private List<ProductItem> productItems;
 
-    public Basket(Store store) {
+    public Basket(Store store, ShoppingCart sc) {
         this.store = store;
-        productItems = new ArrayList<>();
+        this.sc = sc;
+        initProductItems();
     }
 
+    private void initProductItems() {
+        productItems = PersistenceController.readAllProductItems(id);
+    }
 
     public Store getStore() {
         return store;
@@ -81,10 +102,16 @@ public class Basket {
         for (ProductItem pi : productItems) {
             if (pi.getProduct().equals(p)) {
                 pi.setAmount(pi.getAmount() + amount);
+                //update DB
+                PersistenceController.update(pi);
                 return;
             }
         }
-        productItems.add(new ProductItem(p, amount, this));
+
+        ProductItem pi = new ProductItem(p, amount, this);
+        productItems.add(pi);
+        //create pi in DB
+        PersistenceController.create(pi);
     }
 
     public void reserve(){

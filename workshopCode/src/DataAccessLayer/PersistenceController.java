@@ -1,7 +1,9 @@
 package DataAccessLayer;
 
-import DomainLayer.TradingSystem.Models.Product;
-import DomainLayer.TradingSystem.Models.Store;
+import DomainLayer.TradingSystem.Models.*;
+import DomainLayer.TradingSystem.ProductItem;
+import DomainLayer.TradingSystem.StoreManaging;
+import DomainLayer.TradingSystem.StoreOwning;
 import org.hibernate.*;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -103,6 +105,32 @@ public class PersistenceController {
         }
     }
 
+
+    public static void update(Object updatedModel) {
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+
+            // Update the student
+            session.update(updatedModel);
+            // Commit the transaction
+            transaction.commit();
+        } catch (HibernateException ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+    }
+
     //byStore = false --> retrieve all products in the database
     //byStore = true --> retrieve all products that belong to the store
     public static List<Product> readAllProducts(String storeName, boolean byStore) {
@@ -138,19 +166,23 @@ public class PersistenceController {
         return data;
     }
 
-    public static void update(Object updatedModel) {
+    public static List<User> readAllUsers() {
+        List<User> users = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
         Transaction transaction = null;
         try {
             // Begin a transaction
             transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<User> cr = cb.createQuery(User.class);
+            Query<User> query = session.createQuery(cr);
+            users = query.getResultList();
 
-            // Update the student
-            session.update(updatedModel);
+
             // Commit the transaction
             transaction.commit();
-        } catch (HibernateException ex) {
+        } catch (Exception ex) {
             // If there are any exceptions, roll back the changes
             if (transaction != null) {
                 transaction.rollback();
@@ -161,5 +193,237 @@ public class PersistenceController {
             // Close the session
             session.close();
         }
+        return users;
+    }
+
+    public static List<Store> readAllStores() {
+        List<Store> stores = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Store> cr = cb.createQuery(Store.class);
+            Root<Store> root = cr.from(Store.class);
+            Query<Store> query = session.createQuery(cr);
+            stores = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return stores;
+
+    }
+
+    public static List<Purchase> readAllPurchases(String storeName) {
+        List<Purchase> purchases = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Purchase> cr = cb.createQuery(Purchase.class);
+            Root<Purchase> root = cr.from(Purchase.class);
+            cr.select(root).where(cb.equal(root.get("ownerName"), storeName));
+            Query<Purchase> query = session.createQuery(cr);
+            purchases = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return purchases;
+    }
+
+    public static List<StoreManaging> readAllManagers(String storeName) {
+        List<StoreManaging> manages = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<StoreManaging> cr = cb.createQuery(StoreManaging.class);
+            Root<StoreManaging> root = cr.from(StoreManaging.class);
+            cr.select(root).where(cb.equal(root.get("storeName"), storeName));
+            Query<StoreManaging> query = session.createQuery(cr);
+            manages = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return manages;
+    }
+
+    public static List<StoreOwning> readAllOwners(String storeName) {
+        List<StoreOwning> owners = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<StoreOwning> cr = cb.createQuery(StoreOwning.class);
+            Root<StoreOwning> root = cr.from(StoreOwning.class);
+            cr.select(root).where(cb.equal(root.get("storeName"), storeName));
+            Query<StoreOwning> query = session.createQuery(cr);
+            owners = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return owners;
+    }
+
+    public static ShoppingCart readUserCart(String username) {
+        List<ShoppingCart> carts = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<ShoppingCart> cr = cb.createQuery(ShoppingCart.class);
+            Root<ShoppingCart> root = cr.from(ShoppingCart.class);
+            cr.select(root).where(cb.equal(root.get("user"), username));
+            cr.select(root).where(cb.equal(root.get("isHistory"), false));
+            Query<ShoppingCart> query = session.createQuery(cr);
+            carts = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        if(!carts.isEmpty()){
+            return carts.get(0);
+        }
+        return null;
+
+    }
+
+    public static List<ProductItem> readAllProductItems(int basketId) {
+        List<ProductItem> pi = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<ProductItem> cr = cb.createQuery(ProductItem.class);
+            Root<ProductItem> root = cr.from(ProductItem.class);
+            cr.select(root).where(cb.equal(root.get("basket"), basketId));
+            Query<ProductItem> query = session.createQuery(cr);
+            pi = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return pi;
+
+    }
+
+    public static List<Basket> readAllBasket(int Cartid) {
+        List<Basket> baskets = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Basket> cr = cb.createQuery(Basket.class);
+            Root<Basket> root = cr.from(Basket.class);
+            cr.select(root).where(cb.equal(root.get("cart"), Cartid));
+            Query<Basket> query = session.createQuery(cr);
+            baskets = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return baskets;
+
     }
 }

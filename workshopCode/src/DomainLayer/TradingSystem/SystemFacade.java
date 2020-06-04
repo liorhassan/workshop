@@ -30,7 +30,7 @@ public class SystemFacade {
 
     private SystemFacade() {
         initSubscribedUsers();
-        stores = new HashMap<>();
+        initStores();
         adminsList = new ArrayList<>();
         activeUser = new User();  //guest
         lastSearchResult = new ArrayList<>();
@@ -43,6 +43,15 @@ public class SystemFacade {
         this.users.put("Admin159", firstAdmin);
     }
 
+    private void initStores() {
+        stores = new HashMap<>();
+        List<Store> allStores = PersistenceController.readAllStores();
+
+        for (Store s: allStores) {
+            stores.put(s.getName(), s);
+        }
+    }
+
     private void initSubscribedUsers() {
         users = new HashMap<>();
         List<User> allSubscribedUsers = PersistenceController.readAllUsers();
@@ -50,8 +59,7 @@ public class SystemFacade {
         for (User user: allSubscribedUsers) {
             users.put(user.getUsername(), user);
 
-            user.initCart();
-            // TODO: init manages and owns
+            user.initCart();// TODO: maybe do after init stores
         }
     }
 
@@ -314,7 +322,7 @@ public class SystemFacade {
     public String openNewStore(String storeName, String storeDescription) {
 
         // update stores of the system and the user's data
-        StoreOwning storeOwning = new StoreOwning();
+        StoreOwning storeOwning = new StoreOwning(storeName, this.activeUser.getUsername());
         Store newStore = new Store(storeName, storeDescription, this.activeUser, storeOwning);
 
         this.activeUser.addOwnedStore(newStore, storeOwning);
@@ -493,7 +501,7 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreOwning owning = new StoreOwning(activeUser);
+        StoreOwning owning = new StoreOwning(activeUser, storeName, username);
         store.addStoreOwner(appointed_user, owning);
         appointed_user.addOwnedStore(store, owning);
 

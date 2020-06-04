@@ -32,13 +32,13 @@ public class SystemHandler_UT {
         SystemFacade.getInstance().getUsers().get("noy").setUsername("noy");
         SystemFacade.getInstance().getUsers().put("zuzu", new User());
         SystemFacade.getInstance().getUsers().get("zuzu").setUsername("zuzu");
-        Store s = new Store("Pull&Bear", "clothing", SystemFacade.getInstance().getUsers().get("noy"),new StoreOwning());
+        Store s = new Store("Pull&Bear", "clothing", SystemFacade.getInstance().getUsers().get("noy"),new StoreOwning("noy", "Pull&Bear"));
         SystemFacade.getInstance().getStores().put("Pull&Bear", s);
-        s.addManager(SystemFacade.getInstance().getUsers().get("zuzu"), new StoreManaging(SystemFacade.getInstance().getUsers().get("noy")));
-        s.addManager(SystemFacade.getInstance().getUsers().get("loco"), new StoreManaging(SystemFacade.getInstance().getUsers().get("noy")));
+        s.addManager(SystemFacade.getInstance().getUsers().get("zuzu"), new StoreManaging(SystemFacade.getInstance().getUsers().get("noy"), "Pull&Bear","zuzu"));
+        s.addManager(SystemFacade.getInstance().getUsers().get("loco"), new StoreManaging(SystemFacade.getInstance().getUsers().get("noy"), "Pull&Bear", "loco"));
         s.addToInventory("skinny jeans", 120, Category.Clothing, "The most comfortable skiny jeans", 3);
         s.addToInventory("blue top", 120, Category.Clothing, "pretty blue crop top", 4);
-        Store s2 = new Store("Bershka", "clothing", SystemFacade.getInstance().getUsers().get("noy"),new StoreOwning());
+        Store s2 = new Store("Bershka", "clothing", SystemFacade.getInstance().getUsers().get("noy"),new StoreOwning("Bershka", "loco"));
         SystemFacade.getInstance().getStores().put("Bershka", s2);
         s2.addToInventory("skinny jeans", 100, Category.Clothing, "skinny jeans", 3);
 
@@ -191,7 +191,7 @@ public class SystemHandler_UT {
     public void preserveProducts_Test(){
         sys.login("noy", false);
         Store s = sys.getStoreByName("Pull&Bear");
-        Basket b = new Basket(s);
+        Basket b = new Basket(s, sys.getActiveUser().getShoppingCart());
         b.addProduct(s.getProductByName("skinny jeans"), 2);
         b.addProduct(s.getProductByName("blue top"), 4);
         sys.getActiveUser().getShoppingCart().addBasket(b);
