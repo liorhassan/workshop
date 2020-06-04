@@ -1,6 +1,9 @@
 const window_name = "AdminView";
 document.addEventListener("DOMContentLoaded", function () {
-    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
+        method: "POST",
+        body: JSON.stringify({session_id:this.localStorage["session_id"]})
+    })
     .then(response=>response.json())
     .then(updateNavBar);
 })
@@ -9,7 +12,7 @@ function getCustomerHistory() {
     const customerName = document.getElementById("customerName").value;
     fetch('http://localhost:8080/tradingSystem/userPurchaseHistoryAdmin', {
         method: 'POST',
-        body: JSON.stringify({ user: customerName })
+        body: JSON.stringify({session_id:this.localStorage["session_id"], user: customerName })
     })
         .then(response => {
             if (response.ok) {
@@ -43,7 +46,7 @@ function getStoreHistory() {
     const storeName = document.getElementById("storeName").value;
     fetch('http://localhost:8080/tradingSystem/storePurchaseHistoryAdmin', {
         method: 'POST',
-        body: JSON.stringify({ store: storeName })
+        body: JSON.stringify({session_id:this.localStorage["session_id"], store: storeName })
     })
         .then(response => {
             if (response.ok) {

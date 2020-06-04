@@ -1,13 +1,19 @@
 const window_name = "UserPurchaseHistory";
 document.addEventListener("DOMContentLoaded", function () {
 
-    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
+        method: "POST",
+        body: JSON.stringify({session_id:this.localStorage["session_id"]})
+    })
     .then(response=>response.json())
     .then(updateNavBar);
     
 
 
-     fetch("http://localhost:8080/tradingSystem/userPurchaseHistory")
+     fetch("http://localhost:8080/tradingSystem/userPurchaseHistory", {
+        method: "POST",
+        body: JSON.stringify({session_id:this.localStorage["session_id"]})
+    })
          .then(response => response.json())
           .then(setMyHistory)
 

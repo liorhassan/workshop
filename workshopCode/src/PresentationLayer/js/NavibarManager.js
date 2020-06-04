@@ -40,7 +40,10 @@ function updateNavBar(isLoggedIn){
 
 
     document.getElementById("logout_navbar").addEventListener("click",function(){
-        fetch("http://localhost:8080/tradingSystem/logout");
+        fetch("http://localhost:8080/tradingSystem/logout", {
+            method: "POST",
+            body: JSON.stringify({session_id:this.localStorage["session_id"]})
+        });
         });
     } else {
         document.getElementById("navbarCollapse").innerHTML=`<ul class=\"navbar-nav mr-auto\">\

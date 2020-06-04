@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import ServiceLayer.*;
 import com.sun.net.httpserver.Headers;
@@ -96,7 +97,7 @@ public class Controller {
         });
 
         //-----------------------------------------UsersHandler cases------------------------------------------
-        //accept: {userName:"", password:"", adminMode: true/false}
+        //accept: {session_id:"", userName:"", password:"", adminMode: true/false}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/login", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -109,7 +110,8 @@ public class Controller {
                 String userName = (requestJson.containsKey("userName")) ? (String) requestJson.get("userName") : null;
                 String password = (requestJson.containsKey("password")) ? (String) (requestJson.get("password")) : null;
                 boolean adminMode = (requestJson.containsKey("adminMode")) ? (boolean) (requestJson.get("adminMode")) : false;
-                String response = usersHandler.login(userName, password, adminMode);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = usersHandler.login(UUID.fromString(session_id),userName, password, adminMode);
                 headers.set("login", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -145,11 +147,16 @@ public class Controller {
             }
         });
 
+        //accept: {session_id:""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/logout", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                String response = usersHandler.logout();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = usersHandler.logout(UUID.fromString(session_id));
                 headers.set("logout", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {
@@ -183,7 +190,7 @@ public class Controller {
             }
         });
         //-----------------------------------------SearchHandler cases------------------------------------------
-        //accept: {name: "", category:"", keyWords:["", "", ""]}
+        //accept: {session_id: "",name: "", category:"", keyWords:["", "", ""]}
         //retrieve: [{name:"", price:"", store:"", description:""}, ..]  OR  ERROR
         server.createContext("/tradingSystem/search", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -194,11 +201,12 @@ public class Controller {
                 String name = (requestJson.containsKey("name")) ? (String) requestJson.get("name") : null;
                 String category = (requestJson.containsKey("category")) ? (String) requestJson.get("category") : null;
                 JSONArray keys = (requestJson.containsKey("keywords")) ? ((JSONArray) requestJson.get("keywords")) : new JSONArray();
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
                 String[] keywords = new String[keys.size()];
                 for (int i = 0; 0 < keys.size(); i++)
                     keywords[i] = (String) keys.get(i);
 
-                String response = searchHandler.searchProduct(name, category, keywords);
+                String response = searchHandler.searchProduct(UUID.fromString(session_id),name, category, keywords);
                 headers.set("search", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -211,7 +219,7 @@ public class Controller {
             }
         });
 
-        //accept: {maxPrice:Integer, minPrice:Integer, category:""}
+        //accept: {session_id: "", maxPrice:Integer, minPrice:Integer, category:""}
         //retrieve: [{name:"", price:"", store:"", description:""}, ..]  OR ERROR
         server.createContext("/tradingSystem/filter", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -222,8 +230,8 @@ public class Controller {
                 Integer maxPrice = (requestJson.containsKey("maxPrice")) && (!requestJson.get("maxPrice").toString().equals("")) ? Integer.parseInt(requestJson.get("maxPrice").toString()) : null;
                 Integer minPrice = (requestJson.containsKey("minPrice")) && (!requestJson.get("minPrice").toString().equals("")) ? Integer.parseInt(requestJson.get("minPrice").toString()) : null;
                 String category = (requestJson.containsKey("category")) ? (String) requestJson.get("category") : null;
-
-                String response = searchHandler.filterResults(minPrice, maxPrice, category);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = searchHandler.filterResults(UUID.fromString(session_id), minPrice, maxPrice, category);
                 headers.set("filter", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -238,7 +246,7 @@ public class Controller {
 
 
         //-----------------------------------------StoreHandler cases------------------------------------------
-        //accept: {store:"", description:""}
+        //accept: {session_id:"", store:"", description:""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/openNewStore", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -248,7 +256,8 @@ public class Controller {
                 JSONObject requestJson = (JSONObject)parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 String description = (requestJson.containsKey("description")) ? (String) requestJson.get("description") : null;
-                String response = storeHandler.openNewStore(storeName, description);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = storeHandler.openNewStore(UUID.fromString(session_id), storeName, description);
                 headers.set("openNewStore", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -261,7 +270,7 @@ public class Controller {
             }
         });
 
-        //accept: {user: "", store:""}
+        //accept: {session_id: "", user: "", store:""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addStoreOwner", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -272,7 +281,8 @@ public class Controller {
                 //JSONObject requestJson =  (JSONObject)parser.parse("{\"user\":\"noy\", \"store\":\"Pull&Bear\"}");
                 String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                String response = storeHandler.addStoreOwner(userName, storeName);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = storeHandler.addStoreOwner(UUID.fromString(session_id), userName, storeName);
                 headers.set("addStoreOwner", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -285,7 +295,7 @@ public class Controller {
             }
         });
 
-        //accept: {store:"", product: "", price:"", category:"", desc:"", amount:int}
+        //accept: {session_id:"", store:"", product: "", price:"", category:"", desc:"", amount:int}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/updateInventory", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -300,10 +310,11 @@ public class Controller {
                 String category = (requestJson.containsKey("category")) ? (String) requestJson.get("category") : null;
                 String desc = (requestJson.containsKey("desc")) ? (String) requestJson.get("desc") : null;
                 Integer amount = (requestJson.containsKey("amount")) && (!requestJson.get("amount").toString().equals("")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
 
 
 
-                String response = storeHandler.UpdateInventory(storeName, productName, price, category, desc, amount);
+                String response = storeHandler.UpdateInventory(UUID.fromString(session_id), storeName, productName, price, category, desc, amount);
 
                 headers.set("updateInventory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -409,11 +420,16 @@ public class Controller {
         });
 
         //-----------------------------------------ShoppingCartHandler cases------------------------------------------
+        //accept: {store: "", product:"", amount: ""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/cart", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                String response = cartHandler.viewCart();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = cartHandler.viewCart(UUID.fromString(session_id));
                 headers.set("viewCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {
@@ -424,7 +440,7 @@ public class Controller {
             }
         });
 
-        //accept: {store: "", product:"", amount: ""}
+        //accept: {session_id: "", store: "", product:"", amount: ""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/editCart", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -435,7 +451,8 @@ public class Controller {
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
                 String productName = (requestJson.containsKey("product")) ? ((String) requestJson.get("product")) : null;
                 int amount = (requestJson.containsKey("amount")) ? Integer.parseInt((String) requestJson.get("amount")) : null;
-                String response = cartHandler.editCart(storeName, productName, amount);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = cartHandler.editCart(UUID.fromString(session_id), storeName, productName, amount);
                 headers.set("editCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -448,7 +465,7 @@ public class Controller {
             }
         });
 
-        //accept: {store: "", product:"", amount: ""}
+        //accept: {session_id: "", store: "", product:"", amount: ""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addToShoppingBasket", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -459,7 +476,8 @@ public class Controller {
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
                 String productName = (requestJson.containsKey("product")) ? ((String) requestJson.get("product")) : null;
                 int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
-                String response = cartHandler.AddToShoppingBasket(storeName, productName, amount);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = cartHandler.AddToShoppingBasket(UUID.fromString(session_id), storeName, productName, amount);
                 headers.set("addToShoppingBasket", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -472,11 +490,16 @@ public class Controller {
             }
         });
 
+        //accept: {session_id: ""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/purchaseCart", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                String response = cartHandler.purchaseCart();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = cartHandler.purchaseCart(UUID.fromString(session_id));
                 headers.set("purchaseCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {
@@ -488,7 +511,7 @@ public class Controller {
         });
 
         //-----------------------------------------StoreManagerHandler cases------------------------------------------
-        //accept: {user: "", store:""}
+        //accept: {session_id: "", user: "", store:""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addStoreManager", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -498,7 +521,8 @@ public class Controller {
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
-                String response = storeManagerHandler.addStoreManager(userName, storeName);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = storeManagerHandler.addStoreManager(UUID.fromString(session_id), userName, storeName);
                 headers.set("addStoreManager", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -511,7 +535,7 @@ public class Controller {
             }
         });
 
-        //accept: {user: "", store:""}
+        //accept: {session_id: "", user: "", store:""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/removeStoreManager", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -521,7 +545,8 @@ public class Controller {
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
-                String response = storeManagerHandler.removeStoreManager(userName, storeName);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = storeManagerHandler.removeStoreManager(UUID.fromString(session_id), userName, storeName);
                 headers.set("removeStoreManager", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -534,7 +559,7 @@ public class Controller {
             }
         });
 
-        //accept: {user: "", store:"", permission: ["", "",..]}
+        //accept: {session_id: "", user: "", store:"", permission: ["", "",..]}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/editPermission", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -545,10 +570,11 @@ public class Controller {
                 String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
                 JSONArray perm = requestJson.containsKey("permission") ? (JSONArray) requestJson.get("permission") : new JSONArray();
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
                 List<String> permissions = new LinkedList<>();
                 for (int i = 0; i < perm.size(); i++)
                     permissions.add((String) perm.get(i));
-                String response = storeManagerHandler.editManagerPermissions(userName, permissions, storeName);
+                String response = storeManagerHandler.editManagerPermissions(UUID.fromString(session_id), userName, permissions, storeName);
                 headers.set("editPermissions", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -607,7 +633,7 @@ public class Controller {
             }
         });
         //-----------------------------------------PurchaseHistory cases------------------------------------------
-        //accept: {store:""}
+        //accept: {session_id: "", store:""}
         //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}],[{...},...]]  OR ERROR
         server.createContext("/tradingSystem/storePurchaseHistory", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -616,8 +642,9 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
 
-                String response = purchaseHistoryHandler.ViewPurchaseHistoryOfStore(storeName);
+                String response = purchaseHistoryHandler.ViewPurchaseHistoryOfStore(UUID.fromString(session_id), storeName);
 
                 headers.set("storePurchaseHistory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -631,7 +658,7 @@ public class Controller {
             }
         });
 
-        //accept: {store:""}
+        //accept: {session_id: "", store:""}
         //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}],[{...},...]]  OR ERROR
         server.createContext("/tradingSystem/storePurchaseHistoryAdmin", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -640,7 +667,8 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
-                String response = purchaseHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(storeName);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = purchaseHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(UUID.fromString(session_id), storeName);
                 headers.set("storePurchaseHistoryAdmin", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -653,11 +681,16 @@ public class Controller {
             }
         });
 
+        //accept: {session_id: ""}
         //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}, {...}], ...]  OR ERROR
         server.createContext("/tradingSystem/userPurchaseHistory", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
-                String response = purchaseHistoryHandler.viewLoggedInUserPurchaseHistory();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = purchaseHistoryHandler.viewLoggedInUserPurchaseHistory(UUID.fromString(session_id));
                 headers.set("userPurchaseHistory", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {
@@ -668,7 +701,7 @@ public class Controller {
             }
         });
 
-        //accept: {user:""}
+        //accept: {session_id:"", user:""}
         //retrieve: [[{name:"", price:Integer, store:"", amount:Integer}, ...], ...]  OR ERROR
         server.createContext("/tradingSystem/userPurchaseHistoryAdmin", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -677,7 +710,8 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
-                String response = purchaseHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(userName);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = purchaseHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(UUID.fromString(session_id), userName);
                 headers.set("usePurchaseHistoryAdmin", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -691,15 +725,25 @@ public class Controller {
         });
 
         //-----------------------------------------Other cases----------------------------------------------------
+        //accept: {session_id: ""}
         //retrieve: {name:"", type:"", options:["",..]}
         server.createContext("/tradingSystem/myStores", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
 
-                String response = storeHandler.getMyStores();
+                String response = storeHandler.getMyStores(UUID.fromString(session_id));
 
                 headers.set("myStores", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("myStores", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
@@ -732,14 +776,23 @@ public class Controller {
             }
         });
 
+        //accept: {session_id}
         //retrieve: {"", "", ...}
         server.createContext("/tradingSystem/isLoggedIn", he -> {
+            final Headers headers = he.getResponseHeaders();
             try {
-                final Headers headers = he.getResponseHeaders();
-                String response = usersHandler.isLoggedIn();
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = usersHandler.isLoggedIn(UUID.fromString(session_id));
                 headers.set("isLoggedIn", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
-
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("myStores", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
             } finally {
                 he.close();
             }
