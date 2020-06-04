@@ -7,6 +7,7 @@ import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class ClientWebSocket extends WebSocketServer {
 
@@ -30,6 +31,7 @@ public class ClientWebSocket extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+        conn.send("[\"shauli\",\"shauli\"]");
     }
 
     @Override

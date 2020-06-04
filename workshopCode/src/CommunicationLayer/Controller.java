@@ -100,6 +100,7 @@ public class Controller {
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/login", he -> {
             final Headers headers = he.getResponseHeaders();
+
             try {
                 //final String requestMethod = he.getRequestMethod();
                 byte[] requestByte = he.getRequestBody().readAllBytes();
