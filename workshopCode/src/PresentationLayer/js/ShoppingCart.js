@@ -2,7 +2,7 @@ const window_name = "ShoppingCart";
 document.addEventListener("DOMContentLoaded", function () {
     fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
         method: "POST",
-        body: JSON.stringify({session_id:this.localStorage["session_id"]})
+        body: JSON.stringify({session_id: localStorage["session_id"]})
     })
     .then(response=>response.json())
     .then(updateNavBar);
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
      fetch("http://localhost:8080/tradingSystem/cart", {
         method: "POST",
-        body: JSON.stringify({session_id:this.localStorage["session_id"]})
+        body: JSON.stringify({session_id: localStorage["session_id"]})
     })
          .then(response => response.json())
          .then(setItemsToCart)
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // TODO: send msg to server with the updated product item and get back the items in the cart (updated)
         fetch("http://localhost:8080/tradingSystem/editCart", {
             method: "POST",
-            body: JSON.stringify({session_id:this.localStorage["session_id"], store:storeNameUpdate, product:productNameUpdate, amount:quantityUpdate })
+            body: JSON.stringify({session_id: localStorage["session_id"], store:storeNameUpdate, product:productNameUpdate, amount:quantityUpdate })
         })
          .then(response => {
              if (response.ok) {
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
              if (responseMsg.SUCCESS) {
                 fetch("http://localhost:8080/tradingSystem/cart", {
                     method: "POST",
-                    body: JSON.stringify({session_id:this.localStorage["session_id"]})
+                    body: JSON.stringify({session_id: localStorage["session_id"]})
                 })
                          .then(response => response.json())
                          .then(setItemsToCart)
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("purchasebtn").addEventListener("click", function () {
          fetch("http://localhost:8080/tradingSystem/purchaseCart", {
             method: "POST",
-            body: JSON.stringify({session_id:this.localStorage["session_id"]})
+            body: JSON.stringify({session_id: localStorage["session_id"]})
         })
              .then(response => {
                 if (response.ok) {

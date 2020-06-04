@@ -19,7 +19,7 @@ public class SystemFacade {
         return ourInstance;
     }
 
-    private HashMap<UUID,Session> active_sessions;
+    private ConcurrentHashMap<UUID,Session> active_sessions;
     private ConcurrentHashMap<String, User> users;
     private ConcurrentHashMap<String, Store> stores;
     private List<User> adminsList;
@@ -27,7 +27,7 @@ public class SystemFacade {
     private ProductSupplyStub PS;
 
     private SystemFacade() {
-        active_sessions = new HashMap<>();
+        active_sessions = new ConcurrentHashMap<>();
         users = new ConcurrentHashMap<>();
         stores = new ConcurrentHashMap<>();
         adminsList = new ArrayList<>();
@@ -664,8 +664,8 @@ public class SystemFacade {
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
         JSONArray response = new JSONArray();
-        HashMap<Store, StoreOwning> ownings = se.getLoggedin_user().getStoreOwnings();
-        HashMap<Store, StoreManaging> managements = se.getLoggedin_user().getStoreManagements();
+        ConcurrentHashMap<Store, StoreOwning> ownings = se.getLoggedin_user().getStoreOwnings();
+        ConcurrentHashMap<Store, StoreManaging> managements = se.getLoggedin_user().getStoreManagements();
         if(!ownings.isEmpty()){
             for(Store s: ownings.keySet()){
                 JSONObject currStore = new JSONObject();

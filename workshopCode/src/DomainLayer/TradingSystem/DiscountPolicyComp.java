@@ -12,7 +12,6 @@ public class DiscountPolicyComp implements DiscountPolicy {
     private PolicyOperator operator;
 
     public DiscountPolicyComp(DiscountPolicy discount_operands1, DiscountPolicy discount_operands2, PolicyOperator operator){
-        //this.discountPerProduct = new HashMap<>();
         this.discount_operand1 = discount_operands1;
         this.discount_operand1 = discount_operands2;
         this.operator = operator;

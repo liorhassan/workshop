@@ -5,19 +5,20 @@ import DomainLayer.TradingSystem.StoreOwning;
 import DomainLayer.TradingSystem.UserPurchaseHistory;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class User {
 
-    private HashMap<Store, StoreManaging> storeManagements;
-    private HashMap<Store, StoreOwning> storeOwnings;
+    private ConcurrentHashMap<Store, StoreManaging> storeManagements;
+    private ConcurrentHashMap<Store, StoreOwning> storeOwnings;
     private ShoppingCart shoppingCart;
     private UserPurchaseHistory purchaseHistory;
     private String username;
 
     public User(){
         shoppingCart = new ShoppingCart(this);
-        storeManagements = new HashMap<>();
-        storeOwnings = new HashMap<>();
+        storeManagements = new ConcurrentHashMap<>();
+        storeOwnings = new ConcurrentHashMap<>();
         this.purchaseHistory = new UserPurchaseHistory(this);
     }
 
@@ -41,10 +42,10 @@ public class User {
         storeManagements.remove(store);
     }
 
-    public HashMap<Store, StoreOwning> getStoreOwnings() {
+    public ConcurrentHashMap<Store, StoreOwning> getStoreOwnings() {
         return storeOwnings;
     }
-    public HashMap<Store, StoreManaging> getStoreManagements() {
+    public ConcurrentHashMap<Store, StoreManaging> getStoreManagements() {
         return storeManagements;
     }
 

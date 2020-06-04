@@ -33,7 +33,7 @@ public class Session {
 
     public Session() {
         session_id = UUID.randomUUID();
-        loggedin_user = null;
+        loggedin_user = new User();
         lastSearchResult = null;
         adminMode = false;
     }

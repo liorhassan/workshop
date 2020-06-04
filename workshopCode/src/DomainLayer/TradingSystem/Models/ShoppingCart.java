@@ -7,16 +7,17 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ShoppingCart {
 
-    private HashMap<Store, Basket> baskets;
+    private ConcurrentHashMap<Store, Basket> baskets;
     private User user;
     private double cartTotalPrice;
 
     public ShoppingCart(User user) {
         this.user = user;
-        this.baskets = new HashMap<>();
+        this.baskets = new ConcurrentHashMap<>();
     }
 
     public void addProduct(String product, Store store, int amount){

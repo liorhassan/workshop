@@ -2,7 +2,7 @@ const window_name = "DiscountView";
 document.addEventListener("DOMContentLoaded", function () {
     fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
         method: "POST",
-        body: JSON.stringify({session_id:this.localStorage["session_id"]})
+        body: JSON.stringify({session_id: localStorage["session_id"]})
     })
     .then(response=>response.json())
     .then(updateNavBar);
