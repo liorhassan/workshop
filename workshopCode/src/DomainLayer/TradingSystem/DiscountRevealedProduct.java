@@ -32,8 +32,10 @@ public class DiscountRevealedProduct  extends DiscountSimple{
 
     @Override
     public boolean canGet(Basket basket) {
-        if(basket.getProductItems().contains(product))
-            return true;
+        for(ProductItem pi: basket.getProductItems()) {
+            if (pi.getProduct().equals(product))
+                return true;
+        }
         return false;
     }
 

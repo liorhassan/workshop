@@ -125,24 +125,27 @@ public class UC2_8 {
     @Test
     public void revealedDiscountForProduct() {
         (new UsersHandler()).login("toya", "1234", false);
-        (new StoreHandler()).addDiscountForProduct("Lalin", "Body Scrub musk", 10, 0, true);
+        (new StoreHandler()).addDiscountRevealedProduct("Lalin","Body Scrub musk", 50 );
         shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
         String result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("50.0", result);
         shoppingCartHandler.purchaseCart();
-        assertEquals("90", result);
         (new UsersHandler()).logout();
     }
 
     @Test
     public void conditionalDiscountForProduct() {
         (new UsersHandler()).login("toya", "1234", false);
-        (new StoreHandler()).addDiscountForProduct("Lalin", "Body Scrub musk", 10, 3, true);
+        (new StoreHandler()).addDiscountCondProductAmount("Lalin","Body Scrub musk", 50,2);
         shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
+
         String result = shoppingCartHandler.getCartTotalPrice();
-        assertEquals("100", result);
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 1);
+        assertEquals("100.0", result);
+        shoppingCartHandler.purchaseCart();
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 3);
+
         result = shoppingCartHandler.getCartTotalPrice();
-        assertEquals("135", result);
+        assertEquals("125.0", result);
         shoppingCartHandler.purchaseCart();
         (new UsersHandler()).logout();
     }
@@ -151,20 +154,24 @@ public class UC2_8 {
     @Test
     public void onCostDiscountForBasket() {
         (new UsersHandler()).login("toya", "1234", false);
-        (new StoreHandler()).addDiscountForBasket("Lalin",  10, 100, true);
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 1);
+        (new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 100, true);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 3);
         String result = shoppingCartHandler.getCartTotalPrice();
-        assertEquals("50", result);
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
+        assertEquals("135.0", result);
+        shoppingCartHandler.purchaseCart();
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 1);
+
         result = shoppingCartHandler.getCartTotalPrice();
-        assertEquals("120", result);
+        assertEquals("50.0", result);
+        shoppingCartHandler.purchaseCart();
         (new UsersHandler()).logout();
     }
+
 
     @Test
     public void onProductAmountDiscountForBasket() {
         (new UsersHandler()).login("toya", "1234", false);
-        (new StoreHandler()).addDiscountForBasket("Lalin",  10, 2, false);
+        (new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
         shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 1);
         String result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("50", result);

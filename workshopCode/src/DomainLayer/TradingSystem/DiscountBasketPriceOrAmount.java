@@ -65,7 +65,9 @@ public class DiscountBasketPriceOrAmount extends DiscountSimple {
     }
 
     public double calc(Basket basket){
-        double newPrice = (basket.getPrice() - (basket.getPrice() * (discount/100)));
+        double per = discount/100.0;
+        double disc = (basket.getPrice() * (discount/100.0));
+        double newPrice = basket.getPrice() - disc ;
         return newPrice;
     }
 

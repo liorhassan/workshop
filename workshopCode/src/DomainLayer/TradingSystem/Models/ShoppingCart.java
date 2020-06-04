@@ -158,6 +158,7 @@ public class ShoppingCart {
     }
 
     public double getTotalCartPrice(){
+        computeCartPrice();
         return this.cartTotalPrice;
     }
 

@@ -6,7 +6,7 @@ import DomainLayer.TradingSystem.Models.Product;
 public class PurchasePolicyProduct implements PurchasePolicy {
     private String productName;
     private int amount;
-    boolean minOrmax;
+    private boolean minOrmax;
 
 
     public PurchasePolicyProduct(String productName, int amount, boolean minOrmax) {

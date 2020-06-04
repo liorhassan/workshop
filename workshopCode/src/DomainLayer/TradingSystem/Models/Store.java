@@ -339,6 +339,10 @@ public class Store {
         discountPolicies.add(discountPolicy);
     }
 
+    public void addPurchasePolicy(PurchasePolicy purchasePolicy){
+        purchasePolicies.add(purchasePolicy);
+    }
+
     public String viewDiscount(){
         JSONArray discountsdes = new JSONArray();
         for(DiscountBInterface dis :discountsOnProducts){

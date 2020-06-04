@@ -356,26 +356,26 @@ public class Controller {
                     if(subtype.equals("onProductsAmount")) {
                         int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
                         int discount = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                        response = storeHandler.addDiscountForBasket(storeName, discount, amount, false);
+                //        response = storeHandler.addDiscountForBasket(storeName, discount, amount, false);
                     }
                     else{
                         int price = (requestJson.containsKey("price")) ? Integer.parseInt( requestJson.get("price").toString()): null;
                         int discount = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                        response = storeHandler.addDiscountForBasket(storeName, discount, price, false);
+                //        response = storeHandler.addDiscountForBasket(storeName, discount, price, false);
                     }
                 }
                 else{
                     if(subtype.equals("revealed")) {
                         String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
                         int percent = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                        response = storeHandler.addDiscountForProduct(storeName, productName, percent, 0, true);
+                //        response = storeHandler.addDiscountForProduct(storeName, productName, percent, 0, true);
                     }
                     else{
                         String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
                         int percent = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
                         int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
                         boolean onAll = (requestJson.containsKey("onProducts")) ? Boolean.parseBoolean(requestJson.get("onProducts").toString()): null;
-                        response = storeHandler.addDiscountForProduct(storeName, productName, percent, amount, onAll);
+                //        response = storeHandler.addDiscountForProduct(storeName, productName, percent, amount, onAll);
                     }
                 }
 

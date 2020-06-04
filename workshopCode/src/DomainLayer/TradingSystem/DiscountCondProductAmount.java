@@ -63,7 +63,7 @@ public class DiscountCondProductAmount extends DiscountSimple{
         double sum = 0;
         for(int i = amount; i>0; i--){
             if( i%(minAmount+1) == 0 ){
-                sum = sum + (discountProduct.getPrice() - (discountProduct.getPrice() * (discount/100)));
+                sum = sum + (discountProduct.getPrice() - (discountProduct.getPrice() * (discount/100.0)));
             }
             else{
                 sum = sum + discountProduct.getPrice();

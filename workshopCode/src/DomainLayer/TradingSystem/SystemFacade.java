@@ -732,6 +732,81 @@ public class SystemFacade {
         }
     }
 
+
+    public PurchasePolicy buildPurchasePolicy(JSONObject policy, Store store) {
+        PurchasePolicy newPolicy = null;
+        String type = (policy.containsKey("type")) ? ((String) policy.get("type")) : null;
+        if(type.equals("compose")) {
+            String operatorStr = (policy.containsKey("operator")) ? ((String) policy.get("operator")) : null;
+            PolicyOperator operator = parseOperator(operatorStr);
+            if (operator != null) {
+                JSONObject operand1 = (policy.containsKey("operand1")) ? ((JSONObject) policy.get("operand1")) : null;
+                JSONObject operand2 = (policy.containsKey("operand2")) ? ((JSONObject) policy.get("operand2")) : null;
+                newPolicy = new PurchasePolicyComp(buildPurchasePolicy(operand1, store), buildPurchasePolicy(operand2, store), operator);
+            } else
+                throw new IllegalArgumentException("store doesnt exist");
+        }
+
+
+        else if(type.equals("PurchasePolicyProduct")){
+            String productName = (policy.containsKey("productName")) ? ((String) policy.get("productName")) : null;
+            if(checkIfProductExists(store.getName(), productName)){
+                throw new IllegalArgumentException(" this product " + productName + "does not exist in store");
+            }
+            Product p = store.getProductByName(productName);
+            Integer amount = (policy.containsKey("amount:")) ? ((int) policy.get("amount")) : null;
+            if(amount == null)
+                throw new IllegalArgumentException("invalid - no amount");
+            Boolean minOrMax = (policy.containsKey("minOrMax:")) ? ((boolean) policy.get("minOrMax")) : null;
+            if(minOrMax == null)
+                throw new IllegalArgumentException("invalid - no minOrMax");
+
+            newPolicy = new PurchasePolicyProduct(productName, amount, minOrMax);
+        }
+
+        else if(type.equals("PurchasePolicyStore")){
+
+            Integer limit = (policy.containsKey("limit:")) ? ((int) policy.get("limit")) : null;
+            if(limit == null)
+                throw new IllegalArgumentException("invalid - no limit");
+            Boolean minOrMax = (policy.containsKey("minOrMax:")) ? ((boolean) policy.get("minOrMax")) : null;
+            if(minOrMax == null)
+                throw new IllegalArgumentException("invalid - no minOrMax");
+
+            newPolicy = new PurchasePolicyStore( limit, minOrMax);
+        }
+
+        return newPolicy;
+
+    }
+
+
+    public String addPurchasePolicy(String jsonString) {
+        try {
+            JSONParser parser = new JSONParser();
+            JSONObject requestJson = (JSONObject) parser.parse(jsonString);
+            String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+            String[] args = {storeName};
+            Store store = getStoreByName(storeName);
+            if(emptyString(args) || getStoreByName(storeName) == null){
+                throw new IllegalArgumentException("store doesnt exist");
+            }
+            PurchasePolicy  purchasePolicy = buildPurchasePolicy(requestJson, store);
+            if(purchasePolicy == null){
+                throw new IllegalArgumentException("cant add the purchase policy");
+            }
+            else{
+                store.addPurchasePolicy(purchasePolicy);
+            }
+            return "the discount policy added successfully";
+
+        }
+        catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+
     public String checkAmountInInventory(String productName, String storeName) {
         Store s = getStoreByName(storeName);
         if(s != null) {
