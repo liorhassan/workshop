@@ -4,6 +4,7 @@ import DataAccessLayer.PersistenceController;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 
 public class Inventory {
 
@@ -68,7 +69,12 @@ public class Inventory {
         PersistenceController.update(p);
     }
 
-    public void init() {
-        PersistenceController.
+    public void init(String storeName) {
+
+        List<Product> storeProducts = PersistenceController.readAllProducts(storeName,true);
+        for(int i = 0; i < storeProducts.size(); i++) {
+            Product p = storeProducts.get(i);
+            this.products.put(p, p.getQuantity());
+        }
     }
 }

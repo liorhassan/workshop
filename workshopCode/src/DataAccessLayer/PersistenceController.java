@@ -103,8 +103,10 @@ public class PersistenceController {
         }
     }
 
-    public static List<Object> readAll(String tableName, String[][] conds, String className, Class hara) {
-        List<Object> data = null;
+    //byStore = false --> retrieve all products in the database
+    //byStore = true --> retrieve all products that belong to the store
+    public static List<Product> readAllProducts(String storeName, boolean byStore) {
+        List<Product> data = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
         Transaction transaction = null;
@@ -112,22 +114,13 @@ public class PersistenceController {
             // Begin a transaction
             transaction = session.beginTransaction();
             CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Product> cr = cb.createQuery(Product.class);
+            Root<Product> root = cr.from(Product.class);
+            if(byStore)
+                cr.select(root).where(cb.equal(root.get("product_storeName"), storeName));
+            Query<Product> query = session.createQuery(cr);
+            data = query.getResultList();
 
-            switch (className) {
-                case "Product":
-
-//                    CriteriaQuery<hara> cr = cb.createQuery(Product.class);
-//                    Root<Product> root = cr.from(Product.class);
-                    for(int i = 0; i < conds.length; i++){
-//                        cr.select(root).where(cb.equal(root.get(conds[i][0]), conds[i][1]));
-                    }
-
-//                    Query<Product> query = session.createQuery(cr);
-//                    List<Product> results = query.getResultList();
-                    break;
-                default:
-                    throw new IllegalArgumentException("readAll function call with wrong ckass name");
-            }
 
             // Commit the transaction
             transaction.commit();

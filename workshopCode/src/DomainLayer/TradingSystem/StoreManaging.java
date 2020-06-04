@@ -5,6 +5,7 @@ import DomainLayer.TradingSystem.Models.User;
 import java.util.LinkedList;
 import java.util.List;
 
+
 public class StoreManaging {
 
     User appointer;

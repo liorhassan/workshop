@@ -5,26 +5,36 @@ import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
+@Entity
+@Table(name = "stores")
 public class Store implements Serializable {
 
     private Inventory inventory;
+
+    @Id
+    @Column(name = "store_name", unique = true)
     private String name;
+
+    @Column(name = "store_description")
+    private String description;
+
+    @Transient
+    private User storeFirstOwner;
+
     private HashMap<User, StoreManaging> managements;
     private HashMap<User, StoreOwning> ownerships;
-    private String description;
-    private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
+
     private List<DiscountPolicy> discountPolicies;
+
 
     private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
     private List<DiscountBInterface> discountsOnBaskets;
     private List<PurchasePolicy> purchasePolicies;
-
-    @Transient
     private HashMap<Basket, List<ProductItem>> reservedProducts;
     private int discountID_counter;
 
@@ -33,7 +43,7 @@ public class Store implements Serializable {
         this.description = description;
         this.storeFirstOwner = firstOwner;
         this.inventory = new Inventory();
-        inventory.init();
+        inventory.init(name);
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
