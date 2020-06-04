@@ -36,6 +36,13 @@ public class PersistenceController {
         // TODO: add here all consistent objects
         config.addAnnotatedClass(Product.class);
         config.addAnnotatedClass(Store.class);
+        config.addAnnotatedClass(User.class);
+        config.addAnnotatedClass(ShoppingCart.class);
+        config.addAnnotatedClass(Basket.class);
+        config.addAnnotatedClass(ProductItem.class);
+        config.addAnnotatedClass(Purchase.class);
+        config.addAnnotatedClass(StoreManaging.class);
+        config.addAnnotatedClass(StoreOwning.class);
 
         // Configure using the application resource named hibernate.cfg.xml.
         config.configure();
@@ -206,7 +213,6 @@ public class PersistenceController {
             transaction = session.beginTransaction();
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<Store> cr = cb.createQuery(Store.class);
-            Root<Store> root = cr.from(Store.class);
             Query<Store> query = session.createQuery(cr);
             stores = query.getResultList();
 
@@ -405,7 +411,7 @@ public class PersistenceController {
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<Basket> cr = cb.createQuery(Basket.class);
             Root<Basket> root = cr.from(Basket.class);
-            cr.select(root).where(cb.equal(root.get("cart"), Cartid));
+            cr.select(root).where(cb.equal(root.get("sc"), Cartid));
             Query<Basket> query = session.createQuery(cr);
             baskets = query.getResultList();
 

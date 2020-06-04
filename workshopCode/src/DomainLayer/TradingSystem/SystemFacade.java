@@ -29,6 +29,15 @@ public class SystemFacade {
     private ProductSupplyStub PS;
 
     private SystemFacade() {
+        User u = new User();
+        u.setUsername("noy");
+        Store s = new Store("Lalin", "blabla", u, new StoreOwning("Lalin", "noy"));
+        s.addToInventory("soap", 1, Category.Clothing, "blabla", 5);
+        u.getShoppingCart().addProduct("soap", s, 5);
+        PersistenceController.create(u);
+        PersistenceController.create(s);
+        PersistenceController.create(u.getShoppingCart());
+
         initSubscribedUsers();
         initStores();
         adminsList = new ArrayList<>();
@@ -107,6 +116,9 @@ public class SystemFacade {
         User newUser = new User();
         newUser.setUsername(username);
         users.put(username, newUser);
+
+        //save to DB
+        PersistenceController.create(newUser);
     }
 
     //help function for register use case
@@ -215,6 +227,7 @@ public class SystemFacade {
 
         // save data to db
         PersistenceController.update(activeUser.getShoppingCart());
+        PersistenceController.update(activeUser);
 
         activeUser = new User();
         NotificationSystem.getInstance().dettach(this.activeUser.getUsername());

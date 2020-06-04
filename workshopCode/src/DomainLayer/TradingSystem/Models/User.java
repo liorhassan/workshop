@@ -27,7 +27,7 @@ public class User implements Serializable {
     private UserPurchaseHistory purchaseHistory;
 
     @Id
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     public User() {

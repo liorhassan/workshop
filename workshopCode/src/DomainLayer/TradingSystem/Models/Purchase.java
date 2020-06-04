@@ -14,8 +14,9 @@ public class Purchase implements Serializable {
     @GeneratedValue
     private int id;
 
-    @OneToOne
-    @JoinColumn(name = "cart", referencedColumnName = "id")
+//    @OneToOne
+//    @JoinColumn(name = "cart")
+    @JoinColumn(name = "shoppingCart", referencedColumnName = "id")
     private ShoppingCart shoppingCart;
 
     @Column(name = "ownerName")

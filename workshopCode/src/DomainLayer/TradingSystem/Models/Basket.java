@@ -6,27 +6,30 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 
 @Entity
 @Table(name = "baskets")
-public class Basket {
+public class Basket implements Serializable {
 
     @Id
     @Column(name="id")
     @GeneratedValue
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "storename", referencedColumnName = "name")
+//    @ManyToOne
+    @JoinColumn(name = "store", referencedColumnName = "name")
     private Store store;
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "cart", referencedColumnName = "id")
+
+//    @ManyToOne
+//@JoinColumn(name = "cart")
+    @JoinColumn(name = "sc", referencedColumnName = "id")
     private ShoppingCart sc;
 
+    @Transient
     private List<ProductItem> productItems;
 
     public Basket(Store store, ShoppingCart sc) {

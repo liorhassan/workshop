@@ -23,6 +23,7 @@ public class StoreOwning implements Serializable {
     @Column(name = "appointeeName")
     private String appointeeName;
 
+    @Transient
     private List<Permission> permissions;
 
     // first owner constructor

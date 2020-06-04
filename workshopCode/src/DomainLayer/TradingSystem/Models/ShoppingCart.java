@@ -8,19 +8,20 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.HashMap;
 
 @Entity
 @Table(name = "shoppingCarts")
-public class ShoppingCart {
+public class ShoppingCart implements Serializable {
 
     @Id
     @Column(name="id")
     @GeneratedValue
     private int id;
 
-
+    @Transient
     private HashMap<Store, Basket> baskets;
 
     @JoinColumn(name="user", referencedColumnName = "username")
@@ -29,6 +30,7 @@ public class ShoppingCart {
     @Column(name = "isHistory")
     private boolean isHistory;
 
+    @Transient
     private double cartTotalPrice;
 
     public ShoppingCart(User user) {

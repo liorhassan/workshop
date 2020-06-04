@@ -7,20 +7,23 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "prosuctItems")
+@Table(name = "productItems")
 public class ProductItem implements Serializable {
 
+
     @Id
-    @ManyToOne
-    @JoinColumn(name = "productName", referencedColumnName = "name")
+    @Column(name="id")
+    @GeneratedValue
+    private int id;
+
+    //    @JoinColumn(name = "product")
+    @JoinColumn(name = "product", referencedColumnName = "name")
     private Product product;
 
     @Column(name = "amount")
     private int amount;
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "basket", referencedColumnName = "id")
+    @JoinColumn(name = "basket")
     private Basket basket;
 
 
