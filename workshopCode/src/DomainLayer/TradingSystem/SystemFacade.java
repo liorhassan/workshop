@@ -1,6 +1,7 @@
 package DomainLayer.TradingSystem;
 
 
+import DataAccessLayer.PersistenceController;
 import ExternalSystems.PaymentCollectionStub;
 import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
@@ -28,7 +29,7 @@ public class SystemFacade {
     private ProductSupplyStub PS;
 
     private SystemFacade() {
-        users = new HashMap<>();
+        initSubscribedUsers();
         stores = new HashMap<>();
         adminsList = new ArrayList<>();
         activeUser = new User();  //guest
@@ -40,6 +41,18 @@ public class SystemFacade {
         SecurityFacade.getInstance().addUser("Admin159", "951");
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
+    }
+
+    private void initSubscribedUsers() {
+        users = new HashMap<>();
+        List<User> allSubscribedUsers = PersistenceController.readAllUsers();
+
+        for (User user: allSubscribedUsers) {
+            users.put(user.getUsername(), user);
+
+            user.initCart();
+            // TODO: init manages and owns
+        }
     }
 
     public User getUserByName(String username) {
@@ -191,6 +204,10 @@ public class SystemFacade {
 
     //function for handling UseCase 3.1
     public String logout(){
+
+        // save data to db
+        PersistenceController.update(activeUser.getShoppingCart());
+
         activeUser = new User();
         NotificationSystem.getInstance().dettach(this.activeUser.getUsername());
         return "You have been successfully logged out!";
@@ -267,9 +284,12 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreManaging managing = new StoreManaging(activeUser);
+        StoreManaging managing = new StoreManaging(activeUser, storeName, username);
         store.addManager(appointed_user, managing);
         appointed_user.addManagedStore(store, managing);
+
+        // save to db
+        PersistenceController.create(managing);
 
         return "Username has been added as one of the store managers successfully";
     }
@@ -444,6 +464,8 @@ public class SystemFacade {
     public void addPurchaseToHistory() {
         ShoppingCart sc = activeUser.getShoppingCart();
 
+        sc.setIsHistory();
+
         //handle User-Purchase-History
         Purchase newPurchase = new Purchase(sc);
         activeUser.addPurchaseToHistory(newPurchase);
@@ -457,6 +479,11 @@ public class SystemFacade {
         //finally - empty the shopping cart
         activeUser.emptyCart();
 
+        // update cart state
+        PersistenceController.update(sc);
+
+        // update db
+        PersistenceController.create(newPurchase);
     }
 
 

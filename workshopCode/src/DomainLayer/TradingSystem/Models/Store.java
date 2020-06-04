@@ -9,33 +9,49 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
-//@Entity
-//@Table(name = "stores")
+@Entity
+@Table(name = "stores")
 public class Store implements Serializable {
 
+    @Transient
     private Inventory inventory;
 
-//    @Id
-//    @Column(name = "store_name", unique = true)
+    @Id
+    @Column(name = "store_name", unique = true)
     private String name;
 
-//    @Column(name = "store_description")
+    @Column(name = "store_description")
     private String description;
 
-//    @Transient
+    @ManyToOne
+    @JoinColumn(name = "firstOwner", referencedColumnName = "username")
     private User storeFirstOwner;
 
+    @Transient
     private HashMap<User, StoreManaging> managements;
+
+    @Transient
     private HashMap<User, StoreOwning> ownerships;
+
+    @Transient
     private StorePurchaseHistory purchaseHistory;
 
+    @Transient
+    private HashMap<Basket, List<ProductItem>> reservedProducts;
+
+    @Transient
     private List<DiscountPolicy> discountPolicies;
 
-
+    @Transient
     private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
+
+    @Transient
     private List<DiscountBInterface> discountsOnBaskets;
+
+    @Transient
     private List<PurchasePolicy> purchasePolicies;
-    private HashMap<Basket, List<ProductItem>> reservedProducts;
+
+    @Transient
     private int discountID_counter;
 
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
@@ -44,16 +60,38 @@ public class Store implements Serializable {
         this.storeFirstOwner = firstOwner;
         this.inventory = new Inventory();
         inventory.init(name);
-        this.managements = new HashMap<>();
-        this.ownerships = new HashMap<>();
-        this.purchaseHistory = new StorePurchaseHistory(this);
+        initManagments();
+        initOwnerships();
         this.ownerships.put(firstOwner, owning);
+        this.purchaseHistory = new StorePurchaseHistory(this);
         this.discountPolicies = new ArrayList<>();
         this.discountsOnBaskets = new ArrayList<>();
         this.discountsOnProducts = new HashMap<>();
         this.purchasePolicies = new ArrayList<>();
-        this.reservedProducts= new HashMap<>();
+        this.reservedProducts = new HashMap<>();
         this.discountID_counter = 0;
+    }
+
+    private void initManagments() {
+        this.managements = new HashMap<>();
+        List<StoreManaging> sm = PersistenceController.readAllManagers(this.name);
+        User currUser;
+        for (StoreManaging s: sm){
+            currUser = SystemFacade.getInstance().getUserByName(s.getAppointeeName());
+            managements.put(currUser, s);
+            currUser.addManagedStore(this, s);
+        }
+    }
+
+    public void initOwnerships() {
+        this.ownerships = new HashMap<>();
+        List<StoreOwning> so = PersistenceController.readAllOwners(this.name);
+        User currUser;
+        for (StoreOwning s:so){
+            currUser = SystemFacade.getInstance().getUserByName(s.getAppointeeName());
+            ownerships.put(currUser, s);
+            currUser.addOwnedStore(this, s);
+        }
     }
 
     public User getStoreFirstOwner() {
@@ -67,21 +105,21 @@ public class Store implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
     public HashMap<Product, DiscountBaseProduct> getDiscountsOnProducts() {
         return discountsOnProducts;
     }
 
-    public Collection<Product> getProducts(){
-        return  inventory.getProducts().keySet();
+    public Collection<Product> getProducts() {
+        return inventory.getProducts().keySet();
     }
-
 
 
     public HashMap<Product, Integer> getInventory() {
         return inventory.getProducts();
     }
 
-    public DiscountBInterface getDiscountById(int discountId){
+    public DiscountBInterface getDiscountById(int discountId) {
         for (DiscountBInterface dis : discountsOnProducts.values()) {
             if (dis.getDiscountID() == discountId)
                 return dis;
@@ -92,7 +130,6 @@ public class Store implements Serializable {
         }
         return null;
     }
-
 
 
     public boolean isOwner(User user) {
@@ -106,7 +143,7 @@ public class Store implements Serializable {
     public User getAppointer(User user) {
         User appointer = null;
         StoreManaging manage = managements.get(user);
-        if(manage != null)
+        if (manage != null)
             appointer = manage.getAppointer();
         return appointer;
 
@@ -120,14 +157,14 @@ public class Store implements Serializable {
     }
 
     public boolean hasProduct(String productName) {
-        for (Product p : inventory.getProducts().keySet()){
+        for (Product p : inventory.getProducts().keySet()) {
             if (p.getName().equals(productName))
                 return true;
         }
         return false;
     }
 
-    public Inventory getProductsInventory(){
+    public Inventory getProductsInventory() {
         return this.inventory;
     }
 
@@ -140,7 +177,7 @@ public class Store implements Serializable {
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        for (Product p : inventory.getProducts().keySet()){
+        for (Product p : inventory.getProducts().keySet()) {
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
@@ -165,7 +202,7 @@ public class Store implements Serializable {
         this.managements = managements;
     }
 
-    public void addManager(User user, StoreManaging storeManaging){
+    public void addManager(User user, StoreManaging storeManaging) {
         if (!managements.containsKey(user)) {
             managements.put(user, storeManaging);
             NotificationSystem.getInstance().notify(user.getUsername(), "You have been appointed as " + name + "'s store manager");
@@ -181,70 +218,68 @@ public class Store implements Serializable {
     }
 
 
-
     //for each inventory in the basket - checks if the product meets the purchase policy requirements
     //if it does - reserve the product and adds it to the reserved inventory list
-    public void reserveBasket(Basket b){
+    public void reserveBasket(Basket b) {
         //this field save all the inventory that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
-        for(PurchasePolicy p : purchasePolicies){
-            if(!p.purchaseAccordingToPolicy(b))
+        for (PurchasePolicy p : purchasePolicies) {
+            if (!p.purchaseAccordingToPolicy(b))
                 throw new RuntimeException("Your purchase doesn’t match the store’s policy");
         }
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {
             Product p = pi.getProduct();
             int amount = pi.getAmount();
-            if(!this.inventory.reserveProduct(p, amount)){
+            if (!this.inventory.reserveProduct(p, amount)) {
                 throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
             }
             this.reservedProducts.get(b).add(pi);
         }
     }
 
-    public List<ProductItem> getReservedProducts(Basket b){
+    public List<ProductItem> getReservedProducts(Basket b) {
         return this.reservedProducts.get(b);
     }
 
-    public void unreserveBasket(Basket b){
-        for(ProductItem pi: this.reservedProducts.get(b)){
+    public void unreserveBasket(Basket b) {
+        for (ProductItem pi : this.reservedProducts.get(b)) {
             this.inventory.unreserveProduct(pi.getProduct(), pi.getAmount());
         }
     }
 
-    public double calculateTotalCheck(Basket b, List<DiscountBInterface> discounts){
+    public double calculateTotalCheck(Basket b, List<DiscountBInterface> discounts) {
         double total = 0;
-        if(discounts.size()>0) {
+        if (discounts.size() > 0) {
             for (ProductItem pi : b.getProductItems()) {
                 boolean found = false;
                 for (DiscountBInterface disc : discounts) {
-                    if (disc instanceof DiscountBaseProduct){
-                        if(((DiscountBaseProduct) disc).getProductName().equals(pi.getProduct().getName())){
+                    if (disc instanceof DiscountBaseProduct) {
+                        if (((DiscountBaseProduct) disc).getProductName().equals(pi.getProduct().getName())) {
                             total = total + disc.calc(b, pi.getProduct().getPrice());
                             discounts.remove(disc);
                             found = true;
                         }
                     }
                 }
-                if(!found){
+                if (!found) {
                     total = total + pi.getAmount() * pi.getProduct().getPrice();
                 }
             }
-            if(discounts.size()> 0){
-                for(DiscountBInterface disc : discounts){
-                    if(disc.canGet(total)) {
+            if (discounts.size() > 0) {
+                for (DiscountBInterface disc : discounts) {
+                    if (disc.canGet(total)) {
                         total = disc.calc(b, total);
                     }
                 }
             }
-        }
-        else{
+        } else {
             total = b.calcPrice();
         }
 
-        for(DiscountBInterface dis :discountsOnBaskets){
-            if(!discounts.contains(dis)){
-                    total = dis.calc(b, total);
+        for (DiscountBInterface dis : discountsOnBaskets) {
+            if (!discounts.contains(dis)) {
+                total = dis.calc(b, total);
             }
         }
 
@@ -252,50 +287,52 @@ public class Store implements Serializable {
     }
 
 
-    public void addStorePurchaseHistory(Basket b, User u){
+    public void addStorePurchaseHistory(Basket b, User u) {
         Purchase p = new Purchase(b, u);
         p.getPurchasedProducts().computeCartPrice();
         this.purchaseHistory.addPurchase(p);
+
+        // save to db
+        PersistenceController.create(p);
     }
 
 
-
-    public StorePurchaseHistory getPurchaseHistory(){
+    public StorePurchaseHistory getPurchaseHistory() {
         return this.purchaseHistory;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return this.description;
     }
 
 
-    public void addDiscountForProduct(String productName, int percentage, int limit, boolean onAll){
+    public void addDiscountForProduct(String productName, int percentage, int limit, boolean onAll) {
         Product p = this.inventory.getProductByName(productName);
-        if(p != null)
+        if (p != null)
             discountsOnProducts.put(p, new DiscountBaseProduct(discountID_counter, productName, limit, percentage, onAll));
-        discountID_counter ++;
+        discountID_counter++;
     }
 
-    public void addDiscountForBasket(int percentage, int limit, boolean onprice){
+    public void addDiscountForBasket(int percentage, int limit, boolean onprice) {
 
         discountsOnBaskets.add(new DiscountBaseBasket(discountID_counter, limit, percentage, onprice));
-        discountID_counter ++;
+        discountID_counter++;
 
     }
 
-    public void addDiscountPolicy(DiscountPolicy discountPolicy){
+    public void addDiscountPolicy(DiscountPolicy discountPolicy) {
         discountPolicies.add(discountPolicy);
     }
 
-    public String viewDiscount(){
+    public String viewDiscount() {
         JSONArray discountsdes = new JSONArray();
-        for(DiscountBInterface dis :discountsOnBaskets){
+        for (DiscountBInterface dis : discountsOnBaskets) {
             JSONObject curr = new JSONObject();
             curr.put("discountId", dis.getDiscountID());
             curr.put("discountString", dis.discountDescription());
             discountsdes.add(curr);
         }
-        for(DiscountBInterface dis :discountsOnProducts.values()){
+        for (DiscountBInterface dis : discountsOnProducts.values()) {
             JSONObject curr = new JSONObject();
             curr.put("discountId", dis.getDiscountID());
             curr.put("discountString", dis.discountDescription());
@@ -305,13 +342,13 @@ public class Store implements Serializable {
     }
 
 
-    public List<DiscountBInterface> getDiscountsOnBasket(Basket basket){
+    public List<DiscountBInterface> getDiscountsOnBasket(Basket basket) {
         List<DiscountBInterface> output = new ArrayList<>();
-        for(DiscountBaseProduct dis : discountsOnProducts.values()){
-            if(dis.canGet(basket.getProductAmount(dis.getProductName())))
+        for (DiscountBaseProduct dis : discountsOnProducts.values()) {
+            if (dis.canGet(basket.getProductAmount(dis.getProductName())))
                 output.add(dis);
         }
-        for(DiscountPolicy disP : discountPolicies){
+        for (DiscountPolicy disP : discountPolicies) {
             output = disP.checkDiscounts(output, basket);
         }
         return output;
@@ -319,19 +356,19 @@ public class Store implements Serializable {
 
     public void notifyOwners(Basket b, String userName) {
         String msg = userName + " bought some products from the store " + name + " you own: ";
-        for(ProductItem pi: b.getProductItems()) {
+        for (ProductItem pi : b.getProductItems()) {
             msg += pi.getProduct().getName() + ", ";
         }
         msg.substring(0, msg.length() - 2);
         msg += ".";
-        for(User u: ownerships.keySet()) {
+        for (User u : ownerships.keySet()) {
             NotificationSystem.getInstance().notify(u.getUsername(), msg);
         }
     }
 
-    public JSONArray getAllProducts(){
+    public JSONArray getAllProducts() {
         JSONArray products = new JSONArray();
-        for(Product p: getInventory().keySet()) {
+        for (Product p : getInventory().keySet()) {
             JSONObject curr = new JSONObject();
             curr.put("name", p.getName());
             curr.put("price", p.getPrice());
@@ -343,9 +380,9 @@ public class Store implements Serializable {
         return products;
     }
 
-    public String getProductsJS(){
+    public String getProductsJS() {
         JSONArray products = new JSONArray();
-        for(Product p: getInventory().keySet()) {
+        for (Product p : getInventory().keySet()) {
             JSONObject curr = new JSONObject();
             curr.put("name", p.getName());
             curr.put("description", p.getDescription());

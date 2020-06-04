@@ -1,20 +1,34 @@
 package DomainLayer.TradingSystem.Models;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.StoreManaging;
 import DomainLayer.TradingSystem.StoreOwning;
 import DomainLayer.TradingSystem.UserPurchaseHistory;
 
+import javax.persistence.*;
 import java.util.HashMap;
 
+@Entity
+@Table(name = "users")
 public class User {
 
+    @Transient
     private HashMap<Store, StoreManaging> storeManagements;
+
+    @Transient
     private HashMap<Store, StoreOwning> storeOwnings;
+
+    @Transient
     private ShoppingCart shoppingCart;
+
+    @Transient
     private UserPurchaseHistory purchaseHistory;
+
+    @Id
+    @Column(name = "username")
     private String username;
 
-    public User(){
+    public User() {
         shoppingCart = new ShoppingCart(this);
         storeManagements = new HashMap<>();
         storeOwnings = new HashMap<>();
@@ -35,6 +49,10 @@ public class User {
 
     public ShoppingCart getShoppingCart() {
         return shoppingCart;
+    }
+
+    private void initCart() {
+        this.shoppingCart = PersistenceController.readUserCart(this.username);
     }
 
     public void removeStoreManagement(Store store) {

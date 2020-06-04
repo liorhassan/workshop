@@ -2,17 +2,37 @@ package DomainLayer.TradingSystem;
 
 import DomainLayer.TradingSystem.Models.User;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+@Entity
+@Table(name = "storeManagings")
+public class StoreManaging implements Serializable {
 
-public class StoreManaging {
+    @ManyToOne
+    @JoinColumn(name = "appointer", referencedColumnName = "username")
+    private User appointer;
 
-    User appointer;
+    @Id
+    @Column(name = "storeName")
+    private String storeName;
+
+    @Id
+    @Column(name = "appointeeName")
+    private String appointeeName;
+
+    // TODO: change transient!!!
+    @Transient
     private List<Permission> permissions;
 
-    public StoreManaging(User appointer) {
+    public StoreManaging(User appointer, String storeName, String appointeeName) {
         this.appointer = appointer;
+        this.appointeeName = appointeeName;
+        this.storeName = storeName;
+
+        // TODO: init from db
         this.permissions = new LinkedList<>();
         this.permissions.add(new Permission(("View Purchasing History")));
     }
@@ -37,5 +57,9 @@ public class StoreManaging {
                 return true;
         }
         return false;
+    }
+
+    public String getAppointeeName(){
+        return this.appointeeName;
     }
 }

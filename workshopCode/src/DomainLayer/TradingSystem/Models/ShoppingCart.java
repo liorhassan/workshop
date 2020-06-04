@@ -2,21 +2,39 @@ package DomainLayer.TradingSystem.Models;
 
 import DomainLayer.TradingSystem.DiscountBInterface;
 import DomainLayer.TradingSystem.ProductItem;
+import jdk.jfr.Enabled;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.HashMap;
 
+@Entity
+@Table(name = "shoppingCarts")
 public class ShoppingCart {
 
+    @Id
+    @Column(name="id")
+    @GeneratedValue
+    private int id;
+
+
     private HashMap<Store, Basket> baskets;
+
+    @OneToOne
+    @JoinColumn(name="user", referencedColumnName = "username")
     private User user;
+
+    @Column(name = "isHistory")
+    private boolean isHistory;
+
     private double cartTotalPrice;
 
     public ShoppingCart(User user) {
         this.user = user;
         this.baskets = new HashMap<>();
+        this.isHistory = false;
     }
 
     public void addProduct(String product, Store store, int amount){
@@ -27,6 +45,14 @@ public class ShoppingCart {
 
     public User getUser() {
         return user;
+    }
+
+    public boolean getIsHistory() {
+        return this.isHistory;
+    }
+
+    public void setIsHistory() {
+        this.isHistory = !isHistory;
     }
 
     public void setUser(User user) {

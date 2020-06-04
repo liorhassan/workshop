@@ -1,5 +1,6 @@
 package DomainLayer.TradingSystem;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Purchase;
 import DomainLayer.TradingSystem.Models.Store;
 
@@ -13,7 +14,11 @@ public class StorePurchaseHistory {
 
     public StorePurchaseHistory(Store s) {
         this.store = s;
-        this.purchases = new LinkedList<>();
+        initPurchases();
+    }
+
+    private void initPurchases() {
+        this.purchases = PersistenceController.readAllPurchases(store.getName());
     }
 
     public void addPurchase(Purchase p) {
