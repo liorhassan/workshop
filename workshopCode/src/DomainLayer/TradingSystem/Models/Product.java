@@ -14,25 +14,26 @@ import java.util.regex.Pattern;
 public class Product implements Serializable {
 
     @Id
-    @Column(name = "product_name", unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
-    @Id
-    @Column(name = "product_storeName")
+    @Column(name = "storeName")
     private String storeName;
 
 
-    @Column(name = "product_category")
+    @Column(name = "category")
     private Category category;
 
-    @Column(name = "product_description")
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "product_price")
+    @Column(name = "price")
     private Double price;
 
     @Column(name = "quantity")
     private int quantity;
+
+    public Product() {}
 
     public Product(String name, Category category, String description, Double price, String storeName, int quantity) {
         this.name = name;

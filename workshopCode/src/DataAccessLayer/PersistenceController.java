@@ -117,14 +117,14 @@ public class PersistenceController {
             CriteriaQuery<Product> cr = cb.createQuery(Product.class);
             Root<Product> root = cr.from(Product.class);
             if(byStore)
-                cr.select(root).where(cb.equal(root.get("product_storeName"), storeName));
+                cr.select(root).where(cb.equal(root.get("storeName"), storeName));
             Query<Product> query = session.createQuery(cr);
             data = query.getResultList();
 
 
             // Commit the transaction
             transaction.commit();
-        } catch (HibernateException ex) {
+        } catch (Exception ex) {
             // If there are any exceptions, roll back the changes
             if (transaction != null) {
                 transaction.rollback();

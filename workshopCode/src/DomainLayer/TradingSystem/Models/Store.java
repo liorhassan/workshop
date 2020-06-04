@@ -9,20 +9,20 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
-@Entity
-@Table(name = "stores")
+//@Entity
+//@Table(name = "stores")
 public class Store implements Serializable {
 
     private Inventory inventory;
 
-    @Id
-    @Column(name = "store_name", unique = true)
+//    @Id
+//    @Column(name = "store_name", unique = true)
     private String name;
 
-    @Column(name = "store_description")
+//    @Column(name = "store_description")
     private String description;
 
-    @Transient
+//    @Transient
     private User storeFirstOwner;
 
     private HashMap<User, StoreManaging> managements;
