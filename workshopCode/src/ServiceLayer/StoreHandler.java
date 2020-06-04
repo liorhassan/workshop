@@ -53,6 +53,30 @@ public class StoreHandler {
         }
     }
 
+    public String removeStoreOwner(String username,String storename){
+        //SystemLogger.getInstance().writeError(String.format("Remove manager command: username - %s, store name - %s",argToString(username),argToString(storename)));
+        try{
+            String[] args = {username,storename};
+            if(SystemFacade.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Must enter username and store name");
+            if(!SystemFacade.getInstance().storeExists(storename))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if(!SystemFacade.getInstance().userExists(username))
+                throw new IllegalArgumentException("This username doesn't exist");
+            if(!SystemFacade.getInstance().isUserStoreOwner(storename))
+                throw new RuntimeException("You must be this store owner for this command");
+            if(!SystemFacade.getInstance().isOwnerAppointer(username,storename))
+                throw new RuntimeException("This username is not one of this store's managers appointed by you");
+            return SystemFacade.getInstance().removeStoreOwner(username,storename);
+            //return SystemFacade.getInstance().removeManager(username,storename);
+        } catch(Exception e) {
+            SystemLogger.getInstance().writeError("Remove manager error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
+            //return e.getMessage();
+        }
+    }
+
     public String UpdateInventory(String storeName, String productName, Double productPrice, String productCategory, String productDes, Integer amount){
         SystemLogger.getInstance().writeEvent(String.format("Update inventory command: store name - %s, product name - %s, product price - %f, product category - %s, product description - %s, amount - %d", storeName, productName, productPrice, productCategory, productDes, amount));
         try {

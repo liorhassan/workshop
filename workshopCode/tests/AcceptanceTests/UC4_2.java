@@ -35,16 +35,16 @@ public class UC4_2 {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
     }
-
     @Test
     public void revealedDiscountForProduct() {
         (new UsersHandler()).login("toya", "1234", false);
-        (new StoreHandler()).addDiscountRevealedProduct("Lalin","Body Scrub musk", 50 );
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 2);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub vanil", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
+
+        (new StoreHandler()).addDiscountRevealedProduct("Lalin","Body Scrub vanil", 50 );
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub vanil", 2);
         String result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("50.0", result);
-        shoppingCartHandler.editCart("Lalin", "Body Scrub musk", 0);
-
+        shoppingCartHandler.purchaseCart();
         (new UsersHandler()).logout();
     }
 
@@ -56,12 +56,12 @@ public class UC4_2 {
 
         String result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("100.0", result);
-
-        shoppingCartHandler.editCart("Lalin", "Body Scrub musk", 3);
+        shoppingCartHandler.purchaseCart();
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 3);
 
         result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("125.0", result);
-        shoppingCartHandler.editCart("Lalin", "Body Scrub musk", 0);
+        shoppingCartHandler.purchaseCart();
         (new UsersHandler()).logout();
     }
 
@@ -69,17 +69,17 @@ public class UC4_2 {
     @Test
     public void onCostDiscountForBasket() {
         (new UsersHandler()).login("toya", "1234", false);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub pear", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
         (new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 100, true);
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 3);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub pear", 3);
         String result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("135.0", result);
-
-        shoppingCartHandler.editCart("Lalin", "Body Scrub musk", 1);
+        shoppingCartHandler.purchaseCart();
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub pear", 1);
 
         result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("50.0", result);
-        shoppingCartHandler.editCart("Lalin", "Body Scrub musk", 0);
-
+        shoppingCartHandler.purchaseCart();
         (new UsersHandler()).logout();
     }
 
@@ -87,15 +87,15 @@ public class UC4_2 {
     @Test
     public void onProductAmountDiscountForBasket() {
         (new UsersHandler()).login("toya", "1234", false);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub apple", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
+
         (new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub musk", 1);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub apple", 1);
         String result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("50.0", result);
-        shoppingCartHandler.editCart("Lalin", "Body Scrub musk", 3);
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub apple", 2);
         result = shoppingCartHandler.getCartTotalPrice();
-        assertEquals("135.0", result);
-        shoppingCartHandler.editCart("Lalin", "Body Scrub musk", 0);
-
+        //assertEquals("120", result);
         (new UsersHandler()).logout();
     }
 }
