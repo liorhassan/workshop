@@ -365,6 +365,15 @@ public class Store {
         return products.toJSONString();
     }
 
+    public User getOwnerAppointer(User user) {
+        User appointer = null;
+        StoreOwning manage = ownerships.get(user);
+        if(manage != null)
+            appointer = manage.getAppointer();
+        return appointer;
+
+    }
+
     public void removeOwner(User user){
         for(User manUser : managements.keySet()){
             if(managements.get(manUser).getAppointer().equals(user)){
