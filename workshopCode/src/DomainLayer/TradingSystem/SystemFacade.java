@@ -53,6 +53,9 @@ public class SystemFacade {
     public void closeSession(UUID session_id){
         if(!active_sessions.containsKey(session_id))
             throw new IllegalArgumentException("Invalid Session ID");
+        String username = active_sessions.get(session_id).getLoggedin_user().getUsername();
+        if(username != null)
+            NotificationSystem.getInstance().logOutUser(username);
         active_sessions.remove(session_id);
     }
 
@@ -93,6 +96,7 @@ public class SystemFacade {
         User newUser = new User();
         newUser.setUsername(username);
         users.put(username, newUser);
+        NotificationSystem.getInstance().addUser(username);
     }
 
     //help function for register use case
@@ -200,7 +204,7 @@ public class SystemFacade {
         User user = users.get(username);
         se.setAdminMode(adminMode);
         se.setLoggedin_user(user);
-        NotificationSystem.getInstance().notify(username, "hey");
+        NotificationSystem.getInstance().logInUser(username);
     }
 
     //function for handling UseCase 3.1
@@ -208,7 +212,7 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        NotificationSystem.getInstance().dettach(se.getLoggedin_user().getUsername());
+        NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
         return "You have been successfully logged out!";
     }

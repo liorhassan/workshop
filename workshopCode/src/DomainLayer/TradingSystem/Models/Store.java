@@ -18,11 +18,11 @@ public class Store {
     private StorePurchaseHistory purchaseHistory;
     private List<DiscountPolicy> discountPolicies;
 
-    private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
+    private ConcurrentHashMap<Product, DiscountBaseProduct> discountsOnProducts;
     private List<DiscountBInterface> discountsOnBaskets;
     private List<PurchasePolicy> purchasePolicies;
 
-    private HashMap<Basket, List<ProductItem>> reservedProducts;
+    private ConcurrentHashMap<Basket, List<ProductItem>> reservedProducts;
     private int discountID_counter;
 
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
@@ -36,9 +36,9 @@ public class Store {
         this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
         this.discountsOnBaskets = new ArrayList<>();
-        this.discountsOnProducts = new HashMap<>();
+        this.discountsOnProducts = new ConcurrentHashMap<>();
         this.purchasePolicies = new ArrayList<>();
-        this.reservedProducts= new HashMap<>();
+        this.reservedProducts= new ConcurrentHashMap<>();
         this.discountID_counter = 0;
     }
 
@@ -54,7 +54,7 @@ public class Store {
     public void setName(String name) {
         this.name = name;
     }
-    public HashMap<Product, DiscountBaseProduct> getDiscountsOnProducts() {
+    public ConcurrentHashMap<Product, DiscountBaseProduct> getDiscountsOnProducts() {
         return discountsOnProducts;
     }
 
