@@ -119,7 +119,7 @@ public class SystemFacade {
             }
         }
         if(matching.size()==0)
-           throw new RuntimeException("There are no products that match these parameters");
+            throw new RuntimeException("There are no products that match these parameters");
 //        lastSearchResult = matching;
         return matching.toJSONString();
         //return productListToString(lastSearchResult);
@@ -182,8 +182,8 @@ public class SystemFacade {
             activeUser = user;
         }
         else {
-                this.adminMode = true;
-                activeUser = user;
+            this.adminMode = true;
+            activeUser = user;
         }
         NotificationSystem.getInstance().attach(username);
     }
@@ -375,10 +375,10 @@ public class SystemFacade {
         response.put("description", s.getDescription());
         JSONArray productsArray = new JSONArray();
         for (Product currProduct : products) {
-           JSONObject curr = new JSONObject();
-           curr.put("productName", currProduct.getName());
-           curr.put("price", currProduct.getPrice());
-           productsArray.add(curr);
+            JSONObject curr = new JSONObject();
+            curr.put("productName", currProduct.getName());
+            curr.put("price", currProduct.getPrice());
+            productsArray.add(curr);
         }
         response.put("products", productsArray);
         return response.toJSONString();
@@ -682,8 +682,8 @@ public class SystemFacade {
         }
 
         else if(type.equals("simple")){
-            Integer discountId = (policy.containsKey("discountId")) ? ((int) policy.get("discountId")) : null;
-            if(discountId == null)
+            int discountId = (policy.containsKey("discountId")) ? ((int) policy.get("discountId")) : -1;
+            if(discountId == -1)
                 throw new IllegalArgumentException("invalid discountId");
             Store store = getStoreByName(storeName);
             DiscountBInterface discount= store.getDiscountById(discountId);
@@ -726,8 +726,8 @@ public class SystemFacade {
             }
             return "the discount policy added successfully";
 
-            }
-         catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
@@ -816,7 +816,7 @@ public class SystemFacade {
                 if(amount != null) {
                     return String.valueOf(amount);
                 }
-             }
+            }
         }
         return "";
     }
@@ -839,5 +839,10 @@ public class SystemFacade {
 
     public String getCartTotalPrice(){
         return String.valueOf(this.activeUser.getShoppingCart().getTotalCartPrice());
+    }
+
+    public void removePolicies(String storeName){
+        Store store = getStoreByName(storeName);
+        store.removeDiscountPolicies();
     }
 }

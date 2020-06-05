@@ -326,7 +326,7 @@ public class Store {
         Product pDiscount = this.getProductByName(productDiscount);
         Product pCond = this.getProductByName(productCond);
         if(pDiscount != null && pCond != null)
-            discountsOnProducts.add(new DiscountCondBasketProducts(discountID_counter, pCond, pDiscount,percentage, limit));
+            discountsOnProducts.add(new DiscountCondBasketProducts(discountID_counter, pCond, pDiscount,limit, percentage));
         discountID_counter ++;
     }
 
@@ -429,5 +429,9 @@ public class Store {
             }
         }
         ownerships.remove(user);
+    }
+
+    public void removeDiscountPolicies(){
+        this.discountPolicies = new ArrayList<>();
     }
 }

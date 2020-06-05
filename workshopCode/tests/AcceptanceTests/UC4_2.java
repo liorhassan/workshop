@@ -7,8 +7,10 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.json.simple.JSONObject;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class UC4_2 {
 
@@ -26,6 +28,15 @@ public class UC4_2 {
         (new StoreHandler()).openNewStore("Lalin", "beauty products");
         (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40.0, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
         (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
+        (new StoreHandler()).UpdateInventory("Castro", "white T-Shirt", 50.0, "Clothing", "white v t-shirt", 50);
+        (new StoreHandler()).UpdateInventory("Castro", "jeans", 120.0, "Clothing", "blue jeans", 40);
+        (new StoreHandler()).UpdateInventory("Castro", "black skirt", 1000.0, "Clothing", "black mini-skirt", 50);
+
+        (new StoreHandler()).addDiscountCondProductAmount("Castro", "black skirt", 50, 1);
+        (new StoreHandler()).addDiscountCondBasketProducts("Castro", "white T-Shirt","jeans", 50, 1);
+        (new StoreHandler()).addDiscountRevealedProduct("Castro", "white T-Shirt", 20);
+
+
         (new UsersHandler()).logout();
         (new UsersHandler()).register("zuzu", "1234");
     }
@@ -98,4 +109,80 @@ public class UC4_2 {
         //assertEquals("120", result);
         (new UsersHandler()).logout();
     }
+
+    @Test
+    public void policyXORtest() {
+        (new UsersHandler()).login("toya", "1234", false);
+
+        //(new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "jeans", 1);
+        // rev t=shirt xor condJeans
+        String message;
+
+        JSONObject jsonObj1 = new JSONObject();
+        JSONObject jsonObj2 = new JSONObject();
+        JSONObject jsonObjXOR = new JSONObject();
+
+        jsonObj1.put("type", "simple");
+        jsonObj1.put("discountId", 2);
+
+        jsonObj2.put("type", "simple");
+        jsonObj2.put("discountId", 1);
+
+        jsonObjXOR.put("type", "compose");
+        jsonObjXOR.put("operand1", jsonObj1);
+        jsonObjXOR.put("operand2", jsonObj2);
+        jsonObjXOR.put("operator", "XOR");
+        jsonObjXOR.put("store", "Castro");
+
+        message = jsonObjXOR.toString();
+        (new StoreHandler()).addDiscountPolicy(message);
+
+        String result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("220.0", result);
+        shoppingCartHandler.editCart("Castro", "jeans", 0);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 0);
+        (new StoreHandler()).removeDiscountPolicies("Castro");
+        //assertEquals("120", result);
+        (new UsersHandler()).logout();
+    }
+
+    @Test
+    public void policyIFtest() {
+        (new UsersHandler()).login("toya", "1234", false);
+
+        //(new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "skirt", 2);
+        //if skirt then rev t-shirt
+        String result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("220.0", result);
+        shoppingCartHandler.editCart("Castro", "jeans", 0);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 0);
+        (new StoreHandler()).removeDiscountPolicies("Castro");
+        //assertEquals("120", result);
+        (new UsersHandler()).logout();
+    }
+
+    @Test
+    public void policyANDtest() {
+        (new UsersHandler()).login("toya", "1234", false);
+
+        //(new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "skirt", 2);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "jeans" +
+                "", 2);
+
+        //if skirt then rev t-shirt
+        String result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("220.0", result);
+        shoppingCartHandler.editCart("Castro", "jeans", 0);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 0);
+        (new StoreHandler()).removeDiscountPolicies("Castro");
+        //assertEquals("120", result);
+        (new UsersHandler()).logout();
+    }
+
 }

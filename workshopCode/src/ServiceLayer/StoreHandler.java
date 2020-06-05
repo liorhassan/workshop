@@ -262,6 +262,9 @@ public class StoreHandler {
     public void resetStores(){
         SystemFacade.getInstance().resetStores();
     }
+    public void removeDiscountPolicies(String storeName){
+        SystemFacade.getInstance().removePolicies(storeName);
+    }
 
     public String getMyStores(){
         return SystemFacade.getInstance().myStores();
