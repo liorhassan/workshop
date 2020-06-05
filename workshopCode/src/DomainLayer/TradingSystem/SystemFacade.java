@@ -458,9 +458,10 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreOwning owning = new StoreOwning(activeUser);
-        store.addStoreOwner(appointed_user, owning);
-        appointed_user.addOwnedStore(store, owning);
+        store.addStoreOwner(appointed_user, activeUser);
+        //StoreOwning owning = new StoreOwning(activeUser);
+        //store.addStoreOwner(appointed_user, owning);
+        //appointed_user.addOwnedStore(store, owning);
 
 
         return "Username has been added as one of the store owners successfully";
@@ -745,6 +746,18 @@ public class SystemFacade {
              }
         }
         return "";
+    }
+
+    public String responseToAppointment(String storeName, String userToResponse, boolean isApproved){
+        User waiting = users.get(userToResponse);
+        Store store = getStoreByName(storeName);
+        if(isApproved){
+            store.approveAppointment(waiting, activeUser);
+        }
+        else{
+            store.declinedAppointment(waiting, activeUser);
+        }
+        return "your response was updated successfully";
     }
 
     public String getCartTotalPrice(){
