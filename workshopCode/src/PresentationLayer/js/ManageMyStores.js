@@ -368,11 +368,44 @@ function updateCandidatesWindow(candidates){
         const app_button = document.createElement("button");
         app_button.classList.add("btn");
         app_button.classList.add("btn-primary");
+        app_button.classList.add("cand-btn");
         app_button.append(document.createTextNode("Approve"));
         app_button.addEventListener("click",function(){
             fetch("http://localhost:8080/tradingSystem/approveCandidate", {
                 method: "POST",
-                body: JSON.stringify({user: user_name, store: store_name})
+                body: JSON.stringify({user: user_name, store: store_name, status: "approve"})
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            })
+            .then((responseMsg) => {
+                if (responseMsg.SUCCESS) {
+                    Swal.fire(
+                        'SUCCESS!',
+                        responseMsg.SUCCESS,
+                        'success');
+                        
+                    updateCandidates();
+                } else {
+                    Swal.fire(
+                    'OOPS!',
+                    responseMsg,
+                    'error')
+                }
+            })
+        });
+        const rej_button = document.createElement("button");
+        rej_button.classList.add("btn");
+        rej_button.classList.add("btn-primary");
+        rej_button.append(document.createTextNode("Reject"));
+        rej_button.addEventListener("click",function(){
+            fetch("http://localhost:8080/tradingSystem/approveCandidate", {
+                method: "POST",
+                body: JSON.stringify({user: user_name, store: store_name, status: "reject"})
             })
             .then(response => {
                 if (response.ok) {
@@ -399,6 +432,7 @@ function updateCandidatesWindow(candidates){
         })
         const app_span = document.createElement("span");
         app_span.appendChild(app_button);
+        app_span.appendChild(rej_button);
         element.appendChild(element_div);
         element.appendChild(app_span); 
         candidatesList.appendChild(element);

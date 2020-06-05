@@ -261,7 +261,7 @@ public class Controller {
             }
         });
 
-        //accept: {user: "", store:""}
+        //accept: {user: "", store:"", status:"approve/reject"}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/approveCandidate", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -269,10 +269,10 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                //JSONObject requestJson =  (JSONObject)parser.parse("{\"user\":\"noy\", \"store\":\"Pull&Bear\"}");
                 String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                //String response = storeHandler.approveOwnerCandidate(userName, storeName); TODO: implement missing functionality
+                Boolean status = (requestJson.containsKey("status")) ? requestJson.get("status").toString().equals("approve") : false;
+                //String response = storeHandler.approveOwnerCandidate(userName, storeName, status); TODO: implement missing functionality
                 String response = "";
                 headers.set("approveCandidate", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
