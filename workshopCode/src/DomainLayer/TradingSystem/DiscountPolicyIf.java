@@ -12,7 +12,7 @@ public class DiscountPolicyIf extends DiscountPolicy  {
     private boolean simple;
 
 
-    public DiscountPolicyIf(DiscountBInterface result, DiscountBInterface condition){
+    public DiscountPolicyIf( DiscountBInterface condition, DiscountBInterface result){
         //this.discountID = discountID;
         this.condition = condition;
         this.result = result;
@@ -32,6 +32,17 @@ public class DiscountPolicyIf extends DiscountPolicy  {
     public boolean canGet( Basket basket) {
         if(condition.canGet(basket)){
             return true;
+        }
+        if(result.isSimple() && basket.getDiscountsOnProducts().contains(result)){
+            basket.getDiscountsOnProducts().remove(result);
+        }
+        else if (!result.isSimple()) {
+            List<DiscountBInterface> discounts_to_delete = result.relevantDiscounts(basket);
+            for (DiscountBInterface dis : discounts_to_delete) {
+                if (basket.getDiscountsOnProducts().contains(dis)) {
+                    basket.getDiscountsOnProducts().remove(dis);
+                }
+            }
         }
         return false;
     }
@@ -62,7 +73,7 @@ public class DiscountPolicyIf extends DiscountPolicy  {
     public List<DiscountBInterface> filterDiscounts (Basket basket){
         List<DiscountBInterface> chosenDiscounts = new ArrayList<>();
         if((condition.isSimple() && basket.getDiscountsOnProducts().contains(condition)) || (!condition.isSimple() && condition.canGet(basket))){
-            if(DiscountPolicy.class.isAssignableFrom(result.getClass()) ) {
+            if(!result.isSimple())  {
                 chosenDiscounts =  ((DiscountPolicy) result).filterDiscounts(basket);
             }
             else {

@@ -64,7 +64,7 @@ public class DiscountCondBasketProducts extends DiscountSimple {
     @Override
     public boolean canGet( Basket basket) {
         int amount = basket.getProductAmount(productCondition.getName());
-        if(amount>minAmount)
+        if(amount>=minAmount)
             return true;
         return false;
     }

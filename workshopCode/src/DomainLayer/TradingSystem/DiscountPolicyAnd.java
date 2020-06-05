@@ -20,7 +20,21 @@ public class DiscountPolicyAnd extends DiscountPolicy {
     }
     @Override
     public List<DiscountBInterface> filterDiscounts(Basket basket) {
-        return null;
+        List<DiscountBInterface> chosenDiscounts = new ArrayList<>();
+        List<DiscountBInterface> chosenIn1 = new ArrayList<>();
+        List<DiscountBInterface> chosenIn2 = new ArrayList<>();
+        if(!discount_operand1.isSimple())
+            chosenIn1 = ((DiscountPolicy) discount_operand1).filterDiscounts(basket);
+        else if (basket.getDiscountsOnProducts().contains(discount_operand1))
+            chosenIn1.add(discount_operand1);
+        if(!discount_operand2.isSimple())
+            chosenIn2 = ((DiscountPolicy) discount_operand2).filterDiscounts(basket);
+        else if (basket.getDiscountsOnProducts().contains(discount_operand2))
+            chosenIn2.add(discount_operand2);
+
+        chosenDiscounts = chosenIn1;
+        chosenDiscounts.addAll(chosenIn2);
+        return chosenDiscounts;
     }
 
     public DiscountBInterface getOperand1(){
@@ -55,7 +69,7 @@ public class DiscountPolicyAnd extends DiscountPolicy {
 
     @Override
     public boolean isSimple() {
-        return isSimple();
+        return simple;
     }
 
     @Override

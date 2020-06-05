@@ -661,7 +661,7 @@ public class SystemFacade {
         String type = (policy.containsKey("type")) ? ((String) policy.get("type")) : null;
         if(type.equals("compose")){
             String operator = (policy.containsKey("operator")) ? ((String) policy.get("operator")) : null;
-            if(operator.equals("If_THEN")){
+            if(operator.equals("IF_THEN")){
                 JSONObject operand1 = (policy.containsKey("operand1")) ? ((JSONObject) policy.get("operand1")) : null;
                 JSONObject operand2 = (policy.containsKey("operand2")) ? ((JSONObject) policy.get("operand2")) : null;
 
@@ -682,7 +682,7 @@ public class SystemFacade {
         }
 
         else if(type.equals("simple")){
-            int discountId = (policy.containsKey("discountId")) ? ((int) policy.get("discountId")) : -1;
+            int discountId = (policy.containsKey("discountId")) ? Integer.parseInt( policy.get("discountId").toString()) : -1;
             if(discountId == -1)
                 throw new IllegalArgumentException("invalid discountId");
             Store store = getStoreByName(storeName);

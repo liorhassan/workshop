@@ -28,13 +28,15 @@ public class UC4_2 {
         (new StoreHandler()).openNewStore("Lalin", "beauty products");
         (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40.0, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
         (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
-        (new StoreHandler()).UpdateInventory("Castro", "white T-Shirt", 50.0, "Clothing", "white v t-shirt", 50);
-        (new StoreHandler()).UpdateInventory("Castro", "jeans", 120.0, "Clothing", "blue jeans", 40);
-        (new StoreHandler()).UpdateInventory("Castro", "black skirt", 1000.0, "Clothing", "black mini-skirt", 50);
+        (new StoreHandler()).UpdateInventory("Castro", "white T-Shirt", 50.0, "Clothing", "white v t-shirt", 1000);
+        (new StoreHandler()).UpdateInventory("Castro", "jeans", 120.0, "Clothing", "blue jeans", 1000);
+        (new StoreHandler()).UpdateInventory("Castro", "black skirt", 100.0, "Clothing", "black mini-skirt", 1000);
+        (new StoreHandler()).UpdateInventory("Castro", "shoes", 100.0, "Clothing", "shoes", 50);
 
         (new StoreHandler()).addDiscountCondProductAmount("Castro", "black skirt", 50, 1);
         (new StoreHandler()).addDiscountCondBasketProducts("Castro", "white T-Shirt","jeans", 50, 1);
         (new StoreHandler()).addDiscountRevealedProduct("Castro", "white T-Shirt", 20);
+        (new StoreHandler()).addDiscountCondProductAmount("Castro", "shoes", 50, 1);
 
 
         (new UsersHandler()).logout();
@@ -104,9 +106,13 @@ public class UC4_2 {
         shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub apple", 1);
         String result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("50.0", result);
-        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub apple", 2);
+        shoppingCartHandler.purchaseCart();
+        shoppingCartHandler.AddToShoppingBasket("Lalin", "Body Scrub apple", 3);
         result = shoppingCartHandler.getCartTotalPrice();
-        //assertEquals("120", result);
+        assertEquals("135.0", result);
+        shoppingCartHandler.purchaseCart();
+
+        //shoppingCartHandler.editCart("Lalin", "Body Scrub apple", 0);
         (new UsersHandler()).logout();
     }
 
@@ -141,8 +147,9 @@ public class UC4_2 {
 
         String result = shoppingCartHandler.getCartTotalPrice();
         assertEquals("220.0", result);
-        shoppingCartHandler.editCart("Castro", "jeans", 0);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 0);
+        shoppingCartHandler.purchaseCart();
+       // shoppingCartHandler.editCart("Castro", "jeans", 0);
+      //  shoppingCartHandler.editCart("Castro", "white T-Shirt", 0);
         (new StoreHandler()).removeDiscountPolicies("Castro");
         //assertEquals("120", result);
         (new UsersHandler()).logout();
@@ -152,14 +159,41 @@ public class UC4_2 {
     public void policyIFtest() {
         (new UsersHandler()).login("toya", "1234", false);
 
-        //(new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
         shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 4);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "skirt", 2);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "black skirt", 1);
         //if skirt then rev t-shirt
+
+        String message;
+
+        JSONObject jsonObj1 = new JSONObject();
+        JSONObject jsonObj2 = new JSONObject();
+        JSONObject jsonObjIF = new JSONObject();
+
+        jsonObj1.put("type", "simple");
+        jsonObj1.put("discountId", 0);
+
+        jsonObj2.put("type", "simple");
+        jsonObj2.put("discountId", 2);
+
+        jsonObjIF.put("type", "compose");
+        jsonObjIF.put("operand1", jsonObj1);
+        jsonObjIF.put("operand2", jsonObj2);
+        jsonObjIF.put("operator", "IF_THEN");
+        jsonObjIF.put("store", "Castro");
+
+        message = jsonObjIF.toString();
+        (new StoreHandler()).addDiscountPolicy(message);
+
         String result = shoppingCartHandler.getCartTotalPrice();
-        assertEquals("220.0", result);
-        shoppingCartHandler.editCart("Castro", "jeans", 0);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 0);
+        assertEquals("300.0", result);
+        shoppingCartHandler.purchaseCart();
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "black skirt", 2);
+        result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("310.0", result);
+        shoppingCartHandler.purchaseCart();
+        //hoppingCartHandler.editCart("Castro", "black skirt", 0);
+        //shoppingCartHandler.editCart("Castro", "white T-Shirt", 0);
         (new StoreHandler()).removeDiscountPolicies("Castro");
         //assertEquals("120", result);
         (new UsersHandler()).logout();
@@ -169,17 +203,52 @@ public class UC4_2 {
     public void policyANDtest() {
         (new UsersHandler()).login("toya", "1234", false);
 
-        //(new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
         shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 4);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "skirt", 2);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "jeans" +
-                "", 2);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "black skirt", 2);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "shoes", 2);
+        //if skirt and jeans then shoes
+        String message;
 
-        //if skirt then rev t-shirt
+        JSONObject jsonObj1 = new JSONObject();
+        JSONObject jsonObj2 = new JSONObject();
+        JSONObject jsonObj3 = new JSONObject();
+        JSONObject jsonObjIF = new JSONObject();
+        JSONObject jsonObjAND = new JSONObject();
+
+        jsonObj1.put("type", "simple");
+        jsonObj1.put("discountId", 0);
+
+        jsonObj2.put("type", "simple");
+        jsonObj2.put("discountId", 1);
+
+        jsonObj3.put("type", "simple");
+        jsonObj3.put("discountId", 3);
+
+        jsonObjAND.put("type", "compose");
+        jsonObjAND.put("operand1", jsonObj1);
+        jsonObjAND.put("operand2", jsonObj2);
+        jsonObjAND.put("operator", "AND");
+        jsonObjAND.put("store", "Castro");
+
+        jsonObjIF.put("type", "compose");
+        jsonObjIF.put("operand1", jsonObjAND);
+        jsonObjIF.put("operand2", jsonObj3);
+        jsonObjIF.put("operator", "IF_THEN");
+        jsonObjIF.put("store", "Castro");
+
+        message = jsonObjIF.toString();
+        (new StoreHandler()).addDiscountPolicy(message);
+
         String result = shoppingCartHandler.getCartTotalPrice();
-        assertEquals("220.0", result);
-        shoppingCartHandler.editCart("Castro", "jeans", 0);
-        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 0);
+        assertEquals("460.0", result);
+        shoppingCartHandler.purchaseCart();
+        shoppingCartHandler.AddToShoppingBasket("Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "black skirt", 2);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "jeans", 1);
+        shoppingCartHandler.AddToShoppingBasket("Castro", "shoes", 2);
+        result = shoppingCartHandler.getCartTotalPrice();
+        assertEquals("520.0", result);
+        shoppingCartHandler.purchaseCart();
         (new StoreHandler()).removeDiscountPolicies("Castro");
         //assertEquals("120", result);
         (new UsersHandler()).logout();
