@@ -364,4 +364,20 @@ public class Store {
         }
         return products.toJSONString();
     }
+
+    public void removeOwner(User user){
+        for(User manUser : managements.keySet()){
+            if(managements.get(manUser).getAppointer().equals(user)){
+                //sand alert to the user being removed from managers list
+                managements.remove(manUser);
+            }
+        }
+        for(User ownUser : ownerships.keySet()){
+            if(ownerships.get(ownUser).getAppointer().equals(user)){
+                //sand alert to the user being removed from owners list
+                ownerships.remove(ownUser);
+            }
+        }
+        ownerships.remove(user);
+    }
 }
