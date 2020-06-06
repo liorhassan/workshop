@@ -64,4 +64,8 @@ public class StoreManaging implements Serializable {
     public String getAppointeeName(){
         return this.appointeeName;
     }
+
+    public void initPermissions() {
+        this.permissions = new LinkedList<>();
+    }
 }

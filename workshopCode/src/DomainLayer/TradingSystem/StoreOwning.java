@@ -14,7 +14,7 @@ public class StoreOwning implements Serializable {
 
 //    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "appointer", referencedColumnName = "username")
+    @JoinColumn(name = "appointer")
     private User appointer;
 
     @Id
@@ -28,8 +28,8 @@ public class StoreOwning implements Serializable {
     @Transient
     private List<Permission> permissions;
 
-    public StoreOwning(){};
-    // first owner constructor
+    public StoreOwning(){}
+    //first owner constructor
     public StoreOwning(String storeName, String appointeeName) {
         this.storeName = storeName;
         this.appointeeName = appointeeName;
@@ -52,9 +52,6 @@ public class StoreOwning implements Serializable {
             permissions.add(new Permission(p));
         // save to db
         PersistenceController.create(this);
-
-        // save to db
-        PersistenceController.create(this);
     }
 
     public User getAppointer() {
@@ -68,5 +65,14 @@ public class StoreOwning implements Serializable {
 
     public String getAppointeeName() {
         return this.appointeeName;
+    }
+
+
+    public void initPermissions() {
+        this.permissions = new LinkedList<>();
+        String[] perms = {"Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add new Discount Policy"};
+        for(String p : perms)
+            permissions.add(new Permission(p));
+
     }
 }

@@ -64,6 +64,7 @@ public class Store implements Serializable {
         this.storeFirstOwner = firstOwner;
         this.inventory = new Inventory();
         this.managements = new HashMap<>();
+        this.ownerships = new HashMap<>();
         this.ownerships.put(firstOwner, owning);
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.discountPolicies = new ArrayList<>();

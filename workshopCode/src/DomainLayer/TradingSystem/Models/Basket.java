@@ -38,8 +38,11 @@ public class Basket implements Serializable {
 
     @Transient
     private List<ProductItem> productItems;
+    @Transient
     private double price;
+    @Transient
     private List<DiscountBInterface> discountsOnProducts;
+    @Transient
     private HashMap<ProductItem, Double> priceOfProdAfterDiscount;
 
 

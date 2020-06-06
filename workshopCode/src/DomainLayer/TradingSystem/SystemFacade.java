@@ -86,9 +86,11 @@ public class SystemFacade {
         List<StoreManaging> sm = PersistenceController.readAllManagers(store.getName());
         User currUser;
         for (StoreManaging s: sm){
+            s.initPermissions();
             currUser = getUserByName(s.getAppointeeName());
-            store.addManager(currUser, s, false);
             currUser.addManagedStore(store, s);
+            users.replace(s.getAppointeeName(), currUser);
+            store.addManager(currUser, s, false);
         }
     }
 
@@ -96,9 +98,12 @@ public class SystemFacade {
         List<StoreOwning> so = PersistenceController.readAllOwners(store.getName());
         User currUser;
         for (StoreOwning s:so){
+            s.initPermissions();
             currUser = getUserByName(s.getAppointeeName());
-            store.addStoreOwner(currUser, s);
             currUser.addOwnedStore(store, s);
+            users.replace(s.getAppointeeName(), currUser);
+            store.addStoreOwner(currUser, s);
+
         }
     }
 
@@ -367,7 +372,7 @@ public class SystemFacade {
     public String openNewStore(String storeName, String storeDescription) {
 
         // update stores of the system and the user's data
-        StoreOwning storeOwning = new StoreOwning();
+        StoreOwning storeOwning = new StoreOwning(storeName, this.activeUser.getUsername());
         Store newStore = new Store(storeName, storeDescription, this.activeUser, storeOwning);
 
         this.activeUser.addOwnedStore(newStore, storeOwning);
