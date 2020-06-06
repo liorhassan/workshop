@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
             permissions.push("View Purchasing History")
         if(document.getElementById("addDiscPermOpt").checked)
             permissions.push("Add New Discount")
-        if(document.getElementById("addperchPolPermOpt").checked)
+        if(document.getElementById("addPerchPolPermOpt").checked)
             permissions.push("Add New Purchase Policy")
         var sfy = JSON.stringify({user: user_name, store: store_name, permission: permissions});
         fetch("http://localhost:8080/tradingSystem/editPermission", {
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("manageSupplyPermOpt").checked = false;
         document.getElementById("viewHistoryPermOpt").checked = false;
         document.getElementById("addDiscPermOpt").checked = false;
-        document.getElementById("addDiscPolPermOpt").checked = false;
+        document.getElementById("addPerchPolPermOpt").checked = false;
         document.getElementById("editPermissionsModal").style.display = "none";
         
     })
@@ -592,7 +592,7 @@ function showPopUp(action){
     if(action == "Add New Discount")
         window.location.href = "http://localhost:8080/html/discountsWindow.html";
 
-    if(action == "Add new Purchase Policy")
+    if(action == "Add New Purchase Policy")
             window.location.href = "http://localhost:8080/html/PolicyWindow.html";
 
     document.getElementById(actionToModel[action]).style.display = "block";
