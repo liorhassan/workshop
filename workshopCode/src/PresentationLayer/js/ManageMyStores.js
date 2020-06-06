@@ -231,7 +231,7 @@ function initRemoveManagerModel() {
     })
 }
 
-function initRemoveOwnerModel() {   
+function initRemoveOwnerModel() {
     document.getElementById("remove-owner-button").addEventListener("click",function(){
         var store_name = activeStore.name;
         var username  = document.getElementById("remove-owner-name").value;
@@ -388,7 +388,7 @@ function updateCandidatesWindow(candidates){
                         'SUCCESS!',
                         responseMsg.SUCCESS,
                         'success');
-                        
+
                     updateCandidates();
                 } else {
                     Swal.fire(
@@ -420,7 +420,7 @@ function updateCandidatesWindow(candidates){
                         'SUCCESS!',
                         responseMsg.SUCCESS,
                         'success');
-                        
+
                     updateCandidates();
                 } else {
                     Swal.fire(
@@ -434,7 +434,7 @@ function updateCandidatesWindow(candidates){
         app_span.appendChild(app_button);
         app_span.appendChild(rej_button);
         element.appendChild(element_div);
-        element.appendChild(app_span); 
+        element.appendChild(app_span);
         candidatesList.appendChild(element);
     })
 }
@@ -590,10 +590,10 @@ function showPopUp(action){
         .then(updateSupplyProducts)
     }
     if(action == "Add New Discount")
-        window.location.href = "http://localhost:8080/html/discountsWindow.html";
+        window.location.href = "http://localhost:8080/html/DiscountsWindow.html";
 
     if(action == "Add New Purchase Policy")
-            window.location.href = "http://localhost:8080/html/PolicyWindow.html";
+            window.location.href = "http://localhost:8080/html/PurchasePolicy.html";
 
     document.getElementById(actionToModel[action]).style.display = "block";
 }
