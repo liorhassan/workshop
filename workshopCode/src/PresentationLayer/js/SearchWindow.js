@@ -1,5 +1,9 @@
+const window_name = "MainSearch";
 document.addEventListener("DOMContentLoaded", function () {
-
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    .then(response=>response.json())
+    .then(updateNavBar);
+    
 
     fetch("http://localhost:8080/tradingSystem/allProducts")
          .then(response => response.json())
@@ -81,7 +85,7 @@ function setSearchResults(items) {
         element.classList.add("d-flex");
         element.classList.add("justify-content-between");
         element.classList.add("lh-condensed");
-
+        element.classList.add("clickable-product");
         element.addEventListener("click",function(){
             showPopUp(currItem);
         });
