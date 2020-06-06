@@ -15,6 +15,7 @@ public class Store implements Serializable {
     private String name;
     private HashMap<User, StoreManaging> managements;
     private HashMap<User, StoreOwning> ownerships;
+    private HashMap<User, AppointmentAgreement> waitingAgreements;
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
@@ -44,6 +45,7 @@ public class Store implements Serializable {
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
+        this.waitingAgreements = new HashMap<>();
         this.discountID_counter = 0;
         this.purchaseID_counter = 0;
         this.doubleDiscounts = true;
@@ -238,10 +240,36 @@ public class Store implements Serializable {
 
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
-    public void addStoreOwner(User newOwner, StoreOwning storeOwning) {
-        if (!ownerships.containsKey(newOwner))
-            this.ownerships.put(newOwner, storeOwning);
-        NotificationSystem.getInstance().notify(newOwner.getUsername(), "You have been appointed as " + name + "'s store owner");
+    public void addStoreOwner(User newOwner, User appointer) {
+        if (!waitingAgreements.containsKey(newOwner))
+            this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
+        //notify all owners
+        NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+    }
+
+    //UC 4.3
+    public void approveAppointment(User waitingForApprove, User approveOwner){
+        AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
+        apag.approve(approveOwner);
+        if(apag.getWaitingForResponse().size() == 0){
+            if(apag.getDeclined().size() != 0){
+                StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser());
+                ownerships.put(waitingForApprove, storeOwning);
+                waitingAgreements.remove(waitingForApprove);
+                //notify that the appointment approved - (appointing and appointment users)
+            }
+            else {
+                waitingAgreements.remove(waitingForApprove);
+                //notify that the appointment declined - (appointing and appointment users)
+
+            }
+        }
+    }
+
+    //UC 4.3
+    public void declinedAppointment(User waitingForApprove, User declinedOwner){
+        AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
+        apag.decline(declinedOwner);
     }
 
 

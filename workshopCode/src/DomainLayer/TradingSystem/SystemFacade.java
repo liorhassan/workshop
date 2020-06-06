@@ -197,7 +197,6 @@ public class SystemFacade {
 
     //function for handling Use Case 2.7
     public String viewSoppingCart(){
-        NotificationSystem.getInstance().notify(this.activeUser.getUsername(), "hello");
         return activeUser.getShoppingCart().view();
     }
 
@@ -310,7 +309,6 @@ public class SystemFacade {
 
     // function for handling Use Case 3.7 + 6.4 - written by Nufar
     public String getUserPurchaseHistory(String userName) {
-        JSONParser parser = new JSONParser();
         UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
         JSONArray historyArray = new JSONArray();
         for(Purchase p: purchaseHistory.getUserPurchases()){
@@ -466,9 +464,10 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreOwning owning = new StoreOwning(activeUser);
-        store.addStoreOwner(appointed_user, owning);
-        appointed_user.addOwnedStore(store, owning);
+        store.addStoreOwner(appointed_user, activeUser);
+        //StoreOwning owning = new StoreOwning(activeUser);
+        //store.addStoreOwner(appointed_user, owning);
+        //appointed_user.addOwnedStore(store, owning);
 
 
         return "Username has been added as one of the store owners successfully";
@@ -829,7 +828,17 @@ public class SystemFacade {
         return "";
     }
 
-
+    public String responseToAppointment(String storeName, String userToResponse, boolean isApproved){
+        User waiting = users.get(userToResponse);
+        Store store = getStoreByName(storeName);
+        if(isApproved){
+            store.approveAppointment(waiting, activeUser);
+        }
+        else{
+            store.declinedAppointment(waiting, activeUser);
+        }
+        return "your response was updated successfully";
+    }
 
     public String getCartTotalPrice(){
         return String.valueOf(this.activeUser.getShoppingCart().getTotalCartPrice());

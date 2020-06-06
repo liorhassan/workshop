@@ -50,6 +50,30 @@ public class StoreHandler {
         }
     }
 
+    public String responseToAppointmentRequest( String storeName, String username, boolean isApproved) {
+        SystemLogger.getInstance().writeEvent(String.format("Response to store owner appointment command: new owner username - %s, store name - %s",username,storeName));
+        try {
+            String[] args = {username, storeName};
+            if (SystemFacade.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Must enter username and store name");
+            if (!SystemFacade.getInstance().storeExists(storeName))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if(!SystemFacade.getInstance().userExists(username))
+                throw new IllegalArgumentException("This username doesn't exist");
+            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(storeName))
+                throw new RuntimeException("You must be this store owner for this action");
+            if(SystemFacade.getInstance().checkIfUserIsOwner(storeName, username))
+                throw new RuntimeException("This username is already one of the store's owners");
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().responseToAppointment(username, storeName, isApproved));
+        }
+        catch (Exception e){
+            SystemLogger.getInstance().writeError("Response to store owner appointment error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
+        }
+    }
+
+    public String UpdateInventory(String storeName, String productName, double productPrice, String productCategory, String productDes, Integer amount){
     public String UpdateInventory(String storeName, String productName, Double productPrice, String productCategory, String productDes, Integer amount){
         SystemLogger.getInstance().writeEvent(String.format("Update inventory command: store name - %s, product name - %s, product price - %f, product category - %s, product description - %s, amount - %d", storeName, productName, productPrice, productCategory, productDes, amount));
         try {
@@ -208,6 +232,7 @@ public class StoreHandler {
 
     public String addDiscountPolicy(String discountPolicy){
         try{
+
             String result = SystemFacade.getInstance().addDiscountPolicy(discountPolicy);
             return createJSONMsg("SUCCESS", result);
         }
