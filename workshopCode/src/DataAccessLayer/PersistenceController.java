@@ -13,6 +13,7 @@ import org.hibernate.service.ServiceRegistry;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Properties;
@@ -72,7 +73,7 @@ public class PersistenceController {
             session.save(model);
             // Commit the transaction
             transaction.commit();
-        } catch (HibernateException ex) {
+        } catch (Exception ex) {
             // If there are any exceptions, roll back the changes
             if (transaction != null) {
                 transaction.rollback();
@@ -183,9 +184,10 @@ public class PersistenceController {
             transaction = session.beginTransaction();
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<User> cr = cb.createQuery(User.class);
-            Query<User> query = session.createQuery(cr);
+            Root<User> rootEntry = cr.from(User.class);
+            CriteriaQuery<User> all = cr.select(rootEntry);
+            Query<User> query = session.createQuery(all);
             users = query.getResultList();
-
 
             // Commit the transaction
             transaction.commit();
@@ -213,7 +215,9 @@ public class PersistenceController {
             transaction = session.beginTransaction();
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<Store> cr = cb.createQuery(Store.class);
-            Query<Store> query = session.createQuery(cr);
+            Root<Store> rootEntry = cr.from(Store.class);
+            CriteriaQuery<Store> all = cr.select(rootEntry);
+            Query<Store> query = session.createQuery(all);
             stores = query.getResultList();
 
 
@@ -342,7 +346,7 @@ public class PersistenceController {
             CriteriaQuery<ShoppingCart> cr = cb.createQuery(ShoppingCart.class);
             Root<ShoppingCart> root = cr.from(ShoppingCart.class);
             cr.select(root).where(cb.equal(root.get("user"), username));
-            cr.select(root).where(cb.equal(root.get("isHistory"), false));
+            cr.select(root).where(cb.isFalse(root.get("isHistory")));
             Query<ShoppingCart> query = session.createQuery(cr);
             carts = query.getResultList();
 

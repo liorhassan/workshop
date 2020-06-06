@@ -12,7 +12,8 @@ import java.util.List;
 @Table(name = "storeOwnings")
 public class StoreOwning implements Serializable {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "appointer", referencedColumnName = "username")
     private User appointer;
 
@@ -27,6 +28,7 @@ public class StoreOwning implements Serializable {
     @Transient
     private List<Permission> permissions;
 
+    public StoreOwning(){};
     // first owner constructor
     public StoreOwning(String storeName, String appointeeName) {
         this.storeName = storeName;
@@ -45,6 +47,9 @@ public class StoreOwning implements Serializable {
         this.storeName = storeName;
         this.appointeeName = appointeeName;
         this.permissions = new LinkedList<>();
+
+        // save to db
+        PersistenceController.create(this);
     }
 
     public User getAppointer() {

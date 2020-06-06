@@ -16,6 +16,7 @@ public class Purchase implements Serializable {
 
 //    @OneToOne
 //    @JoinColumn(name = "cart")
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "shoppingCart", referencedColumnName = "id")
     private ShoppingCart shoppingCart;
 
@@ -25,6 +26,7 @@ public class Purchase implements Serializable {
     @Column(name = "isUsersPurchase")
     private boolean isUsersPurchase;
 
+    public Purchase(){}
     // Ctor for user's purchase
     public Purchase(ShoppingCart shoppingCart) {
         this.shoppingCart = shoppingCart;

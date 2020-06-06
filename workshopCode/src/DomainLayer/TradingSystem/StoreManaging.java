@@ -11,7 +11,8 @@ import java.util.List;
 @Table(name = "storeManagings")
 public class StoreManaging implements Serializable {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "appointer", referencedColumnName = "username")
     private User appointer;
 
@@ -27,6 +28,7 @@ public class StoreManaging implements Serializable {
     @Transient
     private List<Permission> permissions;
 
+    public StoreManaging(){};
     public StoreManaging(User appointer, String storeName, String appointeeName) {
         this.appointer = appointer;
         this.appointeeName = appointeeName;

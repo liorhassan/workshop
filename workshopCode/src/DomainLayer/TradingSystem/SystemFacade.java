@@ -30,17 +30,20 @@ public class SystemFacade {
     private ProductSupplyStub PS;
 
     private SystemFacade() {
-        User u = new User();
-        u.setUsername("noy");
-        PersistenceController.create(u);
-        Store s = new Store("Lalin", "blabla", u, new StoreOwning("Lalin", "noy"));
-        PersistenceController.create(s);
-        s.addToInventory("soap", 1, Category.Clothing, "blabla", 5);
-        u.getShoppingCart().addProduct("soap", s, 5);
-        PersistenceController.create(u.getShoppingCart());
+
+//        User u = new User();
+//        u.setUsername("noy");
+//        PersistenceController.create(u);
+//        PersistenceController.create(u.getShoppingCart());
+//
+//        Store s = new Store("Lalin", "blabla", u, new StoreOwning("Lalin", "noy"));
+//        PersistenceController.create(s);
+//        s.addToInventory("soap", 1, Category.Clothing, "blabla", 5);
+//        u.getShoppingCart().addProduct("soap", s, 5);
 
         initSubscribedUsers();
         initStores();
+        initCarts();
         adminsList = new ArrayList<>();
         activeUser = new User();  //guest
         lastSearchResult = new ArrayList<>();
@@ -53,25 +56,54 @@ public class SystemFacade {
         this.users.put("Admin159", firstAdmin);
     }
 
-    private void initStores() {
-        stores = new HashMap<>();
-        List<Store> allStores = PersistenceController.readAllStores();
-
-        for (Store s: allStores) {
-            stores.put(s.getName(), s);
-        }
-    }
-
     private void initSubscribedUsers() {
         users = new HashMap<>();
         List<User> allSubscribedUsers = PersistenceController.readAllUsers();
 
         for (User user: allSubscribedUsers) {
             users.put(user.getUsername(), user);
-
-            user.initCart();// TODO: maybe do after init stores
         }
     }
+
+    private void initCarts() {
+        for(User u: this.users.values()){
+            u.initCart();
+        }
+    }
+
+    private void initStores() {
+        stores = new HashMap<>();
+        List<Store> allStores = PersistenceController.readAllStores();
+
+        for (Store s: allStores) {
+            s.init();
+            initManagments(s);
+            initOwnerships(s);
+            stores.put(s.getName(), s);
+        }
+    }
+
+    private void initManagments(Store store) {
+        List<StoreManaging> sm = PersistenceController.readAllManagers(store.getName());
+        User currUser;
+        for (StoreManaging s: sm){
+            currUser = getUserByName(s.getAppointeeName());
+            store.addManager(currUser, s);
+            currUser.addManagedStore(store, s);
+        }
+    }
+
+    private void initOwnerships(Store store) {
+        List<StoreOwning> so = PersistenceController.readAllOwners(store.getName());
+        User currUser;
+        for (StoreOwning s:so){
+            currUser = getUserByName(s.getAppointeeName());
+            store.addStoreOwner(currUser, s);
+            currUser.addOwnedStore(store, s);
+        }
+    }
+
+
 
     public User getUserByName(String username) {
         return users.get(username);
@@ -120,6 +152,7 @@ public class SystemFacade {
 
         //save to DB
         PersistenceController.create(newUser);
+        PersistenceController.create(newUser.getShoppingCart());
     }
 
     //help function for register use case
@@ -341,6 +374,9 @@ public class SystemFacade {
 
         this.activeUser.addOwnedStore(newStore, storeOwning);
         this.stores.put(storeName, newStore);
+
+        //save store in DB
+        PersistenceController.create(newStore);
 
         return "The new store is now open!";
     }

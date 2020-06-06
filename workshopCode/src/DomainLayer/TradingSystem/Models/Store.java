@@ -2,6 +2,7 @@ package DomainLayer.TradingSystem.Models;
 
 import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.*;
+import net.bytebuddy.description.modifier.Ownership;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -23,7 +24,8 @@ public class Store implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "firstOwner", referencedColumnName = "username")
     private User storeFirstOwner;
 
@@ -54,14 +56,14 @@ public class Store implements Serializable {
     @Transient
     private int discountID_counter;
 
+    public Store(){};
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
         this.inventory = new Inventory();
-        inventory.init(name);
-        initManagments();
-        initOwnerships();
+        this.ownerships = new HashMap<>();
+        this.managements = new HashMap<>();
         this.ownerships.put(firstOwner, owning);
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.discountPolicies = new ArrayList<>();
@@ -72,26 +74,18 @@ public class Store implements Serializable {
         this.discountID_counter = 0;
     }
 
-    private void initManagments() {
-        this.managements = new HashMap<>();
-        List<StoreManaging> sm = PersistenceController.readAllManagers(this.name);
-        User currUser;
-        for (StoreManaging s: sm){
-            currUser = SystemFacade.getInstance().getUserByName(s.getAppointeeName());
-            managements.put(currUser, s);
-            currUser.addManagedStore(this, s);
-        }
-    }
-
-    public void initOwnerships() {
+    public void init(){
+        this.inventory = new Inventory();
+        inventory.init(name);
         this.ownerships = new HashMap<>();
-        List<StoreOwning> so = PersistenceController.readAllOwners(this.name);
-        User currUser;
-        for (StoreOwning s:so){
-            currUser = SystemFacade.getInstance().getUserByName(s.getAppointeeName());
-            ownerships.put(currUser, s);
-            currUser.addOwnedStore(this, s);
-        }
+        this.managements = new HashMap<>();
+        this.purchaseHistory = new StorePurchaseHistory(this);
+        this.discountPolicies = new ArrayList<>();
+        this.discountsOnBaskets = new ArrayList<>();
+        this.discountsOnProducts = new HashMap<>();
+        this.purchasePolicies = new ArrayList<>();
+        this.reservedProducts = new HashMap<>();
+        this.discountID_counter = 0;
     }
 
     public User getStoreFirstOwner() {

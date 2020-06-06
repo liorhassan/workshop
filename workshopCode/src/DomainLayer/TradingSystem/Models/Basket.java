@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -19,26 +20,28 @@ public class Basket implements Serializable {
     @GeneratedValue
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "store", referencedColumnName = "name")
     private Store store;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "cart", referencedColumnName = "id")
-//    @JoinColumn(name = "sc", referencedColumnName = "id")
     private ShoppingCart sc;
 
     @Transient
     private List<ProductItem> productItems;
 
+    public Basket(){}
     public Basket(Store store, ShoppingCart sc) {
         this.store = store;
         this.sc = sc;
-        initProductItems();
+        this.productItems = new LinkedList<>();
     }
 
-    private void initProductItems() {
+    public void initProductItems() {
         productItems = PersistenceController.readAllProductItems(id);
     }
 

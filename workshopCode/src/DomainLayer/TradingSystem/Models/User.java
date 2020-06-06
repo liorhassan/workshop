@@ -26,6 +26,7 @@ public class User implements Serializable {
     @Transient
     private UserPurchaseHistory purchaseHistory;
 
+
     @Id
     @Column(name = "username", unique = true)
     private String username;
@@ -34,7 +35,7 @@ public class User implements Serializable {
         shoppingCart = new ShoppingCart(this);
         storeManagements = new HashMap<>();
         storeOwnings = new HashMap<>();
-        this.purchaseHistory = new UserPurchaseHistory(this);
+        this.purchaseHistory = new UserPurchaseHistory(this);//TODO: INIT PURCHASES
     }
 
     public void setUsername(String name) {

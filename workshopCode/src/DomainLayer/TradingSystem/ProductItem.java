@@ -16,19 +16,20 @@ public class ProductItem implements Serializable {
     @GeneratedValue
     private int id;
 
-    //    @JoinColumn(name = "product")
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "product", referencedColumnName = "name")
     private Product product;
 
     @Column(name = "amount")
     private int amount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne()
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "basket", referencedColumnName = "id")
     private Basket basket;
 
-
+    public ProductItem(){}
     public ProductItem(Product product, int amount, Basket basket) {
         this.product = product;
         this.amount = amount;
