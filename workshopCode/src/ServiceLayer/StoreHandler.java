@@ -338,7 +338,10 @@ public class StoreHandler {
         SystemFacade.getInstance().resetStores();
     }
     public void removeDiscountPolicies(String storeName){
-        SystemFacade.getInstance().removePolicies(storeName);
+        SystemFacade.getInstance().removeDescountPolicies(storeName);
+    }
+    public void removePurchasePolicies(String storeName){
+        SystemFacade.getInstance().removePurchasePolicies(storeName);
     }
 
     public String getMyStores(){
@@ -348,6 +351,7 @@ public class StoreHandler {
     public String checkAmountInInventory(String productName, String storeName) {
         return SystemFacade.getInstance().checkAmountInInventory(productName, storeName);
     }
+
 
     public String createJSONMsg(String type, String content) {
         JSONObject response = new JSONObject();
