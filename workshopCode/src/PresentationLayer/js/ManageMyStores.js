@@ -593,7 +593,7 @@ function showPopUp(action){
         window.location.href = "http://localhost:8080/html/DiscountsWindow.html";
 
     if(action == "Add New Purchase Policy")
-            window.location.href = "http://localhost:8080/html/PolicyWindow.html";
+            window.location.href = "http://localhost:8080/html/PurchasePolicy.html";
 
     document.getElementById(actionToModel[action]).style.display = "block";
 }
