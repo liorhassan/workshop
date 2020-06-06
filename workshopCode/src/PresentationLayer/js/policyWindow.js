@@ -1,3 +1,10 @@
+const window_name = "PolicyView";
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    .then(response=>response.json())
+    .then(updateNavBar);
+})
+
 const CATEGORY = "category"
 const PRODUCT = "product"
 const COMP = "composition"

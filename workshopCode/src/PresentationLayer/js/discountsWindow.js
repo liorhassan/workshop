@@ -1,4 +1,11 @@
+const window_name = "DiscountView";
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    .then(response=>response.json())
+    .then(updateNavBar);
+})
 function addNewDiscount(data) {
+
     data.store = document.getElementById("storeName").value;
     fetch("http://localhost:8080/tradingSystem/addDiscount", {
         method: "POST",
