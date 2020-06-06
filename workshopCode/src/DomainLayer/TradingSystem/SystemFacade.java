@@ -135,7 +135,7 @@ public class SystemFacade {
             }
         }
         if(matching.size()==0)
-           throw new RuntimeException("There are no products that match these parameters");
+            throw new RuntimeException("There are no products that match these parameters");
 //        lastSearchResult = matching;
         return matching.toJSONString();
         //return productListToString(lastSearchResult);
@@ -416,10 +416,10 @@ public class SystemFacade {
         response.put("description", s.getDescription());
         JSONArray productsArray = new JSONArray();
         for (Product currProduct : products) {
-           JSONObject curr = new JSONObject();
-           curr.put("productName", currProduct.getName());
-           curr.put("price", currProduct.getPrice());
-           productsArray.add(curr);
+            JSONObject curr = new JSONObject();
+            curr.put("productName", currProduct.getName());
+            curr.put("price", currProduct.getPrice());
+            productsArray.add(curr);
         }
         response.put("products", productsArray);
         return response.toJSONString();
@@ -646,9 +646,18 @@ public class SystemFacade {
     }
 
 
-    public void addDiscountOnProduct(String storeName, String productName, int percentage, int amount, boolean onAll){
+    public void addDiscountCondProductAmount(String storeName, String productName, int percentage, int amount){
         Store s = getStoreByName(storeName);
-        s.addDiscountForProduct(productName, percentage, amount, onAll);
+        s.addDiscountCondProductAmount(productName, percentage, amount);
+    }
+
+    public void addDiscountCondBasketProducts(String storeName, String productDiscount, String productCond, int percentage, int amount){
+        Store s = getStoreByName(storeName);
+        s.addDiscountCondBasketProducts(productDiscount, productCond, percentage, amount);
+    }
+    public void addDiscountRevealedProduct(String storeName, String productName, int percentage){
+        Store s = getStoreByName(storeName);
+        s.addDiscountRevealedForProduct(productName, percentage);
     }
 
     public void addDiscountOnBasket(String storeName, int percentage, int amount, boolean onAll){
@@ -657,10 +666,8 @@ public class SystemFacade {
     }
     public boolean productHasDiscount(String storeName, String productName){
         Store s = getStoreByName(storeName);
-        Product p = s.getProductByName(productName);
-        if(s.getDiscountsOnProducts().containsKey(p))
-            return true;
-        return false;
+        return s.hasRevDiscountOnProduct(productName);
+
     }
 
     public String myStores(UUID session_id){
@@ -738,48 +745,40 @@ public class SystemFacade {
     }
 
 
-    public DiscountPolicy buildDiscountPolicy(JSONObject policy, String storeName) {
-            DiscountPolicy newPolicy = null;
-            String type = (policy.containsKey("type")) ? ((String) policy.get("type")) : null;
-            if(type.equals("If")){
-                JSONObject condition = (policy.containsKey("condition")) ? ((JSONObject) policy.get("condition")) : null;
-                int discountId = (policy.containsKey("discountId")) ? Integer.parseInt(policy.get("discountId").toString()) : null;
-                DiscountBInterface discount = searchDiscountById(storeName, discountId);
-                if(discount == null){
-                    throw new IllegalArgumentException("invalid discountId");
-                }
-                newPolicy = new DiscountPolicyIf(discount, buildDiscountPolicy(condition, storeName));
-            }
-            else if(type.equals("Comp")){
-                String operator = (policy.containsKey("operator")) ? ((String) policy.get("operator")) : null;
+    public DiscountBInterface buildDiscountPolicy(JSONObject policy, String storeName) {
+        DiscountBInterface newPolicy = null;
+        String type = (policy.containsKey("type")) ? ((String) policy.get("type")) : null;
+        if(type.equals("compose")){
+            String operator = (policy.containsKey("operator")) ? ((String) policy.get("operator")) : null;
+            if(operator.equals("IF_THEN")){
                 JSONObject operand1 = (policy.containsKey("operand1")) ? ((JSONObject) policy.get("operand1")) : null;
                 JSONObject operand2 = (policy.containsKey("operand2")) ? ((JSONObject) policy.get("operand2")) : null;
-                String[] args = {operator};
-                if(emptyString(args)){
-                    throw new IllegalArgumentException("invalid operator");
-                }
-                PolicyOperator polOperator = parseOperator(operator);
-                newPolicy = new DiscountPolicyComp(buildDiscountPolicy(operand1, storeName), buildDiscountPolicy(operand2, storeName), polOperator);
-            }
-            else if(type.equals("simpleCategory")){
-                String category = (policy.containsKey("category")) ? ((String) policy.get("category")) : null;
-                String[] args = {category};
-                if(emptyString(args)){
-                    throw new IllegalArgumentException("invalid category");
-                }
-                Category cat = Category.valueOf(category);
-                newPolicy = new PolicyCondCategory(cat);
-            }
-            else if(type.equals("simpleProduct")){
-                String product = (policy.containsKey("productName")) ? ((String) policy.get("productName")) : null;
-                String[] args = {product};
-                if(emptyString(args) || !checkIfProductExists(storeName, product)){
-                    throw new IllegalArgumentException("invalid product name");
-                }
 
-                newPolicy = new PolicyCondProduct(product);
+                newPolicy = new DiscountPolicyIf(buildDiscountPolicy(operand1,storeName), buildDiscountPolicy(operand2, storeName));
             }
-            return newPolicy;
+            if(operator.equals("XOR")){
+                JSONObject operand1 = (policy.containsKey("operand1")) ? ((JSONObject) policy.get("operand1")) : null;
+                JSONObject operand2 = (policy.containsKey("operand2")) ? ((JSONObject) policy.get("operand2")) : null;
+
+                newPolicy = new DiscountPolicyXor(buildDiscountPolicy(operand1,storeName), buildDiscountPolicy(operand2, storeName));
+            }
+            if(operator.equals("AND")){
+                JSONObject operand1 = (policy.containsKey("operand1")) ? ((JSONObject) policy.get("operand1")) : null;
+                JSONObject operand2 = (policy.containsKey("operand2")) ? ((JSONObject) policy.get("operand2")) : null;
+
+                newPolicy = new DiscountPolicyAnd(buildDiscountPolicy(operand1,storeName), buildDiscountPolicy(operand2, storeName));
+            }
+        }
+
+        else if(type.equals("simple")){
+            int discountId = (policy.containsKey("discountId")) ? Integer.parseInt( policy.get("discountId").toString()) : -1;
+            if(discountId == -1)
+                throw new IllegalArgumentException("invalid discountId");
+            Store store = getStoreByName(storeName);
+            DiscountBInterface discount= store.getDiscountById(discountId);
+            newPolicy = discount;
+        }
+        return newPolicy;
 
     }
 
@@ -807,7 +806,7 @@ public class SystemFacade {
             if(emptyString(args) || getStoreByName(storeName) == null){
                 throw new IllegalArgumentException("store doesnt exist");
             }
-            DiscountPolicy discount = buildDiscountPolicy(requestJson, storeName);
+            DiscountBInterface discount = buildDiscountPolicy(requestJson, storeName);
             if(discount == null){
                 throw new IllegalArgumentException("cant add the discount policy");
             }
@@ -816,11 +815,86 @@ public class SystemFacade {
             }
             return "the discount policy added successfully";
 
-            }
-         catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
+
+
+    public PurchasePolicy buildPurchasePolicy(JSONObject policy, Store store) {
+        PurchasePolicy newPolicy = null;
+        String type = (policy.containsKey("type")) ? ((String) policy.get("type")) : null;
+        if(type.equals("compose")) {
+            String operatorStr = (policy.containsKey("operator")) ? ((String) policy.get("operator")) : null;
+            PolicyOperator operator = parseOperator(operatorStr);
+            if (operator != null) {
+                JSONObject operand1 = (policy.containsKey("operand1")) ? ((JSONObject) policy.get("operand1")) : null;
+                JSONObject operand2 = (policy.containsKey("operand2")) ? ((JSONObject) policy.get("operand2")) : null;
+                newPolicy = new PurchasePolicyComp(buildPurchasePolicy(operand1, store), buildPurchasePolicy(operand2, store), operator);
+            } else
+                throw new IllegalArgumentException("store doesnt exist");
+        }
+
+
+        else if(type.equals("PurchasePolicyProduct")){
+            String productName = (policy.containsKey("productName")) ? ((String) policy.get("productName")) : null;
+            if(checkIfProductExists(store.getName(), productName)){
+                throw new IllegalArgumentException(" this product " + productName + "does not exist in store");
+            }
+            Product p = store.getProductByName(productName);
+            Integer amount = (policy.containsKey("amount:")) ? ((int) policy.get("amount")) : null;
+            if(amount == null)
+                throw new IllegalArgumentException("invalid - no amount");
+            Boolean minOrMax = (policy.containsKey("minOrMax:")) ? ((boolean) policy.get("minOrMax")) : null;
+            if(minOrMax == null)
+                throw new IllegalArgumentException("invalid - no minOrMax");
+
+            //newPolicy = new PurchasePolicyProduct(productName, amount, minOrMax);
+        }
+
+        else if(type.equals("PurchasePolicyStore")){
+
+            Integer limit = (policy.containsKey("limit:")) ? ((int) policy.get("limit")) : null;
+            if(limit == null)
+                throw new IllegalArgumentException("invalid - no limit");
+            Boolean minOrMax = (policy.containsKey("minOrMax:")) ? ((boolean) policy.get("minOrMax")) : null;
+            if(minOrMax == null)
+                throw new IllegalArgumentException("invalid - no minOrMax");
+
+            //newPolicy = new PurchasePolicyStore( limit, minOrMax);
+        }
+
+        return newPolicy;
+
+    }
+
+
+    public String addPurchasePolicy(String jsonString) {
+        try {
+            JSONParser parser = new JSONParser();
+            JSONObject requestJson = (JSONObject) parser.parse(jsonString);
+            String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+            String[] args = {storeName};
+            Store store = getStoreByName(storeName);
+            if(emptyString(args) || getStoreByName(storeName) == null){
+                throw new IllegalArgumentException("store doesnt exist");
+            }
+            PurchasePolicy  purchasePolicy = buildPurchasePolicy(requestJson, store);
+            if(purchasePolicy == null){
+                throw new IllegalArgumentException("cant add the purchase policy");
+            }
+            else{
+                store.addPurchasePolicy(purchasePolicy);
+            }
+            return "the discount policy added successfully";
+
+        }
+        catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
 
     public String checkAmountInInventory(String productName, String storeName) {
         Store s = getStoreByName(storeName);
@@ -831,7 +905,7 @@ public class SystemFacade {
                 if(amount != null) {
                     return String.valueOf(amount);
                 }
-             }
+            }
         }
         return "";
     }
@@ -841,5 +915,10 @@ public class SystemFacade {
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
         return String.valueOf(se.getLoggedin_user().getShoppingCart().getTotalCartPrice());
+    }
+
+    public void removePolicies(String storeName){
+        Store store = getStoreByName(storeName);
+        store.removeDiscountPolicies();
     }
 }
