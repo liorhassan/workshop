@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Create table if not exists -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <!-- The JDBC driver of your database -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <!-- SQL dialect -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL55Dialect</property>
+        <!-- The JDBC URL to the database instance -->
+        <!--property name="hibernate.connection.url">jdbc:mysql://localhost/tradingsystem?useUnicode=true&ampuseJDBCCompliantTimezoneShift=true&ampuseLegacyDatetimeCode=false&ampserverTimezone=UTC</property-->
+        <property name="hibernate.connection.url">jdbc:mysql://localhost/tradingsystem?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC</property>
+        <!-- The database username -->
+        <property name="hibernate.connection.username">root</property>
+        <!-- The database password -->
+        <property name="hibernate.connection.password">toya1234</property>
+    </session-factory>
+</hibernate-configuration>
+
+

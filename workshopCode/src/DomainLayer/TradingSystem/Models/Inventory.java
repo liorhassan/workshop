@@ -1,12 +1,15 @@
 package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.TradingSystem.ProductItem;
-
-import java.util.Collection;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Inventory {
+@Entity
+@Table(name = "Inventory")
+public class Inventory implements Serializable {
+
     private ConcurrentHashMap<Product,Integer> products;
 
     public Inventory() {

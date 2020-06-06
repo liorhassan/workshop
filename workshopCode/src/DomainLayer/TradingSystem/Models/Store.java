@@ -1,13 +1,15 @@
 package DomainLayer.TradingSystem.Models;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Store {
+public class Store implements Serializable {
 
     private Inventory inventory;
     private String name;
@@ -41,7 +43,6 @@ public class Store {
         this.reservedProducts= new ConcurrentHashMap<>();
         this.discountID_counter = 0;
     }
-
 
     public User getStoreFirstOwner() {
         return storeFirstOwner;
@@ -119,7 +120,11 @@ public class Store {
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        inventory.getProducts().put(new Product(productName, productCategory, productDescription, productPrice), amount);
+        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name);
+        inventory.getProducts().put(p, amount);
+
+        // save to DB
+        PersistenceController.create(p);
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
@@ -129,6 +134,7 @@ public class Store {
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
                 inventory.getProducts().put(p, amount);
+                PersistenceController.update(p);
                 break;
             }
         }

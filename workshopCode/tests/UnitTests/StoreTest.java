@@ -26,8 +26,8 @@ public class StoreTest {
     @Test
     public void checkIfProductAvailable() {
         assertFalse(store.checkIfProductAvailable("Shirt",1));
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0, "Fox");
+        Product p2 = new Product("Dress",null,null,45.5, "Fox");
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         assertTrue(store.checkIfProductAvailable("Shirt",7));
@@ -37,8 +37,8 @@ public class StoreTest {
     @Test
     public void getProductByName() {
         assertNull(store.getProductByName("Shirt"));
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0, "Fox");
+        Product p2 = new Product("Dress",null,null,45.5,"Fox");
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         assertEquals(p,store.getProductByName("Shirt"));
@@ -59,8 +59,8 @@ public class StoreTest {
     public void hasProduct() {
         assertFalse(store.hasProduct("Shirt"));
         assertFalse(store.hasProduct("Dress"));
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0,"Fox");
+        Product p2 = new Product("Dress",null,null,45.5,"Fox");
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         assertTrue(store.hasProduct("Shirt"));
@@ -69,8 +69,8 @@ public class StoreTest {
 
     @Test
     public void updateInventory() {
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0,"Fox");
+        Product p2 = new Product("Dress",null,null,45.5, "Fox");
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         store.updateInventory("Shirt",30.0,null,"test",7);
@@ -81,8 +81,8 @@ public class StoreTest {
 
     @Test
     public void purchaseProduct() {
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0,"Fox");
+        Product p2 = new Product("Dress",null,null,45.5,"Fox");
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         store.reserveProduct(p,3);
