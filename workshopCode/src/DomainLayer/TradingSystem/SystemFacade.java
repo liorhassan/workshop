@@ -664,6 +664,17 @@ public class SystemFacade {
         Store s = getStoreByName(storeName);
         s.addDiscountForBasket(percentage, amount, onAll);
     }
+
+    public void addPurchasePolicyProduct(String storeName, String productName, int amount, boolean minOrMax, boolean standAlone){
+        Store s = getStoreByName(storeName);
+        s.addSimplePurchasePolicyProduct(productName, amount, minOrMax, standAlone);
+    }
+
+    public void addPurchasePolicyStore(String storeName, int amount, boolean minOrMax, boolean standAlone){
+        Store s = getStoreByName(storeName);
+        s.addSimplePurchasePolicyStore( amount, minOrMax, standAlone);
+    }
+
     public boolean productHasDiscount(String storeName, String productName){
         Store s = getStoreByName(storeName);
         return s.hasRevDiscountOnProduct(productName);
@@ -737,6 +748,21 @@ public class SystemFacade {
     public String viewDiscounts(String storeName){
         Store store = getStoreByName(storeName);
         return store.viewDiscount();
+    }
+
+    public String viewDiscountsForChoose(String storeName){
+        Store store = getStoreByName(storeName);
+        return store.viewDiscountForChoose();
+    }
+
+    public String viewPurchasePolicies(String storeName){
+        Store store = getStoreByName(storeName);
+        return store.viewPurchasePolicies();
+    }
+
+    public String viewPurchasePoliciesForChoose(String storeName){
+        Store store = getStoreByName(storeName);
+        return store.viewPurchasePoliciesForChoose();
     }
 
     public DiscountBInterface searchDiscountById(String storeName, int discountId){
@@ -837,33 +863,14 @@ public class SystemFacade {
         }
 
 
-        else if(type.equals("PurchasePolicyProduct")){
-            String productName = (policy.containsKey("productName")) ? ((String) policy.get("productName")) : null;
-            if(checkIfProductExists(store.getName(), productName)){
-                throw new IllegalArgumentException(" this product " + productName + "does not exist in store");
+        else if(type.equals("simple")){
+
+                int purchaseId = (policy.containsKey("purchaseId")) ? Integer.parseInt( policy.get("purchaseId").toString()) : -1;
+                if(purchaseId == -1)
+                    throw new IllegalArgumentException("invalid discountId");
+                PurchasePolicy pp= store.getPurchasePolicyById(purchaseId);
+                newPolicy = pp;
             }
-            Product p = store.getProductByName(productName);
-            Integer amount = (policy.containsKey("amount:")) ? ((int) policy.get("amount")) : null;
-            if(amount == null)
-                throw new IllegalArgumentException("invalid - no amount");
-            Boolean minOrMax = (policy.containsKey("minOrMax:")) ? ((boolean) policy.get("minOrMax")) : null;
-            if(minOrMax == null)
-                throw new IllegalArgumentException("invalid - no minOrMax");
-
-            //newPolicy = new PurchasePolicyProduct(productName, amount, minOrMax);
-        }
-
-        else if(type.equals("PurchasePolicyStore")){
-
-            Integer limit = (policy.containsKey("limit:")) ? ((int) policy.get("limit")) : null;
-            if(limit == null)
-                throw new IllegalArgumentException("invalid - no limit");
-            Boolean minOrMax = (policy.containsKey("minOrMax:")) ? ((boolean) policy.get("minOrMax")) : null;
-            if(minOrMax == null)
-                throw new IllegalArgumentException("invalid - no minOrMax");
-
-            //newPolicy = new PurchasePolicyStore( limit, minOrMax);
-        }
 
         return newPolicy;
 

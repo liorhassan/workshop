@@ -92,14 +92,6 @@ public class Store implements Serializable {
                     return dis;
             }
         }
-
-        for (DiscountBInterface dis : discountsOnProducts) {
-            if(dis instanceof DiscountSimple){
-                if (((DiscountSimple) dis).getDiscountID() == discountId)
-                    return dis;
-            }
-        }
-
         return null;
     }
 
@@ -411,10 +403,82 @@ public class Store implements Serializable {
 
         for(DiscountBInterface dis :discountsOnBasket){
             JSONObject curr = new JSONObject();
+            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
+            curr.put("discountString", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+        for(DiscountBInterface dis :discountPolicies){
+            JSONObject curr = new JSONObject();
             curr.put("discountPolicyString", dis.discountDescription());
             discountsdes.add(curr);
         }
+
         return discountsdes.toJSONString();
+    }
+
+    public String viewDiscountForChoose(){
+        JSONArray discountsdes = new JSONArray();
+        for(DiscountBInterface dis :discountsOnProducts){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
+            curr.put("discountString", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+
+        for(DiscountBInterface dis :discountsOnBasket){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
+            curr.put("discountString", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+
+        return discountsdes.toJSONString();
+    }
+
+    public String viewPurchasePolicies(){
+        JSONArray purchaePolicy = new JSONArray();
+        for(PurchasePolicy pp :purchasePolicies){
+            JSONObject curr = new JSONObject();
+            curr.put("purchaseString", pp.getPurchaseDescription());
+            purchaePolicy.add(curr);
+        }
+
+        return purchaePolicy.toJSONString();
+    }
+
+    public String viewPurchasePoliciesForChoose(){
+        JSONArray purchaePolicy = new JSONArray();
+        for(PurchasePolicy pp :purchasePolicies) {
+            if (pp instanceof PurchasePolicyStore) {
+                JSONObject curr = new JSONObject();
+                curr.put("purchaseId", ((PurchasePolicyStore) pp).getPurchaseId());
+                curr.put("description", (pp.getPurchaseDescription()));
+                purchaePolicy.add(curr);
+            }
+            else if(pp instanceof PurchasePolicyProduct){
+                JSONObject curr = new JSONObject();
+                curr.put("purchaseId", ((PurchasePolicyProduct) pp).getPurchaseId());
+                curr.put("description", (pp.getPurchaseDescription()));
+                purchaePolicy.add(curr);
+            }
+        }
+
+        for(PurchasePolicy pp : notStandAlonePolicies) {
+            if (pp instanceof PurchasePolicyStore) {
+                JSONObject curr = new JSONObject();
+                curr.put("purchaseId", ((PurchasePolicyStore) pp).getPurchaseId());
+                curr.put("description", (pp.getPurchaseDescription()));
+                purchaePolicy.add(curr);
+            }
+            else if(pp instanceof PurchasePolicyProduct){
+                JSONObject curr = new JSONObject();
+                curr.put("purchaseId", ((PurchasePolicyProduct) pp).getPurchaseId());
+                curr.put("description", (pp.getPurchaseDescription()));
+                purchaePolicy.add(curr);
+            }
+        }
+
+        return purchaePolicy.toJSONString();
     }
 
 
