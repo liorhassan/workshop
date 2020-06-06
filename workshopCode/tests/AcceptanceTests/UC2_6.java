@@ -26,7 +26,7 @@ public class UC2_6 {
         (new UsersHandler()).login("shenhav", "toya", false);
         (new StoreHandler()).openNewStore("FoxHome", "stuff for home");
         (new StoreHandler()).UpdateInventory("FoxHome", "pillow", 25.0, "BeautyProducts", "beauty pillow", 1);
-
+hf
     }
 
     @AfterClass
