@@ -448,10 +448,7 @@ function showPopUp(action){
         .then(updateSupplyProducts)
     }
     if(action == "Add New Discount")
-        window.location.href = "http://localhost:8080/html/discountsWindow.html";
-
-    if(action == "Add new Discount Policy")
-            window.location.href = "http://localhost:8080/html/PolicyWindow.html";
+        window.location.href = "http://localhost:8080/html/DiscountsWindow.html";
 
     document.getElementById(actionToModel[action]).style.display = "block";
 }
