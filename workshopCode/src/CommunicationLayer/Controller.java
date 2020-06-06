@@ -319,7 +319,7 @@ public class Controller {
             }
         });
 
-        //accept: {store:""}
+        //accept: {session_id: "", store:""}
         //retrieve: [{name: ""},...]
         server.createContext("/tradingSystem/newOwnerCandidates", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -328,7 +328,8 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                //String response = storeHandler.getOwnerCandidates(storeName); TODO: implement missing functionality
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                //String response = storeHandler.getOwnerCandidates(session_id, storeName); TODO: implement missing functionality
                 JSONArray ja = new JSONArray();
                 JSONObject jo1 = new JSONObject();
                 JSONObject jo2 = new JSONObject();
@@ -349,7 +350,7 @@ public class Controller {
             }
         });
 
-        //accept: {user: "", store:""}
+        //accept: {session_id: "", user: "", store:""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/removeStoreOwner", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -359,7 +360,8 @@ public class Controller {
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
-                //String response = storeHandler.removeStoreOwner(userName, storeName);
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                //String response = storeHandler.removeStoreOwner(session_id, userName, storeName);
                 String response = "";//TODO
                 headers.set("removeStoreOwner", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
@@ -389,9 +391,6 @@ public class Controller {
                 String desc = (requestJson.containsKey("desc")) ? (String) requestJson.get("desc") : null;
                 Integer amount = (requestJson.containsKey("amount")) && (!requestJson.get("amount").toString().equals("")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
-
-
-
                 String response = storeHandler.UpdateInventory(UUID.fromString(session_id), storeName, productName, price, category, desc, amount);
 
                 headers.set("updateInventory", String.format("application/json; charset=%s", UTF8));
