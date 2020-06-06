@@ -23,6 +23,7 @@ public class Store implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "firstOwner", referencedColumnName = "username")
     private User storeFirstOwner;
 

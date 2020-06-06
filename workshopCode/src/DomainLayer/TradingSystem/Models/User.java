@@ -57,6 +57,8 @@ public class User implements Serializable {
         this.shoppingCart = PersistenceController.readUserCart(this.username);
         if(this.shoppingCart == null)
             this.shoppingCart = new ShoppingCart(this);
+        else
+            shoppingCart.initBaskets();
     }
 
     public void removeStoreManagement(Store store) {

@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.beans.PersistenceDelegate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,11 +32,11 @@ public class SystemFacade {
     private SystemFacade() {
         User u = new User();
         u.setUsername("noy");
+        PersistenceController.create(u);
         Store s = new Store("Lalin", "blabla", u, new StoreOwning("Lalin", "noy"));
+        PersistenceController.create(s);
         s.addToInventory("soap", 1, Category.Clothing, "blabla", 5);
         u.getShoppingCart().addProduct("soap", s, 5);
-        PersistenceController.create(u);
-        PersistenceController.create(s);
         PersistenceController.create(u.getShoppingCart());
 
         initSubscribedUsers();

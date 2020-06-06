@@ -19,14 +19,14 @@ public class Basket implements Serializable {
     @GeneratedValue
     private int id;
 
-//    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store", referencedColumnName = "name")
     private Store store;
 
 
-//    @ManyToOne
-//@JoinColumn(name = "cart")
-    @JoinColumn(name = "sc", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart", referencedColumnName = "id")
+//    @JoinColumn(name = "sc", referencedColumnName = "id")
     private ShoppingCart sc;
 
     @Transient

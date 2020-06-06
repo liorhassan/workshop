@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "storeManagings")
 public class StoreManaging implements Serializable {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointer", referencedColumnName = "username")
     private User appointer;
 

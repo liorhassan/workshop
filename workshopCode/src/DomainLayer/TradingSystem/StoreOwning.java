@@ -1,7 +1,7 @@
 package DomainLayer.TradingSystem;
 
 import DomainLayer.TradingSystem.Models.User;
-
+import DataAccessLayer.PersistenceController;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.List;
 @Table(name = "storeOwnings")
 public class StoreOwning implements Serializable {
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointer", referencedColumnName = "username")
     private User appointer;
 
@@ -34,6 +35,9 @@ public class StoreOwning implements Serializable {
         String[] perms = {"Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add new Discount Policy"};
         for(String p : perms)
             permissions.add(new Permission(p));
+
+        // save to db
+        PersistenceController.create(this);
     }
 
     public StoreOwning(User appointer, String storeName, String appointeeName) {

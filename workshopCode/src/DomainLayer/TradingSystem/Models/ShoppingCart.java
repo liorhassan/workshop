@@ -24,6 +24,7 @@ public class ShoppingCart implements Serializable {
     @Transient
     private HashMap<Store, Basket> baskets;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user", referencedColumnName = "username")
     private User user;
 
@@ -35,11 +36,11 @@ public class ShoppingCart implements Serializable {
 
     public ShoppingCart(User user) {
         this.user = user;
-        initBaskets();
+        this.baskets = new HashMap<Store, Basket>();
         this.isHistory = false;
     }
 
-    private void initBaskets() {
+    public void initBaskets() {
         this.baskets = new HashMap<>();
         List<Basket> b = PersistenceController.readAllBasket(id);
         for(Basket curr: b) {
@@ -52,6 +53,7 @@ public class ShoppingCart implements Serializable {
             Basket b = new Basket(store, this);
             b.addProduct(store.getProductByName(product), amount);
             baskets.put(store, b);
+
             //create Basket in DB
             PersistenceController.create(b);
         } else {

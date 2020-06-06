@@ -17,13 +17,15 @@ public class ProductItem implements Serializable {
     private int id;
 
     //    @JoinColumn(name = "product")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product", referencedColumnName = "name")
     private Product product;
 
     @Column(name = "amount")
     private int amount;
 
-    @JoinColumn(name = "basket")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "basket", referencedColumnName = "id")
     private Basket basket;
 
 
