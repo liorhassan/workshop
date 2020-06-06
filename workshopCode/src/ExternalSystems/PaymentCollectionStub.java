@@ -5,8 +5,8 @@ import DomainLayer.TradingSystem.Models.User;
 
 public class PaymentCollectionStub implements PaymentCollection{
 
-    public boolean pay(ShoppingCart sc, User user){
-        if(sc.getTotalCartPrice() >= 1000)
+    public boolean pay(double totalPrice, User user){
+        if(totalPrice >= 1000)
             return false;
         return true;
     }

@@ -97,7 +97,7 @@ public class ShoppingCart {
     public String viewOnlyProducts() {
         if (baskets.isEmpty())
             throw new RuntimeException("There are no products to view");
-        return view();//TODO:??????????????????
+        return view();
         //return view().substring(28);
     }
 
@@ -105,8 +105,7 @@ public class ShoppingCart {
         double totalPrice = 0;
         for (Basket currBasket : this.baskets.values()) {
             Store currStore = currBasket.getStore();
-            List<DiscountBInterface> discounts = currBasket.getStore().getDiscountsOnBasket(currBasket);
-            totalPrice += currStore.calculateTotalCheck(currBasket, discounts);
+            totalPrice += currStore.calculateTotalCheck(currBasket);
         }
         this.cartTotalPrice = totalPrice;
     }
@@ -116,9 +115,8 @@ public class ShoppingCart {
     //if a product is unavailable - return all reserved products in the cart and throws exception
     public void reserveBaskets(){
         for(Basket b: baskets.values()){
-            Store s = b.getStore();
             try{
-                s.reserveBasket(b);
+                b.reserve();
             }
             catch (Exception e){
                 unreserveProducts();
@@ -131,11 +129,7 @@ public class ShoppingCart {
     //if such products exist, it returns them
     public void unreserveProducts(){
         for(Basket b: baskets.values()){
-            Store s = b.getStore();
-            if(!s.getReservedProducts(b).isEmpty()){
-                //there are reserved products in the basket that needs to be returned
-                s.unreserveBasket(b);
-            }
+            b.unreserve();
         }
     }
 
@@ -159,6 +153,7 @@ public class ShoppingCart {
     }
 
     public double getTotalCartPrice(){
+        computeCartPrice();
         return this.cartTotalPrice;
     }
 
