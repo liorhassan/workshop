@@ -6,9 +6,11 @@ import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.UUID;
+
 public class UsersHandler {
 
-    public String login(String username, String password, boolean mood){
+    public String login(UUID session_id, String username, String password, boolean mood){
 
         SystemLogger.getInstance().writeEvent("Login command: " + username);
 
@@ -27,7 +29,7 @@ public class UsersHandler {
             }
             if(mood && !(SystemFacade.getInstance().checkIfUserIsAdmin(username)))
                 throw new IllegalArgumentException("this user is not a system admin");
-            SystemFacade.getInstance().login(username, mood);
+            SystemFacade.getInstance().login(session_id, username, mood);
             return createJSONMsg("SUCCESS", "You have been successfully logged in!");
             //return "You have been successfully logged in!";
         }
@@ -40,9 +42,9 @@ public class UsersHandler {
     }
 
 
-    public String logout(){
+    public String logout(UUID session_id){
         SystemLogger.getInstance().writeEvent("Logout command");
-        return createJSONMsg("SUCCESS", SystemFacade.getInstance().logout());
+        return createJSONMsg("SUCCESS", SystemFacade.getInstance().logout(session_id));
         //return SystemFacade.getInstance().logout();
     }
 
@@ -110,8 +112,8 @@ public class UsersHandler {
         return response.toJSONString();
     }
 
-    public String isLoggedIn(){
-        return SystemFacade.getInstance().checkIfActiveUserSubscribed() ? createJSONMsg("loggedin","True") : createJSONMsg("loggedin","False");
+    public String isLoggedIn(UUID sessin_id){
+        return SystemFacade.getInstance().checkIfActiveUserSubscribed(sessin_id) ? createJSONMsg("loggedin","True") : createJSONMsg("loggedin","False");
     }
 
 }

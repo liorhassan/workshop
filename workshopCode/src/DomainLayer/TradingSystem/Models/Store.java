@@ -7,15 +7,16 @@ import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.DoubleBinaryOperator;
 
 public class Store implements Serializable {
 
     private Inventory inventory;
     private String name;
-    private HashMap<User, StoreManaging> managements;
-    private HashMap<User, StoreOwning> ownerships;
-    private HashMap<User, AppointmentAgreement> waitingAgreements;
+    private ConcurrentHashMap<User, StoreManaging> managements;
+    private ConcurrentHashMap<User, StoreOwning> ownerships;
+    private ConcurrentHashMap<User, AppointmentAgreement> waitingAgreements;
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
@@ -26,7 +27,7 @@ public class Store implements Serializable {
     private List<PurchasePolicy> purchasePolicies;
     private boolean doubleDiscounts;                    //on products and basketPrice
 
-    private HashMap<Basket, List<ProductItem>> reservedProducts;
+    private ConcurrentHashMap<Basket, List<ProductItem>> reservedProducts;
     private int discountID_counter;
     private int purchaseID_counter;
 
@@ -35,8 +36,8 @@ public class Store implements Serializable {
         this.description = description;
         this.storeFirstOwner = firstOwner;
         this.inventory = new Inventory();
-        this.managements = new HashMap<>();
-        this.ownerships = new HashMap<>();
+        this.managements = new ConcurrentHashMap<>();
+        this.ownerships = new ConcurrentHashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
@@ -44,8 +45,8 @@ public class Store implements Serializable {
         this.notStandAlonePolicies = new ArrayList<>();
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
-        this.reservedProducts= new HashMap<>();
-        this.waitingAgreements = new HashMap<>();
+        this.reservedProducts= new ConcurrentHashMap<>();
+        this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
         this.purchaseID_counter = 0;
         this.doubleDiscounts = true;
@@ -80,7 +81,7 @@ public class Store implements Serializable {
     }
 
 
-    public HashMap<Product, Integer> getInventory() {
+    public ConcurrentHashMap<Product, Integer> getInventory() {
         return inventory.getProducts();
     }
 
@@ -219,15 +220,15 @@ public class Store implements Serializable {
         }
     }
 
-    public HashMap<User, StoreManaging> getManagements() {
+    public ConcurrentHashMap<User, StoreManaging> getManagements() {
         return managements;
     }
 
-    public HashMap<User, StoreOwning> getOwnerships() {
+    public ConcurrentHashMap<User, StoreOwning> getOwnerships() {
         return ownerships;
     }
 
-    public void setManagements(HashMap<User, StoreManaging> managements) {
+    public void setManagements(ConcurrentHashMap<User, StoreManaging> managements) {
         this.managements = managements;
     }
 
