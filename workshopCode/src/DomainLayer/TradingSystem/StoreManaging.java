@@ -13,7 +13,7 @@ public class StoreManaging {
     public StoreManaging(User appointer) {
         this.appointer = appointer;
         this.permissions = new LinkedList<>();
-
+        this.permissions.add(new Permission(("View Purchasing History")));
     }
 
     public User getAppointer() {

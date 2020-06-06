@@ -5,6 +5,6 @@ import DomainLayer.TradingSystem.Models.User;
 
 public interface PaymentCollection {
 
-    boolean pay(ShoppingCart sc, User user);
+    boolean pay(double totalPrice, User user);
 
     }

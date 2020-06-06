@@ -1,15 +1,17 @@
 package DomainLayer.TradingSystem.Models;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.DoubleBinaryOperator;
 
-public class Store {
+public class Store implements Serializable {
 
-    private Inventory products;
+    private Inventory inventory;
     private String name;
     private HashMap<User, StoreManaging> managements;
     private HashMap<User, StoreOwning> ownerships;
@@ -29,7 +31,7 @@ public class Store {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
-        this.products = new Inventory();
+        this.inventory = new Inventory();
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
@@ -65,22 +67,16 @@ public class Store {
     }
 
     public Collection<Product> getProducts(){
-        return  products.getProducts().keySet();
+        return  inventory.getProducts().keySet();
     }
 
     public void setDoubleDiscounts(boolean doubleDiscounts){
         this.doubleDiscounts = doubleDiscounts;
     }
 
-    public boolean checkIfProductAvailable(String product, int amount){
-        Product p = getProductByName(product);
-        if(p == null)
-            return false;
-        return products.getProducts().get(p) >= amount;
-    }
 
     public HashMap<Product, Integer> getInventory() {
-        return products.getProducts();
+        return inventory.getProducts();
     }
 
     public DiscountBInterface getDiscountById(int discountId){
@@ -133,13 +129,7 @@ public class Store {
         return null;
     }
 
-    public Product getProductByName(String productName){
-        for (Product p : products.getProducts().keySet()) {
-            if (p.getName().equals(productName))
-                return p;
-        }
-        return null;
-    }
+
 
     public boolean isOwner(User user) {
         return ownerships.containsKey(user);
@@ -158,15 +148,6 @@ public class Store {
 
     }
 
-    public User getOwnerAppointer(User user) {
-        User appointer = null;
-        StoreOwning manage = ownerships.get(user);
-        if(manage != null)
-            appointer = manage.getAppointer();
-        return appointer;
-
-    }
-
     public void removeManager(User user) {
         managements.remove(user);
         user.removeStoreManagement(this);
@@ -175,7 +156,7 @@ public class Store {
     }
 
     public boolean hasProduct(String productName) {
-        for (Product p : products.getProducts().keySet()){
+        for (Product p : inventory.getProducts().keySet()){
             if (p.getName().equals(productName))
                 return true;
         }
@@ -183,20 +164,25 @@ public class Store {
     }
 
     public Inventory getProductsInventory(){
-        return this.products;
+        return this.inventory;
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        products.getProducts().put(new Product(productName, productCategory, productDescription, productPrice), amount);
+        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name);
+        inventory.getProducts().put(p, amount);
+
+        // save to DB
+        PersistenceController.create(p);
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        for (Product p : products.getProducts().keySet()){
+        for (Product p : inventory.getProducts().keySet()){
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
-                products.getProducts().put(p, amount);
+                inventory.getProducts().put(p, amount);
+                PersistenceController.update(p);
                 break;
             }
         }
@@ -215,8 +201,10 @@ public class Store {
     }
 
     public void addManager(User user, StoreManaging storeManaging){
-        if (!managements.containsKey(user))
+        if (!managements.containsKey(user)) {
             managements.put(user, storeManaging);
+            NotificationSystem.getInstance().notify(user.getUsername(), "You have been appointed as " + name + "'s store manager");
+        }
     }
 
     // before activating this function make sure the new Owner is registered!!!
@@ -227,26 +215,12 @@ public class Store {
         NotificationSystem.getInstance().notify(newOwner.getUsername(), "You have been appointed as " + name + "'s store owner");
     }
 
-    //reserve a specific product
-    //returns false if the product is unavailable in the inventory
-    public boolean reserveProduct(Product p, int amount){
-        if(checkIfProductAvailable(p.getName(), amount)){
-            int prevAmount = this.products.getProducts().get(p);
-            if(prevAmount == amount){
-                this.products.getProducts().remove(p);
-            }
-            else{
-                this.products.getProducts().replace(p, prevAmount - amount);
-            }
-            return true;
-        }
-        return false;
-    }
 
-    //for each products in the basket - checks if the product meets the purchase policy requirements
-    //if it does - reserve the product and adds it to the reserved products list
+
+    //for each inventory in the basket - checks if the product meets the purchase policy requirements
+    //if it does - reserve the product and adds it to the reserved inventory list
     public void reserveBasket(Basket b){
-        //this field save all the products that have been reserved
+        //this field save all the inventory that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
         for(PurchasePolicy p : purchasePolicies){
             if(!p.purchaseAccordingToPolicy(b))
@@ -256,7 +230,7 @@ public class Store {
         for (ProductItem pi : products) {
             Product p = pi.getProduct();
             int amount = pi.getAmount();
-            if(!reserveProduct(p, amount)){
+            if(!this.inventory.reserveProduct(p, amount)){
                 throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
             }
             this.reservedProducts.get(b).add(pi);
@@ -269,12 +243,7 @@ public class Store {
 
     public void unreserveBasket(Basket b){
         for(ProductItem pi: this.reservedProducts.get(b)){
-            if(products.getProducts().get(pi.getProduct()) != null){
-                products.getProducts().put(pi.getProduct(), products.getProducts().get(pi.getProduct()) + pi.getAmount());
-            }
-            else{
-                products.getProducts().put(pi.getProduct(), pi.getAmount());
-            }
+            this.inventory.unreserveProduct(pi.getProduct(), pi.getAmount());
         }
     }
 
@@ -337,11 +306,10 @@ public class Store {
         discountID_counter ++;
     }
 
-
-
     public void addDiscountForBasket(int percentage, int limit, boolean onprice){
         discountsOnBasket.add(new DiscountBasketPriceOrAmount(discountID_counter, limit, percentage, onprice));
         discountID_counter ++;
+
     }
 
     public void addDiscountPolicy(DiscountBInterface discountPolicy){
@@ -415,23 +383,16 @@ public class Store {
         return products.toJSONString();
     }
 
-    public void removeOwner(User user){
-        for(User manUser : managements.keySet()){
-            if(managements.get(manUser).getAppointer().equals(user)){
-                //sand alert to the user being removed from managers list
-                managements.remove(manUser);
-            }
-        }
-        for(User ownUser : ownerships.keySet()){
-            if(ownerships.get(ownUser).getAppointer().equals(user)){
-                //sand alert to the user being removed from owners list
-                ownerships.remove(ownUser);
-            }
-        }
-        ownerships.remove(user);
+    public Product getProductByName(String name) {
+        return this.inventory.getProductByName(name);
     }
 
-    public void removeDiscountPolicies(){
-        this.discountPolicies = new ArrayList<>();
+    public boolean checkIfProductAvailable(String productName, int amount) {
+        return this.inventory.checkIfProductAvailable(productName, amount);
+    }
+
+    //for store unit test
+    public void reserveProduct(Product p, int amount) {
+        this.inventory.reserveProduct(p, amount);
     }
 }

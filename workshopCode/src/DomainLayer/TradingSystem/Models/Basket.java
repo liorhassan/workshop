@@ -167,4 +167,15 @@ public class Basket {
         }
         productItems.add(new ProductItem(p, amount, this));
     }
+
+    public void reserve(){
+        store.reserveBasket(this);
+    }
+
+    public void unreserve(){
+        if(!store.getReservedProducts(this).isEmpty()) {
+            //there are reserved products in the basket that needs to be returned
+            store.unreserveBasket(this);
+        }
+    }
 }
