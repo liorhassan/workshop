@@ -2,12 +2,14 @@ package DomainLayer.TradingSystem;
 
 import DomainLayer.TradingSystem.Models.Basket;
 
-public interface DiscountBInterface {
-    public boolean canGet(double param);
-    public double calc(Basket basket, double price);
-    public String discountDescription();
-    public int getDiscountID();
+import java.util.List;
 
+public interface DiscountBInterface {
+    public boolean canGet(Basket basket);
+    public String discountDescription();
+    public int getDiscountPercent();
+    public boolean isSimple();
+    public List<DiscountBInterface> relevantDiscounts (Basket basket);
 }
 
 

@@ -105,8 +105,7 @@ public class ShoppingCart {
         double totalPrice = 0;
         for (Basket currBasket : this.baskets.values()) {
             Store currStore = currBasket.getStore();
-            List<DiscountBInterface> discounts = currBasket.getStore().getDiscountsOnBasket(currBasket);
-            totalPrice += currStore.calculateTotalCheck(currBasket, discounts);
+            totalPrice += currStore.calculateTotalCheck(currBasket);
         }
         this.cartTotalPrice = totalPrice;
     }
@@ -154,6 +153,7 @@ public class ShoppingCart {
     }
 
     public double getTotalCartPrice(){
+        computeCartPrice();
         return this.cartTotalPrice;
     }
 
