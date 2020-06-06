@@ -1,10 +1,10 @@
-
+const window_name = "EntryWindow";
 
 document.addEventListener("DOMContentLoaded", function () {
-    var webSocket = new WebSocket( "ws://localhost:8088");
-    webSocket.onmessage = function(msgEvent) {
-                            alert(msgEvent.data)
-    };
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    .then(response=>response.json())
+    .then(updateNavBar);
+    
     document.getElementById("loginBtn").addEventListener("click", function () {
 
         var inputUsername = document.getElementById("inputUsername").value;
@@ -24,18 +24,19 @@ document.addEventListener("DOMContentLoaded", function () {
           })
          .then((responseMsg) => {
              if (responseMsg.SUCCESS) {
+                  
                   Swal.fire(
                         'Congratulations!',
                         responseMsg.SUCCESS,
                         'success').then(() => {
+                        localStorage.setItem('loggedInUserName',inputUsername);
                         if (isAdminMode) {
                             window.location.href = "/html/AdminWindow.html";
                         }
                         else{
-                            window.location.href = "/html/HomeGuest.html";
+                            window.location.href = "/html/SearchWindow.html";
                         }
                         })
-                        webSocket.send(inputUsername);
              } else {
                   Swal.fire(
                      'OOPS!',

@@ -1,67 +1,69 @@
-.dropdown-item{
-  cursor: pointer;
-}
 #menu_dropDown {
-  position: absolute;
-      transform: translate3d(199px, 38px, 0px);
-      top: 5px;
-      left: 115pt;
-      will-change: transform;
-  }
-  
-  #search-part{
-      width: -webkit-fill-available;
-  }
-  
-  #filter-results {
-      max-width: 250pt;
-      margin-left: 20pt;
-  }
-  
-  #search-results {
+position: absolute;
+    transform: translate3d(199px, 38px, 0px);
+    top: 5px;
+    left: 115pt;
+    will-change: transform;
+}
+
+#search-part{
+    width: -webkit-fill-available;
+}
+
+#filter-results {
+    max-width: 250pt;
+    margin-left: 20pt;
+}
+
+#search-results {
     max-height: 300pt;
     overflow: hidden;
     overflow-y: scroll;
 }
 
-#history-list {
-  max-height: 300pt;
-  overflow: hidden;
-  overflow-y: scroll;
+#search-bar {
+    max-width: fit-content;
+    margin-top: 60pt;
 }
-  
-  .card-link+.card-link {
-      margin-left: 0;
-  }
-  
-  .custom-select {
-      align-items: center;
-      margin-bottom: 0;
-      font-size: 1rem;
-      font-weight: 400;
-      line-height: 1.5;
-      color: #495057;
-      text-align: center;
-      white-space: nowrap;
-      background-color: #e9ecef;
-      border: 1px solid #ced4da;
-      border-radius: .25rem;
-  }
-  
-  #search-bar {
-      margin-left: 250pt;
-      margin-top: 60pt;
-  }
-  
-  .nav-item {
-      white-space: nowrap;;
-  }
 
-  #stores {
-    margin-top: 70pt;
-  }
+#product-description {
+    overflow-y: scroll;
+}
 
-  
+#filter-button {
+    color: white;
+}
+
+#search-button {
+    color: white;
+}
+
+.card-link+.card-link {
+    margin-left: 0;
+}
+
+.custom-select {
+    align-items: center;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
+
+.clickable-product {
+    cursor: pointer;
+}
+
+.nav-item {
+    white-space: nowrap;;
+}
+
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */
@@ -76,10 +78,6 @@
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
   }
   
-  .cand-btn {
-    margin-right: 7pt;
-  }
-
   /* Modal Content/Box */
   .modal-content {
     background-color: #fefefe;
@@ -116,8 +114,4 @@
   input[type=number]::-webkit-inner-spin-button, 
   input[type=number]::-webkit-outer-spin-button {  
      opacity: 1;
-  }
-
-  .update-product-form{
-    min-height: 300;
   }
