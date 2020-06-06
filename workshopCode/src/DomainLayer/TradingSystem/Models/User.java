@@ -4,7 +4,6 @@ import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.StoreManaging;
 import DomainLayer.TradingSystem.StoreOwning;
 import DomainLayer.TradingSystem.UserPurchaseHistory;
-import org.hibernate.usertype.UserType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
-
     @Transient
     private HashMap<Store, StoreManaging> storeManagements;
 

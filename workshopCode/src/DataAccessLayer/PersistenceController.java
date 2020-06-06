@@ -4,16 +4,17 @@ import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.TradingSystem.ProductItem;
 import DomainLayer.TradingSystem.StoreManaging;
 import DomainLayer.TradingSystem.StoreOwning;
-import org.hibernate.*;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Properties;
@@ -345,8 +346,9 @@ public class PersistenceController {
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<ShoppingCart> cr = cb.createQuery(ShoppingCart.class);
             Root<ShoppingCart> root = cr.from(ShoppingCart.class);
-            cr.select(root).where(cb.equal(root.get("user"), username));
-            cr.select(root).where(cb.isFalse(root.get("isHistory")));
+            cr.select(root);
+            cr.where(cb.and(cb.equal(root.join("user").get("username"), username),
+                     cb.isFalse(root.get("isHistory"))));
             Query<ShoppingCart> query = session.createQuery(cr);
             carts = query.getResultList();
 
