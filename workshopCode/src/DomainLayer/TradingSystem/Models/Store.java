@@ -244,6 +244,11 @@ public class Store implements Serializable {
         if (!waitingAgreements.containsKey(newOwner))
             this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
         //notify all owners
+        for(User u: ownerships.keySet()) {
+            if(u.getUsername().equals(appointer.getUsername()))
+                continue;
+            NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + newOwner.getUsername() + " as owner of: " + getName() + " is waiting to your response");
+        }
         NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
     }
 
@@ -256,11 +261,17 @@ public class Store implements Serializable {
                 StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser());
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
-                //notify that the appointment approved - (appointing and appointment users)
+                //notify that the appointment approved )
+                for(User u: ownerships.keySet()) {
+                    NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is approved");
+                }
             }
             else {
                 waitingAgreements.remove(waitingForApprove);
-                //notify that the appointment declined - (appointing and appointment users)
+                //notify that the appointment declined
+                for(User u: ownerships.keySet()) {
+                    NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is declined");
+                }
 
             }
         }
