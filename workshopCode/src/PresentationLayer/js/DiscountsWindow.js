@@ -41,7 +41,7 @@ function addBasketAmount() {
     const data = {
         type: "simple",
         subtype: "DiscountBasketPriceOrAmount",
-        amount: radioBtn,
+        amount: amount,
         percent: percent,
         onPriceOrAmountOfProducts: radioBtn[0].checked ? true : false,
     }
@@ -56,7 +56,7 @@ function addCondBasketProdcts() {
 
     const data = {
         type: "simple",
-        subtype: "DiscountCondBasketProdcts",
+        subtype: "DiscountCondBasketProducts",
         productConditionName: condName,
         conditionAmount: amount,
         discountProductName: discountName,
@@ -86,8 +86,8 @@ function addCondBasketProdcts() {
     const percents = document.getElementById("conditionalDiscountPercents").value;
 
     const data = {
-        type: "onProduct",
-        subtype: "conditional",
+        type: "simple",
+        subtype: "DiscountCondProductAmount",
         productName: condName,
         minAmount: amount,
         discountPercent: percents,
