@@ -26,8 +26,8 @@ public class PurchaseTest {
     @Test
     public void getTotalCheck() {
         assertEquals(0,purchase.getTotalCheck(),0.0000000001);
-        Product p1 = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p1 = new Product("Shirt",null,null,40.0,"Fox");
+        Product p2 = new Product("Dress",null,null,45.5,"Fox");
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p1,10);
         store.getInventory().put(p2,10);

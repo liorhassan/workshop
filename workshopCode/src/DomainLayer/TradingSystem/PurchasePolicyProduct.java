@@ -6,10 +6,12 @@ import DomainLayer.TradingSystem.Models.Product;
 public class PurchasePolicyProduct implements PurchasePolicy {
     private String productName;
     private int amount;
-    boolean minOrmax;
+    private boolean minOrmax;
+    private int purchaseId;
 
 
-    public PurchasePolicyProduct(String productName, int amount, boolean minOrmax) {
+    public PurchasePolicyProduct(String productName, int amount, boolean minOrmax, int purchaseId) {
+        this.purchaseId = purchaseId;
         this.productName = productName;
         this.amount = amount;
         this.minOrmax = minOrmax;
@@ -29,4 +31,21 @@ public class PurchasePolicyProduct implements PurchasePolicy {
         }
         return true;
     }
+
+    public int getPurchaseId() {
+        return purchaseId;
+    }
+
+    @Override
+    public String getPurchaseDescription(){
+        String output= "";
+        if(minOrmax){
+            output = "buy max " + amount + "from product: " + productName;
+        }
+        else {
+            output = "buy min " + amount + "from product: " + productName;
+        }
+        return output;
+    }
+
 }

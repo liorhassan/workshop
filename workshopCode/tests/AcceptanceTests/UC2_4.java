@@ -4,6 +4,10 @@ package AcceptanceTests;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import ServiceLayer.ViewInfoHandler;
+import netscape.javascript.JSObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -26,8 +30,8 @@ public class UC2_4 {
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).login("noy", "1234", false);
         (new StoreHandler()).openNewStore("Lalin", "beauty products");
-        (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 1);
-        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 1);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Cream ocean", 40.0, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 1);
+        (new StoreHandler()).UpdateInventory("Lalin", "Body Scrub musk", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 1);
     }
 
 
@@ -39,43 +43,55 @@ public class UC2_4 {
     }
 
     @Test
-    public void valid() {
+    public void valid() throws ParseException {
         String result = viewInfo.viewStoreinfo("Lalin");
-        String expectefResult1 = "Store name: Lalin description: beauty products" +
-                "\n products:\n" +
-                "  Body Cream ocean- 40.0$\n  Body Scrub musk- 50.0$\n";
-        String expectefResult2 = "Store name: Lalin description: beauty products" +
-                "\n products:\n" +
-                "  Body Scrub musk- 50.0$\n  Body Cream ocean- 40.0$\n";
-        assertTrue(result.equals(expectefResult1)||result.equals(expectefResult2));
+        String expected = "{\"name\":\"Lalin\",\"description\":\"beauty products\",\"products\":[{\"price\":40.0,\"productName\":\"Body Cream ocean\"},{\"price\":50.0,\"productName\":\"Body Scrub musk\"}]}";
+        JSONParser parser = new JSONParser();
 
+        assertEquals(parser.parse(expected), parser.parse(result));
 
         result = viewInfo.viewProductInfo("Lalin", "Body Cream ocean");
-        String expectefResult = "Body Cream ocean: Velvety and soft skin lotion with ocean scent\nprice: 40.0$";
-        assertEquals(expectefResult, result);
+        expected = "{\"name\":\"Body Cream ocean\",\"description\":\"Velvety and soft skin lotion with ocean scent\",\"price\":40.0}";
+        assertEquals(parser.parse(expected), parser.parse(result));
     }
 
     @Test
     public void storeDoesntExist(){
-        String result = viewInfo.viewStoreinfo("Swear");
-        assertEquals("This store doesn't exist in this trading system", result);
+        try {
+            String result = viewInfo.viewStoreinfo("Swear");
+        }
+        catch(Exception e){
+            assertEquals("This store doesn't exist in this trading system", e.getMessage());
+        }
     }
 
     @Test
     public void storeNameEmpty(){
-        String result = viewInfo.viewStoreinfo("");
-        assertEquals("The store name is invalid", result);
+        try {
+            String result = viewInfo.viewStoreinfo("");
+        }
+        catch(Exception e){
+            assertEquals("The store name is invalid", e.getMessage());
+        }
     }
 
     @Test
     public void productDoesntExist(){
-        String result = viewInfo.viewProductInfo("Body oil", "Lalin");
-        assertEquals("This product is not available for purchasing in this store", result);
+        try {
+            String result = viewInfo.viewProductInfo("Body oil", "Lalin");
+        }
+        catch(Exception e){
+            assertEquals("This product is not available for purchasing in this store", e.getMessage());
+        }
     }
 
     @Test
     public void productNameEmpty(){
-        String result = viewInfo.viewProductInfo("", "Lalin");
-        assertEquals("The product name is invalid", result);
+        try {
+            String result = viewInfo.viewProductInfo("", "Lalin");
+        }
+        catch(Exception e){
+            assertEquals("The product name is invalid", e.getMessage());
+        }
     }
 }

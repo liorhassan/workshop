@@ -1,14 +1,21 @@
+const window_name = "ManageMyStores";
 var activeStore;
 var activeProducts;
 document.addEventListener("DOMContentLoaded", function () {
 
-    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
+        method: "POST",
+        body: JSON.stringify({session_id: localStorage["session_id"]})
+    })
     .then(response=>response.json())
     .then(updateNavBar);
     
 
 
-     fetch("http://localhost:8080/tradingSystem/myStores")
+     fetch("http://localhost:8080/tradingSystem/myStores", {
+        method: "POST",
+        body: JSON.stringify({session_id: localStorage["session_id"]})
+    })
          .then(response => response.json())
           .then(setMyStores)
 
@@ -16,13 +23,61 @@ document.addEventListener("DOMContentLoaded", function () {
         showPopUp("Open Store");
     });
 
+    document.getElementById("editPermBtn").addEventListener("click",function(){
+        store_name = activeStore.name;
+        user_name = document.getElementById("perm-username").value;
+        permissions = []
+        if(document.getElementById("manageSupplyPermOpt").checked)
+            permissions.push("Manage Supply")
+        if(document.getElementById("viewHistoryPermOpt").checked)
+            permissions.push("View Purchasing History")
+        if(document.getElementById("addDiscPermOpt").checked)
+            permissions.push("Add New Discount")
+        if(document.getElementById("addPerchPolPermOpt").checked)
+            permissions.push("Add New Purchase Policy")
+        var sfy = JSON.stringify({user: user_name, store: store_name, permission: permissions});
+        fetch("http://localhost:8080/tradingSystem/editPermission", {
+            method: "POST",
+            body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, permission: permissions})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        });
+        document.getElementById("perm-username").value = "";
+        document.getElementById("manageSupplyPermOpt").checked = false;
+        document.getElementById("viewHistoryPermOpt").checked = false;
+        document.getElementById("addDiscPermOpt").checked = false;
+        document.getElementById("addPerchPolPermOpt").checked = false;
+        document.getElementById("editPermissionsModal").style.display = "none";
+        
+    })
+
     initOpenStoreModel();
     
     initAddManagerModel();
 
     initAddOwnerModel();
 
-    initRemoveManagerModel()
+    initRemoveManagerModel();
+
+    initRemoveOwnerModel();
 
     initManageSupplyModel();
     
@@ -47,9 +102,9 @@ function initOpenStoreModel() {
     document.getElementById("confirm-open-store-btn").addEventListener("click",function(){
         var store_name = document.getElementById("StoreNameInput").value;
         var store_description  = document.getElementById("StoreDescInput").value;
-        fetch("/tradingSystem/openNewStore", {
+        fetch("http://localhost:8080/tradingSystem/openNewStore", {
             method: "POST",
-            body: JSON.stringify({store: store_name, description: store_description})
+            body: JSON.stringify({session_id: localStorage["session_id"] ,store: store_name, description: store_description})
         })
         .then(response => {
             if (response.ok) {
@@ -71,7 +126,10 @@ function initOpenStoreModel() {
                    'error')
             }
         })
-        fetch("http://localhost:8080/tradingSystem/myStores")
+        fetch("http://localhost:8080/tradingSystem/myStores", {
+            method: "POST",
+            body: JSON.stringify({session_id: localStorage["session_id"]})
+        })
          .then(response => response.json())
           .then(setMyStores);
         document.getElementById("StoreNameInput").value = "";
@@ -87,7 +145,7 @@ function initAddManagerModel() {
         var username  = document.getElementById("new-manager-name").value;
         fetch("http://localhost:8080/tradingSystem/addStoreManager", {
             method: "POST",
-            body: JSON.stringify( {user: username, store:store_name})
+            body: JSON.stringify( {session_id: localStorage["session_id"], user: username, store:store_name})
         })
         .then(response => {
             if (response.ok) {
@@ -120,7 +178,7 @@ function initAddOwnerModel() {
         var username  = document.getElementById("new-owner-name").value;
         fetch("http://localhost:8080/tradingSystem/addStoreOwner", {
             method: "POST",
-            body: JSON.stringify( {user: username, store:store_name})
+            body: JSON.stringify( {session_id: localStorage["session_id"] ,user: username, store:store_name})
         })
         .then(response => {
             if (response.ok) {
@@ -154,6 +212,40 @@ function initRemoveManagerModel() {
         var username  = document.getElementById("remove-manager-name").value;
         fetch("http://localhost:8080/tradingSystem/removeStoreManager", {
             method: "POST",
+            body: JSON.stringify( {session_id: localStorage["session_id"], user: username, store:store_name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then((responseMsg) => {
+            if (responseMsg.SUCCESS) {
+                Swal.fire(
+                      'SUCCESS!',
+                      responseMsg.SUCCESS,
+                      'success')
+            } else {
+                Swal.fire(
+                   'OOPS!',
+                   responseMsg,
+                   'error')
+            }
+        })
+
+        document.getElementById("remove-manager-name").value = "";
+        document.getElementById("removeManagerModal").style.display = "none";
+    })
+}
+
+function initRemoveOwnerModel() {
+    document.getElementById("remove-owner-button").addEventListener("click",function(){
+        var store_name = activeStore.name;
+        var username  = document.getElementById("remove-owner-name").value;
+        fetch("http://localhost:8080/tradingSystem/removeStoreOwner", {
+            method: "POST",
             body: JSON.stringify( {user: username, store:store_name})
         })
         .then(response => {
@@ -177,8 +269,8 @@ function initRemoveManagerModel() {
             }
         })
 
-        document.getElementById("remove-manager-button").value = "";
-        document.getElementById("removeManagerModal").style.display = "none";
+        document.getElementById("remove-owner-name").value = "";
+        document.getElementById("removeOwnerModal").style.display = "none";
     })
 }
 
@@ -192,7 +284,7 @@ function initManageSupplyModel(){
         var prod_amount = document.getElementById("update-product-amount").value;
         fetch("http://localhost:8080/tradingSystem/updateInventory", {
             method: "POST",
-            body: JSON.stringify( {store:activeStore.name, product: prod_name, price:prod_price, category:prod_cat, desc:prod_desc, amount:prod_amount})
+            body: JSON.stringify( {session_id: localStorage["session_id"], store:activeStore.name, product: prod_name, price:prod_price, category:prod_cat, desc:prod_desc, amount:prod_amount})
         })
         .then(response => {
             if (response.ok) {
@@ -268,6 +360,94 @@ function updatePurchaseHistory(history){
     })
 }
 
+function updateCandidatesWindow(candidates){
+    var candidatesList = document.getElementById("candidates-list");
+    candidatesList.innerHTML = "";
+    candidates.forEach(cand=>{
+        const element = document.createElement("li");
+        element.classList.add("list-group-item");
+        element.classList.add("d-flex");
+        element.classList.add("justify-content-between");
+        element.classList.add("lh-condensed");
+        const element_div = document.createElement("div");
+        const cand_name = document.createElement("h6");
+        cand_name.classList.add("my-0");
+        cand_name.append(document.createTextNode(cand.name));
+        element_div.appendChild(cand_name);
+        const app_button = document.createElement("button");
+        app_button.classList.add("btn");
+        app_button.classList.add("btn-primary");
+        app_button.classList.add("cand-btn");
+        app_button.append(document.createTextNode("Approve"));
+        app_button.addEventListener("click",function(){
+            fetch("http://localhost:8080/tradingSystem/approveCandidate", {
+                method: "POST",
+                body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, status: "approve"})
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            })
+            .then((responseMsg) => {
+                if (responseMsg.SUCCESS) {
+                    Swal.fire(
+                        'SUCCESS!',
+                        responseMsg.SUCCESS,
+                        'success');
+
+                    updateCandidates();
+                } else {
+                    Swal.fire(
+                    'OOPS!',
+                    responseMsg,
+                    'error')
+                }
+            })
+        });
+        const rej_button = document.createElement("button");
+        rej_button.classList.add("btn");
+        rej_button.classList.add("btn-primary");
+        rej_button.append(document.createTextNode("Reject"));
+        rej_button.addEventListener("click",function(){
+            fetch("http://localhost:8080/tradingSystem/approveCandidate", {
+                method: "POST",
+                body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, status: "reject"})
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            })
+            .then((responseMsg) => {
+                if (responseMsg.SUCCESS) {
+                    Swal.fire(
+                        'SUCCESS!',
+                        responseMsg.SUCCESS,
+                        'success');
+
+                    updateCandidates();
+                } else {
+                    Swal.fire(
+                    'OOPS!',
+                    responseMsg,
+                    'error')
+                }
+            })
+        })
+        const app_span = document.createElement("span");
+        app_span.appendChild(app_button);
+        app_span.appendChild(rej_button);
+        element.appendChild(element_div);
+        element.appendChild(app_span);
+        candidatesList.appendChild(element);
+    })
+}
+
 function setMyStores(stores) {
     const numOfStores = document.getElementById("num-of-stores");
     numOfStores.innerHTML = "";
@@ -318,13 +498,10 @@ function setMyStores(stores) {
 
         currStore.options.forEach(currAction=>{
             const a = document.createElement("a");
-            // if(currAction=="Add New Discount")
-            //     a.href="/html/discountsWindow";
-            // else
-                a.addEventListener("click",function(){
-                activeStore = currStore;
-                showPopUp(currAction);
-                })
+            a.addEventListener("click",function(){
+            activeStore = currStore;
+            showPopUp(currAction);
+            })
             a.classList.add("dropdown-item");
             a.append(document.createTextNode(currAction));
 
@@ -361,21 +538,42 @@ function setCategories(categories) {
     })
 }
 
+function updateCandidates() {
+    fetch("http://localhost:8080/tradingSystem/newOwnerCandidates", {
+            method: "POST",
+            body: JSON.stringify({session_id: localStorage["session_id"], store:activeStore.name})
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text();
+            }
+        })
+        .then(updateCandidatesWindow)
+}
+
+
 actionToModel={
     "Open Store":"openStoreModal",
     "Add Manager":"addManagerModal",
     "Add Owner":"addOwnerModal",
     "Remove Manager":"removeManagerModal",
+    "Remove Owner":"removeOwnerModal",
     "Edit Permissions":"editPermissionsModal",
     "Manage Supply":"manageSupplyModal",
-    "View Purchasing History":"viewPurchaseHistoryModal"
+    "View Purchasing History":"viewPurchaseHistoryModal",
+    "Approve New Owner":"approveNewOwnerModal"
 }
 
 function showPopUp(action){
+    if(action == "Approve New Owner"){
+        updateCandidates();
+    }
     if(action == "View Purchasing History"){
         fetch("http://localhost:8080/tradingSystem/storePurchaseHistory", {
             method: "POST",
-            body: JSON.stringify({store:activeStore.name})
+            body: JSON.stringify({session_id: localStorage["session_id"], store:activeStore.name})
         })
         .then(response => {
             if (response.ok) {
@@ -401,10 +599,10 @@ function showPopUp(action){
         .then(updateSupplyProducts)
     }
     if(action == "Add New Discount")
-        window.location.href = "http://localhost:8080/html/discountsWindow.html";
+        window.location.href = "http://localhost:8080/html/DiscountsWindow.html";
 
-    if(action == "Add new Discount Policy")
-            window.location.href = "http://localhost:8080/html/PolicyWindow.html";
+    if(action == "Add New Purchase Policy")
+            window.location.href = "http://localhost:8080/html/PurchasePolicy.html";
 
     document.getElementById(actionToModel[action]).style.display = "block";
 }

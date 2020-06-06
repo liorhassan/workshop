@@ -1,11 +1,13 @@
-
+const window_name = "EntryWindow";
 
 document.addEventListener("DOMContentLoaded", function () {
-    var webSocket = new WebSocket( "ws://localhost:8088");
-//    var webSocket = new WebSocket( "ws://localhost:8090/WebSocketServer/client");
-    webSocket.onmessage = function(msgEvent) {
-                            alert(msgEvent.data)
-                       };
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
+        method: "POST",
+        body: JSON.stringify({session_id: localStorage["session_id"]})
+    })
+    .then(response=>response.json())
+    .then(updateNavBar);
+    
     document.getElementById("loginBtn").addEventListener("click", function () {
 
         var inputUsername = document.getElementById("inputUsername").value;
@@ -14,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fetch("http://localhost:8080/tradingSystem/login", {
             method: "POST",
-            body: JSON.stringify({userName:inputUsername, password:inputPassword, adminMode:isAdminMode })
+            body: JSON.stringify({session_id: localStorage["session_id"], userName:inputUsername, password:inputPassword, adminMode:isAdminMode })
         })
          .then(response => {
              if (response.ok) {
@@ -25,19 +27,19 @@ document.addEventListener("DOMContentLoaded", function () {
           })
          .then((responseMsg) => {
              if (responseMsg.SUCCESS) {
-//                  worker.ws.send(inputUsername);
+                  
                   Swal.fire(
                         'Congratulations!',
                         responseMsg.SUCCESS,
                         'success').then(() => {
+                        localStorage.setItem('loggedInUserName',inputUsername);
                         if (isAdminMode) {
                             window.location.href = "/html/AdminWindow.html";
                         }
                         else{
-                            window.location.href = "/html/HomeRegisterd.html";
+                            window.location.href = "/html/SearchWindow.html";
                         }
                         })
-                        webSocket.send(inputUsername);
              } else {
                   Swal.fire(
                      'OOPS!',

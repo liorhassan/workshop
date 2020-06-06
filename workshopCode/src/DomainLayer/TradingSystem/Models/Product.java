@@ -2,22 +2,39 @@ package DomainLayer.TradingSystem.Models;
 
 import DomainLayer.TradingSystem.Category;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Product {
+@Entity
+@Table(name = "products")
+public class Product implements Serializable {
+
+    @Id
+    @Column(name = "product_name", unique = true)
     private String name;
+
+    @Column(name = "product_category")
     private Category category;
+
+    @Column(name = "product_description")
     private String description;
+
+    @Column(name = "product_price")
     private Double price;
 
-    public Product(String name, Category category, String description, Double price) {
+    @Column(name = "product_storeName")
+    private String storeName;
+
+    public Product(String name, Category category, String description, Double price, String storeName) {
         this.name = name;
         this.category = category;
         this.description = description;
         this.price = price;
+        this.storeName = storeName;
     }
 
     public String getName() {

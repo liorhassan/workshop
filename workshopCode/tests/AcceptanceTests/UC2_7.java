@@ -23,9 +23,9 @@ public class UC2_7 {
         (new UsersHandler()).login("lior", "1234", false);
         (new StoreHandler()).openNewStore("Rami Levi", "Supermarket");
         (new StoreHandler()).openNewStore("Shufersal", "Supermarket");
-        (new StoreHandler()).UpdateInventory("Rami Levi","apple", 2, "Food", "green apple", 3);
+        (new StoreHandler()).UpdateInventory("Rami Levi","apple", 2.0, "Food", "green apple", 3);
 
-        (new StoreHandler()).UpdateInventory("Rami Levi","water", 3, "Food", "water 1 L", 2);
+        (new StoreHandler()).UpdateInventory("Rami Levi","water", 3.0, "Food", "water 1 L", 2);
         (new  ShoppingCartHandler()).AddToShoppingBasket("Rami Levi", "apple",  2);
         (new  ShoppingCartHandler()).AddToShoppingBasket("Rami Levi", "water", 1);
     }
