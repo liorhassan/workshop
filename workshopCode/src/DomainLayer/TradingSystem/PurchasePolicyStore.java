@@ -8,8 +8,10 @@ public class PurchasePolicyStore implements PurchasePolicy {
     private int limit;
     private boolean minOrMax;
 
-    public PurchasePolicyStore( int limit, boolean minOrMax) {
-        //this.onPrice = onPrice;
+    private int purchaseId;
+
+    public PurchasePolicyStore( int limit, boolean minOrMax, int purchaseId) {
+        this.purchaseId = purchaseId;
         this.limit = limit;
         this.minOrMax = minOrMax;
     }
@@ -25,5 +27,9 @@ public class PurchasePolicyStore implements PurchasePolicy {
         }
         else
             return amount >= limit;
+    }
+
+    public int getPurchaseId() {
+        return purchaseId;
     }
 }
