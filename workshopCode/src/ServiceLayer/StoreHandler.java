@@ -50,7 +50,30 @@ public class StoreHandler {
         }
     }
 
-    public String UpdateInventory(String storeName, String productName, Double productPrice, String productCategory, String productDes, Integer amount){
+    public String responseToAppointmentRequest( String storeName, String username, boolean isApproved) {
+        SystemLogger.getInstance().writeEvent(String.format("Response to store owner appointment command: new owner username - %s, store name - %s",username,storeName));
+        try {
+            String[] args = {username, storeName};
+            if (SystemFacade.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Must enter username and store name");
+            if (!SystemFacade.getInstance().storeExists(storeName))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if(!SystemFacade.getInstance().userExists(username))
+                throw new IllegalArgumentException("This username doesn't exist");
+            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(storeName))
+                throw new RuntimeException("You must be this store owner for this action");
+            if(SystemFacade.getInstance().checkIfUserIsOwner(storeName, username))
+                throw new RuntimeException("This username is already one of the store's owners");
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().responseToAppointment(username, storeName, isApproved));
+        }
+        catch (Exception e){
+            SystemLogger.getInstance().writeError("Response to store owner appointment error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
+        }
+    }
+
+    public String UpdateInventory(String storeName, String productName, double productPrice, String productCategory, String productDes, Integer amount){
         SystemLogger.getInstance().writeEvent(String.format("Update inventory command: store name - %s, product name - %s, product price - %f, product category - %s, product description - %s, amount - %d", storeName, productName, productPrice, productCategory, productDes, amount));
         try {
             String[] args = {storeName, productName};
@@ -80,10 +103,64 @@ public class StoreHandler {
         }
     }
 
-    public String addDiscountForProduct(String storeName, String productName, int percentage, int amount, boolean onAll){
+    public String addDiscountCondProductAmount(String storeName, String productName, int percentage, int amount) {
+
+        try {
+            String[] args = {storeName, productName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if (percentage > 100 || percentage < 0) {
+                throw new IllegalArgumentException("Invalid percentage value: must be between 0 and 100");
+            }
+            if (amount < 0) {
+                throw new IllegalArgumentException("Invalid amount value: must be more then 0 ");
+            }
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+            if (!SystemFacade.getInstance().checkIfProductExists(storeName, productName)) {
+                throw new IllegalArgumentException("Cant add the discount on this product");
+            }
+            SystemFacade.getInstance().addDiscountCondProductAmount(storeName, productName, percentage, amount);
+            return createJSONMsg("SUCCESS", "The discount has been added successfully");
+
+        } catch (Exception e) {
+            SystemLogger.getInstance().writeError("Add Discount For product: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public String addDiscountRevealedProduct(String storeName, String productName, int percentage){
 
         try{
             String[] args = {storeName, productName};
+            if(SystemFacade.getInstance().emptyString(args)){
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if(percentage > 100 || percentage < 0){
+                throw new IllegalArgumentException("Invalid percentage value: must be between 0 and 100");
+            }
+            if(!SystemFacade.getInstance().storeExists(storeName)){
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+            if(!SystemFacade.getInstance().checkIfProductExists(storeName, productName) && SystemFacade.getInstance().productHasDiscount(storeName, productName)){
+                throw new IllegalArgumentException("Cant add the discount on this product");
+            }
+            SystemFacade.getInstance().addDiscountRevealedProduct(storeName, productName, percentage );
+            return createJSONMsg("SUCCESS","The discount has been added successfully");
+
+        }
+        catch(Exception e){
+            SystemLogger.getInstance().writeError("Add Discount For product: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public String addDiscountCondBasketProducts(String storeName, String productDiscount, String condProduct, int percentage, int amount){
+
+        try{
+            String[] args = {storeName, productDiscount, condProduct};
             if(SystemFacade.getInstance().emptyString(args)){
                 throw new IllegalArgumentException("Must enter store name and product name");
             }
@@ -96,10 +173,10 @@ public class StoreHandler {
             if(!SystemFacade.getInstance().storeExists(storeName)){
                 throw new IllegalArgumentException("The store doesn't exist");
             }
-            if(!SystemFacade.getInstance().checkIfProductExists(storeName, productName) && !SystemFacade.getInstance().productHasDiscount(storeName, productName)){
-                throw new IllegalArgumentException("Cant add the discount on this product");
+            if(!SystemFacade.getInstance().checkIfProductExists(storeName, productDiscount) || !SystemFacade.getInstance().checkIfProductExists(storeName, productDiscount)){
+                throw new IllegalArgumentException("productCond or productDiscount does not exist in the store");
             }
-            SystemFacade.getInstance().addDiscountOnProduct(storeName, productName, percentage, amount, onAll);
+            SystemFacade.getInstance().addDiscountCondBasketProducts(storeName, productDiscount, condProduct, percentage, amount);
             return createJSONMsg("SUCCESS","The discount has been added successfully");
 
         }
@@ -109,7 +186,7 @@ public class StoreHandler {
         }
     }
 
-    public String addDiscountForBasket(String storeName,  int percentage, int amount, boolean onPrice) {
+    public String addDiscountForBasketPriceOrAmount(String storeName,  int percentage, int amount, boolean onPrice) {
         try {
             String[] args = {storeName};
             if (SystemFacade.getInstance().emptyString(args)) {
@@ -164,12 +241,26 @@ public class StoreHandler {
         }
     }
 
+    public String addPurchasePolicy(String purchasePolicy){
+        try{
+            String result = SystemFacade.getInstance().addPurchasePolicy(purchasePolicy);
+            return createJSONMsg("SUCCESS", result);
+        }
+        catch (Exception e) {
+            SystemLogger.getInstance().writeError("Add Discount Policy error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     public String getStoreProducts(String storeName) {
         return SystemFacade.getInstance().getAllProducts(storeName);
     }
 
     public void resetStores(){
         SystemFacade.getInstance().resetStores();
+    }
+    public void removeDiscountPolicies(String storeName){
+        SystemFacade.getInstance().removePolicies(storeName);
     }
 
     public String getMyStores(){

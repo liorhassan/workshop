@@ -5,6 +5,8 @@ import DomainLayer.TradingSystem.ProductItem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -33,14 +35,25 @@ public class Basket implements Serializable {
 
     @Transient
     private List<ProductItem> productItems;
+    private double price;
+    private List<DiscountBInterface> discountsOnProducts;
+    private HashMap<ProductItem, Double> priceOfProdAfterDiscount;
+
 
     public Basket(){}
     public Basket(Store store, ShoppingCart sc) {
         this.store = store;
+        productItems = new ArrayList<>();
+        discountsOnProducts = new ArrayList<>();
+        price = 0;
+        priceOfProdAfterDiscount = new HashMap<>();
         this.sc = sc;
-        this.productItems = new LinkedList<>();
     }
 
+
+    public List<DiscountBInterface> getDiscountsOnProducts() {
+        return discountsOnProducts;
+    }
     public void initProductItems() {
         productItems = PersistenceController.readAllProductItems(id);
     }
@@ -57,6 +70,15 @@ public class Basket implements Serializable {
         return productItems;
     }
 
+    public ProductItem getProductItemByProduct(Product product){
+        for(ProductItem pi : productItems){
+            if(pi.getProduct().equals(product)){
+                return pi;
+            }
+        }
+        return null;
+    }
+
     public int getProductAmount(String productName){
         int amount = 0;
         for (ProductItem pi : getProductItems()) {
@@ -68,13 +90,73 @@ public class Basket implements Serializable {
         return amount;
     }
 
-    public double calcPrice(){
-        double total = 0;
-        for (ProductItem pi: getProductItems()) {
-            total += (pi.getAmount() * pi.getProduct().getPrice());
+    public void collectDiscounts(){
+        for(DiscountBInterface dis : store.getDiscountsOnProducts()){
+            if(dis.canGet(this)){
+                discountsOnProducts.add(dis);
+            }
         }
-        return total;
+        for (DiscountBInterface policy : store.getDiscountPolicies()){
+            if(policy.canGet(this)){
+                ((DiscountPolicy)policy).filterDiscounts(this);
+            }
+        }
+
     }
+
+    public void calcProductPrice(){
+        for( DiscountBInterface dis : discountsOnProducts){
+
+            ProductItem pi = getProductItemByProduct(((DiscountSimple) dis).getProductDiscount());
+            Double newPrice = ((DiscountSimple)dis).calc(this);
+            if(priceOfProdAfterDiscount.containsKey(pi)){
+                double price = priceOfProdAfterDiscount.get(pi);
+                if(newPrice < price){
+                    priceOfProdAfterDiscount.replace(pi, newPrice);
+                }
+            }
+            else{
+                priceOfProdAfterDiscount.put(pi, newPrice);
+            }
+
+        }
+    }
+    public double calcBasketPrice(){
+        double totalPrice = 0;
+        collectDiscounts();
+        calcProductPrice();
+        for (ProductItem pi: productItems){
+            if(priceOfProdAfterDiscount.containsKey(pi)){
+                totalPrice = totalPrice + priceOfProdAfterDiscount.get(pi);
+            }
+            else{
+                double price = pi.getAmount() * pi.getProduct().getPrice();
+                totalPrice = totalPrice + price;
+            }
+        }
+        this.price = totalPrice;
+        return totalPrice;
+    }
+
+    public double calcBasketPriceBeforeDiscount(){
+        double totalPrice = 0;
+        for (ProductItem pi: productItems){
+            double price = pi.getAmount() * pi.getProduct().getPrice();
+            totalPrice = totalPrice + price;
+        }
+
+        return totalPrice;
+    }
+
+    public void setPrice(double price){
+        this.price = price;
+    }
+    public double getPrice(){
+        return  price;
+    }
+
+
+
 
     public void setProductItems(List<ProductItem> productItems) {
         this.productItems = productItems;

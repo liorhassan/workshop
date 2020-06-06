@@ -51,7 +51,7 @@ public class Controller {
                 path = path.substring(1);
                 path = path.replaceAll("//", "/");
                 if (path.length() == 0)
-                    path = "html\\HomeGuest.html";
+                    path = "html\\Main.html";
 
                 boolean fromFile = new File(pathToRoot + path).exists();
                 InputStream in = fromFile ? new FileInputStream(pathToRoot + path)
@@ -159,6 +159,7 @@ public class Controller {
                 he.close();
             }
         });
+        
 
         //accept: {userName: ""}
         //retrieve: {SUCCESS: msg} OR ERROR
@@ -261,6 +262,31 @@ public class Controller {
             }
         });
 
+        //accept: {user: "", store:"", status:"approve/reject"}
+        //retrieve: {SUCCESS: msg} OR ERROR
+        server.createContext("/tradingSystem/approveCandidate", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
+                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                Boolean status = (requestJson.containsKey("status")) ? requestJson.get("status").toString().equals("approve") : false;
+                //String response = storeHandler.approveOwnerCandidate(userName, storeName, status); TODO: implement missing functionality
+                String response = "";
+                headers.set("approveCandidate", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("approveCandidate", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
         //accept: {user: "", store:""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/addStoreOwner", he -> {
@@ -279,6 +305,60 @@ public class Controller {
                 e.printStackTrace();
             } catch (Exception e) {
                 headers.set("addStoreOwner", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {store:""}
+        //retrieve: [{name: ""},...]
+        server.createContext("/tradingSystem/newOwnerCandidates", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                //String response = storeHandler.getOwnerCandidates(storeName); TODO: implement missing functionality
+                JSONArray ja = new JSONArray();
+                JSONObject jo1 = new JSONObject();
+                JSONObject jo2 = new JSONObject();
+                jo1.put("name","test1");
+                jo2.put("name","test2");
+                ja.add(jo1);
+                ja.add(jo2);
+                String response = ja.toJSONString();
+                headers.set("newOwnerCandidates", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("newOwnerCandidates", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {user: "", store:""}
+        //retrieve: {SUCCESS: msg} OR ERROR
+        server.createContext("/tradingSystem/removeStoreOwner", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
+                String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
+                //String response = storeHandler.removeStoreOwner(userName, storeName);
+                String response = "";//TODO
+                headers.set("removeStoreOwner", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("removeStoreOwner", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();
@@ -357,26 +437,26 @@ public class Controller {
                     if(subtype.equals("onProductsAmount")) {
                         int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
                         int discount = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                        response = storeHandler.addDiscountForBasket(storeName, discount, amount, false);
+                //        response = storeHandler.addDiscountForBasket(storeName, discount, amount, false);
                     }
                     else{
                         int price = (requestJson.containsKey("price")) ? Integer.parseInt( requestJson.get("price").toString()): null;
                         int discount = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                        response = storeHandler.addDiscountForBasket(storeName, discount, price, false);
+                //        response = storeHandler.addDiscountForBasket(storeName, discount, price, false);
                     }
                 }
                 else{
                     if(subtype.equals("revealed")) {
                         String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
                         int percent = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                        response = storeHandler.addDiscountForProduct(storeName, productName, percent, 0, true);
+                //        response = storeHandler.addDiscountForProduct(storeName, productName, percent, 0, true);
                     }
                     else{
                         String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
                         int percent = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
                         int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
                         boolean onAll = (requestJson.containsKey("onProducts")) ? Boolean.parseBoolean(requestJson.get("onProducts").toString()): null;
-                        response = storeHandler.addDiscountForProduct(storeName, productName, percent, amount, onAll);
+                //        response = storeHandler.addDiscountForProduct(storeName, productName, percent, amount, onAll);
                     }
                 }
 
@@ -533,6 +613,8 @@ public class Controller {
                 he.close();
             }
         });
+
+
 
         //accept: {user: "", store:"", permission: ["", "",..]}
         //retrieve: {SUCCESS: msg} OR ERROR
