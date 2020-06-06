@@ -382,7 +382,7 @@ function updateCandidatesWindow(candidates){
         app_button.addEventListener("click",function(){
             fetch("http://localhost:8080/tradingSystem/approveCandidate", {
                 method: "POST",
-                body: JSON.stringify({user: user_name, store: store_name, status: "approve"})
+                body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, status: "approve"})
             })
             .then(response => {
                 if (response.ok) {
@@ -414,7 +414,7 @@ function updateCandidatesWindow(candidates){
         rej_button.addEventListener("click",function(){
             fetch("http://localhost:8080/tradingSystem/approveCandidate", {
                 method: "POST",
-                body: JSON.stringify({user: user_name, store: store_name, status: "reject"})
+                body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, status: "reject"})
             })
             .then(response => {
                 if (response.ok) {
@@ -541,7 +541,7 @@ function setCategories(categories) {
 function updateCandidates() {
     fetch("http://localhost:8080/tradingSystem/newOwnerCandidates", {
             method: "POST",
-            body: JSON.stringify({store:activeStore.name})
+            body: JSON.stringify({session_id: localStorage["session_id"], store:activeStore.name})
         })
         .then(response => {
             if (response.ok) {
