@@ -277,7 +277,7 @@ public class Controller {
                 he.close();
             }
         });
-        //accept: {user: "", store:"", status:"approve/reject"}
+        //accept: {session_id:"", user: "", store:"", status:"approve/reject"}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/approveCandidate", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -288,8 +288,8 @@ public class Controller {
                 String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 Boolean status = (requestJson.containsKey("status")) ? requestJson.get("status").toString().equals("approve") : false;
-                //String response = storeHandler.approveOwnerCandidate(userName, storeName, status); TODO: implement missing functionality
-                String response = "";
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = storeHandler.responseToAppointmentRequest(UUID.fromString(session_id), userName, storeName, status);
                 headers.set("approveCandidate", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {

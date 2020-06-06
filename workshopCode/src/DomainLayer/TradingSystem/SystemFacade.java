@@ -521,7 +521,7 @@ public class SystemFacade {
 
         // update store and user
         StoreOwning owning = new StoreOwning(se.getLoggedin_user());
-        store.addStoreOwner(appointed_user, owning);
+        store.addStoreOwner(appointed_user, se.getLoggedin_user());
         appointed_user.addOwnedStore(store, owning);
 
 
@@ -910,14 +910,17 @@ public class SystemFacade {
         return "";
     }
 
-    public String responseToAppointment(String storeName, String userToResponse, boolean isApproved){
+    public String responseToAppointment(UUID session_id, String storeName, String userToResponse, boolean isApproved){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
         User waiting = users.get(userToResponse);
         Store store = getStoreByName(storeName);
         if(isApproved){
-            store.approveAppointment(waiting, activeUser);
+            store.approveAppointment(waiting, se.getLoggedin_user());
         }
         else{
-            store.declinedAppointment(waiting, activeUser);
+            store.declinedAppointment(waiting, se.getLoggedin_user());
         }
         return "your response was updated successfully";
     }

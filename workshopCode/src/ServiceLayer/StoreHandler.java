@@ -1,5 +1,6 @@
 package ServiceLayer;
 
+import DomainLayer.TradingSystem.Session;
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
@@ -52,7 +53,7 @@ public class StoreHandler {
         }
     }
 
-    public String responseToAppointmentRequest( String storeName, String username, boolean isApproved) {
+    public String responseToAppointmentRequest(UUID SessionID,  String storeName, String username, boolean isApproved) {
         SystemLogger.getInstance().writeEvent(String.format("Response to store owner appointment command: new owner username - %s, store name - %s",username,storeName));
         try {
             String[] args = {username, storeName};
@@ -62,11 +63,11 @@ public class StoreHandler {
                 throw new IllegalArgumentException("This store doesn't exist");
             if(!SystemFacade.getInstance().userExists(username))
                 throw new IllegalArgumentException("This username doesn't exist");
-            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(storeName))
+            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(SessionID, storeName))
                 throw new RuntimeException("You must be this store owner for this action");
             if(SystemFacade.getInstance().checkIfUserIsOwner(storeName, username))
                 throw new RuntimeException("This username is already one of the store's owners");
-            return createJSONMsg("SUCCESS", SystemFacade.getInstance().responseToAppointment(username, storeName, isApproved));
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().responseToAppointment(SessionID, username, storeName, isApproved));
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Response to store owner appointment error: " + e.getMessage());
