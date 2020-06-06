@@ -378,15 +378,18 @@ public class Store {
         for(User manUser : managements.keySet()){
             if(managements.get(manUser).getAppointer().equals(user)){
                 //sand alert to the user being removed from managers list
+                NotificationSystem.getInstance().notify(manUser.getUsername(), "your appointment as manager of: " + getName() + " is canceled");
                 managements.remove(manUser);
             }
         }
         for(User ownUser : ownerships.keySet()){
             if(ownerships.get(ownUser).getAppointer().equals(user)){
                 //sand alert to the user being removed from owners list
+                NotificationSystem.getInstance().notify(ownUser.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
                 ownerships.remove(ownUser);
             }
         }
+        NotificationSystem.getInstance().notify(user.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
         ownerships.remove(user);
     }
 }
