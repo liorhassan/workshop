@@ -189,7 +189,58 @@ public class StoreHandler {
 
     }
 
-    public String viewDiscounts(String storeName){
+    public String addPurchasePolicyProduct(String storeName, String productName, int amount, boolean minOrMax, boolean standAlone) {
+
+        try {
+            String[] args = {storeName, productName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if (amount < 0 ) {
+                throw new IllegalArgumentException("Invalid percentage value: must be more then 0 ");
+            }
+
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+            if (!SystemFacade.getInstance().checkIfProductExists(storeName, productName)) {
+                throw new IllegalArgumentException("Cant add the policy on this product");
+            }
+            SystemFacade.getInstance().addPurchasePolicyProduct(storeName, productName, amount, minOrMax, standAlone);
+            return createJSONMsg("SUCCESS", "The purchase policy has been added successfully");
+
+        } catch (Exception e) {
+            SystemLogger.getInstance().writeError("Add purchase policy For product: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public String addPurchasePolicyStore(String storeName, int amount, boolean minOrMax, boolean standAlone) {
+
+        try {
+            String[] args = {storeName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name ");
+            }
+            if (amount < 0 ) {
+                throw new IllegalArgumentException("Invalid limit : must be more then 0");
+            }
+
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+
+            SystemFacade.getInstance().addPurchasePolicyStore(storeName, amount, minOrMax, standAlone);
+            return createJSONMsg("SUCCESS", "The purchase policy has been added successfully");
+
+        } catch (Exception e) {
+            SystemLogger.getInstance().writeError("Add purchase policy For product: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
+    public String viewAllDiscounts(String storeName){
         try {
             String[] args = {storeName};
             if (SystemFacade.getInstance().emptyString(args)) {
@@ -202,6 +253,57 @@ public class StoreHandler {
         }
         catch(Exception e){
             SystemLogger.getInstance().writeError("View Discounts error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public String viewDiscounts(String storeName){
+        try {
+            String[] args = {storeName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+            return SystemFacade.getInstance().viewDiscountsForChoose(storeName);
+        }
+        catch(Exception e){
+            SystemLogger.getInstance().writeError("View Discounts for choose error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public String viewPurchasePolicies(String storeName){
+        try {
+            String[] args = {storeName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+            return SystemFacade.getInstance().viewPurchasePoliciesForChoose(storeName);
+        }
+        catch(Exception e){
+            SystemLogger.getInstance().writeError("View purchase policy for choose error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public String viewAllPurchasePolicies(String storeName){
+        try {
+            String[] args = {storeName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name and product name");
+            }
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+            return SystemFacade.getInstance().viewPurchasePolicies(storeName);
+        }
+        catch(Exception e){
+            SystemLogger.getInstance().writeError("View purchase policy error: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
