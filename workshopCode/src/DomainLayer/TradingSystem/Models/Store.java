@@ -21,11 +21,13 @@ public class Store implements Serializable {
     private List<DiscountBInterface> discountPolicies;
     private List<DiscountBInterface> discountsOnProducts;
     private List<DiscountBInterface> discountsOnBasket;
+    private List<PurchasePolicy> notStandAlonePolicies;
     private List<PurchasePolicy> purchasePolicies;
     private boolean doubleDiscounts;                    //on products and basketPrice
 
     private HashMap<Basket, List<ProductItem>> reservedProducts;
     private int discountID_counter;
+    private int purchaseID_counter;
 
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
         this.name = name;
@@ -38,11 +40,12 @@ public class Store implements Serializable {
         this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
         this.discountsOnBasket = new ArrayList<>();
-
+        this.notStandAlonePolicies = new ArrayList<>();
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts= new HashMap<>();
         this.discountID_counter = 0;
+        this.purchaseID_counter = 0;
         this.doubleDiscounts = true;
     }
 
@@ -91,6 +94,32 @@ public class Store implements Serializable {
             if(dis instanceof DiscountSimple){
                 if (((DiscountSimple) dis).getDiscountID() == discountId)
                     return dis;
+            }
+        }
+
+        return null;
+    }
+
+    public PurchasePolicy getPurchasePolicyById(int purchaseId){
+        for (PurchasePolicy pp : notStandAlonePolicies) {
+            if(pp instanceof PurchasePolicyProduct){
+                if (((PurchasePolicyProduct) pp).getPurchaseId() == purchaseId)
+                    return pp;
+            }
+            if(pp instanceof PurchasePolicyStore){
+                if (((PurchasePolicyStore) pp).getPurchaseId() == purchaseId)
+                    return pp;
+            }
+        }
+
+        for (PurchasePolicy pp : purchasePolicies) {
+            if(pp instanceof PurchasePolicyProduct){
+                if (((PurchasePolicyProduct) pp).getPurchaseId() == purchaseId)
+                    return pp;
+            }
+            if(pp instanceof PurchasePolicyStore){
+                if (((PurchasePolicyStore) pp).getPurchaseId() == purchaseId)
+                    return pp;
             }
         }
 
@@ -320,6 +349,28 @@ public class Store implements Serializable {
         purchasePolicies.add(purchasePolicy);
     }
 
+    public void addSimplePurchasePolicyStore(int limit, boolean minOrMax, boolean standAlone) {
+        if(standAlone){
+            purchasePolicies.add(new PurchasePolicyStore(limit,minOrMax,purchaseID_counter));
+            purchaseID_counter++;
+        }
+        else{
+            notStandAlonePolicies.add(new PurchasePolicyStore(limit,minOrMax,purchaseID_counter));
+            purchaseID_counter++;
+        }
+    }
+
+    public void addSimplePurchasePolicyProduct(String productName, int limit, boolean minOrMax, boolean standAlone) {
+        if(standAlone){
+            purchasePolicies.add(new PurchasePolicyProduct(productName, limit,minOrMax,purchaseID_counter));
+            purchaseID_counter++;
+        }
+        else{
+            notStandAlonePolicies.add(new PurchasePolicyProduct(productName, limit,minOrMax,purchaseID_counter));
+            purchaseID_counter++;
+        }
+    }
+
     public String viewDiscount(){
         JSONArray discountsdes = new JSONArray();
         for(DiscountBInterface dis :discountsOnProducts){
@@ -328,12 +379,7 @@ public class Store implements Serializable {
             curr.put("discountString", dis.discountDescription());
             discountsdes.add(curr);
         }
-        for(DiscountBInterface dis :discountsOnBasket){
-            JSONObject curr = new JSONObject();
-            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
-            curr.put("discountString", dis.discountDescription());
-            discountsdes.add(curr);
-        }
+
         for(DiscountBInterface dis :discountsOnBasket){
             JSONObject curr = new JSONObject();
             curr.put("discountPolicyString", dis.discountDescription());
@@ -389,6 +435,10 @@ public class Store implements Serializable {
 
     public boolean checkIfProductAvailable(String productName, int amount) {
         return this.inventory.checkIfProductAvailable(productName, amount);
+    }
+
+    public void removeDiscountPolicies(){
+        this.discountPolicies = new ArrayList<>();
     }
 
     //for store unit test

@@ -769,7 +769,7 @@ public class SystemFacade {
             if(minOrMax == null)
                 throw new IllegalArgumentException("invalid - no minOrMax");
 
-            newPolicy = new PurchasePolicyProduct(productName, amount, minOrMax);
+            //newPolicy = new PurchasePolicyProduct(productName, amount, minOrMax);
         }
 
         else if(type.equals("PurchasePolicyStore")){
@@ -781,7 +781,7 @@ public class SystemFacade {
             if(minOrMax == null)
                 throw new IllegalArgumentException("invalid - no minOrMax");
 
-            newPolicy = new PurchasePolicyStore( limit, minOrMax);
+            //newPolicy = new PurchasePolicyStore( limit, minOrMax);
         }
 
         return newPolicy;
@@ -829,21 +829,7 @@ public class SystemFacade {
         return "";
     }
 
-    public String removeStoreOwner(String userName, String storeName){
-        Store store = getStoreByName(storeName);
-        User userToRemove = users.get(userName);
-        store.removeOwner(userToRemove);
-        return "owner been removed successfully";
-    }
 
-    public boolean isOwnerAppointer(String storeName, String userName){
-        Store store = getStoreByName(storeName);
-        User user = users.get(userName);
-        if(activeUser.equals(store.getOwnerAppointer(user))){
-            return true;
-        }
-        return false;
-    }
 
     public String getCartTotalPrice(){
         return String.valueOf(this.activeUser.getShoppingCart().getTotalCartPrice());
