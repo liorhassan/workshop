@@ -32,38 +32,29 @@ public class Store implements Serializable {
 
     @Transient
     private HashMap<User, StoreManaging> managements;
-
     @Transient
     private HashMap<User, StoreOwning> ownerships;
-
     @Transient
     private HashMap<User, AppointmentAgreement> waitingAgreements;
-    private String description;
-    private User storeFirstOwner;
+    @Transient
     private StorePurchaseHistory purchaseHistory;
-
     @Transient
     private HashMap<Basket, List<ProductItem>> reservedProducts;
-
-    @Transient
-    private List<DiscountPolicy> discountPolicies;
-
-    @Transient
-    private HashMap<Product, DiscountBaseProduct> discountsOnProducts;
-
-    @Transient
-    private List<DiscountBInterface> discountsOnBaskets;
-
     @Transient
     private List<DiscountBInterface> discountPolicies;
+    @Transient
     private List<DiscountBInterface> discountsOnProducts;
+    @Transient
     private List<DiscountBInterface> discountsOnBasket;
+    @Transient
     private List<PurchasePolicy> notStandAlonePolicies;
+    @Transient
     private List<PurchasePolicy> purchasePolicies;
+    @Transient
     private boolean doubleDiscounts;                    //on products and basketPrice
-
     @Transient
     private int discountID_counter;
+    @Transient
     private int purchaseID_counter;
 
     public Store(){};
@@ -76,8 +67,8 @@ public class Store implements Serializable {
         this.ownerships.put(firstOwner, owning);
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.discountPolicies = new ArrayList<>();
-        this.discountsOnBaskets = new ArrayList<>();
-        this.discountsOnProducts = new HashMap<>();
+        this.discountsOnBasket = new ArrayList<>();
+        this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts = new HashMap<>();
         this.discountID_counter = 0;
@@ -89,7 +80,6 @@ public class Store implements Serializable {
         this.ownerships = new HashMap<>();
         this.managements = new HashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
-        this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
         this.discountsOnBasket = new ArrayList<>();
         this.notStandAlonePolicies = new ArrayList<>();
@@ -116,7 +106,6 @@ public class Store implements Serializable {
         this.name = name;
     }
 
-    public HashMap<Product, DiscountBaseProduct> getDiscountsOnProducts() {
     public List<DiscountBInterface> getDiscountsOnProducts() {
         return discountsOnProducts;
     }
@@ -134,7 +123,7 @@ public class Store implements Serializable {
     }
 
 
-    public HashMap<Product, Integer> getInventory() {
+    public HashMap<Product, Integer> getInventory(){
         return inventory.getProducts();
     }
 
@@ -253,7 +242,7 @@ public class Store implements Serializable {
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name);
+        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name, amount);
         inventory.getProducts().put(p, amount);
 
         // save to DB
@@ -285,10 +274,11 @@ public class Store implements Serializable {
         this.managements = managements;
     }
 
-    public void addManager(User user, StoreManaging storeManaging){
+    public void addManager(User user, StoreManaging storeManaging, boolean notify){
         if (!managements.containsKey(user)) {
             managements.put(user, storeManaging);
-            NotificationSystem.getInstance().notify(user.getUsername(), "You have been appointed as " + name + "'s store manager");
+            if(notify)
+                NotificationSystem.getInstance().notify(user.getUsername(), "You have been appointed as " + name + "'s store manager");
         }
     }
 
@@ -301,13 +291,17 @@ public class Store implements Serializable {
         NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
     }
 
+    public void addStoreOwner(User u, StoreOwning so){
+        this.ownerships.put(u, so);
+    }
+
     //UC 4.3
     public void approveAppointment(User waitingForApprove, User approveOwner){
         AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
         apag.approve(approveOwner);
         if(apag.getWaitingForResponse().size() == 0){
             if(apag.getDeclined().size() != 0){
-                StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser());
+                StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser(), name,  "");//TODO: apointeeName?????
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
                 //notify that the appointment approved - (appointing and appointment users)

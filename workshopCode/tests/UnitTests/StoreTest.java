@@ -51,7 +51,7 @@ public class StoreTest {
         assertNull(store.getAppointer(user1));
         User user2 = new User();
         StoreManaging sm = new StoreManaging(user2, store.getName(), user1.getUsername());
-        store.addManager(user1,sm);
+        store.addManager(user1,sm, false);
         assertEquals(user2,store.getAppointer(user1));
     }
 

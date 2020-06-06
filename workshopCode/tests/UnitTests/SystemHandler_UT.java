@@ -34,8 +34,8 @@ public class SystemHandler_UT {
         SystemFacade.getInstance().getUsers().get("zuzu").setUsername("zuzu");
         Store s = new Store("Pull&Bear", "clothing", SystemFacade.getInstance().getUsers().get("noy"),new StoreOwning("noy", "Pull&Bear"));
         SystemFacade.getInstance().getStores().put("Pull&Bear", s);
-        s.addManager(SystemFacade.getInstance().getUsers().get("zuzu"), new StoreManaging(SystemFacade.getInstance().getUsers().get("noy"), "Pull&Bear","zuzu"));
-        s.addManager(SystemFacade.getInstance().getUsers().get("loco"), new StoreManaging(SystemFacade.getInstance().getUsers().get("noy"), "Pull&Bear", "loco"));
+        s.addManager(SystemFacade.getInstance().getUsers().get("zuzu"), new StoreManaging(SystemFacade.getInstance().getUsers().get("noy"), "Pull&Bear","zuzu"), false);
+        s.addManager(SystemFacade.getInstance().getUsers().get("loco"), new StoreManaging(SystemFacade.getInstance().getUsers().get("noy"), "Pull&Bear", "loco"), false);
         s.addToInventory("skinny jeans", 120, Category.Clothing, "The most comfortable skiny jeans", 3);
         s.addToInventory("blue top", 120, Category.Clothing, "pretty blue crop top", 4);
         Store s2 = new Store("Bershka", "clothing", SystemFacade.getInstance().getUsers().get("noy"),new StoreOwning("Bershka", "loco"));

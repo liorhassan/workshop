@@ -1,6 +1,9 @@
 package DomainLayer.TradingSystem.Models;
 
 import DataAccessLayer.PersistenceController;
+import DomainLayer.TradingSystem.DiscountBInterface;
+import DomainLayer.TradingSystem.DiscountPolicy;
+import DomainLayer.TradingSystem.DiscountSimple;
 import DomainLayer.TradingSystem.ProductItem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

@@ -10,7 +10,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.beans.PersistenceDelegate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,7 +87,7 @@ public class SystemFacade {
         User currUser;
         for (StoreManaging s: sm){
             currUser = getUserByName(s.getAppointeeName());
-            store.addManager(currUser, s);
+            store.addManager(currUser, s, false);
             currUser.addManagedStore(store, s);
         }
     }
@@ -338,8 +337,8 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreManaging managing = new StoreManaging(activeUser);
-        store.addManager(appointed_user, managing);
+        StoreManaging managing = new StoreManaging(activeUser, storeName, username);
+        store.addManager(appointed_user, managing, true);
         appointed_user.addManagedStore(store, managing);
 
         // save to db
@@ -392,7 +391,6 @@ public class SystemFacade {
         JSONArray historyArray = new JSONArray();
         for(Purchase p: purchaseHistory.getUserPurchases()){
             try {
-                JSONParser parser = new JSONParser();
                 JSONArray h = (JSONArray) parser.parse(p.getPurchasedProducts().viewOnlyProducts());
                 historyArray.add(h);
             }catch(Exception e){System.out.println(e.getMessage());};
@@ -929,5 +927,10 @@ public class SystemFacade {
 
     public String getCartTotalPrice(){
         return String.valueOf(this.activeUser.getShoppingCart().getTotalCartPrice());
+    }
+
+    public void removePolicies(String storeName){
+        Store store = getStoreByName(storeName);
+        store.removeDiscountPolicies();
     }
 }

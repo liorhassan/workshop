@@ -30,7 +30,9 @@ public class StoreOwning implements Serializable {
 
     public StoreOwning(){};
     // first owner constructor
-    public StoreOwning() {
+    public StoreOwning(String storeName, String appointeeName) {
+        this.storeName = storeName;
+        this.appointeeName = appointeeName;
         permissions = new ArrayList<>();
         String[] perms = {"Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add new Discount Policy"};
         for(String p : perms)
@@ -40,15 +42,14 @@ public class StoreOwning implements Serializable {
         PersistenceController.create(this);
     }
 
-    public StoreOwning(User appointer) {
+    public StoreOwning(User appointer, String storeName, String appointeeName) {
         this.appointer = appointer;
+        this.storeName = storeName;
+        this.appointeeName = appointeeName;
         this.permissions = new ArrayList<>();
         String[] perms = {"Add Manager", "Add Owner", "Approve New Owner", "Remove Manager", "Remove Owner", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add New Purchase Policy"};
         for(String p : perms)
             permissions.add(new Permission(p));
-        this.storeName = storeName;
-        this.appointeeName = appointeeName;
-
         // save to db
         PersistenceController.create(this);
 
@@ -65,4 +66,7 @@ public class StoreOwning implements Serializable {
     }
 
 
+    public String getAppointeeName() {
+        return this.appointeeName;
+    }
 }
