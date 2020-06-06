@@ -951,10 +951,10 @@ public class SystemFacade {
         return "owner been removed successfully";
     }
 
-    public boolean isOwnerAppointer(String storeName, String userName){
+    public boolean isOwnerAppointer(UUID session_id, String storeName, String userName){
         Store store = getStoreByName(storeName);
         User user = users.get(userName);
-        if(activeUser.equals(store.getOwnerAppointer(user))){
+        if(active_sessions.get(session_id).equals(store.getOwnerAppointer(user))){
             return true;
         }
         return false;

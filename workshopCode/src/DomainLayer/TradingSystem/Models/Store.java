@@ -257,9 +257,7 @@ public class Store implements Serializable {
                 //notify that the appointment declined - (appointing and appointment users)
 
             }
-            return true;
         }
-        return false;
     }
 
     //UC 4.3

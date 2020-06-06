@@ -77,8 +77,7 @@ public class StoreHandler {
         }
     }
 
-    public String UpdateInventory(UUID session_id, String storeName, String productName, Double productPrice, String productCategory, String productDes, Integer amount){
-    public String removeStoreOwner(String username,String storename){
+    public String removeStoreOwner(UUID session_id, String username,String storename){
         //SystemLogger.getInstance().writeError(String.format("Remove manager command: username - %s, store name - %s",argToString(username),argToString(storename)));
         try{
             String[] args = {username,storename};
@@ -88,9 +87,9 @@ public class StoreHandler {
                 throw new IllegalArgumentException("This store doesn't exist");
             if(!SystemFacade.getInstance().userExists(username))
                 throw new IllegalArgumentException("This username doesn't exist");
-            if(!SystemFacade.getInstance().isUserStoreOwner(storename))
+            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storename))
                 throw new RuntimeException("You must be this store owner for this command");
-            if(!SystemFacade.getInstance().isOwnerAppointer(username,storename))
+            if(!SystemFacade.getInstance().isOwnerAppointer(session_id,storename, username))
                 throw new RuntimeException("This username is not one of this store's managers appointed by you");
             return SystemFacade.getInstance().removeStoreOwner(username,storename);
             //return SystemFacade.getInstance().removeManager(username,storename);
@@ -102,7 +101,7 @@ public class StoreHandler {
         }
     }
 
-    public String UpdateInventory(String storeName, String productName, double productPrice, String productCategory, String productDes, Integer amount){
+    public String UpdateInventory(UUID session_id, String storeName, String productName, Double productPrice, String productCategory, String productDes, Integer amount){
         SystemLogger.getInstance().writeEvent(String.format("Update inventory command: store name - %s, product name - %s, product price - %f, product category - %s, product description - %s, amount - %d", storeName, productName, productPrice, productCategory, productDes, amount));
         try {
             String[] args = {storeName, productName};
