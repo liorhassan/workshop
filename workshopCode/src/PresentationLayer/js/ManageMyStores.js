@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
             permissions.push("View Purchasing History")
         if(document.getElementById("addDiscPermOpt").checked)
             permissions.push("Add New Discount")
-        if(document.getElementById("addDiscPolPermOpt").checked)
-            permissions.push("Add New Discount Policy")
+        if(document.getElementById("addperchPolPermOpt").checked)
+            permissions.push("Add New Purchase Policy")
         var sfy = JSON.stringify({user: user_name, store: store_name, permission: permissions});
         fetch("http://localhost:8080/tradingSystem/editPermission", {
             method: "POST",
@@ -592,7 +592,7 @@ function showPopUp(action){
     if(action == "Add New Discount")
         window.location.href = "http://localhost:8080/html/discountsWindow.html";
 
-    if(action == "Add new Discount Policy")
+    if(action == "Add new Purchase Policy")
             window.location.href = "http://localhost:8080/html/PolicyWindow.html";
 
     document.getElementById(actionToModel[action]).style.display = "block";

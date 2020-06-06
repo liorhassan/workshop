@@ -14,14 +14,17 @@ public class StoreOwning {
     // first owner constructor
     public StoreOwning() {
         permissions = new ArrayList<>();
-        String[] perms = {"Add Manager", "Add Owner", "Approve New Owner", "Remove Manager", "Remove Owner", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add new Discount Policy"};
+        String[] perms = {"Add Manager", "Add Owner", "Approve New Owner", "Remove Manager", "Remove Owner", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add new Purchase Policy"};
         for(String p : perms)
             permissions.add(new Permission(p));
     }
 
     public StoreOwning(User appointer) {
         this.appointer = appointer;
-        this.permissions = new LinkedList<>();
+        this.permissions = new ArrayList<>();
+        String[] perms = {"Add Manager", "Add Owner", "Approve New Owner", "Remove Manager", "Remove Owner", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add new Purchase Policy"};
+        for(String p : perms)
+            permissions.add(new Permission(p));
     }
 
     public User getAppointer() {
