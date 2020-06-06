@@ -74,7 +74,6 @@ public class StoreHandler {
     }
 
     public String UpdateInventory(String storeName, String productName, double productPrice, String productCategory, String productDes, Integer amount){
-    public String UpdateInventory(String storeName, String productName, Double productPrice, String productCategory, String productDes, Integer amount){
         SystemLogger.getInstance().writeEvent(String.format("Update inventory command: store name - %s, product name - %s, product price - %f, product category - %s, product description - %s, amount - %d", storeName, productName, productPrice, productCategory, productDes, amount));
         try {
             String[] args = {storeName, productName};

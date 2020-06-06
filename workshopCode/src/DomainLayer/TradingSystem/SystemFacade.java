@@ -313,6 +313,7 @@ public class SystemFacade {
         JSONArray historyArray = new JSONArray();
         for(Purchase p: purchaseHistory.getUserPurchases()){
             try {
+                JSONParser parser = new JSONParser();
                 JSONArray h = (JSONArray) parser.parse(p.getPurchasedProducts().viewOnlyProducts());
                 historyArray.add(h);
             }catch(Exception e){System.out.println(e.getMessage());};
