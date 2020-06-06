@@ -346,11 +346,11 @@ public class SystemFacade {
 
     // function for handling Use Case 3.7 + 6.4 - written by Nufar
     public String getUserPurchaseHistory(String userName) {
-        JSONParser parser = new JSONParser();
         UserPurchaseHistory purchaseHistory = this.users.get(userName).getPurchaseHistory();
         JSONArray historyArray = new JSONArray();
         for(Purchase p: purchaseHistory.getUserPurchases()){
             try {
+                JSONParser parser = new JSONParser();
                 JSONArray h = (JSONArray) parser.parse(p.getPurchasedProducts().viewOnlyProducts());
                 historyArray.add(h);
             }catch(Exception e){System.out.println(e.getMessage());};
@@ -908,6 +908,18 @@ public class SystemFacade {
             }
         }
         return "";
+    }
+
+    public String responseToAppointment(String storeName, String userToResponse, boolean isApproved){
+        User waiting = users.get(userToResponse);
+        Store store = getStoreByName(storeName);
+        if(isApproved){
+            store.approveAppointment(waiting, activeUser);
+        }
+        else{
+            store.declinedAppointment(waiting, activeUser);
+        }
+        return "your response was updated successfully";
     }
 
     public String getCartTotalPrice(UUID session_id){
