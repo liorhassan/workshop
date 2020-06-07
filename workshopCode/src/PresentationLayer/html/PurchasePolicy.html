@@ -2,16 +2,16 @@
 
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/PurchasePolicy.css">
     <script src="../js/PurchasPolicyCompose.js"></script>
     <script src="../js/PurchasePolicy.js"></script>
@@ -22,166 +22,174 @@
 
 <body data-gr-c-s-loaded="true">
 
-    <!-- Fixed home bar  -->
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand">Trading System</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+<!-- Fixed home bar  -->
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand">Trading System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav mr-auto">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="HomeRegisterd.html">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="ShoppingCart.html">Shopping Cart</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="ManageMyStores.html">Manage Stores <span
+                        class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Purchase History</a>
+            </li>
+            <li class="nav-item" style="margin-left: 510pt;">
+                <a class="nav-link" href="HomeGuest.html">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- Fixed home bar  -->
+<main role="main" class="main">
+    <div class="container">
+        <div>
+            <section class="jumbotron text-center">
+                <h2>Make a new purchase policy</h2>
+            </section>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon3">Please enter a store name</span>
+                </div>
+                <input type="text" id="storeName" aria-describedby="basic-addon3">
+            </div>
+            <ul class="nav nav-pills mb-3" id="policyType" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" href="HomeRegisterd.html">Home</a>
+                    <a class="nav-link" id="simpleOptions" data-toggle="tab" href="#Simple" role="tab"
+                       aria-controls="Simple" aria-selected="false"
+                       onclick="resetActiveTabsButThis(this)">Simple</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="ShoppingCart.html">Shopping Cart</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="ManageMyStores.html">Manage Stores <span
-                            class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Purchase History</a>
-                </li>
-                <li class="nav-item" style="margin-left: 510pt;">
-                    <a class="nav-link" href="HomeGuest.html">Logout</a>
+                    <a class="nav-link" id="composeOptions" data-toggle="tab" href="#Compose" role="tab"
+                       aria-controls="Compose" aria-selected="false" onclick="setCompose(this)">Compose</a>
                 </li>
             </ul>
-        </div>
-    </nav>
-    <!-- Fixed home bar  -->
-    <main role="main" class="main">
-        <div class="container">
-            <div>
-                <section class="jumbotron text-center">
-                    <h2>Make a new purchase policy</h2>
-                </section>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon3">Please enter a store name</span>
+            <div class="tab-content" id="simpleDiscountTypeContent">
+                <div class="tab-pane fade" id="Simple" role="tabpanel" aria-labelledby="simple-tab">
+                    <div class="wrappedInput">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon3">Is Standalone?</span>
+                        </div>
+                        <div class="input-group-text">
+                            <input type="checkbox" id="isStandalone" aria-describedby="basic-addon3">
+                        </div>
                     </div>
-                    <input type="text" id="storeName" aria-describedby="basic-addon3">
+                    <ul class="nav nav-pills mb-3" id="subPropBasket" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link" id="purchasePolicyProductOption" data-toggle="tab"
+                               href="#PurchasePolicyProduct" role="tab" aria-selected="false">Purchase Policy by
+                                Product</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="purchasePolicyStoreOption" data-toggle="tab"
+                               href="#PurchasePolicyStore" role="tab" aria-selected="false">Purchase Policy by
+                                Store</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="purchasePolicyUserOption" data-toggle="tab"
+                               href="#PurchasePolicyUser" role="tab" aria-selected="false">Purchase Policy by
+                                User</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="purchasePolicySystemOption" data-toggle="tab"
+                               href="#PurchasePolicySystem" role="tab" aria-selected="false">Purchase Policy
+                                by System</a>
+                        </li>
+                    </ul>
                 </div>
-                <ul class="nav nav-pills mb-3" id="policyType" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link" id="simpleOptions" data-toggle="tab" href="#Simple" role="tab"
-                            aria-controls="Simple" aria-selected="false"
-                            onclick="resetActiveTabsButThis(this)">Simple</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="composeOptions" data-toggle="tab" href="#Compose" role="tab"
-                            aria-controls="Compose" aria-selected="false" onclick="setCompose(this)">Compose</a>
-                    </li>
-                </ul>
-                <div class="tab-content" id="simpleDiscountTypeContent">
-                    <div class="tab-pane fade" id="Simple" role="tabpanel" aria-labelledby="simple-tab">
-                        <ul class="nav nav-pills mb-3" id="subPropBasket" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link" id="purchasePolicyProductOption" data-toggle="tab"
-                                    href="#PurchasePolicyProduct" role="tab" aria-selected="false">Purchase Policy by
-                                    Product</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="purchasePolicyStoreOption" data-toggle="tab"
-                                    href="#PurchasePolicyStore" role="tab" aria-selected="false">Purchase Policy by
-                                    Store</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="purchasePolicyUserOption" data-toggle="tab"
-                                    href="#PurchasePolicyUser" role="tab" aria-selected="false">Purchase Policy by
-                                    User</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="purchasePolicySystemOption" data-toggle="tab"
-                                    href="#PurchasePolicySystem" role="tab" aria-selected="false">Purchase Policy
-                                    by System</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="tab-pane fade" id="Compose" role="tabpanel" aria-labelledby="compose-tab">
-                        <button onclick="getSimplePolicies()">Get simple policies</button>
-                        <div id="allPolicyDiv" style="display: none;">
-                            <div id="policy-content">
-                            </div>
-                            <button class="btn btn-primary" onclick="submitPolicy()">Add Purchase Policy</button>
+                <div class="tab-pane fade" id="Compose" role="tabpanel" aria-labelledby="compose-tab">
+                    <button onclick="getSimplePolicies()">Get simple policies</button>
+                    <div id="allPolicyDiv">
+                        <div id="policy-content" style="display: none;">
                         </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="simpleDiv">
-                    <div class="tab-pane fade" id="PurchasePolicyProduct" role="tabpanel" aria-labelledby="product-tab">
-                        <label>Purchase Policy by Product</label>
-                        <div class="columndForm input-group mb-3">
-                            <div class="wrappedInput">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon3">Product name</span>
-                                </div>
-                                <input type="text" id="productName" aria-describedby="basic-addon3">
-                            </div>
-                            <div class="wrappedInput">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon3">Amount</span>
-                                </div>
-                                <input type="number" min=1 id="amount" aria-describedby="basic-addon3">
-                            </div>
-                            <div class="wrappedInput">
-                                <div class="input-group-text">
-                                    <input type="radio" name="minOrMaxProduct" checked id="minProduct"
-                                        aria-describedby="basic-addon3">
-                                </div>
-                                <label>Min</label>
-                            </div>
-                            <div class="wrappedInput">
-                                <div class="input-group-text">
-                                    <input type="radio" name="minOrMaxProduct" id="maxProduct"
-                                        aria-describedby="basic-addon3">
-                                </div>
-                                <label>Max</label>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" onclick="addPolicyByProduct()">Add Purchase Policy</button>
-                    </div>
-                    <div class="tab-pane fade" id="PurchasePolicyStore" role="tabpanel" aria-labelledby="store-tab">
-                        <label for="basketPriceNumber">Purchase Policy by Store:</label>
-                        <div class="columndForm input-group mb-3">
-                            <div class="wrappedInput">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon3">limit</span>
-                                </div>
-                                <input type="number" id="limit" aria-describedby="basic-addon3">
-                            </div>
-                            <div class="wrappedInput">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon3">Amount</span>
-                                </div>
-                            </div>
-                            <div class="wrappedInput">
-                                <div class="input-group-text">
-                                    <input type="radio" name="minOrMaxStore" checked id="minStore"
-                                        aria-describedby="basic-addon3">
-                                </div>
-                                <label>Min</label>
-                            </div>
-                            <div class="wrappedInput">
-                                <div class="input-group-text">
-                                    <input type="radio" name="minOrMaxStore" id="maxStore"
-                                        aria-describedby="basic-addon3">
-                                </div>
-                                <label>Max</label>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" onclick="addStorePolicy()">Add Purchase Policy</button>
-                    </div>
-                    <div class="tab-pane fade" id="PurchasePolicyUser" role="tabpanel" aria-labelledby="user-tab">
-                        <label>Purchase Policy by User:</label>
-                    </div>
-                    <div class="tab-pane fade" id="PurchasePolicySystem" role="tabpanel" aria-labelledby="system-tab">
-                        <label>Purchase Policy by System:</label>
+                        <button class="btn btn-primary" onclick="submitPolicy()">Add Purchase Policy</button>
                     </div>
                 </div>
             </div>
+            <div class="tab-content" id="simpleDiv">
+                <div class="tab-pane fade" id="PurchasePolicyProduct" role="tabpanel" aria-labelledby="product-tab">
+                    <label>Purchase Policy by Product</label>
+                    <div class="columndForm input-group mb-3">
+                        <div class="wrappedInput">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon3">Product name</span>
+                            </div>
+                            <input type="text" id="productName" aria-describedby="basic-addon3">
+                        </div>
+                        <div class="wrappedInput">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon3">Amount</span>
+                            </div>
+                            <input type="number" min=1 id="amount" aria-describedby="basic-addon3">
+                        </div>
+                        <div class="wrappedInput">
+                            <div class="input-group-text">
+                                <input type="radio" name="minOrMaxProduct" checked id="minProduct"
+                                       aria-describedby="basic-addon3">
+                            </div>
+                            <label>Min</label>
+                        </div>
+                        <div class="wrappedInput">
+                            <div class="input-group-text">
+                                <input type="radio" name="minOrMaxProduct" id="maxProduct"
+                                       aria-describedby="basic-addon3">
+                            </div>
+                            <label>Max</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addPolicyByProduct()">Add Purchase Policy</button>
+                </div>
+                <div class="tab-pane fade" id="PurchasePolicyStore" role="tabpanel" aria-labelledby="store-tab">
+                    <label for="basketPriceNumber">Purchase Policy by Store:</label>
+                    <div class="columndForm input-group mb-3">
+                        <div class="wrappedInput">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon3">limit</span>
+                            </div>
+                            <input type="number" id="limit" aria-describedby="basic-addon3">
+                        </div>
+                        <div class="wrappedInput">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon3">Amount</span>
+                            </div>
+                        </div>
+                        <div class="wrappedInput">
+                            <div class="input-group-text">
+                                <input type="radio" name="minOrMaxStore" checked id="minStore"
+                                       aria-describedby="basic-addon3">
+                            </div>
+                            <label>Min</label>
+                        </div>
+                        <div class="wrappedInput">
+                            <div class="input-group-text">
+                                <input type="radio" name="minOrMaxStore" id="maxStore"
+                                       aria-describedby="basic-addon3">
+                            </div>
+                            <label>Max</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addStorePolicy()">Add Purchase Policy</button>
+                </div>
+                <div class="tab-pane fade" id="PurchasePolicyUser" role="tabpanel" aria-labelledby="user-tab">
+                    <label>Purchase Policy by User:</label>
+                </div>
+                <div class="tab-pane fade" id="PurchasePolicySystem" role="tabpanel" aria-labelledby="system-tab">
+                    <label>Purchase Policy by System:</label>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
+</main>
 
 
 </body>

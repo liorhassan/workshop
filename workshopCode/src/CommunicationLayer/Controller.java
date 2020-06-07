@@ -529,11 +529,13 @@ public class Controller {
                             int amount = (requestJson.containsKey("amount")) ? Integer.parseInt((String) requestJson.get("amount")) : null;
                             String product = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
                             boolean minOrMax = (requestJson.containsKey("minOrMax")) ? (boolean) (requestJson.get("minOrMax")) : false;
-                            response = storeHandler.addPurchasePolicyProduct(store, product, amount, minOrMax, true);
+                            boolean standalone = (requestJson.containsKey("standalone")) ? (boolean) (requestJson.get("standalone")) : false;
+                            response = storeHandler.addPurchasePolicyProduct(store, product, amount, minOrMax, standalone);
                         }else if(subtype.equals("PurchasePolicyStore")){
                             int limit = (requestJson.containsKey("limit")) ? Integer.parseInt((String) requestJson.get("limit")) : null;
                             boolean minOrMax = (requestJson.containsKey("minOrMax")) ? (boolean) (requestJson.get("minOrMax")) : false;
-                            response = storeHandler.addPurchasePolicyStore(store, limit, minOrMax, true);
+                            boolean standalone = (requestJson.containsKey("standalone")) ? (boolean) (requestJson.get("standalone")) : false;
+                            response = storeHandler.addPurchasePolicyStore(store, limit, minOrMax, standalone);
                         }
                         break;
                     case "compose":

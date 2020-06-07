@@ -1,5 +1,6 @@
 function addNewPolicy(data) {
     data.store = document.getElementById("storeName").value;
+    data.standalone = document.getElementById("isStandalone").checked;
     fetch("http://localhost:8080/tradingSystem/addPurchasePolicy", {
         method: "POST",
         body: JSON.stringify(data)
@@ -49,7 +50,6 @@ function addStorePolicy() {
 
     const data = {
         type: "simple",
-//        subtype: "DiscountCondBasketProdcts",
         subtype: "PurchasePolicyStore",
         limit: limit,
         minOrMax: radioBtn[0].checked ? false : true,
