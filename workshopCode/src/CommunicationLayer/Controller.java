@@ -495,7 +495,7 @@ public class Controller {
         });
 
 
-
+        //accept: {rator: , operand1:, operand2:}
         server.createContext("/tradingSystem/addDiscountPolicy", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
