@@ -1,9 +1,5 @@
-const window_name = "PolicyView";
 document.addEventListener("DOMContentLoaded", function () {
-    fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
-        method: "POST",
-        body: JSON.stringify({session_id: localStorage["session_id"]})
-    })
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
     .then(response=>response.json())
     .then(updateNavBar);
 })
@@ -17,17 +13,17 @@ let result = {};
 let rootElementType;
 let totalComp;
 let prevSelect = {}
-let allSimplePolicies = [{ policyId: 1, policyName: "A" }, { policyId: 2, policyName: "AB" }, { policyId: 3, policyName: "C" }, { policyId: 4, policyName: "D" }];
-function getSimplePolicies() {
+let allDiscounts = [{ discountId: 1, discountName: "A" }, { discountId: 2, discountName: "AB" }, { discountId: 3, discountName: "C" }, { discountId: 4, discountName: "D" }];
+function getDiscounts() {
     const store = document.getElementById("storeName").value;
 
     if (!store || store.length == 0) {
         Swal.fire(
             'Forgot something?',
-            'You must specify a store name to get purchase policies',
+            'You must specify a store name to get discounts',
             'warning')
     } else {
-        fetch("http://localhost:8080/tradingSystem/getSimplePolicies", {
+        fetch("http://localhost:8080/tradingSystem/getDiscounts", {
             method: "POST",
             body: JSON.stringify({ store: store })
         })
@@ -48,10 +44,10 @@ function getSimplePolicies() {
                 } else if (data.length == 0) {
                     Swal.fire(
                         'Unfortunatly',
-                        "There are no policies",
+                        "There are no discounts",
                         'warning')
                 } else {
-                    allSimplePolicies = data;
+                    allDiscounts = data;
                     document.getElementById("allPolicyDiv").style.display = 'inline';
                 }
             })
@@ -72,7 +68,7 @@ function submitPolicy() {
 
     result.store = document.getElementById("storeName").value;
 
-    fetch("http://localhost:8080/tradingSystem/addPurchasePolicy", {
+    fetch("http://localhost:8080/tradingSystem/addDiscountPolicy", {
         method: "POST",
         body: JSON.stringify(result)
     }).then(response => {
@@ -111,7 +107,7 @@ function getOperand(type, childIndex) {
     }
     else {
         currOperand.type = "simple";
-        currOperand.policyId = type;
+        currOperand.discountId = type;
     }
 
     return currOperand;
@@ -151,8 +147,8 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         ratorinput.setAttribute("id", "rator" + compCounter);
 
         const ratorOption1 = document.createElement("option");
-        ratorOption1.setAttribute("value", "OR");
-        ratorOption1.appendChild(document.createTextNode("OR"));
+        ratorOption1.setAttribute("value", "IF_THEN");
+        ratorOption1.appendChild(document.createTextNode("IF_THEN"));
         const ratorOption2 = document.createElement("option");
         ratorOption2.setAttribute("value", "AND");
         ratorOption2.appendChild(document.createTextNode("AND"));
@@ -184,10 +180,10 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         rand1DefaultOption.setAttribute("selected", true)
         rand1DefaultOption.appendChild(document.createTextNode("- Choose operand -"));
         rand1Select.appendChild(rand1DefaultOption);
-        allSimplePolicies.forEach(policy => {
+        allDiscounts.forEach(discount => {
             const rand1Option = document.createElement("option");
-            rand1Option.setAttribute("value", policy.policyId);
-            rand1Option.appendChild(document.createTextNode(policy.policyName));
+            rand1Option.setAttribute("value", discount.discountId);
+            rand1Option.appendChild(document.createTextNode(discount.discountName));
             rand1Select.appendChild(rand1Option);
         });
 
@@ -227,10 +223,10 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         rand2DefaultOption.setAttribute("selected", true)
         rand2DefaultOption.appendChild(document.createTextNode("- Choose operand -"));
         rand2Select.appendChild(rand2DefaultOption);
-        allSimplePolicies.forEach(policy => {
+        allDiscounts.forEach(discount => {
             const rand2Option = document.createElement("option");
-            rand2Option.setAttribute("value", policy.policyId);
-            rand2Option.appendChild(document.createTextNode(policy.policyName));
+            rand2Option.setAttribute("value", discount.discountId);
+            rand2Option.appendChild(document.createTextNode(discount.discountName));
             rand2Select.appendChild(rand2Option);
         });
 

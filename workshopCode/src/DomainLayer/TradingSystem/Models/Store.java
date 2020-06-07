@@ -7,14 +7,16 @@ import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.DoubleBinaryOperator;
 
 public class Store implements Serializable {
 
     private Inventory inventory;
     private String name;
-    private HashMap<User, StoreManaging> managements;
-    private HashMap<User, StoreOwning> ownerships;
+    private ConcurrentHashMap<User, StoreManaging> managements;
+    private ConcurrentHashMap<User, StoreOwning> ownerships;
+    private ConcurrentHashMap<User, AppointmentAgreement> waitingAgreements;
     private String description;
     private User storeFirstOwner;
     private StorePurchaseHistory purchaseHistory;
@@ -25,7 +27,7 @@ public class Store implements Serializable {
     private List<PurchasePolicy> purchasePolicies;
     private boolean doubleDiscounts;                    //on products and basketPrice
 
-    private HashMap<Basket, List<ProductItem>> reservedProducts;
+    private ConcurrentHashMap<Basket, List<ProductItem>> reservedProducts;
     private int discountID_counter;
     private int purchaseID_counter;
 
@@ -34,8 +36,8 @@ public class Store implements Serializable {
         this.description = description;
         this.storeFirstOwner = firstOwner;
         this.inventory = new Inventory();
-        this.managements = new HashMap<>();
-        this.ownerships = new HashMap<>();
+        this.managements = new ConcurrentHashMap<>();
+        this.ownerships = new ConcurrentHashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
         this.discountPolicies = new ArrayList<>();
@@ -43,7 +45,8 @@ public class Store implements Serializable {
         this.notStandAlonePolicies = new ArrayList<>();
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
-        this.reservedProducts= new HashMap<>();
+        this.reservedProducts= new ConcurrentHashMap<>();
+        this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
         this.purchaseID_counter = 0;
         this.doubleDiscounts = true;
@@ -78,7 +81,7 @@ public class Store implements Serializable {
     }
 
 
-    public HashMap<Product, Integer> getInventory() {
+    public ConcurrentHashMap<Product, Integer> getInventory() {
         return inventory.getProducts();
     }
 
@@ -209,15 +212,15 @@ public class Store implements Serializable {
         }
     }
 
-    public HashMap<User, StoreManaging> getManagements() {
+    public ConcurrentHashMap<User, StoreManaging> getManagements() {
         return managements;
     }
 
-    public HashMap<User, StoreOwning> getOwnerships() {
+    public ConcurrentHashMap<User, StoreOwning> getOwnerships() {
         return ownerships;
     }
 
-    public void setManagements(HashMap<User, StoreManaging> managements) {
+    public void setManagements(ConcurrentHashMap<User, StoreManaging> managements) {
         this.managements = managements;
     }
 
@@ -230,10 +233,36 @@ public class Store implements Serializable {
 
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
-    public void addStoreOwner(User newOwner, StoreOwning storeOwning) {
-        if (!ownerships.containsKey(newOwner))
-            this.ownerships.put(newOwner, storeOwning);
-        NotificationSystem.getInstance().notify(newOwner.getUsername(), "You have been appointed as " + name + "'s store owner");
+    public void addStoreOwner(User newOwner, User appointer) {
+        if (!waitingAgreements.containsKey(newOwner))
+            this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
+        //notify all owners
+        NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+    }
+
+    //UC 4.3
+    public void approveAppointment(User waitingForApprove, User approveOwner){
+        AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
+        apag.approve(approveOwner);
+        if(apag.getWaitingForResponse().size() == 0){
+            if(apag.getDeclined().size() != 0){
+                StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser());
+                ownerships.put(waitingForApprove, storeOwning);
+                waitingAgreements.remove(waitingForApprove);
+                //notify that the appointment approved - (appointing and appointment users)
+            }
+            else {
+                waitingAgreements.remove(waitingForApprove);
+                //notify that the appointment declined - (appointing and appointment users)
+
+            }
+        }
+    }
+
+    //UC 4.3
+    public void declinedAppointment(User waitingForApprove, User declinedOwner){
+        AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
+        apag.decline(declinedOwner);
     }
 
 

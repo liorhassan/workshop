@@ -3,13 +3,19 @@ var activeStore;
 var activeProducts;
 document.addEventListener("DOMContentLoaded", function () {
 
-    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
+        method: "POST",
+        body: JSON.stringify({session_id: localStorage["session_id"]})
+    })
     .then(response=>response.json())
     .then(updateNavBar);
     
 
 
-     fetch("http://localhost:8080/tradingSystem/myStores")
+     fetch("http://localhost:8080/tradingSystem/myStores", {
+        method: "POST",
+        body: JSON.stringify({session_id: localStorage["session_id"]})
+    })
          .then(response => response.json())
           .then(setMyStores)
 
@@ -32,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var sfy = JSON.stringify({user: user_name, store: store_name, permission: permissions});
         fetch("http://localhost:8080/tradingSystem/editPermission", {
             method: "POST",
-            body: JSON.stringify({user: user_name, store: store_name, permission: permissions})
+            body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, permission: permissions})
         })
         .then(response => {
             if (response.ok) {
@@ -98,7 +104,7 @@ function initOpenStoreModel() {
         var store_description  = document.getElementById("StoreDescInput").value;
         fetch("http://localhost:8080/tradingSystem/openNewStore", {
             method: "POST",
-            body: JSON.stringify({store: store_name, description: store_description})
+            body: JSON.stringify({session_id: localStorage["session_id"] ,store: store_name, description: store_description})
         })
         .then(response => {
             if (response.ok) {
@@ -120,7 +126,10 @@ function initOpenStoreModel() {
                    'error')
             }
         })
-        fetch("http://localhost:8080/tradingSystem/myStores")
+        fetch("http://localhost:8080/tradingSystem/myStores", {
+            method: "POST",
+            body: JSON.stringify({session_id: localStorage["session_id"]})
+        })
          .then(response => response.json())
           .then(setMyStores);
         document.getElementById("StoreNameInput").value = "";
@@ -136,7 +145,7 @@ function initAddManagerModel() {
         var username  = document.getElementById("new-manager-name").value;
         fetch("http://localhost:8080/tradingSystem/addStoreManager", {
             method: "POST",
-            body: JSON.stringify( {user: username, store:store_name})
+            body: JSON.stringify( {session_id: localStorage["session_id"], user: username, store:store_name})
         })
         .then(response => {
             if (response.ok) {
@@ -169,7 +178,7 @@ function initAddOwnerModel() {
         var username  = document.getElementById("new-owner-name").value;
         fetch("http://localhost:8080/tradingSystem/addStoreOwner", {
             method: "POST",
-            body: JSON.stringify( {user: username, store:store_name})
+            body: JSON.stringify( {session_id: localStorage["session_id"] ,user: username, store:store_name})
         })
         .then(response => {
             if (response.ok) {
@@ -203,7 +212,7 @@ function initRemoveManagerModel() {
         var username  = document.getElementById("remove-manager-name").value;
         fetch("http://localhost:8080/tradingSystem/removeStoreManager", {
             method: "POST",
-            body: JSON.stringify( {user: username, store:store_name})
+            body: JSON.stringify( {session_id: localStorage["session_id"], user: username, store:store_name})
         })
         .then(response => {
             if (response.ok) {
@@ -275,7 +284,7 @@ function initManageSupplyModel(){
         var prod_amount = document.getElementById("update-product-amount").value;
         fetch("http://localhost:8080/tradingSystem/updateInventory", {
             method: "POST",
-            body: JSON.stringify( {store:activeStore.name, product: prod_name, price:prod_price, category:prod_cat, desc:prod_desc, amount:prod_amount})
+            body: JSON.stringify( {session_id: localStorage["session_id"], store:activeStore.name, product: prod_name, price:prod_price, category:prod_cat, desc:prod_desc, amount:prod_amount})
         })
         .then(response => {
             if (response.ok) {
@@ -373,7 +382,7 @@ function updateCandidatesWindow(candidates){
         app_button.addEventListener("click",function(){
             fetch("http://localhost:8080/tradingSystem/approveCandidate", {
                 method: "POST",
-                body: JSON.stringify({user: user_name, store: store_name, status: "approve"})
+                body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, status: "approve"})
             })
             .then(response => {
                 if (response.ok) {
@@ -405,7 +414,7 @@ function updateCandidatesWindow(candidates){
         rej_button.addEventListener("click",function(){
             fetch("http://localhost:8080/tradingSystem/approveCandidate", {
                 method: "POST",
-                body: JSON.stringify({user: user_name, store: store_name, status: "reject"})
+                body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, status: "reject"})
             })
             .then(response => {
                 if (response.ok) {
@@ -532,7 +541,7 @@ function setCategories(categories) {
 function updateCandidates() {
     fetch("http://localhost:8080/tradingSystem/newOwnerCandidates", {
             method: "POST",
-            body: JSON.stringify({store:activeStore.name})
+            body: JSON.stringify({session_id: localStorage["session_id"], store:activeStore.name})
         })
         .then(response => {
             if (response.ok) {
@@ -564,7 +573,7 @@ function showPopUp(action){
     if(action == "View Purchasing History"){
         fetch("http://localhost:8080/tradingSystem/storePurchaseHistory", {
             method: "POST",
-            body: JSON.stringify({store:activeStore.name})
+            body: JSON.stringify({session_id: localStorage["session_id"], store:activeStore.name})
         })
         .then(response => {
             if (response.ok) {
