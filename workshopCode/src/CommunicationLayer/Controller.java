@@ -422,7 +422,7 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                String response = storeHandler.viewAllDiscounts(storeName);
+                String response = storeHandler.viewDiscounts(storeName);
                 headers.set("getDiscounts", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -560,12 +560,12 @@ public class Controller {
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 String response = storeHandler.viewPurchasePolicies(storeName);
-                headers.set("getDiscounts", String.format("application/json; charset=%s", UTF8));
+                headers.set("getSimplePolicies", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
                 e.printStackTrace();
             } catch (Exception e) {
-                headers.set("getDiscounts", String.format("application/json; charset=%s", UTF8));
+                headers.set("getSimplePolicies", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();
