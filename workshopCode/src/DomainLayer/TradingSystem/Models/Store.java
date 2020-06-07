@@ -236,15 +236,23 @@ public class Store implements Serializable {
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
     public void addStoreOwner(User newOwner, User appointer) {
-        if (!waitingAgreements.containsKey(newOwner))
-            this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
-        //notify all owners
-        for(User u: ownerships.keySet()) {
-            if(u.getUsername().equals(appointer.getUsername()))
-                continue;
-            NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + newOwner.getUsername() + " as owner of: " + getName() + " is waiting to your response");
+        if (ownerships.size() == 1) {
+            NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+            StoreOwning storeOwning = new StoreOwning(appointer);
+            ownerships.put(newOwner, storeOwning);
+            newOwner.addOwnedStore(this, storeOwning);
+            PersistenceController.create(ownerships);
+        } else {
+            if (!waitingAgreements.containsKey(newOwner))
+                this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
+            //notify all owners
+            for (User u : ownerships.keySet()) {
+                if (u.getUsername().equals(appointer.getUsername()))
+                    continue;
+                NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + newOwner.getUsername() + " as owner of: " + getName() + " is waiting to your response");
+            }
+            NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
         }
-        NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
     }
 
     //UC 4.3
@@ -256,6 +264,8 @@ public class Store implements Serializable {
                 StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser());
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
+                PersistenceController.create(ownerships);
+
                 //notify that the appointment approved )
                 for(User u: ownerships.keySet()) {
                     NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is approved");
@@ -432,13 +442,6 @@ public class Store implements Serializable {
     public String viewDiscountForChoose(){
         JSONArray discountsdes = new JSONArray();
         for(DiscountBInterface dis :discountsOnProducts){
-            JSONObject curr = new JSONObject();
-            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
-            curr.put("discountString", dis.discountDescription());
-            discountsdes.add(curr);
-        }
-
-        for(DiscountBInterface dis :discountsOnBasket){
             JSONObject curr = new JSONObject();
             curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
             curr.put("discountString", dis.discountDescription());
