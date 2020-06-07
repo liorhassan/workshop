@@ -1,6 +1,9 @@
 const window_name = "MainSearch";
 document.addEventListener("DOMContentLoaded", function () {
-    fetch("http://localhost:8080/tradingSystem/isLoggedIn")
+    fetch("http://localhost:8080/tradingSystem/isLoggedIn", {
+        method: "POST",
+        body: JSON.stringify({session_id: localStorage["session_id"]})
+    })
     .then(response=>response.json())
     .then(updateNavBar);
     
@@ -27,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
         fetch("http://localhost:8080/tradingSystem/search", {
             method: "POST",
-            body: JSON.stringify({name: name, category: category, keywords: keyWords})
+            body: JSON.stringify({session_id: localStorage["session_id"] ,name: name, category: category, keywords: keyWords})
         })
         .then(response => {
             if (response.ok) {
@@ -52,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var temp = JSON.stringify({maxPrice: max_price, minPrice: min_price, category: category});
         fetch("http://localhost:8080/tradingSystem/filter", {
             method: "POST",
-            body: JSON.stringify({maxPrice: max_price, minPrice: min_price, category: category})
+            body: JSON.stringify({session_id: localStorage["session_id"] ,maxPrice: max_price, minPrice: min_price, category: category})
         })
         .then(response => {
             if (response.ok) {
@@ -158,7 +161,7 @@ function showPopUp(item){
     
         fetch("http://localhost:8080/tradingSystem/addToShoppingBasket", {
             method: "POST",
-            body: JSON.stringify({store: product_store, product:product_name, amount: product_amount})
+            body: JSON.stringify({session_id: localStorage["session_id"], store: product_store, product:product_name, amount: product_amount})
         })
         .then(response => {
             if (response.ok) {

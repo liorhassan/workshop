@@ -32,4 +32,16 @@ public class PurchasePolicyStore implements PurchasePolicy {
     public int getPurchaseId() {
         return purchaseId;
     }
+
+    @Override
+    public String getPurchaseDescription(){
+        String output= "";
+        if(minOrMax){
+            output = "buy max " + limit + "products";
+        }
+        else {
+            output = "buy max " + limit + "products";
+        }
+        return output;
+    }
 }

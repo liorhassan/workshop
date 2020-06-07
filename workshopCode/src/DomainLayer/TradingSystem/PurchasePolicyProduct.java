@@ -36,4 +36,16 @@ public class PurchasePolicyProduct implements PurchasePolicy {
         return purchaseId;
     }
 
+    @Override
+    public String getPurchaseDescription(){
+        String output= "";
+        if(minOrmax){
+            output = "buy max " + amount + "from product: " + productName;
+        }
+        else {
+            output = "buy min " + amount + "from product: " + productName;
+        }
+        return output;
+    }
+
 }
