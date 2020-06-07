@@ -2,6 +2,7 @@ package IntegrationTests;
 
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.Models.User;
+import DomainLayer.TradingSystem.NotificationSystem;
 import DomainLayer.TradingSystem.SystemFacade;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.StoreManagerHandler;
@@ -51,14 +52,16 @@ public class StoreOwningIntegration {
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"toya", "1234", false);
         Store store = SystemFacade.getInstance().getStoreByName("Lalin");
+        int noyNumOfNotificBefore = NotificationSystem.getInstance().getUserNotificationNumber("noy");
         User noy = SystemFacade.getInstance().getUserByName("noy");
         assertTrue(!store.isOwner(noy));
         assertTrue(!noy.getStoreOwnings().contains(store));
         SystemFacade.getInstance().appointOwner(se,"noy", "Lalin");
         // noy get notification
+        int noyNumOfNotificAfter = NotificationSystem.getInstance().getUserNotificationNumber("noy");
         assertTrue(store.isOwner(noy));
         assertTrue(noy.getStoreOwnings().contains(store));
-
+        assertEquals(noyNumOfNotificBefore+1,noyNumOfNotificAfter);
         //SystemFacade.getInstance().editPermissions()
 
         SystemFacade.getInstance().logout(se);
@@ -72,14 +75,23 @@ public class StoreOwningIntegration {
         User zuzu = SystemFacade.getInstance().getUserByName("zuzu");
         assertTrue(!store.isOwner(zuzu));
         assertTrue(!zuzu.getStoreOwnings().contains(store));
+        int zuzuNumOfNotificBefore = NotificationSystem.getInstance().getUserNotificationNumber("zuzu");
+        int rachelNumOfNotificBefore = NotificationSystem.getInstance().getUserNotificationNumber("rachel");
+
         SystemFacade.getInstance().appointOwner(se,"zuzu", "Castro");
-        // maor get notification
+        // zuzu get notification
         //rachel get notification
+
+        int zuzuNumOfNotificAfter = NotificationSystem.getInstance().getUserNotificationNumber("zuzu");
+        int rachelNumOfNotificAfter = NotificationSystem.getInstance().getUserNotificationNumber("rachel");
+        assertEquals(zuzuNumOfNotificBefore+1,zuzuNumOfNotificAfter);
+        assertEquals(rachelNumOfNotificBefore+1,rachelNumOfNotificAfter);
+
         SystemFacade.getInstance().logout(se);
         UUID se2 =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"rachel", "1234", false);
-        SystemFacade.getInstance().approve("maor", "Castro");
-        //maor get notification
+        SystemFacade.getInstance().approve("zuzu", "Castro");
+
         assertTrue(store.isOwner(zuzu));
         assertTrue(zuzu.getStoreOwnings().contains(store));
 
@@ -92,11 +104,19 @@ public class StoreOwningIntegration {
         (new UsersHandler()).login(se,"toya", "1234", false);
         Store store = SystemFacade.getInstance().getStoreByName("Castro");
         User maor = SystemFacade.getInstance().getUserByName("maor");
+        int maorNumOfNotificBefore = NotificationSystem.getInstance().getUserNotificationNumber("maor");
+        int rachelNumOfNotificBefore = NotificationSystem.getInstance().getUserNotificationNumber("rachel");
+
         assertTrue(!store.isOwner(maor));
         assertTrue(!maor.getStoreOwnings().contains(store));
         SystemFacade.getInstance().appointOwner(se,"maor", "Castro");
         // maor get notification
         //rachel get notification
+        int maorNumOfNotificAfter = NotificationSystem.getInstance().getUserNotificationNumber("maor");
+        int rachelNumOfNotificAfter = NotificationSystem.getInstance().getUserNotificationNumber("rachel");
+        assertEquals(maorNumOfNotificBefore+1,maorNumOfNotificAfter);
+        assertEquals(rachelNumOfNotificBefore+1,rachelNumOfNotificAfter);
+
         SystemFacade.getInstance().logout(se);
         UUID se2 =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"rachel", "1234", false);
@@ -124,8 +144,13 @@ public class StoreOwningIntegration {
 
         UUID se2 =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se2, "lior", "1234", false);
+        int zuzuNumOfNotificBefore = NotificationSystem.getInstance().getUserNotificationNumber("zuzu");
+
         SystemFacade.getInstance().appointManager(se2, "zuzu", "Zara");
         //zuzu get notification
+
+        int zuzuNumOfNotificAfter = NotificationSystem.getInstance().getUserNotificationNumber("rachel");
+        assertEquals(zuzuNumOfNotificBefore+1,zuzuNumOfNotificAfter);
         SystemFacade.getInstance().logout(se2);
 
         UUID se3 =  SystemFacade.getInstance().createNewSession();

@@ -867,7 +867,7 @@ public class SystemFacade {
 
                 int purchaseId = (policy.containsKey("purchaseId")) ? Integer.parseInt( policy.get("purchaseId").toString()) : -1;
                 if(purchaseId == -1)
-                    throw new IllegalArgumentException("invalid discountId");
+                    throw new IllegalArgumentException("invalid purchaseId");
                 PurchasePolicy pp= store.getPurchasePolicyById(purchaseId);
                 newPolicy = pp;
             }

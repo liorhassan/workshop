@@ -2,6 +2,7 @@ package IntegrationTests;
 
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.Models.User;
+import DomainLayer.TradingSystem.NotificationSystem;
 import DomainLayer.TradingSystem.SystemFacade;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.StoreManagerHandler;
@@ -52,7 +53,13 @@ public class StoreManagerIntegration {
         User noy = SystemFacade.getInstance().getUserByName("noy");
         assertTrue(!store.isManager(noy));
         assertTrue(!noy.getStoreManagements().contains(store));
+
+        int noyNumOfNotificBefore = NotificationSystem.getInstance().getUserNotificationNumber("noy");
+
         SystemFacade.getInstance().appointManager(se,"noy", "Castro");
+
+        int noyNumOfNotificAfter = NotificationSystem.getInstance().getUserNotificationNumber("noy");
+        assertEquals(noyNumOfNotificBefore+1,noyNumOfNotificAfter);
 
         assertTrue(store.isManager(noy));
         assertTrue(noy.getStoreManagements().contains(store));
