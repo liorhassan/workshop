@@ -61,12 +61,13 @@ public class Inventory implements Serializable {
             int newAmount = products.get(p) + amount;
             products.put(p, newAmount);
             p.setQuantity(newAmount);
+            PersistenceController.create(p);
         }
         else{
             products.put(p, amount);
             p.setQuantity(amount);
+            PersistenceController.update(p);
         }
-        PersistenceController.update(p);
     }
 
     public void init(String storeName) {

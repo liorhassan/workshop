@@ -31,7 +31,7 @@ public class ProductItem implements Serializable {
 
     public ProductItem(){}
     public ProductItem(Product product, int amount, Basket basket) {
-        this.product = product;
+        this.product = SystemFacade.getInstance().getStoreByName(basket.getStore().getName()).getProductByName(product.getName());
         this.amount = amount;
         this.basket = basket;
     }
@@ -43,6 +43,7 @@ public class ProductItem implements Serializable {
     public void setProduct(Product product) {
         this.product = product;
     }
+
 
     public int getAmount() {
         return amount;
