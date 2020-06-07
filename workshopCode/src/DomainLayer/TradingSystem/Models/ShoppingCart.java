@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Entity
 @Table(name = "shoppingCarts")
@@ -23,7 +24,7 @@ public class ShoppingCart implements Serializable {
     private int id;
 
     @Transient
-    private HashMap<Store, Basket> baskets;
+    private ConcurrentHashMap<Store, Basket> baskets;
 
     //    @ManyToOne(fetch = FetchType.LAZY)
 //    @ManyToOne(cascade = {CascadeType.ALL})
@@ -46,7 +47,7 @@ public class ShoppingCart implements Serializable {
     public ShoppingCart(User user) {
         this.user = user;
         this.userName = user.getUsername();
-        this.baskets = new HashMap<Store, Basket>();
+        this.baskets = new ConcurrentHashMap<Store, Basket>();
         this.isHistory = false;
     }
 

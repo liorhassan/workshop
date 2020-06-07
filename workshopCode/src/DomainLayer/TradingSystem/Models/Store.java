@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.DoubleBinaryOperator;
 
 @Entity
@@ -34,15 +35,15 @@ public class Store implements Serializable {
     private User storeFirstOwner;
 
     @Transient
-    private HashMap<User, StoreManaging> managements;
+    private ConcurrentHashMap<User, StoreManaging> managements;
     @Transient
-    private HashMap<User, StoreOwning> ownerships;
+    private ConcurrentHashMap<User, StoreOwning> ownerships;
     @Transient
-    private HashMap<User, AppointmentAgreement> waitingAgreements;
+    private ConcurrentHashMap<User, AppointmentAgreement> waitingAgreements;
     @Transient
     private StorePurchaseHistory purchaseHistory;
     @Transient
-    private HashMap<Basket, List<ProductItem>> reservedProducts;
+    private ConcurrentHashMap<Basket, List<ProductItem>> reservedProducts;
     @Transient
     private List<DiscountBInterface> discountPolicies;
     @Transient
@@ -67,15 +68,15 @@ public class Store implements Serializable {
         this.storeFirstOwner = firstOwner;
         this.firstOwnerName = firstOwner.getUsername();
         this.inventory = new Inventory();
-        this.managements = new HashMap<>();
-        this.ownerships = new HashMap<>();
+        this.managements = new ConcurrentHashMap<>();
+        this.ownerships = new ConcurrentHashMap<>();
         this.ownerships.put(firstOwner, owning);
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.discountPolicies = new ArrayList<>();
         this.discountsOnBasket = new ArrayList<>();
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
-        this.reservedProducts = new HashMap<>();
+        this.reservedProducts = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
     }
 
@@ -91,9 +92,8 @@ public class Store implements Serializable {
         this.notStandAlonePolicies = new ArrayList<>();
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
-        this.reservedProducts = new HashMap<>();
-        this.reservedProducts = new HashMap<>();
-        this.waitingAgreements = new HashMap<>();
+        this.reservedProducts = new ConcurrentHashMap<>();
+        this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
         this.purchaseID_counter = 0;
         this.doubleDiscounts = true;
@@ -129,7 +129,7 @@ public class Store implements Serializable {
     }
 
 
-    public HashMap<Product, Integer> getInventory() {
+    public ConcurrentHashMap<Product, Integer> getInventory() {
         return inventory.getProducts();
     }
 
@@ -140,14 +140,6 @@ public class Store implements Serializable {
                     return dis;
             }
         }
-
-        for (DiscountBInterface dis : discountsOnProducts) {
-            if (dis instanceof DiscountSimple) {
-                if (((DiscountSimple) dis).getDiscountID() == discountId)
-                    return dis;
-            }
-        }
-
         return null;
     }
 
@@ -266,15 +258,15 @@ public class Store implements Serializable {
         }
     }
 
-    public HashMap<User, StoreManaging> getManagements() {
+    public ConcurrentHashMap<User, StoreManaging> getManagements() {
         return managements;
     }
 
-    public HashMap<User, StoreOwning> getOwnerships() {
+    public ConcurrentHashMap<User, StoreOwning> getOwnerships() {
         return ownerships;
     }
 
-    public void setManagements(HashMap<User, StoreManaging> managements) {
+    public void setManagements(ConcurrentHashMap<User, StoreManaging> managements) {
         this.managements = managements;
     }
 
@@ -460,12 +452,84 @@ public class Store implements Serializable {
             discountsdes.add(curr);
         }
 
-        for (DiscountBInterface dis : discountsOnBasket) {
+        for(DiscountBInterface dis :discountsOnBasket){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
+            curr.put("discountString", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+        for(DiscountBInterface dis :discountPolicies){
             JSONObject curr = new JSONObject();
             curr.put("discountPolicyString", dis.discountDescription());
             discountsdes.add(curr);
         }
+
         return discountsdes.toJSONString();
+    }
+
+    public String viewDiscountForChoose(){
+        JSONArray discountsdes = new JSONArray();
+        for(DiscountBInterface dis :discountsOnProducts){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
+            curr.put("discountString", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+
+        for(DiscountBInterface dis :discountsOnBasket){
+            JSONObject curr = new JSONObject();
+            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
+            curr.put("discountString", dis.discountDescription());
+            discountsdes.add(curr);
+        }
+
+        return discountsdes.toJSONString();
+    }
+
+    public String viewPurchasePolicies(){
+        JSONArray purchaePolicy = new JSONArray();
+        for(PurchasePolicy pp :purchasePolicies){
+            JSONObject curr = new JSONObject();
+            curr.put("purchaseString", pp.getPurchaseDescription());
+            purchaePolicy.add(curr);
+        }
+
+        return purchaePolicy.toJSONString();
+    }
+
+    public String viewPurchasePoliciesForChoose(){
+        JSONArray purchaePolicy = new JSONArray();
+        for(PurchasePolicy pp :purchasePolicies) {
+            if (pp instanceof PurchasePolicyStore) {
+                JSONObject curr = new JSONObject();
+                curr.put("purchaseId", ((PurchasePolicyStore) pp).getPurchaseId());
+                curr.put("description", (pp.getPurchaseDescription()));
+                purchaePolicy.add(curr);
+            }
+            else if(pp instanceof PurchasePolicyProduct){
+                JSONObject curr = new JSONObject();
+                curr.put("purchaseId", ((PurchasePolicyProduct) pp).getPurchaseId());
+                curr.put("description", (pp.getPurchaseDescription()));
+                purchaePolicy.add(curr);
+            }
+        }
+
+        for(PurchasePolicy pp : notStandAlonePolicies) {
+            if (pp instanceof PurchasePolicyStore) {
+                JSONObject curr = new JSONObject();
+                curr.put("purchaseId", ((PurchasePolicyStore) pp).getPurchaseId());
+                curr.put("description", (pp.getPurchaseDescription()));
+                purchaePolicy.add(curr);
+            }
+            else if(pp instanceof PurchasePolicyProduct){
+                JSONObject curr = new JSONObject();
+                curr.put("purchaseId", ((PurchasePolicyProduct) pp).getPurchaseId());
+                curr.put("description", (pp.getPurchaseDescription()));
+                purchaePolicy.add(curr);
+            }
+        }
+
+        return purchaePolicy.toJSONString();
     }
 
 

@@ -8,15 +8,16 @@ import DomainLayer.TradingSystem.UserPurchaseHistory;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
     @Transient
-    private HashMap<Store, StoreManaging> storeManagements;
+    private ConcurrentHashMap<Store, StoreManaging> storeManagements;
 
     @Transient
-    private HashMap<Store, StoreOwning> storeOwnings;
+    private ConcurrentHashMap<Store, StoreOwning> storeOwnings;
 
     @Transient
     private ShoppingCart shoppingCart;
@@ -34,8 +35,8 @@ public class User implements Serializable {
 
     public User() {
         shoppingCart = new ShoppingCart(this);
-        storeManagements = new HashMap<>();
-        storeOwnings = new HashMap<>();
+        storeManagements = new ConcurrentHashMap<>();
+        storeOwnings = new ConcurrentHashMap<>();
         this.isAdmin = false;
         this.purchaseHistory = new UserPurchaseHistory(this);//TODO: INIT PURCHASES
     }
@@ -70,10 +71,10 @@ public class User implements Serializable {
         storeManagements.remove(store);
     }
 
-    public HashMap<Store, StoreOwning> getStoreOwnings() {
+    public ConcurrentHashMap<Store, StoreOwning> getStoreOwnings() {
         return storeOwnings;
     }
-    public HashMap<Store, StoreManaging> getStoreManagements() {
+    public ConcurrentHashMap<Store, StoreManaging> getStoreManagements() {
         return storeManagements;
     }
 

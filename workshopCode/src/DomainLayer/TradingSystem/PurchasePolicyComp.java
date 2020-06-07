@@ -30,4 +30,14 @@ public class PurchasePolicyComp implements PurchasePolicy{
         }
         return false;
     }
+
+    @Override
+    public String getPurchaseDescription(){
+        String output= "";
+        String  output1 = operand1.getPurchaseDescription();
+        String  output2 = operand2.getPurchaseDescription();
+        output = output1 + operator.toString() + output2;
+
+        return output;
+    }
 }
