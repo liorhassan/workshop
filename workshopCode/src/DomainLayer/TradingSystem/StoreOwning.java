@@ -12,9 +12,11 @@ import java.util.List;
 @Table(name = "storeOwnings")
 public class StoreOwning implements Serializable {
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "appointer")
+//    @ManyToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "appointer")
+    @Column(name = "appointer")
+    private String appointerName;
+    @Transient
     private User appointer;
 
     @Id
@@ -44,6 +46,7 @@ public class StoreOwning implements Serializable {
 
     public StoreOwning(User appointer, String storeName, String appointeeName) {
         this.appointer = appointer;
+        this.appointeeName = appointerName;
         this.storeName = storeName;
         this.appointeeName = appointeeName;
         this.permissions = new ArrayList<>();

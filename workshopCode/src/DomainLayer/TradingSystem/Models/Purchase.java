@@ -15,9 +15,12 @@ public class Purchase implements Serializable {
     private int id;
 
 //    @OneToOne
-//    @JoinColumn(name = "cart")
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "shoppingCart", referencedColumnName = "id")
+//    @OneToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "shoppingCart", referencedColumnName = "id")
+    @Column(name = "cart")
+    private int cartId;
+
+    @Transient
     private ShoppingCart shoppingCart;
 
     @Column(name = "ownerName")

@@ -30,17 +30,17 @@ public class SystemFacade {
 
     private SystemFacade() {
 
-//        User u = new User();
-//        u.setUsername("noy");
-//        PersistenceController.create(u);
-//        PersistenceController.create(u.getShoppingCart());
-//
-//        Store s = new Store("Lalin", "blabla", u, new StoreOwning("Lalin", "noy"));
-//        PersistenceController.create(s);
-//        s.addToInventory("soap", 1, Category.Clothing, "blabla", 5);
-//        s.addToInventory("lotion", 1, Category.Clothing, "blabla", 5);
-//        u.getShoppingCart().addProduct("soap", s, 5);
-//        u.getShoppingCart().addProduct("lotion", s, 5);
+        User u = new User();
+        u.setUsername("noy");
+        PersistenceController.create(u);
+        PersistenceController.create(u.getShoppingCart());
+
+        Store s = new Store("Lalin", "blabla", u, new StoreOwning("Lalin", "noy"));
+        PersistenceController.create(s);
+        s.addToInventory("soap", 1, Category.Clothing, "blabla", 5);
+        s.addToInventory("lotion", 1, Category.Clothing, "blabla", 5);
+        u.getShoppingCart().addProduct("soap", s, 5);
+        u.getShoppingCart().addProduct("lotion", s, 5);
 
 
         users = new HashMap<>();
@@ -55,8 +55,8 @@ public class SystemFacade {
         firstAdmin.setIsAdmin();
         SecurityFacade.getInstance().addUser("Admin159", "951");
 
-//        PersistenceController.create(firstAdmin);
-//        PersistenceController.create(firstAdmin.getShoppingCart());
+        PersistenceController.create(firstAdmin);
+        PersistenceController.create(firstAdmin.getShoppingCart());
 
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
@@ -109,7 +109,7 @@ public class SystemFacade {
             s.initPermissions();
             currUser = getUserByName(s.getAppointeeName());
             currUser.addManagedStore(store, s);
-            users.replace(s.getAppointeeName(), currUser);
+            users.replace(currUser.getUsername(), currUser);
             store.addManager(currUser, s, false);
         }
     }
@@ -121,7 +121,7 @@ public class SystemFacade {
             s.initPermissions();
             currUser = getUserByName(s.getAppointeeName());
             currUser.addOwnedStore(store, s);
-            users.replace(s.getAppointeeName(), currUser);
+            users.replace(currUser.getUsername(), currUser);
             store.addStoreOwner(currUser, s);
 
         }

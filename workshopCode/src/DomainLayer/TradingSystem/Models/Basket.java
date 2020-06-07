@@ -24,17 +24,22 @@ public class Basket implements Serializable {
     @GeneratedValue
     private int id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "store", referencedColumnName = "name")
+//    @ManyToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "store", referencedColumnName = "name")
+    @Column(name = "store")
+    private String storeName;
+
+    @Transient
     private Store store;
 
-
 //    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "cart", referencedColumnName = "id")
-    private ShoppingCart sc;
+//    @ManyToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "cart", referencedColumnName = "id")
+    @Column(name = "cart")
+    private int cartId;
 
+    @Transient
+    private ShoppingCart sc;
     @Transient
     private List<ProductItem> productItems;
     @Transient
@@ -48,19 +53,29 @@ public class Basket implements Serializable {
     public Basket(){}
     public Basket(Store store, ShoppingCart sc) {
         this.store = store;
+        this.storeName = store.getName();
         productItems = new ArrayList<>();
         discountsOnProducts = new ArrayList<>();
         price = 0;
         priceOfProdAfterDiscount = new HashMap<>();
         this.sc = sc;
+        this.cartId = sc.getId();
     }
 
 
     public List<DiscountBInterface> getDiscountsOnProducts() {
         return discountsOnProducts;
     }
-    public void initProductItems() {
+    public void initProductItems(Basket b) {
         productItems = PersistenceController.readAllProductItems(id);
+        for(ProductItem pi: productItems){
+            pi.setBasket(b);
+            pi.setProduct(b.getStore().getProductByName(pi.getProductName()));
+        }
+        discountsOnProducts = new ArrayList<>();
+        price = 0;
+        priceOfProdAfterDiscount = new HashMap<>();
+
     }
 
     public Store getStore() {
@@ -213,8 +228,22 @@ public class Basket implements Serializable {
 
     public void unreserve(){
         if(!store.getReservedProducts(this).isEmpty()) {
+            PersistenceController.create(this);
             //there are reserved products in the basket that needs to be returned
             store.unreserveBasket(this);
         }
+    }
+
+    public String getStoreName() {
+        return this.storeName;
+    }
+
+
+    public void setCart(ShoppingCart shoppingCart) {
+        this.sc = shoppingCart;
+    }
+
+    public int getId() {
+        return this.id;
     }
 }

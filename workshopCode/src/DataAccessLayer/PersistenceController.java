@@ -356,7 +356,7 @@ public class PersistenceController {
             CriteriaQuery<ShoppingCart> cr = cb.createQuery(ShoppingCart.class);
             Root<ShoppingCart> root = cr.from(ShoppingCart.class);
             cr.select(root);
-            cr.where(cb.and(cb.equal(root.join("user").get("username"), username),
+            cr.where(cb.and(cb.equal(root.get("userName"), username),
                      cb.isFalse(root.get("isHistory"))));
             Query<ShoppingCart> query = session.createQuery(cr);
             carts = query.getResultList();
@@ -393,7 +393,7 @@ public class PersistenceController {
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<ProductItem> cr = cb.createQuery(ProductItem.class);
             Root<ProductItem> root = cr.from(ProductItem.class);
-            cr.select(root).where(cb.equal(root.get("basket"), basketId));
+            cr.select(root).where(cb.equal(root.get("basketId"), basketId));
             Query<ProductItem> query = session.createQuery(cr);
             pi = query.getResultList();
 
@@ -426,7 +426,7 @@ public class PersistenceController {
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<Basket> cr = cb.createQuery(Basket.class);
             Root<Basket> root = cr.from(Basket.class);
-            cr.select(root).where(cb.equal(root.get("sc"), Cartid));
+            cr.select(root).where(cb.equal(root.get("cartId"), Cartid));
             Query<Basket> query = session.createQuery(cr);
             baskets = query.getResultList();
 

@@ -26,8 +26,11 @@ public class Store implements Serializable {
     private String description;
 
     //    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "storeFirstOwner", referencedColumnName = "username")
+//    @ManyToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "storeFirstOwner", referencedColumnName = "username")
+    @Column(name = "storeFirstOwner")
+    private String firstOwnerName;
+    @Transient
     private User storeFirstOwner;
 
     @Transient
@@ -62,6 +65,7 @@ public class Store implements Serializable {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
+        this.firstOwnerName = firstOwner.getUsername();
         this.inventory = new Inventory();
         this.managements = new HashMap<>();
         this.ownerships = new HashMap<>();
@@ -76,6 +80,7 @@ public class Store implements Serializable {
     }
 
     public void init() {
+        this.storeFirstOwner = SystemFacade.getInstance().getUserByName(firstOwnerName);
         this.inventory = new Inventory();
         inventory.init(name);
         this.ownerships = new HashMap<>();
@@ -336,6 +341,7 @@ public class Store implements Serializable {
                 throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
             }
             this.reservedProducts.get(b).add(pi);
+            PersistenceController.delete(pi);
         }
     }
 
@@ -346,6 +352,7 @@ public class Store implements Serializable {
     public void unreserveBasket(Basket b) {
         for (ProductItem pi : this.reservedProducts.get(b)) {
             this.inventory.unreserveProduct(pi.getProduct(), pi.getAmount());
+            PersistenceController.create(pi);
         }
     }
 

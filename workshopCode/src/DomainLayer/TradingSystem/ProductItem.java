@@ -17,23 +17,31 @@ public class ProductItem implements Serializable {
     private int id;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "product", referencedColumnName = "name")
+//    @ManyToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "product", referencedColumnName = "name")
+    @Column(name = "product")
+    private String productName;
+    @Transient
     private Product product;
 
     @Column(name = "amount")
     private int amount;
 
 //    @ManyToOne()
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "basket", referencedColumnName = "id")
+//    @ManyToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "basket", referencedColumnName = "id")
+    @Column(name = "basket")
+    private int basketId;
+    @Transient
     private Basket basket;
 
     public ProductItem(){}
     public ProductItem(Product product, int amount, Basket basket) {
-        this.product = SystemFacade.getInstance().getStoreByName(basket.getStore().getName()).getProductByName(product.getName());
+        this.product = product;
+        this.productName = product.getName();
         this.amount = amount;
         this.basket = basket;
+        this.basketId = basket.getId();
     }
 
     public Product getProduct() {
@@ -61,4 +69,7 @@ public class ProductItem implements Serializable {
         this.basket = basket;
     }
 
+    public String getProductName() {
+        return this.productName;
+    }
 }

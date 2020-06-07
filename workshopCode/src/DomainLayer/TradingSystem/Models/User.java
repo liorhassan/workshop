@@ -42,6 +42,7 @@ public class User implements Serializable {
 
     public void setUsername(String name) {
         this.username = name;
+        this.shoppingCart.setUserName(username);
     }
 
     public String getUsername() {
@@ -58,10 +59,11 @@ public class User implements Serializable {
 
     public void initCart() {
         this.shoppingCart = PersistenceController.readUserCart(this.username);
+        shoppingCart.setUser(this);
         if(this.shoppingCart == null)
             this.shoppingCart = new ShoppingCart(this);
         else
-            shoppingCart.initBaskets();
+            shoppingCart.initBaskets(shoppingCart);
     }
 
     public void removeStoreManagement(Store store) {

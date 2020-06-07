@@ -11,9 +11,11 @@ import java.util.List;
 @Table(name = "storeManagings")
 public class StoreManaging implements Serializable {
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "appointer", referencedColumnName = "username")
+//    @ManyToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "appointer", referencedColumnName = "username")
+    @Column(name = "appointer")
+    private String appointerName;
+    @Transient
     private User appointer;
 
     @Id
@@ -31,6 +33,7 @@ public class StoreManaging implements Serializable {
     public StoreManaging(){};
     public StoreManaging(User appointer, String storeName, String appointeeName) {
         this.appointer = appointer;
+        this.appointerName = appointer.getUsername();
         this.appointeeName = appointeeName;
         this.storeName = storeName;
 

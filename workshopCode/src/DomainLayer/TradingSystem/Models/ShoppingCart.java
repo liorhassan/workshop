@@ -26,8 +26,12 @@ public class ShoppingCart implements Serializable {
     private HashMap<Store, Basket> baskets;
 
     //    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "user", referencedColumnName = "username")
+//    @ManyToOne(cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "user", referencedColumnName = "username")
+    @Column(name = "userName")
+    private String userName;
+
+    @Transient
     private User user;
 
     @Column(name = "isHistory")
@@ -41,16 +45,19 @@ public class ShoppingCart implements Serializable {
 
     public ShoppingCart(User user) {
         this.user = user;
+        this.userName = user.getUsername();
         this.baskets = new HashMap<Store, Basket>();
         this.isHistory = false;
     }
 
-    public void initBaskets() {
+    public void initBaskets(ShoppingCart sc) {
         this.baskets = new HashMap<>();
         List<Basket> b = PersistenceController.readAllBasket(id);
+
         for(Basket curr: b) {
-            curr.initProductItems();
-            curr.setStore(SystemFacade.getInstance().getStoreByName(curr.getStore().getName()));
+            curr.setStore(SystemFacade.getInstance().getStoreByName(curr.getStoreName()));
+            curr.setCart(sc);
+            curr.initProductItems(curr);
             baskets.put(curr.getStore(), curr);
         }
     }
@@ -115,7 +122,7 @@ public class ShoppingCart implements Serializable {
                         baskets.remove(store);
                         //update DB
                         PersistenceController.delete(pi);
-                        PersistenceController.delete(baskets.get(store));
+                        PersistenceController.delete(baskets);
                     } else {
                         PersistenceController.delete(pi);
                     }
@@ -175,6 +182,7 @@ public class ShoppingCart implements Serializable {
         for (Basket b : baskets.values()) {
             try {
                 b.reserve();
+                PersistenceController.delete(b);
             } catch (Exception e) {
                 unreserveProducts();
                 throw new RuntimeException(e.getMessage());
@@ -221,6 +229,13 @@ public class ShoppingCart implements Serializable {
     }
 
 
+    public int getId() {
+        return this.id;
+    }
+
+    public void setUserName(String username) {
+        this.userName = username;
+    }
 }
 
 
