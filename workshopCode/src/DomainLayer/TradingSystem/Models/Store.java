@@ -6,9 +6,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.DoubleBinaryOperator;
 
 public class Store implements Serializable {
 
@@ -531,6 +533,20 @@ public class Store implements Serializable {
             products.add(curr);
         }
         return products.toJSONString();
+    }
+
+    public String appointmentWaitingForUser(User owner){
+        //List<String> output = new ArrayList<>();
+        JSONArray usernames = new JSONArray();
+        for(User user : waitingAgreements.keySet()){
+            AppointmentAgreement aa = waitingAgreements.get(user);
+            if(aa.getWaitingForResponse().contains(owner)){
+                JSONObject curr = new JSONObject();
+                curr.put("userName", user.getUsername());
+                usernames.add(curr);
+            }
+        }
+        return usernames.toJSONString();
     }
 
     public Product getProductByName(String name) {

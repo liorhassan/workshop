@@ -943,4 +943,13 @@ public class SystemFacade {
         Store store = getStoreByName(storeName);
         store.removeDiscountPolicies();
     }
+
+    public String waitingAppointments(UUID session_id, String storeName){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        Store store = getStoreByName(storeName);
+        String userNames = store.appointmentWaitingForUser(se.getLoggedin_user());
+        return userNames;
+    }
 }
