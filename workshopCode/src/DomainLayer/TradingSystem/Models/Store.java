@@ -77,6 +77,7 @@ public class Store implements Serializable {
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
         this.reservedProducts = new ConcurrentHashMap<>();
+        this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
     }
 
@@ -84,8 +85,8 @@ public class Store implements Serializable {
         this.storeFirstOwner = SystemFacade.getInstance().getUserByName(firstOwnerName);
         this.inventory = new Inventory();
         inventory.init(name);
-        this.ownerships = new HashMap<>();
-        this.managements = new HashMap<>();
+        this.ownerships = new ConcurrentHashMap<>();
+        this.managements = new ConcurrentHashMap<>();
         this.purchaseHistory = new StorePurchaseHistory(this);
         this.discountPolicies = new ArrayList<>();
         this.discountsOnBasket = new ArrayList<>();
@@ -333,7 +334,6 @@ public class Store implements Serializable {
                 throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
             }
             this.reservedProducts.get(b).add(pi);
-            PersistenceController.delete(pi);
         }
     }
 
@@ -375,6 +375,7 @@ public class Store implements Serializable {
 
         // save to db
         PersistenceController.create(p);
+        PersistenceController.update(p.getPurchasedProducts());
     }
 
 
@@ -588,5 +589,17 @@ public class Store implements Serializable {
     //for store unit test
     public void reserveProduct(Product p, int amount) {
         this.inventory.reserveProduct(p, amount);
+    }
+
+    public void initPurchaseHistory() {
+        List<Purchase> purchases = PersistenceController.readPurchaseHistory(this.name);
+        for(Purchase p: purchases){
+            p.setCart(PersistenceController.readCartById(p.getCartId()));
+            ShoppingCart sc = p.getPurchasedProducts();
+            sc.setUser(SystemFacade.getInstance().getUserByName(sc.getUserName()));
+            sc.initBaskets(sc);
+            this.purchaseHistory.addPurchase(p);
+        }
+
     }
 }

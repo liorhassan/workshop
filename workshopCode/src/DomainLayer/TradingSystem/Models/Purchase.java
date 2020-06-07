@@ -33,6 +33,7 @@ public class Purchase implements Serializable {
     // Ctor for user's purchase
     public Purchase(ShoppingCart shoppingCart) {
         this.shoppingCart = shoppingCart;
+        this.cartId = shoppingCart.getId();
         this.isUsersPurchase = true;
         this.ownerName = shoppingCart.getUser().getUsername();
     }
@@ -40,13 +41,22 @@ public class Purchase implements Serializable {
     // Ctor for store's purchase
     public Purchase(Basket b, User u){
         this.isUsersPurchase = false;
-        this.ownerName = b.getStore().getName();
+        this.ownerName = b.getStoreName();
         this.shoppingCart = new ShoppingCart(u);
         this.shoppingCart.setIsHistory();
-        this.shoppingCart.addBasket(b);
+        Basket newBasket = new Basket(b.getStore(),shoppingCart);
+        newBasket.setProductItems(b.getProductItems());
 
         // save new shopping cart to db
         PersistenceController.create(this.shoppingCart);
+        this.cartId = shoppingCart.getId();
+        newBasket.setCartId(cartId);
+        PersistenceController.create(newBasket);
+        newBasket.copyProductItems(b);
+        this.shoppingCart.addBasket(newBasket);
+        PersistenceController.update(this.shoppingCart);
+        PersistenceController.update(newBasket);
+
     }
     public ShoppingCart getPurchasedProducts() {
         return shoppingCart;
@@ -54,5 +64,13 @@ public class Purchase implements Serializable {
 
     public double getTotalCheck() {
         return this.shoppingCart.getTotalCartPrice();
+    }
+
+    public int getCartId() {
+        return this.cartId;
+    }
+
+    public void setCart(ShoppingCart sc) {
+        this.shoppingCart = sc;
     }
 }

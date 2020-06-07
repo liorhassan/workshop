@@ -29,20 +29,7 @@ public class SystemFacade {
 
     private SystemFacade() {
 
-        User u = new User();
-        u.setUsername("noy");
-        PersistenceController.create(u);
-        PersistenceController.create(u.getShoppingCart());
-
-        Store s = new Store("Lalin", "blabla", u, new StoreOwning("Lalin", "noy"));
-        PersistenceController.create(s);
-        s.addToInventory("soap", 1, Category.Clothing, "blabla", 5);
-        s.addToInventory("lotion", 1, Category.Clothing, "blabla", 5);
-        u.getShoppingCart().addProduct("soap", s, 5);
-        u.getShoppingCart().addProduct("lotion", s, 5);
-
-
-        users = new HashMap<>();
+        users = new ConcurrentHashMap<>();
         active_sessions = new ConcurrentHashMap<>();
         users = new ConcurrentHashMap<>();
         stores = new ConcurrentHashMap<>();
@@ -58,8 +45,6 @@ public class SystemFacade {
         firstAdmin.setIsAdmin();
         SecurityFacade.getInstance().addUser("Admin159", "951");
 
-        PersistenceController.create(firstAdmin);
-        PersistenceController.create(firstAdmin.getShoppingCart());
 
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
@@ -85,13 +70,17 @@ public class SystemFacade {
         initAdmins();
         initStores();
         initCarts();
+        initPurchaseHistory();
     }
+
+
 
     private void initSubscribedUsers() {
         List<User> allSubscribedUsers = PersistenceController.readAllUsers(false);
 
         for (User user: allSubscribedUsers) {
             users.put(user.getUsername(), user);
+            NotificationSystem.getInstance().addUser(user.getUsername());
         }
     }
 
@@ -145,7 +134,16 @@ public class SystemFacade {
         }
     }
 
+    private void initPurchaseHistory() {
 
+        for(User u : this.users.values()){
+            u.initPurchaseHistory();
+        }
+
+        for(Store s : this.stores.values()){
+            s.initPurchaseHistory();
+        }
+    }
 
     public User getUserByName(String username) {
         return users.get(username);
@@ -306,8 +304,8 @@ public class SystemFacade {
             throw new IllegalArgumentException("Invalid Session ID");
 
         // save data to db
-        PersistenceController.update(activeUser.getShoppingCart());
-        PersistenceController.update(activeUser);
+        PersistenceController.update(se.getLoggedin_user().getShoppingCart());
+        PersistenceController.update(se.getLoggedin_user());
         NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
         return "You have been successfully logged out!";
@@ -392,7 +390,7 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreManaging managing = new StoreManaging(se.getLoggedin_user());
+        StoreManaging managing = new StoreManaging(se.getLoggedin_user(), storeName, username);
         store.addManager(appointed_user, managing, true);
         appointed_user.addManagedStore(store, managing);
 
@@ -426,7 +424,7 @@ public class SystemFacade {
             throw new IllegalArgumentException("Invalid Session ID");
 
         // update stores of the system and the user's data
-        StoreOwning storeOwning = new StoreOwning(storeName, this.activeUser.getUsername());
+        StoreOwning storeOwning = new StoreOwning(storeName, se.getLoggedin_user().getUsername());
         Store newStore = new Store(storeName, storeDescription, se.getLoggedin_user(), storeOwning);
 
         se.getLoggedin_user().addOwnedStore(newStore, storeOwning);
@@ -615,8 +613,6 @@ public class SystemFacade {
         // update cart state
         PersistenceController.update(sc);
 
-        // update db
-        PersistenceController.create(newPurchase);
     }
 
 
@@ -629,7 +625,7 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreOwning owning = new StoreOwning(se.getLoggedin_user());
+        StoreOwning owning = new StoreOwning(se.getLoggedin_user(), storeName, username);
         store.addStoreOwner(appointed_user, se.getLoggedin_user());
         appointed_user.addOwnedStore(store, owning);
 

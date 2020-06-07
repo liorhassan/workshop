@@ -8,6 +8,7 @@ import DomainLayer.TradingSystem.UserPurchaseHistory;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Entity
@@ -59,7 +60,8 @@ public class User implements Serializable {
     }
 
     public void initCart() {
-        this.shoppingCart = PersistenceController.readUserCart(this.username);
+        if(this.shoppingCart == null)
+            this.shoppingCart = PersistenceController.readUserCart(this.username);
         shoppingCart.setUser(this);
         if(this.shoppingCart == null)
             this.shoppingCart = new ShoppingCart(this);
@@ -103,10 +105,14 @@ public class User implements Serializable {
 
     public void emptyCart(){
         this.shoppingCart = new ShoppingCart(this);
+        PersistenceController.create(this.shoppingCart);
     }
 
     public void addPurchaseToHistory(Purchase newPurchase) {
         this.purchaseHistory.add(newPurchase);
+
+        //save to db
+        PersistenceController.create(newPurchase);
     }
 
     public boolean getIsAdmin(){
@@ -115,5 +121,15 @@ public class User implements Serializable {
 
     public void setIsAdmin(){
         this.isAdmin = true;
+    }
+
+    public void initPurchaseHistory() {
+        List<Purchase> purchases = PersistenceController.readPurchaseHistory(this.username);
+        for(Purchase p : purchases) {
+            p.setCart(PersistenceController.readCartById(p.getCartId()));
+            p.getPurchasedProducts().setUser(this);
+            p.getPurchasedProducts().initBaskets(p.getPurchasedProducts());
+            this.purchaseHistory.add(p);
+        }
     }
 }

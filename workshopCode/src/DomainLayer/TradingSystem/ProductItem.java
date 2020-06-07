@@ -50,6 +50,7 @@ public class ProductItem implements Serializable {
 
     public void setProduct(Product product) {
         this.product = product;
+        this.productName = product.getName();
     }
 
 
@@ -71,5 +72,13 @@ public class ProductItem implements Serializable {
 
     public String getProductName() {
         return this.productName;
+    }
+
+    public void setProductName(String name) {
+        this.productName = name;
+    }
+
+    public void setBasketId(int id) {
+        this.basketId = id;
     }
 }

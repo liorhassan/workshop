@@ -246,4 +246,22 @@ public class Basket implements Serializable {
     public int getId() {
         return this.id;
     }
+
+    public void setCartId(int cartId) {
+        this.cartId = cartId;
+    }
+
+    public void copyProductItems(Basket b) {
+        for(ProductItem pi: b.productItems){
+            ProductItem piNew = new ProductItem();
+            piNew.setProductName(pi.getProduct().getName());
+            piNew.setBasketId(this.id);
+            piNew.setAmount(pi.getAmount());
+            PersistenceController.create(piNew);
+
+        }
+
+
+
+    }
 }

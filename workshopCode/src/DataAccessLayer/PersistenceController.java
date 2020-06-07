@@ -154,7 +154,7 @@ public class PersistenceController {
             CriteriaQuery<Product> cr = cb.createQuery(Product.class);
             Root<Product> root = cr.from(Product.class);
             if(byStore)
-                cr.select(root).where(cb.equal(root.get("storeName"), storeName));
+                cr.select(root).where(cb.equal(root.get("storeName"), storeName), cb.isTrue(root.get("inStock")));
             Query<Product> query = session.createQuery(cr);
             data = query.getResultList();
 
@@ -446,5 +446,72 @@ public class PersistenceController {
         }
         return baskets;
 
+    }
+
+    public static List<Purchase> readPurchaseHistory(String ownerName) {
+        List<Purchase> purchases = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Purchase> cr = cb.createQuery(Purchase.class);
+            Root<Purchase> root = cr.from(Purchase.class);
+            cr.select(root).where(cb.equal(root.get("ownerName"), ownerName));
+            Query<Purchase> query = session.createQuery(cr);
+            purchases = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return purchases;
+    }
+
+    public static ShoppingCart readCartById(int cartId) {
+        List<ShoppingCart> cart = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<ShoppingCart> cr = cb.createQuery(ShoppingCart.class);
+            Root<ShoppingCart> root = cr.from(ShoppingCart.class);
+            cr.select(root).where(cb.equal(root.get("id"), cartId));
+            Query<ShoppingCart> query = session.createQuery(cr);
+             cart = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        if(cart == null || cart.isEmpty()){
+            return new ShoppingCart();
+        }
+        return cart.get(0);
     }
 }

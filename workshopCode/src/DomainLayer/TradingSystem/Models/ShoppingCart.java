@@ -52,7 +52,7 @@ public class ShoppingCart implements Serializable {
     }
 
     public void initBaskets(ShoppingCart sc) {
-        this.baskets = new HashMap<>();
+        this.baskets = new ConcurrentHashMap<>();
         List<Basket> b = PersistenceController.readAllBasket(id);
 
         for(Basket curr: b) {
@@ -183,7 +183,6 @@ public class ShoppingCart implements Serializable {
         for (Basket b : baskets.values()) {
             try {
                 b.reserve();
-                PersistenceController.delete(b);
             } catch (Exception e) {
                 unreserveProducts();
                 throw new RuntimeException(e.getMessage());
@@ -236,6 +235,10 @@ public class ShoppingCart implements Serializable {
 
     public void setUserName(String username) {
         this.userName = username;
+    }
+
+    public String getUserName() {
+        return this.userName;
     }
 }
 

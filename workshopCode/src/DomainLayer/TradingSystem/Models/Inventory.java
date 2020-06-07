@@ -41,9 +41,9 @@ public class Inventory implements Serializable {
             int prevAmount = this.products.get(p);
             if(prevAmount == amount){
                 this.products.remove(p);
-
+                p.setQuantity(0);
                 // update database
-                PersistenceController.delete(p);
+                PersistenceController.update(p);
             }
             else{
                 this.products.replace(p, prevAmount - amount);

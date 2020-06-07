@@ -32,6 +32,9 @@ public class Product implements Serializable {
     @Column(name = "quantity")
     private int quantity;
 
+    @Column(name = "inStock")
+    private boolean inStock;
+
     public Product() {}
 
     public Product(String name, Category category, String description, Double price, String storeName, int quantity) {
@@ -41,11 +44,17 @@ public class Product implements Serializable {
         this.price = price;
         this.storeName = storeName;
         this.quantity = quantity;
+        this.inStock = true;
     }
 
     public int getQuantity() { return this.quantity;}
 
-    public void setQuantity(int newQnt) { this.quantity = newQnt; }
+    public void setQuantity(int newQnt) {
+        this.quantity = newQnt;
+        if(quantity == 0){
+            inStock = false;
+        }
+    }
 
     public String getName() {
         return name;
