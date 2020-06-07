@@ -101,7 +101,7 @@ public class PersistenceController {
 
             // Commit the transaction
             transaction.commit();
-        } catch (HibernateException ex) {
+        } catch (Exception ex) {
             // If there are any exceptions, roll back the changes
             if (transaction != null) {
                 transaction.rollback();
@@ -175,19 +175,28 @@ public class PersistenceController {
         return data;
     }
 
-    public static List<User> readAllUsers() {
+    public static List<User> readAllUsers(boolean isAdmin) {
         List<User> users = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
         Transaction transaction = null;
         try {
             // Begin a transaction
+//            transaction = session.beginTransaction();
+//            CriteriaBuilder cb = session.getCriteriaBuilder();
+//            CriteriaQuery<User> cr = cb.createQuery(User.class);
+//            Root<User> rootEntry = cr.from(User.class);
+//            CriteriaQuery<User> all = cr.select(rootEntry);
+//            Query<User> query = session.createQuery(all);
+//            users = query.getResultList();
+
             transaction = session.beginTransaction();
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<User> cr = cb.createQuery(User.class);
-            Root<User> rootEntry = cr.from(User.class);
-            CriteriaQuery<User> all = cr.select(rootEntry);
-            Query<User> query = session.createQuery(all);
+            Root<User> root = cr.from(User.class);
+            if(isAdmin)
+                cr.select(root).where(cb.isTrue(root.get("isAdmin")));
+            Query<User> query = session.createQuery(cr);
             users = query.getResultList();
 
             // Commit the transaction

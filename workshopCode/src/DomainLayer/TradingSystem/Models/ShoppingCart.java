@@ -3,6 +3,7 @@ package DomainLayer.TradingSystem.Models;
 import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.DiscountBInterface;
 import DomainLayer.TradingSystem.ProductItem;
+import DomainLayer.TradingSystem.SystemFacade;
 import jdk.jfr.Enabled;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 public class ShoppingCart implements Serializable {
 
     @Id
-    @Column(name="id")
+    @Column(name="id", unique = true)
     @GeneratedValue
     private int id;
 
@@ -47,6 +48,7 @@ public class ShoppingCart implements Serializable {
         List<Basket> b = PersistenceController.readAllBasket(id);
         for(Basket curr: b) {
             curr.initProductItems();
+            curr.setStore(SystemFacade.getInstance().getStoreByName(curr.getStore().getName()));
             baskets.put(curr.getStore(), curr);
         }
     }
@@ -106,14 +108,23 @@ public class ShoppingCart implements Serializable {
             if(pi.getProduct().getName().equals(product)) {
                 if (amount == 0) {
                     items.remove(pi);
-                    if (items.isEmpty())
+                    if (items.isEmpty()) {
                         baskets.remove(store);
+                        //update DB
+                        PersistenceController.delete(pi);
+                        PersistenceController.delete(baskets.get(store));
+                    }
+                    else{
+                        PersistenceController.delete(pi);
+                    }
                     response.put("SUCCESS", "The product has been updated successfully");
                     return response.toJSONString();
                     //return "The product has been updated successfully";
                 }
                 else  {
                     pi.setAmount(amount);
+                    //update DB
+                    PersistenceController.update(pi);
                     response.put("SUCCESS", "The product has been updated successfully");
                     return response.toJSONString();
                     //return "The product has been updated successfully";

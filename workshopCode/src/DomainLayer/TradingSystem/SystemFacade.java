@@ -38,29 +38,50 @@ public class SystemFacade {
 //        Store s = new Store("Lalin", "blabla", u, new StoreOwning("Lalin", "noy"));
 //        PersistenceController.create(s);
 //        s.addToInventory("soap", 1, Category.Clothing, "blabla", 5);
+//        s.addToInventory("lotion", 1, Category.Clothing, "blabla", 5);
 //        u.getShoppingCart().addProduct("soap", s, 5);
+//        u.getShoppingCart().addProduct("lotion", s, 5);
 
-        initSubscribedUsers();
-        initStores();
-        initCarts();
+
+        users = new HashMap<>();
         adminsList = new ArrayList<>();
+        stores = new HashMap<>();
         activeUser = new User();  //guest
         lastSearchResult = new ArrayList<>();
         PC = new PaymentCollectionStub();
         PS = new ProductSupplyStub();
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
+        firstAdmin.setIsAdmin();
         SecurityFacade.getInstance().addUser("Admin159", "951");
+
+//        PersistenceController.create(firstAdmin);
+//        PersistenceController.create(firstAdmin.getShoppingCart());
+
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
     }
 
+    public void init() {
+        initSubscribedUsers();
+        initAdmins();
+        initStores();
+        initCarts();
+    }
+
     private void initSubscribedUsers() {
-        users = new HashMap<>();
-        List<User> allSubscribedUsers = PersistenceController.readAllUsers();
+        List<User> allSubscribedUsers = PersistenceController.readAllUsers(false);
 
         for (User user: allSubscribedUsers) {
             users.put(user.getUsername(), user);
+        }
+    }
+
+    private void initAdmins() {
+        List<User> allAdmins = PersistenceController.readAllUsers(true);
+
+        for (User user: allAdmins) {
+            adminsList.add(user);
         }
     }
 
@@ -71,7 +92,6 @@ public class SystemFacade {
     }
 
     private void initStores() {
-        stores = new HashMap<>();
         List<Store> allStores = PersistenceController.readAllStores();
 
         for (Store s: allStores) {
@@ -604,6 +624,7 @@ public class SystemFacade {
 
     public void addAdmin(String userName){
         User user = users.get(userName);
+        user.setIsAdmin();
         adminsList.add(user);
     }
 
@@ -938,4 +959,6 @@ public class SystemFacade {
         Store store = getStoreByName(storeName);
         store.removeDiscountPolicies();
     }
+
+
 }

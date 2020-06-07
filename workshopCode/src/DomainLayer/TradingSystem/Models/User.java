@@ -29,10 +29,14 @@ public class User implements Serializable {
     @Column(name = "username", unique = true)
     private String username;
 
+    @Column(name = "isAdmin")
+    private boolean isAdmin;
+
     public User() {
         shoppingCart = new ShoppingCart(this);
         storeManagements = new HashMap<>();
         storeOwnings = new HashMap<>();
+        this.isAdmin = false;
         this.purchaseHistory = new UserPurchaseHistory(this);//TODO: INIT PURCHASES
     }
 
@@ -102,4 +106,11 @@ public class User implements Serializable {
         this.purchaseHistory.add(newPurchase);
     }
 
+    public boolean getIsAdmin(){
+        return this.isAdmin;
+    }
+
+    public void setIsAdmin(){
+        this.isAdmin = true;
+    }
 }

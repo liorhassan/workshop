@@ -12,7 +12,7 @@ public class ProductItem implements Serializable {
 
 
     @Id
-    @Column(name="id")
+    @Column(name="id", unique = true)
     @GeneratedValue
     private int id;
 

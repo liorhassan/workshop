@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -21,7 +20,7 @@ import java.util.List;
 public class Basket implements Serializable {
 
     @Id
-    @Column(name="id")
+    @Column(name="id", unique = true)
     @GeneratedValue
     private int id;
 
