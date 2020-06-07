@@ -6,9 +6,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.DoubleBinaryOperator;
 
 public class Store implements Serializable {
 
@@ -554,6 +556,7 @@ public class Store implements Serializable {
             if(managements.get(manUser).getAppointer().equals(user)){
                 //sand alert to the user being removed from managers list
                 NotificationSystem.getInstance().notify(manUser.getUsername(), "your appointment as manager of: " + getName() + " is canceled");
+                manUser.removeStoreManagement(this);
                 managements.remove(manUser);
             }
         }
@@ -561,10 +564,12 @@ public class Store implements Serializable {
             if(ownerships.get(ownUser).getAppointer().equals(user)){
                 //sand alert to the user being removed from owners list
                 NotificationSystem.getInstance().notify(ownUser.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
+                ownUser.getStoreOwnings().remove(this);
                 ownerships.remove(ownUser);
             }
         }
         NotificationSystem.getInstance().notify(user.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
         ownerships.remove(user);
     }
+
 }
