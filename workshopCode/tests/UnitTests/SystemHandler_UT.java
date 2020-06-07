@@ -201,7 +201,7 @@ public class SystemHandler_UT {
         assertTrue(s.checkIfProductAvailable("skinny jeans", 1));
     }
 
-
+    /*
     @Test
     public void appointOwner_Test(){
         sys.login("noy", false);
@@ -209,6 +209,7 @@ public class SystemHandler_UT {
         assertTrue(sys.getStoreByName("Pull&Bear").getOwnerships().containsKey(sys.getUserByName("prince")));
         sys.logout();
     }
+     */
 
     @Test
     public void checkIfActiveUserIsOwner_Test(){
