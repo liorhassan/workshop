@@ -220,10 +220,12 @@ public class Store implements Serializable {
     }
 
     public void removeManager(User user) {
+        //update DB
+        PersistenceController.delete(managements.get(user));
+
         managements.remove(user);
         user.removeStoreManagement(this);
         NotificationSystem.getInstance().notify(user.getUsername(), "You have been no longer " + name + "'s manager");
-
     }
 
     public boolean hasProduct(String productName) {

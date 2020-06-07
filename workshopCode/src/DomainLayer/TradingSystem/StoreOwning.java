@@ -78,4 +78,11 @@ public class StoreOwning implements Serializable {
             permissions.add(new Permission(p));
 
     }
+    public String getAppoinerName() {
+        return this.appointerName;
+    }
+
+    public void setAppointer(User app) {
+        this.appointer = app;
+    }
 }

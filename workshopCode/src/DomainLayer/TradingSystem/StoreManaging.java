@@ -71,4 +71,12 @@ public class StoreManaging implements Serializable {
     public void initPermissions() {
         this.permissions = new LinkedList<>();
     }
+
+    public String getAppoinerName() {
+        return this.appointerName;
+    }
+
+    public void setAppointer(User app) {
+        this.appointer = app;
+    }
 }

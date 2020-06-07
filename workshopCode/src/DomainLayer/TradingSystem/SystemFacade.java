@@ -81,6 +81,7 @@ public class SystemFacade {
         for (User user: allSubscribedUsers) {
             users.put(user.getUsername(), user);
             NotificationSystem.getInstance().addUser(user.getUsername());
+            NotificationSystem.getInstance().logOutUser(user.getUsername());
         }
     }
 
@@ -114,6 +115,8 @@ public class SystemFacade {
         User currUser;
         for (StoreManaging s: sm){
             s.initPermissions();
+            if(s.getAppoinerName() != null)
+                s.setAppointer(getUserByName(s.getAppoinerName()));
             currUser = getUserByName(s.getAppointeeName());
             currUser.addManagedStore(store, s);
             users.replace(currUser.getUsername(), currUser);
@@ -126,6 +129,8 @@ public class SystemFacade {
         User currUser;
         for (StoreOwning s:so){
             s.initPermissions();
+            if(s.getAppoinerName() != null)
+                s.setAppointer(getUserByName(s.getAppoinerName()));
             currUser = getUserByName(s.getAppointeeName());
             currUser.addOwnedStore(store, s);
             users.replace(currUser.getUsername(), currUser);
