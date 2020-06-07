@@ -422,7 +422,7 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
-                String response = storeHandler.viewDiscounts(storeName);
+                String response = storeHandler.viewAllDiscounts(storeName);
                 headers.set("getDiscounts", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -505,6 +505,65 @@ public class Controller {
                 sendResponse(he, response);
             } catch (Exception e) {
                 headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {type: simple, subtype: "PurchasePolicyProduct, productName: name, amount: int, minOrMax: bolean}
+        // /PurchasePolicyStore}
+        server.createContext("/tradingSystem/addPurchasePolicy", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                String response = "";
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String type = (requestJson.containsKey("type")) ? (String) requestJson.get("type") : null;
+                String subtype = (requestJson.containsKey("subtype")) ? (String) requestJson.get("subtype") : null;
+                String store = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                switch (type){
+                    case "simple":
+                        if(subtype.equals("PurchasePolicyProduct")){
+                            int amount = (requestJson.containsKey("amount")) ? Integer.parseInt((String) requestJson.get("amount")) : null;
+                            String product = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
+                            boolean minOrMax = (requestJson.containsKey("minOrMax")) ? (boolean) (requestJson.get("minOrMax")) : false;
+                            response = storeHandler.addPurchasePolicyProduct(store, product, amount, minOrMax, true);
+                        }else if(subtype.equals("PurchasePolicyStore")){
+                            int limit = (requestJson.containsKey("limit")) ? Integer.parseInt((String) requestJson.get("limit")) : null;
+                            boolean minOrMax = (requestJson.containsKey("minOrMax")) ? (boolean) (requestJson.get("minOrMax")) : false;
+                            response = storeHandler.addPurchasePolicyStore(store, limit, minOrMax, true);
+                        }
+                        break;
+                    case "compose":
+                        response = storeHandler.addPurchasePolicy(new String(requestByte));
+                }
+                headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (Exception e) {
+                headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+
+        server.createContext("/tradingSystem/getSimplePolicies", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                String response = storeHandler.viewPurchasePolicies(storeName);
+                headers.set("getDiscounts", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("getDiscounts", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();

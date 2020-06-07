@@ -49,7 +49,8 @@ function addStorePolicy() {
 
     const data = {
         type: "simple",
-        subtype: "DiscountCondBasketProdcts",
+//        subtype: "DiscountCondBasketProdcts",
+        subtype: "PurchasePolicyStore",
         limit: limit,
         minOrMax: radioBtn[0].checked ? false : true,
     }
