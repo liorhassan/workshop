@@ -196,7 +196,7 @@ public class Store implements Serializable {
         inventory.getProducts().put(p, amount);
 
         // save to DB
-        PersistenceController.create(p);
+        //PersistenceController.create(p);
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
@@ -206,7 +206,7 @@ public class Store implements Serializable {
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
                 inventory.getProducts().put(p, amount);
-                PersistenceController.update(p);
+                //PersistenceController.update(p);
                 break;
             }
         }

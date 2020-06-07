@@ -212,7 +212,8 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
+        if(se.getLoggedin_user().getUsername() != null)
+            NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
         return "You have been successfully logged out!";
     }
