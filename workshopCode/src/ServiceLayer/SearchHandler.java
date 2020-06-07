@@ -11,10 +11,11 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SearchHandler {
 
-    public String searchProduct(String name, String category, String[] keywords) {
+    public String searchProduct(UUID session_id, String name, String category, String[] keywords) {
         SystemLogger.getInstance().writeEvent(String.format("Search product command: name - %s, category - %s, keywords - %s", argToString(name), argToString(category), argArrayToString(keywords)));
         try {
 
@@ -29,7 +30,7 @@ public class SearchHandler {
             String[] args = {name, category, argArrayToString(keywords)};
             if (SystemFacade.getInstance().allEmptyString(args))
                 throw new IllegalArgumentException("Must enter search parameter");
-            return SystemFacade.getInstance().searchProducts(name, category, keywords);
+            return SystemFacade.getInstance().searchProducts(session_id,name, category, keywords);
         } catch (RuntimeException e) {
             SystemLogger.getInstance().writeError("Search product error: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -37,10 +38,10 @@ public class SearchHandler {
         }
     }
 
-    public String filterResults(Integer minPrice, Integer maxPrice, String category) {
+    public String filterResults(UUID session_id, Integer minPrice, Integer maxPrice, String category) {
         SystemLogger.getInstance().writeError(String.format("Filter results command: minPrice - %d, maxPrice - %d, category - %s", minPrice, maxPrice, argToString(category)));
         try {
-            return SystemFacade.getInstance().filterResults(minPrice, maxPrice, category);
+            return SystemFacade.getInstance().filterResults(session_id, minPrice, maxPrice, category);
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("Filter results error: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
