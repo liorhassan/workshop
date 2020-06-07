@@ -1,5 +1,6 @@
 function addNewPolicy(data) {
     data.store = document.getElementById("storeName").value;
+    data.standalone = document.getElementById("isStandalone").checked;
     fetch("http://localhost:8080/tradingSystem/addPurchasePolicy", {
         method: "POST",
         body: JSON.stringify(data)
