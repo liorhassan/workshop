@@ -16,7 +16,7 @@ public class ProductTest {
 
     @Before
     public void setUp() throws Exception {
-        product = new Product("Shirt",null,"",40.0, "castro");
+        product = new Product("Shirt",null,"",40.0, "castro",1);
     }
 
     @After

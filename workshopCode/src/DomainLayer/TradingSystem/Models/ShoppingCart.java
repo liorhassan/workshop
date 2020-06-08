@@ -1,33 +1,89 @@
 package DomainLayer.TradingSystem.Models;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.DiscountBInterface;
 import DomainLayer.TradingSystem.ProductItem;
+import DomainLayer.TradingSystem.SystemFacade;
+import jdk.jfr.Enabled;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ShoppingCart {
+@Entity
+@Table(name = "shoppingCarts")
+public class ShoppingCart implements Serializable {
 
+    @Id
+    @Column(name = "id", unique = true)
+    @GeneratedValue
+    private int id;
+
+    @Transient
     private ConcurrentHashMap<Store, Basket> baskets;
+
+
+    @Column(name = "userName")
+    private String userName;
+
+    @Transient
     private User user;
+
+    @Column(name = "isHistory")
+    private boolean isHistory;
+
+    @Column(name = "totalPrice")
     private double cartTotalPrice;
+
+    public ShoppingCart() {
+    }
 
     public ShoppingCart(User user) {
         this.user = user;
-        this.baskets = new ConcurrentHashMap<>();
+        this.userName = user.getUsername();
+        this.baskets = new ConcurrentHashMap<Store, Basket>();
+        this.isHistory = false;
     }
 
-    public void addProduct(String product, Store store, int amount){
-        if (!baskets.containsKey(store))
-            baskets.put(store, new Basket(store));
+    public void initBaskets(ShoppingCart sc) {
+        this.baskets = new ConcurrentHashMap<>();
+        List<Basket> b = PersistenceController.readAllBasket(id);
+
+        for(Basket curr: b) {
+            curr.setStore(SystemFacade.getInstance().getStoreByName(curr.getStoreName()));
+            curr.setCart(sc);
+            curr.initProductItems(curr);
+            baskets.put(curr.getStore(), curr);
+        }
+    }
+
+    public void addProduct(String product, Store store, int amount) {
+        if (!baskets.containsKey(store)) {
+            Basket b = new Basket(store, this);
+            //create basket in DB
+            PersistenceController.create(b);
+            baskets.put(store, b);
+        }
         baskets.get(store).addProduct(store.getProductByName(product), amount);
+
+        //update DB
+//        PersistenceController.update(baskets.get(store));
     }
 
     public User getUser() {
         return user;
+    }
+
+    public boolean getIsHistory() {
+        return this.isHistory;
+    }
+
+    public void setIsHistory() {
+        this.isHistory = !isHistory;
     }
 
     public void setUser(User user) {
@@ -38,37 +94,44 @@ public class ShoppingCart {
         return baskets.values();
     }
 
-    public String view(){
+    public String view() {
 //        String output = "Your ShoppingCart details: \n";
 //        JSONObject response = new JSONObject();
         JSONArray response = new JSONArray();
-        if(!baskets.isEmpty()){
+        if (!baskets.isEmpty()) {
             for (Basket b : baskets.values()) {
                 JSONArray currBasket = b.viewBasket();
                 Iterator itr = currBasket.iterator();
-                while(itr.hasNext())
+                while (itr.hasNext())
                     response.add(itr.next());
             }
         }
         return response.toJSONString();
     }
 
-    public String edit(Store store, String product, int amount){
+    public String edit(Store store, String product, int amount) {
         Basket basket = baskets.get(store);
         List<ProductItem> items = basket.getProductItems();
         JSONObject response = new JSONObject();
-        for(ProductItem pi : items){
-            if(pi.getProduct().getName().equals(product)) {
+        for (ProductItem pi : items) {
+            if (pi.getProduct().getName().equals(product)) {
                 if (amount == 0) {
                     items.remove(pi);
-                    if (items.isEmpty())
+                    if (items.isEmpty()) {
                         baskets.remove(store);
+                        //update DB
+                        PersistenceController.delete(pi);
+                        PersistenceController.delete(baskets);
+                    } else {
+                        PersistenceController.delete(pi);
+                    }
                     response.put("SUCCESS", "The product has been updated successfully");
                     return response.toJSONString();
                     //return "The product has been updated successfully";
-                }
-                else  {
+                } else {
                     pi.setAmount(amount);
+                    //update DB
+                    PersistenceController.update(pi);
                     response.put("SUCCESS", "The product has been updated successfully");
                     return response.toJSONString();
                     //return "The product has been updated successfully";
@@ -81,18 +144,18 @@ public class ShoppingCart {
         //return "The product doesn’t exist in your shopping cart";
     }
 
-    public boolean isProductInCart(String product, Store store){
+    public boolean isProductInCart(String product, Store store) {
         Basket basket = baskets.get(store);
         List<ProductItem> items = basket.getProductItems();
-        for(ProductItem pi : items){
-            if(pi.getProduct().getName().equals(product))
+        for (ProductItem pi : items) {
+            if (pi.getProduct().getName().equals(product))
                 return true;
         }
         return false;
     }
 
-    public boolean isBasketExists (Store store){
-        return baskets.containsKey(store) ;
+    public boolean isBasketExists(Store store) {
+        return baskets.containsKey(store);
     }
 
     public String viewOnlyProducts() {
@@ -114,12 +177,11 @@ public class ShoppingCart {
 
     //for each basket in the cart - reserved the products in the basket
     //if a product is unavailable - return all reserved products in the cart and throws exception
-    public void reserveBaskets(){
-        for(Basket b: baskets.values()){
-            try{
+    public void reserveBaskets() {
+        for (Basket b : baskets.values()) {
+            try {
                 b.reserve();
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 unreserveProducts();
                 throw new RuntimeException(e.getMessage());
             }
@@ -128,40 +190,53 @@ public class ShoppingCart {
 
     //checks for each basket in the cart if there are reserved products in the store
     //if such products exist, it returns them
-    public void unreserveProducts(){
-        for(Basket b: baskets.values()){
+    public void unreserveProducts() {
+        for (Basket b : baskets.values()) {
             b.unreserve();
         }
     }
 
     //for each store in the cart adds it store purchase history
-    public void addStoresPurchaseHistory(){
-        for(Store s: baskets.keySet()){
+    public void addStoresPurchaseHistory() {
+        for (Store s : baskets.keySet()) {
             s.addStorePurchaseHistory(baskets.get(s), user);
         }
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return this.baskets.isEmpty();
     }
 
-    public void addBasket(Basket basket){
+    public void addBasket(Basket basket) {
         this.baskets.put(basket.getStore(), basket);
     }
 
-    public Basket getStoreBasket(Store s){
-       return baskets.get(s);
+    public Basket getStoreBasket(Store s) {
+        return baskets.get(s);
     }
 
-    public double getTotalCartPrice(){
+    public double getTotalCartPrice() {
         computeCartPrice();
         return this.cartTotalPrice;
     }
 
-    public void notifyOwners(){
-        for(Store s: baskets.keySet()) {
+    public void notifyOwners() {
+        for (Store s : baskets.keySet()) {
             s.notifyOwners(baskets.get(s), this.user.getUsername());
         }
+    }
+
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setUserName(String username) {
+        this.userName = username;
+    }
+
+    public String getUserName() {
+        return this.userName;
     }
 }
 
