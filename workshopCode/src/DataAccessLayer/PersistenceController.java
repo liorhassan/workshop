@@ -1,6 +1,7 @@
 package DataAccessLayer;
 
 import DomainLayer.TradingSystem.Models.*;
+import DomainLayer.TradingSystem.Permission;
 import DomainLayer.TradingSystem.ProductItem;
 import DomainLayer.TradingSystem.StoreManaging;
 import DomainLayer.TradingSystem.StoreOwning;
@@ -45,6 +46,7 @@ public class PersistenceController {
         config.addAnnotatedClass(Purchase.class);
         config.addAnnotatedClass(StoreManaging.class);
         config.addAnnotatedClass(StoreOwning.class);
+        config.addAnnotatedClass(Permission.class);
 
         // Configure using the application resource named hibernate.cfg.xml.
         config.configure();
@@ -514,4 +516,39 @@ public class PersistenceController {
         }
         return cart.get(0);
     }
+
+    public static List<Permission> readAllPermissions(String storeName, String appointeeName) {
+        List<Permission> perms = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Permission> cr = cb.createQuery(Permission.class);
+            Root<Permission> root = cr.from(Permission.class);
+            cr.select(root).where(cb.equal(root.get("storeName"), storeName), cb.equal(root.get("appointee"), appointeeName));
+            Query<Permission> query = session.createQuery(cr);
+            perms = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+
+        return perms;
+
+    }
+
 }

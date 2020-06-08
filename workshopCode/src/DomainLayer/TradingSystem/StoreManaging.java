@@ -1,5 +1,6 @@
 package DomainLayer.TradingSystem;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.User;
 
 import javax.persistence.*;
@@ -42,6 +43,14 @@ public class StoreManaging implements Serializable {
         this.permissions.add(new Permission(("View Purchasing History")));
     }
 
+    public void initPermissions(){
+        this.permissions = new LinkedList<>();
+        List<Permission> perms = PersistenceController.readAllPermissions(storeName, appointeeName);
+        for(Permission p: perms){
+            this.permissions.add(p);
+        }
+    }
+
     public User getAppointer() {
         return appointer;
     }
@@ -50,8 +59,17 @@ public class StoreManaging implements Serializable {
         return  permissions;
     }
 
-    public void setPermission(List<Permission> p){
-        permissions = p;
+    public void setPermission(List<Permission> perm){
+        for(Permission p: this.permissions){
+            PersistenceController.delete(p);
+        }
+        for(Permission p: perm){
+            p.setStoreName(storeName);
+            p.setAppointee(appointeeName);
+            PersistenceController.create(p);
+        }
+
+        permissions = perm;
     }
 
     public boolean havePermission(String permission){
@@ -68,9 +86,6 @@ public class StoreManaging implements Serializable {
         return this.appointeeName;
     }
 
-    public void initPermissions() {
-        this.permissions = new LinkedList<>();
-    }
 
     public String getAppoinerName() {
         return this.appointerName;
