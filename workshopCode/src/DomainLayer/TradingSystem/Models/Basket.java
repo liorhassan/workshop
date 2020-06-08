@@ -1,33 +1,77 @@
 package DomainLayer.TradingSystem.Models;
 
-import DomainLayer.TradingSystem.*;
+import DataAccessLayer.PersistenceController;
+import DomainLayer.TradingSystem.DiscountBInterface;
+import DomainLayer.TradingSystem.DiscountPolicy;
+import DomainLayer.TradingSystem.DiscountSimple;
+import DomainLayer.TradingSystem.ProductItem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
-public class Basket {
 
+@Entity
+@Table(name = "baskets")
+public class Basket implements Serializable {
+
+    @Id
+    @Column(name="id", unique = true)
+    @GeneratedValue
+    private int id;
+
+
+    @Column(name = "store")
+    private String storeName;
+
+    @Transient
     private Store store;
+
+    @Column(name = "cart")
+    private int cartId;
+
+    @Transient
+    private ShoppingCart sc;
+    @Transient
     private List<ProductItem> productItems;
+    @Transient
     private double price;
+    @Transient
     private List<DiscountBInterface> discountsOnProducts;
+    @Transient
     private HashMap<ProductItem, Double> priceOfProdAfterDiscount;
 
 
-    public Basket(Store store) {
+    public Basket(){}
+    public Basket(Store store, ShoppingCart sc) {
         this.store = store;
+        this.storeName = store.getName();
         productItems = new ArrayList<>();
         discountsOnProducts = new ArrayList<>();
         price = 0;
         priceOfProdAfterDiscount = new HashMap<>();
+        this.sc = sc;
+        this.cartId = sc.getId();
     }
 
 
     public List<DiscountBInterface> getDiscountsOnProducts() {
         return discountsOnProducts;
+    }
+    public void initProductItems(Basket b) {
+        productItems = PersistenceController.readAllProductItems(id);
+        for(ProductItem pi: productItems){
+            pi.setBasket(b);
+            pi.setProduct(b.getStore().getProductByName(pi.getProductName()));
+        }
+        discountsOnProducts = new ArrayList<>();
+        price = 0;
+        priceOfProdAfterDiscount = new HashMap<>();
+
     }
 
     public Store getStore() {
@@ -162,10 +206,16 @@ public class Basket {
         for (ProductItem pi : productItems) {
             if (pi.getProduct().equals(p)) {
                 pi.setAmount(pi.getAmount() + amount);
+                //update DB
+                PersistenceController.update(pi);
                 return;
             }
         }
-        productItems.add(new ProductItem(p, amount, this));
+
+        ProductItem pi = new ProductItem(p, amount, this);
+        productItems.add(pi);
+        //create pi in DB
+        PersistenceController.create(pi);
     }
 
     public void reserve(){
@@ -174,8 +224,40 @@ public class Basket {
 
     public void unreserve(){
         if(!store.getReservedProducts(this).isEmpty()) {
+            PersistenceController.create(this);
             //there are reserved products in the basket that needs to be returned
             store.unreserveBasket(this);
         }
+    }
+
+    public String getStoreName() {
+        return this.storeName;
+    }
+
+
+    public void setCart(ShoppingCart shoppingCart) {
+        this.sc = shoppingCart;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setCartId(int cartId) {
+        this.cartId = cartId;
+    }
+
+    public void copyProductItems(Basket b) {
+        for(ProductItem pi: b.productItems){
+            ProductItem piNew = new ProductItem();
+            piNew.setProductName(pi.getProduct().getName());
+            piNew.setBasketId(this.id);
+            piNew.setAmount(pi.getAmount());
+            PersistenceController.create(piNew);
+
+        }
+
+
+
     }
 }

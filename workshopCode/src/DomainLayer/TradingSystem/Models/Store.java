@@ -2,9 +2,11 @@ package DomainLayer.TradingSystem.Models;
 
 import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.*;
+import net.bytebuddy.description.modifier.Ownership;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,42 +14,86 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Entity
+@Table(name = "stores")
 public class Store implements Serializable {
 
+    @Transient
     private Inventory inventory;
-    private String name;
-    private ConcurrentHashMap<User, StoreManaging> managements;
-    private ConcurrentHashMap<User, StoreOwning> ownerships;
-    private ConcurrentHashMap<User, AppointmentAgreement> waitingAgreements;
-    private String description;
-    private User storeFirstOwner;
-    private StorePurchaseHistory purchaseHistory;
-    private List<DiscountBInterface> discountPolicies;
-    private List<DiscountBInterface> discountsOnProducts;
-    private List<DiscountBInterface> discountsOnBasket;
-    private List<PurchasePolicy> notStandAlonePolicies;
-    private List<PurchasePolicy> purchasePolicies;
-    private boolean doubleDiscounts;                    //on products and basketPrice
 
+    @Id
+    @Column(name = "name", unique = true)
+    private String name;
+
+    @Column(name = "description")
+    private String description;
+
+
+    @Column(name = "storeFirstOwner")
+    private String firstOwnerName;
+    @Transient
+    private User storeFirstOwner;
+
+    @Transient
+    private ConcurrentHashMap<User, StoreManaging> managements;
+    @Transient
+    private ConcurrentHashMap<User, StoreOwning> ownerships;
+    @Transient
+    private ConcurrentHashMap<User, AppointmentAgreement> waitingAgreements;
+    @Transient
+    private StorePurchaseHistory purchaseHistory;
+    @Transient
     private ConcurrentHashMap<Basket, List<ProductItem>> reservedProducts;
+    @Transient
+    private List<DiscountBInterface> discountPolicies;
+    @Transient
+    private List<DiscountBInterface> discountsOnProducts;
+    @Transient
+    private List<DiscountBInterface> discountsOnBasket;
+    @Transient
+    private List<PurchasePolicy> notStandAlonePolicies;
+    @Transient
+    private List<PurchasePolicy> purchasePolicies;
+    @Transient
+    private boolean doubleDiscounts;                    //on products and basketPrice
+    @Transient
     private int discountID_counter;
+    @Transient
     private int purchaseID_counter;
 
+    public Store(){};
     public Store(String name, String description, User firstOwner, StoreOwning owning) {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
+        this.firstOwnerName = firstOwner.getUsername();
         this.inventory = new Inventory();
         this.managements = new ConcurrentHashMap<>();
         this.ownerships = new ConcurrentHashMap<>();
-        this.purchaseHistory = new StorePurchaseHistory(this);
         this.ownerships.put(firstOwner, owning);
+        this.purchaseHistory = new StorePurchaseHistory(this);
+        this.discountPolicies = new ArrayList<>();
+        this.discountsOnBasket = new ArrayList<>();
+        this.discountsOnProducts = new ArrayList<>();
+        this.purchasePolicies = new ArrayList<>();
+        this.reservedProducts = new ConcurrentHashMap<>();
+        this.waitingAgreements = new ConcurrentHashMap<>();
+        this.discountID_counter = 0;
+    }
+
+    public void init() {
+        this.storeFirstOwner = SystemFacade.getInstance().getUserByName(firstOwnerName);
+        this.inventory = new Inventory();
+        inventory.init(name);
+        this.ownerships = new ConcurrentHashMap<>();
+        this.managements = new ConcurrentHashMap<>();
+        this.purchaseHistory = new StorePurchaseHistory(this);
         this.discountPolicies = new ArrayList<>();
         this.discountsOnBasket = new ArrayList<>();
         this.notStandAlonePolicies = new ArrayList<>();
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
-        this.reservedProducts= new ConcurrentHashMap<>();
+        this.reservedProducts = new ConcurrentHashMap<>();
         this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
         this.purchaseID_counter = 0;
@@ -67,6 +113,7 @@ public class Store implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
     public List<DiscountBInterface> getDiscountsOnProducts() {
         return discountsOnProducts;
     }
@@ -75,11 +122,11 @@ public class Store implements Serializable {
         return discountPolicies;
     }
 
-    public Collection<Product> getProducts(){
-        return  inventory.getProducts().keySet();
+    public Collection<Product> getProducts() {
+        return inventory.getProducts().keySet();
     }
 
-    public void setDoubleDiscounts(boolean doubleDiscounts){
+    public void setDoubleDiscounts(boolean doubleDiscounts) {
         this.doubleDiscounts = doubleDiscounts;
     }
 
@@ -88,9 +135,9 @@ public class Store implements Serializable {
         return inventory.getProducts();
     }
 
-    public DiscountBInterface getDiscountById(int discountId){
+    public DiscountBInterface getDiscountById(int discountId) {
         for (DiscountBInterface dis : discountsOnProducts) {
-            if(dis instanceof DiscountSimple){
+            if (dis instanceof DiscountSimple) {
                 if (((DiscountSimple) dis).getDiscountID() == discountId)
                     return dis;
             }
@@ -98,24 +145,24 @@ public class Store implements Serializable {
         return null;
     }
 
-    public PurchasePolicy getPurchasePolicyById(int purchaseId){
+    public PurchasePolicy getPurchasePolicyById(int purchaseId) {
         for (PurchasePolicy pp : notStandAlonePolicies) {
-            if(pp instanceof PurchasePolicyProduct){
+            if (pp instanceof PurchasePolicyProduct) {
                 if (((PurchasePolicyProduct) pp).getPurchaseId() == purchaseId)
                     return pp;
             }
-            if(pp instanceof PurchasePolicyStore){
+            if (pp instanceof PurchasePolicyStore) {
                 if (((PurchasePolicyStore) pp).getPurchaseId() == purchaseId)
                     return pp;
             }
         }
 
         for (PurchasePolicy pp : purchasePolicies) {
-            if(pp instanceof PurchasePolicyProduct){
+            if (pp instanceof PurchasePolicyProduct) {
                 if (((PurchasePolicyProduct) pp).getPurchaseId() == purchaseId)
                     return pp;
             }
-            if(pp instanceof PurchasePolicyStore){
+            if (pp instanceof PurchasePolicyStore) {
                 if (((PurchasePolicyStore) pp).getPurchaseId() == purchaseId)
                     return pp;
             }
@@ -124,11 +171,11 @@ public class Store implements Serializable {
         return null;
     }
 
-    public boolean hasRevDiscountOnProduct(String productName){
+    public boolean hasRevDiscountOnProduct(String productName) {
         Product product = getProductByName(productName);
-        for(DiscountBInterface dis : discountsOnProducts){
-            if(dis instanceof DiscountCondProductAmount){
-                if(((DiscountRevealedProduct) dis).getProductDiscount().getName().equals(productName)){
+        for (DiscountBInterface dis : discountsOnProducts) {
+            if (dis instanceof DiscountCondProductAmount) {
+                if (((DiscountRevealedProduct) dis).getProductDiscount().getName().equals(productName)) {
                     return true;
                 }
             }
@@ -136,26 +183,24 @@ public class Store implements Serializable {
         return false;
     }
 
-    public DiscountBInterface searchIDInCompDiscount(DiscountBInterface discount, int discountId){
+    public DiscountBInterface searchIDInCompDiscount(DiscountBInterface discount, int discountId) {
 
-        if(discount instanceof DiscountSimple){
-            if (((DiscountSimple) discount).getDiscountID() == discountId){
+        if (discount instanceof DiscountSimple) {
+            if (((DiscountSimple) discount).getDiscountID() == discountId) {
                 return discount;
             }
-        }
-        else{
+        } else {
             DiscountBInterface res1 = searchIDInCompDiscount(((DiscountPolicy) discount).getOperand1(), discountId);
             DiscountBInterface res2 = searchIDInCompDiscount(((DiscountPolicy) discount).getOperand2(), discountId);
-            if(res1 != null){
+            if (res1 != null) {
                 return res1;
             }
-            if(res2 != null){
+            if (res2 != null) {
                 return res2;
             }
         }
         return null;
     }
-
 
 
     public boolean isOwner(User user) {
@@ -169,33 +214,35 @@ public class Store implements Serializable {
     public User getAppointer(User user) {
         User appointer = null;
         StoreManaging manage = managements.get(user);
-        if(manage != null)
+        if (manage != null)
             appointer = manage.getAppointer();
         return appointer;
 
     }
 
     public void removeManager(User user) {
+        //update DB
+        PersistenceController.delete(managements.get(user));
+
         managements.remove(user);
         user.removeStoreManagement(this);
         NotificationSystem.getInstance().notify(user.getUsername(), "You have been no longer " + name + "'s manager");
-
     }
 
     public boolean hasProduct(String productName) {
-        for (Product p : inventory.getProducts().keySet()){
+        for (Product p : inventory.getProducts().keySet()) {
             if (p.getName().equals(productName))
                 return true;
         }
         return false;
     }
 
-    public Inventory getProductsInventory(){
+    public Inventory getProductsInventory() {
         return this.inventory;
     }
 
     public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name);
+        Product p = new Product(productName, productCategory, productDescription, productPrice, this.name, amount);
         inventory.getProducts().put(p, amount);
 
         // save to DB
@@ -203,7 +250,7 @@ public class Store implements Serializable {
     }
 
     public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
-        for (Product p : inventory.getProducts().keySet()){
+        for (Product p : inventory.getProducts().keySet()) {
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
                 p.setCategory(productCategory);
@@ -227,10 +274,11 @@ public class Store implements Serializable {
         this.managements = managements;
     }
 
-    public void addManager(User user, StoreManaging storeManaging){
+    public void addManager(User user, StoreManaging storeManaging, boolean notify) {
         if (!managements.containsKey(user)) {
             managements.put(user, storeManaging);
-            NotificationSystem.getInstance().notify(user.getUsername(), "You have been appointed as " + name + "'s store manager");
+            if (notify)
+                NotificationSystem.getInstance().notify(user.getUsername(), "You have been appointed as " + name + "'s store manager");
         }
     }
 
@@ -239,7 +287,7 @@ public class Store implements Serializable {
     public void addStoreOwner(User newOwner, User appointer) {
         if (ownerships.size() == 1) {
             NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
-            StoreOwning storeOwning = new StoreOwning(appointer);
+            StoreOwning storeOwning = new StoreOwning(appointer, name, newOwner.getUsername());
             ownerships.put(newOwner, storeOwning);
             newOwner.addOwnedStore(this, storeOwning);
             PersistenceController.create(ownerships);
@@ -256,13 +304,17 @@ public class Store implements Serializable {
         }
     }
 
+    public void addStoreOwner(User u, StoreOwning so) {
+        this.ownerships.put(u, so);
+    }
+
     //UC 4.3
-    public void approveAppointment(User waitingForApprove, User approveOwner){
+    public void approveAppointment(User waitingForApprove, User approveOwner) {
         AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
         apag.approve(approveOwner);
-        if(apag.getWaitingForResponse().size() == 0){
-            if(apag.getDeclined().size() != 0){
-                StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser());
+        if (apag.getWaitingForResponse().size() == 0) {
+            if (apag.getDeclined().size() != 0) {
+                StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser(), name, "");//TODO: apointeeName?????
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
                 PersistenceController.create(ownerships);
@@ -284,40 +336,40 @@ public class Store implements Serializable {
     }
 
     //UC 4.3
-    public void declinedAppointment(User waitingForApprove, User declinedOwner){
+    public void declinedAppointment(User waitingForApprove, User declinedOwner) {
         AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
         apag.decline(declinedOwner);
     }
 
 
-
     //for each inventory in the basket - checks if the product meets the purchase policy requirements
     //if it does - reserve the product and adds it to the reserved inventory list
-    public void reserveBasket(Basket b){
+    public void reserveBasket(Basket b) {
         //this field save all the inventory that have been reserved
         this.reservedProducts.put(b, new LinkedList<>());
-        for(PurchasePolicy p : purchasePolicies){
-            if(!p.purchaseAccordingToPolicy(b))
+        for (PurchasePolicy p : purchasePolicies) {
+            if (!p.purchaseAccordingToPolicy(b))
                 throw new RuntimeException("Your purchase doesn’t match the store’s policy");
         }
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {
             Product p = pi.getProduct();
             int amount = pi.getAmount();
-            if(!this.inventory.reserveProduct(p, amount)){
+            if (!this.inventory.reserveProduct(p, amount)) {
                 throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
             }
             this.reservedProducts.get(b).add(pi);
         }
     }
 
-    public List<ProductItem> getReservedProducts(Basket b){
+    public List<ProductItem> getReservedProducts(Basket b) {
         return this.reservedProducts.get(b);
     }
 
-    public void unreserveBasket(Basket b){
-        for(ProductItem pi: this.reservedProducts.get(b)){
+    public void unreserveBasket(Basket b) {
+        for (ProductItem pi : this.reservedProducts.get(b)) {
             this.inventory.unreserveProduct(pi.getProduct(), pi.getAmount());
+            PersistenceController.create(pi);
         }
     }
 
@@ -330,7 +382,7 @@ public class Store implements Serializable {
             for (DiscountBInterface dis : discountsOnBasket) {
                 if (dis.canGet(b)) {
                     double newPrice = ((DiscountSimple) dis).calc(b);
-                    if(newPrice< tempPrice){
+                    if (newPrice < tempPrice) {
                         tempPrice = newPrice;
                     }
                 }
@@ -341,86 +393,87 @@ public class Store implements Serializable {
     }
 
 
-    public void addStorePurchaseHistory(Basket b, User u){
+    public void addStorePurchaseHistory(Basket b, User u) {
         Purchase p = new Purchase(b, u);
         p.getPurchasedProducts().computeCartPrice();
         this.purchaseHistory.addPurchase(p);
+
+        // save to db
+        PersistenceController.create(p);
+        PersistenceController.update(p.getPurchasedProducts());
     }
 
 
-
-    public StorePurchaseHistory getPurchaseHistory(){
+    public StorePurchaseHistory getPurchaseHistory() {
         return this.purchaseHistory;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return this.description;
     }
 
 
-    public void addDiscountCondProductAmount(String productName, int percentage, int limit){
+    public void addDiscountCondProductAmount(String productName, int percentage, int limit) {
         Product p = this.getProductByName(productName);
-        if(p != null)
-            discountsOnProducts.add( new DiscountCondProductAmount(discountID_counter, limit, p, percentage));
-        discountID_counter ++;
+        if (p != null)
+            discountsOnProducts.add(new DiscountCondProductAmount(discountID_counter, limit, p, percentage));
+        discountID_counter++;
     }
 
-    public void addDiscountCondBasketProducts(String productDiscount, String productCond, int percentage, int limit){
+    public void addDiscountCondBasketProducts(String productDiscount, String productCond, int percentage, int limit) {
         Product pDiscount = this.getProductByName(productDiscount);
         Product pCond = this.getProductByName(productCond);
-        if(pDiscount != null && pCond != null)
-            discountsOnProducts.add(new DiscountCondBasketProducts(discountID_counter, pCond, pDiscount,limit, percentage));
-        discountID_counter ++;
+        if (pDiscount != null && pCond != null)
+            discountsOnProducts.add(new DiscountCondBasketProducts(discountID_counter, pCond, pDiscount, limit, percentage));
+        discountID_counter++;
     }
 
-    public void addDiscountRevealedForProduct(String productName, int percentage){
+    public void addDiscountRevealedForProduct(String productName, int percentage) {
         Product p = this.getProductByName(productName);
-        if(p != null)
+        if (p != null)
             discountsOnProducts.add(new DiscountRevealedProduct(discountID_counter, p, percentage));
-        discountID_counter ++;
+        discountID_counter++;
     }
 
-    public void addDiscountForBasket(int percentage, int limit, boolean onprice){
+    public void addDiscountForBasket(int percentage, int limit, boolean onprice) {
         discountsOnBasket.add(new DiscountBasketPriceOrAmount(discountID_counter, limit, percentage, onprice));
-        discountID_counter ++;
+        discountID_counter++;
 
     }
 
-    public void addDiscountPolicy(DiscountBInterface discountPolicy){
+    public void addDiscountPolicy(DiscountBInterface discountPolicy) {
         discountPolicies.add(discountPolicy);
     }
 
-    public void addPurchasePolicy(PurchasePolicy purchasePolicy){
+    public void addPurchasePolicy(PurchasePolicy purchasePolicy) {
         purchasePolicies.add(purchasePolicy);
     }
 
     public void addSimplePurchasePolicyStore(int limit, boolean minOrMax, boolean standAlone) {
-        if(standAlone){
-            purchasePolicies.add(new PurchasePolicyStore(limit,minOrMax,purchaseID_counter));
+        if (standAlone) {
+            purchasePolicies.add(new PurchasePolicyStore(limit, minOrMax, purchaseID_counter));
             purchaseID_counter++;
-        }
-        else{
-            notStandAlonePolicies.add(new PurchasePolicyStore(limit,minOrMax,purchaseID_counter));
+        } else {
+            notStandAlonePolicies.add(new PurchasePolicyStore(limit, minOrMax, purchaseID_counter));
             purchaseID_counter++;
         }
     }
 
     public void addSimplePurchasePolicyProduct(String productName, int limit, boolean minOrMax, boolean standAlone) {
-        if(standAlone){
-            purchasePolicies.add(new PurchasePolicyProduct(productName, limit,minOrMax,purchaseID_counter));
+        if (standAlone) {
+            purchasePolicies.add(new PurchasePolicyProduct(productName, limit, minOrMax, purchaseID_counter));
             purchaseID_counter++;
-        }
-        else{
-            notStandAlonePolicies.add(new PurchasePolicyProduct(productName, limit,minOrMax,purchaseID_counter));
+        } else {
+            notStandAlonePolicies.add(new PurchasePolicyProduct(productName, limit, minOrMax, purchaseID_counter));
             purchaseID_counter++;
         }
     }
 
-    public String viewDiscount(){
+    public String viewDiscount() {
         JSONArray discountsdes = new JSONArray();
-        for(DiscountBInterface dis :discountsOnProducts){
+        for (DiscountBInterface dis : discountsOnProducts) {
             JSONObject curr = new JSONObject();
-            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
+            curr.put("discountId", ((DiscountSimple) dis).getDiscountID());
             curr.put("discountString", dis.discountDescription());
             discountsdes.add(curr);
         }
@@ -501,19 +554,19 @@ public class Store implements Serializable {
 
     public void notifyOwners(Basket b, String userName) {
         String msg = userName + " bought some products from the store " + name + " you own: ";
-        for(ProductItem pi: b.getProductItems()) {
+        for (ProductItem pi : b.getProductItems()) {
             msg += pi.getProduct().getName() + ", ";
         }
         msg.substring(0, msg.length() - 2);
         msg += ".";
-        for(User u: ownerships.keySet()) {
+        for (User u : ownerships.keySet()) {
             NotificationSystem.getInstance().notify(u.getUsername(), msg);
         }
     }
 
-    public JSONArray getAllProducts(){
+    public JSONArray getAllProducts() {
         JSONArray products = new JSONArray();
-        for(Product p: getInventory().keySet()) {
+        for (Product p : getInventory().keySet()) {
             JSONObject curr = new JSONObject();
             curr.put("name", p.getName());
             curr.put("price", p.getPrice());
@@ -525,9 +578,9 @@ public class Store implements Serializable {
         return products;
     }
 
-    public String getProductsJS(){
+    public String getProductsJS() {
         JSONArray products = new JSONArray();
-        for(Product p: getInventory().keySet()) {
+        for (Product p : getInventory().keySet()) {
             JSONObject curr = new JSONObject();
             curr.put("name", p.getName());
             curr.put("description", p.getDescription());
@@ -561,13 +614,25 @@ public class Store implements Serializable {
         return this.inventory.checkIfProductAvailable(productName, amount);
     }
 
-    public void removeDiscountPolicies(){
+    public void removeDiscountPolicies() {
         this.discountPolicies = new ArrayList<>();
     }
 
     //for store unit test
     public void reserveProduct(Product p, int amount) {
         this.inventory.reserveProduct(p, amount);
+    }
+
+    public void initPurchaseHistory() {
+        List<Purchase> purchases = PersistenceController.readPurchaseHistory(this.name);
+        for(Purchase p: purchases){
+            p.setCart(PersistenceController.readCartById(p.getCartId()));
+            ShoppingCart sc = p.getPurchasedProducts();
+            sc.setUser(SystemFacade.getInstance().getUserByName(sc.getUserName()));
+            sc.initBaskets(sc);
+            this.purchaseHistory.addPurchase(p);
+        }
+
     }
 
     public User getOwnerAppointer(User user) {
