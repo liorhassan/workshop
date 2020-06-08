@@ -34,10 +34,9 @@ public class SystemFacade {
         adminsList = new ArrayList<>();
         PC = new PaymentCollectionStub();
         PS = new ProductSupplyStub();
-        initSystem();
     }
 
-    private void initSystem(){
+    public void initSystem(){
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
         SecurityFacade.getInstance().addUser("Admin159", "951");
