@@ -944,4 +944,20 @@ public class SystemFacade {
         Store store = getStoreByName(storeName);
         store.removeDiscountPolicies();
     }
+
+    public String removeStoreOwner(String userName, String storeName){
+        Store store = getStoreByName(storeName);
+        User userToRemove = users.get(userName);
+        store.removeOwner(userToRemove);
+        return "owner been removed successfully";
+    }
+
+    public boolean isOwnerAppointer(UUID session_id, String storeName, String userName){
+        Store store = getStoreByName(storeName);
+        User user = users.get(userName);
+        if(active_sessions.get(session_id).equals(store.getOwnerAppointer(user))){
+            return true;
+        }
+        return false;
+    }
 }
