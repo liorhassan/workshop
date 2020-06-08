@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.*;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -23,6 +24,7 @@ public class UC4_10 {
 
     @BeforeClass
     public static void init(){
+        PersistenceController.initiate();
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).register("rachel", "1234");

@@ -15,17 +15,14 @@ import static org.junit.Assert.assertNotEquals;
 public class UC4_2 {
 
     private static ShoppingCartHandler shoppingCartHandler;
-    private UUID session_id;
+    private static UUID session_id;
 
-    @Before
-    public void setUp(){
-        session_id = (new SessionHandler()).openNewSession();
-        shoppingCartHandler = new ShoppingCartHandler();
-    }
 
     @BeforeClass
-    public void init(){
-        (new UC3_2()).init(); // user toya is logged in
+    public static void init(){
+        shoppingCartHandler = new ShoppingCartHandler();
+        UC3_2.init(); // user toya is logged in
+        session_id = UC3_2.session_id;
         (new StoreHandler()).openNewStore(session_id, "Castro", "clothes for women and men");
         (new StoreHandler()).openNewStore(session_id, "Lalin", "beauty products");
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Cream ocean", 40.0, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
@@ -47,13 +44,7 @@ public class UC4_2 {
 
     @AfterClass
     public static void clean(){
-        (new UsersHandler()).resetUsers();
-        (new StoreHandler()).resetStores();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        (new SessionHandler()).closeSession(session_id);
+        UC3_2.clean();
     }
 
     @Test

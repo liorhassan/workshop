@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
@@ -12,11 +13,13 @@ import static org.junit.Assert.assertEquals;
 
 public class UC6_4 {
 
-    private ViewPurchaseHistoryHandler viewHistoryHandler;
+    private static ViewPurchaseHistoryHandler viewHistoryHandler;
     private static UUID session_id;
 
     @BeforeClass
     public static void init() throws Exception {
+        PersistenceController.initiate();
+        viewHistoryHandler = new ViewPurchaseHistoryHandler();
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).login(session_id, "Admin159", "951", true);
         (new UsersHandler()).register("toya", "555"); // to check history
@@ -27,16 +30,6 @@ public class UC6_4 {
     public static void clean() {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
-    }
-
-    @Before
-    public void setUp() {
-        viewHistoryHandler = new ViewPurchaseHistoryHandler();
-    }
-
-
-    @After
-    public void tearDown() throws Exception {
         (new SessionHandler()).closeSession(session_id);
     }
 

@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.StoreManagerHandler;
@@ -15,16 +16,14 @@ import static junit.framework.TestCase.assertEquals;
 public class UC4_6 {
 
     private static StoreManagerHandler storeManagerHandler;
-    private UUID session_id;
+    private static UUID session_id;
 
-    @Before
-    public void setUp(){
-        session_id = (new SessionHandler()).openNewSession();
-        storeManagerHandler = new StoreManagerHandler();
-    }
 
     @BeforeClass
-    public void init(){
+    public static void init(){
+        PersistenceController.initiate();
+        session_id = (new SessionHandler()).openNewSession();
+        storeManagerHandler = new StoreManagerHandler();
         // store owner
         (new UsersHandler()).register("noy", "1234");
         // store manager
@@ -35,20 +34,16 @@ public class UC4_6 {
     }
 
     @AfterClass
-    public void clean() {
+    public static void clean() {
         (new UsersHandler()).logout(session_id);
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
-    }
-
-    @After
-    public void tearDown() throws Exception {
         (new SessionHandler()).closeSession(session_id);
     }
 
+
     @Test
     public void valid() {
-        (new UsersHandler()).login(session_id, "noy", "1234", false);
         List<String> p = new LinkedList<>();
         p.add("View Store Purchase History");
         String result = storeManagerHandler.editManagerPermissions(session_id, "maor", p, "Mcdonalds");

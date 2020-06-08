@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
@@ -14,6 +15,7 @@ public class UC2_3 {
 
     @BeforeClass
     public static void setUp() {
+        PersistenceController.initiate();
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("toya", "1234");
     }

@@ -1,6 +1,7 @@
 package DomainLayer.TradingSystem;
 
 
+import DataAccessLayer.PersistenceController;
 import ExternalSystems.PaymentCollectionStub;
 import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
@@ -87,6 +88,11 @@ public class SystemFacade {
     }
 
     public void resetStores(){
+        for(Store s : stores.values()){
+            for(Product p : s.getInventory().keySet()){
+                PersistenceController.delete(p);
+            }
+        }
         stores.clear();
     }
 

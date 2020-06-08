@@ -103,6 +103,7 @@ public class PersistenceController {
     public static void update(Object updatedModel) {
         // Create a session
         Session session = SESSION_FACTORY.openSession();
+
         Transaction transaction = null;
         try {
             // Begin a transaction
@@ -110,6 +111,7 @@ public class PersistenceController {
 
             // Update the student
             session.update(updatedModel);
+
             // Commit the transaction
             transaction.commit();
         } catch (HibernateException ex) {

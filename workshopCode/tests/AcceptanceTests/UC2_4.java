@@ -1,6 +1,7 @@
 package AcceptanceTests;
 
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
@@ -28,6 +29,7 @@ public class UC2_4 {
 
     @BeforeClass
     public static void init(){
+        PersistenceController.initiate();
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).login(session_id, "noy", "1234", false);

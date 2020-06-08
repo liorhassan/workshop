@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.UsersHandler;
 import org.junit.After;
 import org.junit.Before;
@@ -15,6 +16,7 @@ public class UC2_2 {
 
     @BeforeClass
     public static void setUp() throws Exception {
+        PersistenceController.initiate();
         handler = new UsersHandler();
     }
 

@@ -1,4 +1,5 @@
 package AcceptanceTests;
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.UsersHandler;
 import ServiceLayer.StoreHandler;
@@ -10,17 +11,15 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 public class UC4_5 {
-    private StoreManagerHandler service;
-    private UUID session_id;
+    private static StoreManagerHandler service;
+    private static UUID session_id;
 
-    @Before
-    public void setUp() throws Exception{
-        session_id = (new SessionHandler()).openNewSession();
-        service = new StoreManagerHandler();
-    }
 
     @BeforeClass
-    public void init() throws Exception{
+    public static void init() throws Exception{
+        PersistenceController.initiate();
+        session_id = (new SessionHandler()).openNewSession();
+        service = new StoreManagerHandler();
         (new UsersHandler()).register("lior", "1234");
         (new UsersHandler()).register("Aviv", "good");
         (new UsersHandler()).register("Amit", "good");
@@ -31,8 +30,8 @@ public class UC4_5 {
         (new StoreHandler()).openNewStore(session_id, "Rami Levi", "SuperMarket");
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @AfterClass
+    public static void clean() throws Exception {
         (new SessionHandler()).closeSession(session_id);
     }
 

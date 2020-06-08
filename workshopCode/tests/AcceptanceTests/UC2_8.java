@@ -14,17 +14,13 @@ import static org.junit.Assert.assertEquals;
 public class UC2_8 {
 
     private static ShoppingCartHandler shoppingCartHandler;
-    private UUID session_id;
-
-    @Before
-    public void setUp(){
-        shoppingCartHandler = new ShoppingCartHandler();
-        session_id = (new SessionHandler()).openNewSession();
-    }
+    private static UUID session_id;
 
     @BeforeClass
-    public void init(){
-        (new UC3_2()).init(); // user toya is logged in
+    public static void init(){
+        shoppingCartHandler = new ShoppingCartHandler();
+        UC3_2.init(); // user toya is logged in
+        session_id = UC3_2.session_id;
         (new StoreHandler()).openNewStore(session_id, "Castro", "clothes for women and men");
         (new StoreHandler()).openNewStore(session_id, "Lalin", "beauty products");
         (new StoreHandler()).UpdateInventory(session_id, "Castro", "white T-shirt", 5.0, "Clothing", "white T-shirt for men", 50);
@@ -42,14 +38,9 @@ public class UC2_8 {
 
     @AfterClass
     public static void clean(){
-        (new UsersHandler()).resetUsers();
-        (new StoreHandler()).resetStores();
+        UC3_2.clean();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        (new SessionHandler()).closeSession(session_id);
-    }
 
     @Test
     public void emptyCart() {

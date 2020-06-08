@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.ShoppingCartHandler;
 import ServiceLayer.UsersHandler;
@@ -9,21 +10,20 @@ import org.junit.*;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class UC2_7 {
 
-    private  ShoppingCartHandler service;
-    private UUID session_id;
+    private static ShoppingCartHandler service;
+    private static UUID session_id;
 
-    @Before
-    public void setUp() throws Exception{
-        service = new ShoppingCartHandler();
-        session_id = (new SessionHandler()).openNewSession();
-    }
 
     @BeforeClass
-    public void init() throws Exception {
+    public static void init() throws Exception {
+        PersistenceController.initiate();
 
+        service = new ShoppingCartHandler();
+        session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("lior", "1234");
         (new UsersHandler()).login(session_id, "lior", "1234", false);
         (new StoreHandler()).openNewStore(session_id, "Rami Levi", "Supermarket");
@@ -36,61 +36,96 @@ public class UC2_7 {
     }
     @AfterClass
     public static void clean() {
+        (new SessionHandler()).closeSession(session_id);
         (new  UsersHandler()).resetUsers();
         (new  StoreHandler()).resetStores();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        (new SessionHandler()).closeSession(session_id);
     }
 
     @Test
     public void successful(){
         service.AddToShoppingBasket(session_id, "Rami Levi", "apple",  2);
         String output1 = service.editCart(session_id, "Rami Levi", "apple", 1);
-        assertEquals("The product has been updated successfully", output1);
+        assertEquals("{\"SUCCESS\":\"The product has been updated successfully\"}", output1);
         String output2 = service.editCart(session_id, "Rami Levi", "water", 0);
-        assertEquals("The product has been updated successfully", output2);
+        assertEquals("{\"SUCCESS\":\"The product has been updated successfully\"}", output2);
         String output3 = service.viewCart(session_id);
-        assertEquals("Your ShoppingCart details: \nStore name: Rami Levi\nProduct name: apple price: 2.0 amount: 1\n", output3);
-        service.AddToShoppingBasket(session_id, "Rami Levi", "water", 1);
+        assertEquals("[{\"amount\":1,\"price\":2.0,\"name\":\"apple\",\"store\":\"Rami Levi\"}]", output3);
     }
 
     @Test
     public void productIsNotExist(){
-        String output = service.editCart(session_id, "Rami Levi", "fish", 2);
-        assertEquals("The product doesn’t exist in your shopping cart", output);
+        try{
+            String output = service.editCart(session_id, "Rami Levi", "fish", 2);
+            fail();
+        }catch(Exception e) {
+            assertEquals("The product doesn’t exist in your shopping cart", e.getMessage());
+        }
     }
 
     @Test
     public void storeDoesNotExist(){
-        String output1 = service.editCart(session_id, "Shufersal", "milki", 1);
-        assertEquals("This store doesn't exist", output1);
-        String output2 = service.editCart(session_id, "Golda", "ice cream" , 1);
-        assertEquals("This store doesn't exist", output2);
+        try{
+            String output1 = service.editCart(session_id, "Shufersal", "milki", 1);
+            fail();
+        }catch(Exception e) {
+            assertEquals("This store doesn't exist", e.getMessage());
+        }
+        try{
+            String output2 = service.editCart(session_id, "Golda", "ice cream" , 1);
+            fail();
+        }catch(Exception e) {
+            assertEquals("This store doesn't exist", e.getMessage());
+        }
     }
 
     @Test
     public void productDoesNotAvailable(){
-        String output1 = service.editCart(session_id, "Rami Levi", "water", 4);
-        assertEquals("The product isn't available in the store with the requested amount", output1);
-        String output2 = service.editCart(session_id, "Rami Levi", "apple" , 10);
-        assertEquals("The product isn't available in the store with the requested amount", output2);
+        try{
+            String output1 = service.editCart(session_id, "Rami Levi", "water", 4);
+            fail();
+        }catch(Exception e) {
+            assertEquals("The product doesn’t exist in your shopping cart", e.getMessage());
+        }
+        try{
+            String output2 = service.editCart(session_id, "Rami Levi", "apple" , 10);
+            fail();
+        }catch(Exception e) {
+            assertEquals("The product isn't available in the store with the requested amount", e.getMessage());
+        }
     }
 
     @Test
     public void emptyInput(){
-        String output1 = service.editCart(session_id, "", "apple", 1);
-        assertEquals("Must enter store name and product name and amount bigger than 0", output1);
-        String output2 = service.editCart(session_id, null, "apple", 1);
-        assertEquals("Must enter store name and product name and amount bigger than 0", output2);
-        String output3 = service.editCart(session_id, "Rami levi", "", 2);
-        assertEquals("Must enter store name and product name and amount bigger than 0", output3);
-        String output4 = service.editCart(session_id, "Rami levi", null, 2);
-        assertEquals("Must enter store name and product name and amount bigger than 0", output4);
-        String output5 = service.editCart(session_id, "Rami levi", "apple", -1);
-        assertEquals("Must enter store name and product name and amount bigger than 0", output5);
+        try{
+            String output1 = service.editCart(session_id, "", "apple", 1);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter store name and product name and amount bigger than 0", e.getMessage());
+        }
+        try{
+            String output2 = service.editCart(session_id, null, "apple", 1);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter store name and product name and amount bigger than 0", e.getMessage());
+        }
+        try{
+            String output3 = service.editCart(session_id, "Rami levi", "", 2);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter store name and product name and amount bigger than 0", e.getMessage());
+        }
+        try{
+            String output4 = service.editCart(session_id, "Rami levi", null, 2);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter store name and product name and amount bigger than 0", e.getMessage());
+        }
+        try{
+            String output5 = service.editCart(session_id, "Rami levi", "apple", -1);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter store name and product name and amount bigger than 0", e.getMessage());
+        }
     }
 
 }
