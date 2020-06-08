@@ -36,10 +36,9 @@ public class SystemFacade {
         adminsList = new ArrayList<>();
         PC = new PaymentCollectionStub();
         PS = new ProductSupplyStub();
-        initSystem();
     }
 
-    private void initSystem(){
+    public void initSystem(){
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
         firstAdmin.setIsAdmin();
@@ -48,6 +47,7 @@ public class SystemFacade {
 
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
+        NotificationSystem.getInstance().addUser("Admin159");
     }
 
     public UUID createNewSession(){
@@ -178,6 +178,11 @@ public class SystemFacade {
     }
 
     public void resetStores(){
+        for(Store s : stores.values()){
+            for(Product p : s.getInventory().keySet()){
+                PersistenceController.delete(p);
+            }
+        }
         stores.clear();
     }
 
@@ -307,6 +312,8 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
+        if(se.getLoggedin_user().getUsername() != null)
+            NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
 
         // save data to db
         PersistenceController.update(se.getLoggedin_user().getShoppingCart());
@@ -987,7 +994,6 @@ public class SystemFacade {
 
     }
 
-
     public String addPurchasePolicy(String jsonString) {
         try {
             JSONParser parser = new JSONParser();
@@ -1069,5 +1075,14 @@ public class SystemFacade {
             return true;
         }
         return false;
+    }
+
+    public String waitingAppointments(UUID session_id, String storeName){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        Store store = getStoreByName(storeName);
+        String userNames = store.appointmentWaitingForUser(se.getLoggedin_user());
+        return userNames;
     }
 }

@@ -21,6 +21,7 @@ public class AppointmentAgreement {
         this.approved = new ArrayList<>();
         this.declined = new ArrayList<>();
         this.theAppointerUser = theAppointerUser;
+        waitingForResponse.remove(getTheAppointerUser());
     }
 
 

@@ -285,10 +285,23 @@ public class Store implements Serializable {
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
     public void addStoreOwner(User newOwner, User appointer) {
-        if (!waitingAgreements.containsKey(newOwner))
-            this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
-        //notify all owners
-        NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+        if (ownerships.size() == 1) {
+            NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+            StoreOwning storeOwning = new StoreOwning(appointer);
+            ownerships.put(newOwner, storeOwning);
+            newOwner.addOwnedStore(this, storeOwning);
+            PersistenceController.create(ownerships);
+        } else {
+            if (!waitingAgreements.containsKey(newOwner))
+                this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
+            //notify all owners
+            for (User u : ownerships.keySet()) {
+                if (u.getUsername().equals(appointer.getUsername()))
+                    continue;
+                NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + newOwner.getUsername() + " as owner of: " + getName() + " is waiting to your response");
+            }
+            NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+        }
     }
 
     public void addStoreOwner(User u, StoreOwning so) {
@@ -304,10 +317,19 @@ public class Store implements Serializable {
                 StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser(), name, "");//TODO: apointeeName?????
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
-                //notify that the appointment approved - (appointing and appointment users)
-            } else {
+                PersistenceController.create(ownerships);
+
+                //notify that the appointment approved )
+                for(User u: ownerships.keySet()) {
+                    NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is approved");
+                }
+            }
+            else {
                 waitingAgreements.remove(waitingForApprove);
-                //notify that the appointment declined - (appointing and appointment users)
+                //notify that the appointment declined
+                for(User u: ownerships.keySet()) {
+                    NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is declined");
+                }
 
             }
         }
@@ -480,13 +502,6 @@ public class Store implements Serializable {
             discountsdes.add(curr);
         }
 
-        for(DiscountBInterface dis :discountsOnBasket){
-            JSONObject curr = new JSONObject();
-            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
-            curr.put("discountString", dis.discountDescription());
-            discountsdes.add(curr);
-        }
-
         return discountsdes.toJSONString();
     }
 
@@ -575,6 +590,20 @@ public class Store implements Serializable {
             products.add(curr);
         }
         return products.toJSONString();
+    }
+
+    public String appointmentWaitingForUser(User owner){
+        //List<String> output = new ArrayList<>();
+        JSONArray usernames = new JSONArray();
+        for(User user : waitingAgreements.keySet()){
+            AppointmentAgreement aa = waitingAgreements.get(user);
+            if(aa.getWaitingForResponse().contains(owner)){
+                JSONObject curr = new JSONObject();
+                curr.put("userName", user.getUsername());
+                usernames.add(curr);
+            }
+        }
+        return usernames.toJSONString();
     }
 
     public Product getProductByName(String name) {
