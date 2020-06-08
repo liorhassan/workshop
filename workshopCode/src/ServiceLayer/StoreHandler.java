@@ -407,7 +407,7 @@ public class StoreHandler {
         SystemFacade.getInstance().resetStores();
     }
     public void removeDiscountPolicies(String storeName){
-        SystemFacade.getInstance().removeDescountPolicies(storeName);
+        SystemFacade.getInstance().removePolicies(storeName);
     }
     public void removePurchasePolicies(String storeName){
         SystemFacade.getInstance().removePurchasePolicies(storeName);
