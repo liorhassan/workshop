@@ -81,28 +81,28 @@ public class UC6_4 {
     }
 
 
-    @Test
-    public void notAdminMode() {
-        (new UsersHandler()).logout(session_id);
-        (new UsersHandler()).register("nufi", "1234");
-        (new UsersHandler()).login(session_id, "nufi", "1234", false);
-
-        try{
-            String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "toya");
-            fail();
-        }catch(Exception e) {
-            assertEquals("Only admin user can view other users' purchase history", e.getMessage());
-        }
-        try{
-            viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "KKW");
-            fail();
-        }catch(Exception e) {
-            assertEquals("Only admin user can view store's purchase history", e.getMessage());
-        }
-
-        (new UsersHandler()).logout(session_id);
-        (new UsersHandler()).login(session_id, "Admin159", "951", true);
-    }
+//    @Test
+//    public void notAdminMode() {
+//        (new UsersHandler()).logout(session_id);
+//        (new UsersHandler()).register("nufi", "1234");
+//        (new UsersHandler()).login(session_id, "nufi", "1234", false);
+//
+//        try{
+//            String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "toya");
+//            fail();
+//        }catch(Exception e) {
+//            assertEquals("Only admin user can view other users' purchase history", e.getMessage());
+//        }
+//        try{
+//            viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "KKW");
+//            fail();
+//        }catch(Exception e) {
+//            assertEquals("Only admin user can view store's purchase history", e.getMessage());
+//        }
+//
+//        (new UsersHandler()).logout(session_id);
+//        (new UsersHandler()).login(session_id, "Admin159", "951", true);
+//    }
 
     @Test
     public void storeExists() {

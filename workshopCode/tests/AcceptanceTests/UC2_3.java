@@ -40,7 +40,6 @@ public class UC2_3 {
 
     @After
     public void tearDown() throws Exception {
-        (new UsersHandler()).logout(session_id);
     }
 
     @Test
@@ -50,6 +49,7 @@ public class UC2_3 {
         (new UsersHandler()).logout(session_id);
         String output2 = (new UsersHandler()).login(session_id , "Amit", "good", false);
         assertEquals("{\"SUCCESS\":\"You have been successfully logged in!\"}", output2);
+        (new UsersHandler()).logout(session_id);
     }
 
     @Test

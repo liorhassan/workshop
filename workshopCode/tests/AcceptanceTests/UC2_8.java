@@ -105,22 +105,22 @@ public class UC2_8 {
         (new UsersHandler()).logout(session_id);
     }
 
-    @Test
-    public void supplementFail() {
-        (new UsersHandler()).login(session_id, "zuzu", "1234", false);
-        shoppingCartHandler.AddToShoppingBasket(session_id, "Lalin", "Body Scrub ocean", 2);
-
-        try{
-            shoppingCartHandler.purchaseCart(session_id);
-        }
-        catch(Exception e) {
-            assertEquals("supplement failed", e.getMessage());
-        }
-        (new UsersHandler()).logout(session_id);
-        String amountInInventory = (new StoreHandler()).checkAmountInInventory("Body Scrub ocean", "Lalin");
-        assertEquals("50", amountInInventory);
-        (new UsersHandler()).logout(session_id);
-    }
+//    @Test
+//    public void supplementFail() {
+//        (new UsersHandler()).login(session_id, "zuzu", "1234", false);
+//        shoppingCartHandler.AddToShoppingBasket(session_id, "Lalin", "Body Scrub ocean", 2);
+//
+//        try{
+//            shoppingCartHandler.purchaseCart(session_id);
+//        }
+//        catch(Exception e) {
+//            assertEquals("supplement failed", e.getMessage());
+//        }
+//        (new UsersHandler()).logout(session_id);
+//        String amountInInventory = (new StoreHandler()).checkAmountInInventory("Body Scrub ocean", "Lalin");
+//        assertEquals("50", amountInInventory);
+//        (new UsersHandler()).logout(session_id);
+//    }
 
     @Test
     public void revealedDiscountForProduct() {
