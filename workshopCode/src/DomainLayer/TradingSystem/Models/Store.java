@@ -521,13 +521,13 @@ public class Store implements Serializable {
         for(PurchasePolicy pp :purchasePolicies) {
             if (pp instanceof PurchasePolicyStore) {
                 JSONObject curr = new JSONObject();
-                curr.put("purchaseId", ((PurchasePolicyStore) pp).getPurchaseId());
+                curr.put("policyId", ((PurchasePolicyStore) pp).getPurchaseId());
                 curr.put("description", (pp.getPurchaseDescription()));
                 purchaePolicy.add(curr);
             }
             else if(pp instanceof PurchasePolicyProduct){
                 JSONObject curr = new JSONObject();
-                curr.put("purchaseId", ((PurchasePolicyProduct) pp).getPurchaseId());
+                curr.put("policyId", ((PurchasePolicyProduct) pp).getPurchaseId());
                 curr.put("description", (pp.getPurchaseDescription()));
                 purchaePolicy.add(curr);
             }
@@ -536,13 +536,13 @@ public class Store implements Serializable {
         for(PurchasePolicy pp : notStandAlonePolicies) {
             if (pp instanceof PurchasePolicyStore) {
                 JSONObject curr = new JSONObject();
-                curr.put("purchaseId", ((PurchasePolicyStore) pp).getPurchaseId());
+                curr.put("policyId", ((PurchasePolicyStore) pp).getPurchaseId());
                 curr.put("description", (pp.getPurchaseDescription()));
                 purchaePolicy.add(curr);
             }
             else if(pp instanceof PurchasePolicyProduct){
                 JSONObject curr = new JSONObject();
-                curr.put("purchaseId", ((PurchasePolicyProduct) pp).getPurchaseId());
+                curr.put("policyId", ((PurchasePolicyProduct) pp).getPurchaseId());
                 curr.put("description", (pp.getPurchaseDescription()));
                 purchaePolicy.add(curr);
             }
@@ -616,6 +616,9 @@ public class Store implements Serializable {
 
     public void removeDiscountPolicies() {
         this.discountPolicies = new ArrayList<>();
+    }
+    public void removePurchasePolicies(){
+        this.purchasePolicies = new ArrayList<>();
     }
 
     //for store unit test

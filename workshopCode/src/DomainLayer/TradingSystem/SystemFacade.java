@@ -1063,6 +1063,7 @@ public class SystemFacade {
         store.removeDiscountPolicies();
     }
 
+
     public String removeStoreOwner(String userName, String storeName){
         Store store = getStoreByName(storeName);
         User userToRemove = users.get(userName);
@@ -1086,5 +1087,10 @@ public class SystemFacade {
         Store store = getStoreByName(storeName);
         String userNames = store.appointmentWaitingForUser(se.getLoggedin_user());
         return userNames;
+    }
+
+    public void removePurchasePolicies(String storeName){
+        Store store = getStoreByName(storeName);
+        store.removePurchasePolicies();
     }
 }

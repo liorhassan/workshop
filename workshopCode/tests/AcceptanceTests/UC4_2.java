@@ -1,16 +1,16 @@
 package AcceptanceTests;
 
-import ServiceLayer.SessionHandler;
 import ServiceLayer.ShoppingCartHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
-import org.junit.*;
 import org.json.simple.JSONObject;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 public class UC4_2 {
 
@@ -147,8 +147,8 @@ public class UC4_2 {
         String result = shoppingCartHandler.getCartTotalPrice(session_id);
         assertEquals("220.0", result);
         shoppingCartHandler.purchaseCart(session_id);
-       // shoppingCartHandler.editCart("Castro", "jeans", 0);
-      //  shoppingCartHandler.editCart("Castro", "black T-Shirt", 0);
+        // shoppingCartHandler.editCart("Castro", "jeans", 0);
+        //  shoppingCartHandler.editCart("Castro", "black T-Shirt", 0);
         (new StoreHandler()).removeDiscountPolicies("Castro");
         //assertEquals("120", result);
         (new UsersHandler()).logout(session_id);
@@ -252,5 +252,6 @@ public class UC4_2 {
         //assertEquals("120", result);
         (new UsersHandler()).logout(session_id);
     }
+
 
 }
