@@ -876,7 +876,6 @@ public class SystemFacade {
 
     }
 
-
     public String addPurchasePolicy(String jsonString) {
         try {
             JSONParser parser = new JSONParser();
