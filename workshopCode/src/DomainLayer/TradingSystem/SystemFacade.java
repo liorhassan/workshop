@@ -312,12 +312,13 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        if(se.getLoggedin_user().getUsername() != null)
+        if(se.getLoggedin_user().getUsername() != null) {
             NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
 
-        // save data to db
-        PersistenceController.update(se.getLoggedin_user().getShoppingCart());
-        PersistenceController.update(se.getLoggedin_user());
+            // save data to db
+            PersistenceController.update(se.getLoggedin_user().getShoppingCart());
+            PersistenceController.update(se.getLoggedin_user());
+        }
         NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
         return "You have been successfully logged out!";
@@ -703,6 +704,7 @@ public class SystemFacade {
         User user = users.get(userName);
         user.setIsAdmin();
         adminsList.add(user);
+        PersistenceController.update(user);
     }
 
     public boolean checkIfInAdminMode(UUID session_id) {

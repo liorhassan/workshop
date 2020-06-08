@@ -287,7 +287,7 @@ public class Store implements Serializable {
     public void addStoreOwner(User newOwner, User appointer) {
         if (ownerships.size() == 1) {
             NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
-            StoreOwning storeOwning = new StoreOwning(appointer);
+            StoreOwning storeOwning = new StoreOwning(appointer, name, newOwner.getUsername());
             ownerships.put(newOwner, storeOwning);
             newOwner.addOwnedStore(this, storeOwning);
             PersistenceController.create(ownerships);
