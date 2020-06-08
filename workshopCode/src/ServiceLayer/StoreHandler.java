@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.UUID;
@@ -71,6 +72,30 @@ public class StoreHandler {
         catch (Exception e){
             SystemLogger.getInstance().writeError("Response to store owner appointment error: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
+            //return e.getMessage();
+        }
+    }
+
+    public String removeStoreOwner(UUID session_id, String username,String storename){
+        //SystemLogger.getInstance().writeError(String.format("Remove manager command: username - %s, store name - %s",argToString(username),argToString(storename)));
+        try{
+            String[] args = {username,storename};
+            if(SystemFacade.getInstance().emptyString(args))
+                throw new IllegalArgumentException("Must enter username and store name");
+            if(!SystemFacade.getInstance().storeExists(storename))
+                throw new IllegalArgumentException("This store doesn't exist");
+            if(!SystemFacade.getInstance().userExists(username))
+                throw new IllegalArgumentException("This username doesn't exist");
+            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storename))
+                throw new RuntimeException("You must be this store owner for this command");
+            if(!SystemFacade.getInstance().isOwnerAppointer(session_id,storename, username))
+                throw new RuntimeException("This username is not one of this store's managers appointed by you");
+            return SystemFacade.getInstance().removeStoreOwner(username,storename);
+            //return SystemFacade.getInstance().removeManager(username,storename);
+        } catch(Exception e) {
+            SystemLogger.getInstance().writeError("Remove manager error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+            //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
         }
     }
