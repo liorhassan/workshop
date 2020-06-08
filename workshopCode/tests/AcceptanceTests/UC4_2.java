@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+
 public class UC4_2 {
 
     private static ShoppingCartHandler shoppingCartHandler;
