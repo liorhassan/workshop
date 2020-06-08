@@ -5,7 +5,6 @@ import DomainLayer.TradingSystem.Models.User;
 import DomainLayer.TradingSystem.NotificationSystem;
 import DomainLayer.TradingSystem.SystemFacade;
 import ServiceLayer.StoreHandler;
-import ServiceLayer.StoreManagerHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -25,7 +24,7 @@ public class StoreOwningIntegration {
         (new UsersHandler()).register("rachel", "1234");
         (new UsersHandler()).register("zuzu", "1234");
         (new UsersHandler()).register("lior", "1234");
-        (
+
         (new UsersHandler()).register("toya", "1234");
         UUID se = SystemFacade.getInstance().createNewSession();
 
@@ -90,7 +89,7 @@ public class StoreOwningIntegration {
         SystemFacade.getInstance().logout(se);
         UUID se2 =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"rachel", "1234", false);
-        SystemFacade.getInstance().approve("zuzu", "Castro");
+        SystemFacade.getInstance().responseToAppointment(se2,"Castro", "zuzu", true);
 
         assertTrue(store.isOwner(zuzu));
         assertTrue(zuzu.getStoreOwnings().contains(store));
@@ -120,7 +119,7 @@ public class StoreOwningIntegration {
         SystemFacade.getInstance().logout(se);
         UUID se2 =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"rachel", "1234", false);
-        SystemFacade.getInstance().declined("maor", "Castro");
+        SystemFacade.getInstance().responseToAppointment(se2,"Castro", "maor", false);
         //maor get notification
         assertTrue(!store.isOwner(maor));
         assertTrue(!maor.getStoreOwnings().contains(store));
@@ -155,7 +154,7 @@ public class StoreOwningIntegration {
 
         UUID se3 =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se3, "toya", "1234", false);
-        SystemFacade.getInstance().removeOwner(se3, "lior", "Zara");
+        SystemFacade.getInstance().removeStoreOwner("lior", "Zara");
         assertTrue(!store.isOwner(lior));
         assertTrue(!lior.getStoreOwnings().contains(store));
         assertTrue(!store.isManager(zuzu));
@@ -171,6 +170,8 @@ public class StoreOwningIntegration {
         SystemFacade.getInstance().openNewStore(se, "Bershka", "Clothing");
         Store store = SystemFacade.getInstance().getStoreByName("Bershka");
         User maor = SystemFacade.getInstance().getUserByName("maor");
+        User rachel = SystemFacade.getInstance().getUserByName("rachel");
+
         SystemFacade.getInstance().appointOwner(se,"maor", "Bershka");
         assertTrue(store.isOwner(maor));
         assertTrue(maor.getStoreOwnings().contains(store));
@@ -181,7 +182,7 @@ public class StoreOwningIntegration {
         (new UsersHandler()).login(se,"maor", "1234", false);
 
         try{
-            SystemFacade.getInstance().removeOwner("rachel", "Castro");
+            SystemFacade.getInstance().removeStoreOwner("rachel", "Castro");
         }
         catch (Exception e){
             assertEquals("You must be a store owner for this action", e.getMessage());
