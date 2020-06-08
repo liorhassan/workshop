@@ -76,6 +76,7 @@ public class Store implements Serializable {
         this.discountsOnBasket = new ArrayList<>();
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
+        this.notStandAlonePolicies = new ArrayList<>();
         this.reservedProducts = new ConcurrentHashMap<>();
         this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
@@ -256,6 +257,7 @@ public class Store implements Serializable {
                 p.setCategory(productCategory);
                 p.setDescription(productDescription);
                 inventory.getProducts().put(p, amount);
+                p.setQuantity(amount);
                 PersistenceController.update(p);
                 break;
             }
