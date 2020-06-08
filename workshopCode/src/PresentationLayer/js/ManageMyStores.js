@@ -27,6 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
         store_name = activeStore.name;
         user_name = document.getElementById("perm-username").value;
         permissions = []
+        if(document.getElementById("addManagerPermOpt").checked)
+            permissions.push("Add Manager")
+            if(document.getElementById("remManagerPermOpt").checked)
+            permissions.push("Remove Manager")
+            if(document.getElementById("editPermPermOpt").checked)
+            permissions.push("Edit Permissions")
         if(document.getElementById("manageSupplyPermOpt").checked)
             permissions.push("Manage Supply")
         if(document.getElementById("viewHistoryPermOpt").checked)
@@ -61,6 +67,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
         document.getElementById("perm-username").value = "";
+        document.getElementById("addManagerPermOpt").checked = false;
+        document.getElementById("remManagerPermOpt").checked = false;
+        document.getElementById("editPermPermOpt").checked = false;
         document.getElementById("manageSupplyPermOpt").checked = false;
         document.getElementById("viewHistoryPermOpt").checked = false;
         document.getElementById("addDiscPermOpt").checked = false;
