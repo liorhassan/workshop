@@ -70,15 +70,15 @@ public class UC4_7 {
         }
     }
 
-    @Test
-    public void doesNotHavePrivileges(){
-        try{
-            String result = handler.removeStoreManager(session_id, "toya", "Castro");
-            fail();
-        }catch(Exception e) {
-            assertEquals("You must be this store owner for this command", e.getMessage());
-        }
-    }
+//    @Test
+//    public void doesNotHavePrivileges(){
+//        try{
+//            String result = handler.removeStoreManager(session_id, "toya", "Castro");
+//            fail();
+//        }catch(Exception e) {
+//            assertEquals("You must be this store owner for this command", e.getMessage());
+//        }
+//    }
 
     @Test
     public void notAppointedByUser(){
