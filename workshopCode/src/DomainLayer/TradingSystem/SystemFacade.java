@@ -1,6 +1,7 @@
 package DomainLayer.TradingSystem;
 
 
+import DataAccessLayer.PersistenceController;
 import ExternalSystems.PaymentCollectionStub;
 import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
@@ -42,6 +43,7 @@ public class SystemFacade {
         SecurityFacade.getInstance().addUser("Admin159", "951");
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
+        NotificationSystem.getInstance().addUser("Admin159");
     }
 
     public UUID createNewSession(){
@@ -87,6 +89,11 @@ public class SystemFacade {
     }
 
     public void resetStores(){
+        for(Store s : stores.values()){
+            for(Product p : s.getInventory().keySet()){
+                PersistenceController.delete(p);
+            }
+        }
         stores.clear();
     }
 
@@ -212,7 +219,8 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
+        if(se.getLoggedin_user().getUsername() != null)
+            NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
         return "You have been successfully logged out!";
     }
