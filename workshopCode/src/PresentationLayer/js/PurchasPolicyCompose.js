@@ -17,7 +17,7 @@ let result = {};
 let rootElementType;
 let totalComp;
 let prevSelect = {}
-let allSimplePolicies = [{ policyId: 1, policyName: "A" }, { policyId: 2, policyName: "AB" }, { policyId: 3, policyName: "C" }, { policyId: 4, policyName: "D" }];
+let allSimplePolicies;
 function getSimplePolicies() {
     const store = document.getElementById("storeName").value;
 
@@ -53,6 +53,7 @@ function getSimplePolicies() {
                 } else {
                     allSimplePolicies = data;
                     document.getElementById("allPolicyDiv").style.display = 'inline';
+                    createCompStatement(1,0,'Root')
                 }
             })
     }
@@ -186,8 +187,8 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         rand1Select.appendChild(rand1DefaultOption);
         allSimplePolicies.forEach(policy => {
             const rand1Option = document.createElement("option");
-            rand1Option.setAttribute("value", policy.policyId);
-            rand1Option.appendChild(document.createTextNode(policy.policyName));
+            rand1Option.setAttribute("value", policy.purchaseId);
+            rand1Option.appendChild(document.createTextNode(policy.description));
             rand1Select.appendChild(rand1Option);
         });
 
@@ -229,8 +230,8 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         rand2Select.appendChild(rand2DefaultOption);
         allSimplePolicies.forEach(policy => {
             const rand2Option = document.createElement("option");
-            rand2Option.setAttribute("value", policy.policyId);
-            rand2Option.appendChild(document.createTextNode(policy.policyName));
+            rand2Option.setAttribute("value", policy.purchaseId);
+            rand2Option.appendChild(document.createTextNode(policy.description));
             rand2Select.appendChild(rand2Option);
         });
 

@@ -51,7 +51,7 @@ function addBasketAmount() {
     addNewDiscount(data);
 }
 
-function addCondBasketProdcts() {
+function addCondBasketProducts() {
     const condName = document.getElementById("productConditionName").value;
     const discountName = document.getElementById("discountProductName").value;
     const amount = document.getElementById("conditionalBasketAmount").value;
@@ -83,7 +83,7 @@ function addProductReveal() {
     addNewDiscount(data);
 }
 
-function addCondBasketProdcts() {
+function addProductConditional() {
     const condName = document.getElementById("productName").value;
     const amount = document.getElementById("conditionalAmount").value
     const percents = document.getElementById("conditionalDiscountPercents").value;
@@ -127,5 +127,4 @@ function resetActiveTabsButThis(clickedTab) {
 
 function setCompose(clickedTab) {
     resetActiveTabsButThis(clickedTab);
-    createCompStatement(1,0,'Root')
 }

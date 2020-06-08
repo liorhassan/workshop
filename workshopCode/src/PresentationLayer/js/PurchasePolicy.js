@@ -86,5 +86,4 @@ function resetActiveTabsButThis(clickedTab) {
 
 function setCompose(clickedTab) {
     resetActiveTabsButThis(clickedTab);
-    createCompStatement(1,0,'Root')
 }

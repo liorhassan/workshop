@@ -34,7 +34,7 @@ public class StoreOwning implements Serializable {
         this.storeName = storeName;
         this.appointeeName = appointeeName;
         permissions = new ArrayList<>();
-        String[] perms = {"Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add new Discount Policy"};
+        String[] perms = {"Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add New Purchase Policy"};
         for(String p : perms)
             permissions.add(new Permission(p));
 
@@ -71,7 +71,7 @@ public class StoreOwning implements Serializable {
 
     public void initPermissions() {
         this.permissions = new LinkedList<>();
-        String[] perms = {"Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add new Discount Policy"};
+        String[] perms = {"Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add New Purchase Policy"};
         for(String p : perms)
             permissions.add(new Permission(p));
 
