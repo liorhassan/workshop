@@ -29,6 +29,8 @@ public class PurchasePolicyProduct implements PurchasePolicy {
                     return (pi.getAmount()>= amount);
             }
         }
+        if(!minOrmax)
+            return false;
         return true;
     }
 
