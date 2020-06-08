@@ -883,7 +883,6 @@ public class SystemFacade {
 
     }
 
-
     public String addPurchasePolicy(String jsonString) {
         try {
             JSONParser parser = new JSONParser();
@@ -965,5 +964,14 @@ public class SystemFacade {
             return true;
         }
         return false;
+    }
+
+    public String waitingAppointments(UUID session_id, String storeName){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        Store store = getStoreByName(storeName);
+        String userNames = store.appointmentWaitingForUser(se.getLoggedin_user());
+        return userNames;
     }
 }

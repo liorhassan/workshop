@@ -1,6 +1,5 @@
 package ServiceLayer;
 
-import DomainLayer.TradingSystem.Session;
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONArray;
@@ -346,7 +345,7 @@ public class StoreHandler {
         try {
             String[] args = {storeName};
             if (SystemFacade.getInstance().emptyString(args)) {
-                throw new IllegalArgumentException("Must enter store name and product name");
+                throw new IllegalArgumentException("Must enter store name ");
             }
             if (!SystemFacade.getInstance().storeExists(storeName)) {
                 throw new IllegalArgumentException("The store doesn't exist");
@@ -382,6 +381,24 @@ public class StoreHandler {
         }
     }
 
+    public String getAllWaitingAppointments(UUID session_id, String storeName){
+        try {
+            String[] args = {storeName};
+            if (SystemFacade.getInstance().emptyString(args)) {
+                throw new IllegalArgumentException("Must enter store name ");
+            }
+            if (!SystemFacade.getInstance().storeExists(storeName)) {
+                throw new IllegalArgumentException("The store doesn't exist");
+            }
+            return SystemFacade.getInstance().waitingAppointments(session_id, storeName);
+        }
+        catch(Exception e){
+            SystemLogger.getInstance().writeError("get All Waiting Appointments error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
+
     public String getStoreProducts(String storeName) {
         return SystemFacade.getInstance().getAllProducts(storeName);
     }
@@ -400,6 +417,8 @@ public class StoreHandler {
     public String checkAmountInInventory(String productName, String storeName) {
         return SystemFacade.getInstance().checkAmountInInventory(productName, storeName);
     }
+
+
 
     public String createJSONMsg(String type, String content) {
         JSONObject response = new JSONObject();
