@@ -12,8 +12,7 @@ import java.util.List;
 @Table(name = "storeManagings")
 public class StoreManaging implements Serializable {
 
-//    @ManyToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "appointer", referencedColumnName = "username")
+
     @Column(name = "appointer")
     private String appointerName;
     @Transient
@@ -27,7 +26,6 @@ public class StoreManaging implements Serializable {
     @Column(name = "appointeeName")
     private String appointeeName;
 
-    // TODO: change transient!!!
     @Transient
     private List<Permission> permissions;
 

@@ -12,8 +12,6 @@ import java.util.List;
 @Table(name = "storeOwnings")
 public class StoreOwning implements Serializable {
 
-//    @ManyToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "appointer")
     @Column(name = "appointer")
     private String appointerName;
     @Transient

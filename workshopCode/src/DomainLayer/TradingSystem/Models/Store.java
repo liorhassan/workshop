@@ -28,9 +28,7 @@ public class Store implements Serializable {
     @Column(name = "description")
     private String description;
 
-    //    @ManyToOne(fetch = FetchType.LAZY)
-//    @ManyToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "storeFirstOwner", referencedColumnName = "username")
+
     @Column(name = "storeFirstOwner")
     private String firstOwnerName;
     @Transient

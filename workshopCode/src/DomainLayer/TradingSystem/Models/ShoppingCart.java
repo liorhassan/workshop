@@ -26,9 +26,7 @@ public class ShoppingCart implements Serializable {
     @Transient
     private ConcurrentHashMap<Store, Basket> baskets;
 
-    //    @ManyToOne(fetch = FetchType.LAZY)
-//    @ManyToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "user", referencedColumnName = "username")
+
     @Column(name = "userName")
     private String userName;
 

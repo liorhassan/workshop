@@ -16,9 +16,6 @@ public class ProductItem implements Serializable {
     @GeneratedValue
     private int id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @ManyToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "product", referencedColumnName = "name")
     @Column(name = "product")
     private String productName;
     @Transient
@@ -27,9 +24,6 @@ public class ProductItem implements Serializable {
     @Column(name = "amount")
     private int amount;
 
-//    @ManyToOne()
-//    @ManyToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "basket", referencedColumnName = "id")
     @Column(name = "basket")
     private int basketId;
     @Transient

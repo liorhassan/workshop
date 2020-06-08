@@ -24,17 +24,13 @@ public class Basket implements Serializable {
     @GeneratedValue
     private int id;
 
-//    @ManyToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "store", referencedColumnName = "name")
+
     @Column(name = "store")
     private String storeName;
 
     @Transient
     private Store store;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @ManyToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "cart", referencedColumnName = "id")
     @Column(name = "cart")
     private int cartId;
 
