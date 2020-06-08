@@ -6,9 +6,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.DoubleBinaryOperator;
 
 public class Store implements Serializable {
 
@@ -48,6 +50,7 @@ public class Store implements Serializable {
         this.reservedProducts= new ConcurrentHashMap<>();
         this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
+        this.purchaseID_counter = 0;
         this.purchaseID_counter = 0;
         this.doubleDiscounts = true;
     }
@@ -234,10 +237,23 @@ public class Store implements Serializable {
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
     public void addStoreOwner(User newOwner, User appointer) {
-        if (!waitingAgreements.containsKey(newOwner))
-            this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
-        //notify all owners
-        NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+        if (ownerships.size() == 1) {
+            NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+            StoreOwning storeOwning = new StoreOwning(appointer);
+            ownerships.put(newOwner, storeOwning);
+            newOwner.addOwnedStore(this, storeOwning);
+            PersistenceController.create(ownerships);
+        } else {
+            if (!waitingAgreements.containsKey(newOwner))
+                this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
+            //notify all owners
+            for (User u : ownerships.keySet()) {
+                if (u.getUsername().equals(appointer.getUsername()))
+                    continue;
+                NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + newOwner.getUsername() + " as owner of: " + getName() + " is waiting to your response");
+            }
+            NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
+        }
     }
 
     //UC 4.3
@@ -249,11 +265,19 @@ public class Store implements Serializable {
                 StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser());
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
-                //notify that the appointment approved - (appointing and appointment users)
+                PersistenceController.create(ownerships);
+
+                //notify that the appointment approved )
+                for(User u: ownerships.keySet()) {
+                    NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is approved");
+                }
             }
             else {
                 waitingAgreements.remove(waitingForApprove);
-                //notify that the appointment declined - (appointing and appointment users)
+                //notify that the appointment declined
+                for(User u: ownerships.keySet()) {
+                    NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is declined");
+                }
 
             }
         }
@@ -425,13 +449,6 @@ public class Store implements Serializable {
             discountsdes.add(curr);
         }
 
-        for(DiscountBInterface dis :discountsOnBasket){
-            JSONObject curr = new JSONObject();
-            curr.put("discountId", ((DiscountSimple)dis).getDiscountID());
-            curr.put("discountString", dis.discountDescription());
-            discountsdes.add(curr);
-        }
-
         return discountsdes.toJSONString();
     }
 
@@ -522,6 +539,20 @@ public class Store implements Serializable {
         return products.toJSONString();
     }
 
+    public String appointmentWaitingForUser(User owner){
+        //List<String> output = new ArrayList<>();
+        JSONArray usernames = new JSONArray();
+        for(User user : waitingAgreements.keySet()){
+            AppointmentAgreement aa = waitingAgreements.get(user);
+            if(aa.getWaitingForResponse().contains(owner)){
+                JSONObject curr = new JSONObject();
+                curr.put("userName", user.getUsername());
+                usernames.add(curr);
+            }
+        }
+        return usernames.toJSONString();
+    }
+
     public Product getProductByName(String name) {
         return this.inventory.getProductByName(name);
     }
@@ -538,4 +569,35 @@ public class Store implements Serializable {
     public void reserveProduct(Product p, int amount) {
         this.inventory.reserveProduct(p, amount);
     }
+
+    public User getOwnerAppointer(User user) {
+        User appointer = null;
+        StoreOwning manage = ownerships.get(user);
+        if(manage != null)
+            appointer = manage.getAppointer();
+        return appointer;
+
+    }
+
+    public void removeOwner(User user){
+        for(User manUser : managements.keySet()){
+            if(managements.get(manUser).getAppointer().equals(user)){
+                //sand alert to the user being removed from managers list
+                NotificationSystem.getInstance().notify(manUser.getUsername(), "your appointment as manager of: " + getName() + " is canceled");
+                manUser.removeStoreManagement(this);
+                managements.remove(manUser);
+            }
+        }
+        for(User ownUser : ownerships.keySet()){
+            if(ownerships.get(ownUser).getAppointer().equals(user)){
+                //sand alert to the user being removed from owners list
+                NotificationSystem.getInstance().notify(ownUser.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
+                ownUser.getStoreOwnings().remove(this);
+                ownerships.remove(ownUser);
+            }
+        }
+        NotificationSystem.getInstance().notify(user.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
+        ownerships.remove(user);
+    }
+
 }

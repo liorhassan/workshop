@@ -1,6 +1,7 @@
 package DomainLayer.TradingSystem;
 
 
+import DataAccessLayer.PersistenceController;
 import ExternalSystems.PaymentCollectionStub;
 import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
@@ -33,15 +34,15 @@ public class SystemFacade {
         adminsList = new ArrayList<>();
         PC = new PaymentCollectionStub();
         PS = new ProductSupplyStub();
-        initSystem();
     }
 
-    private void initSystem(){
+    public void initSystem(){
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
         SecurityFacade.getInstance().addUser("Admin159", "951");
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
+        NotificationSystem.getInstance().addUser("Admin159");
     }
 
     public UUID createNewSession(){
@@ -87,6 +88,11 @@ public class SystemFacade {
     }
 
     public void resetStores(){
+        for(Store s : stores.values()){
+            for(Product p : s.getInventory().keySet()){
+                PersistenceController.delete(p);
+            }
+        }
         stores.clear();
     }
 
@@ -212,7 +218,8 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
+        if(se.getLoggedin_user().getUsername() != null)
+            NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
         return "You have been successfully logged out!";
     }
@@ -876,7 +883,6 @@ public class SystemFacade {
 
     }
 
-
     public String addPurchasePolicy(String jsonString) {
         try {
             JSONParser parser = new JSONParser();
@@ -942,5 +948,30 @@ public class SystemFacade {
     public void removePolicies(String storeName){
         Store store = getStoreByName(storeName);
         store.removeDiscountPolicies();
+    }
+
+    public String removeStoreOwner(String userName, String storeName){
+        Store store = getStoreByName(storeName);
+        User userToRemove = users.get(userName);
+        store.removeOwner(userToRemove);
+        return "owner been removed successfully";
+    }
+
+    public boolean isOwnerAppointer(UUID session_id, String storeName, String userName){
+        Store store = getStoreByName(storeName);
+        User user = users.get(userName);
+        if(active_sessions.get(session_id).equals(store.getOwnerAppointer(user))){
+            return true;
+        }
+        return false;
+    }
+
+    public String waitingAppointments(UUID session_id, String storeName){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        Store store = getStoreByName(storeName);
+        String userNames = store.appointmentWaitingForUser(se.getLoggedin_user());
+        return userNames;
     }
 }

@@ -20,8 +20,6 @@ public class StoreManagerHandler {
                 throw new IllegalArgumentException("This store doesn't exist");
             if(!SystemFacade.getInstance().userExists(username))
                 throw new IllegalArgumentException("This username doesn't exist");
-            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storeName))
-                throw new RuntimeException("You must be a store owner for this action");
             if(SystemFacade.getInstance().checkIfUserIsManager(storeName, username))
                 throw new RuntimeException("This username is already one of the store's managers");
             return createJSONMsg("SUCCESS", SystemFacade.getInstance().appointManager(session_id, username, storeName));
@@ -45,8 +43,6 @@ public class StoreManagerHandler {
                 throw new IllegalArgumentException("This store doesn't exist");
             if(!SystemFacade.getInstance().userExists(username))
                 throw new IllegalArgumentException("This username doesn't exist");
-            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storename))
-                throw new RuntimeException("You must be this store owner for this command");
             if(!SystemFacade.getInstance().isUserAppointer(session_id, username,storename))
                 throw new RuntimeException("This username is not one of this store's managers appointed by you");
             return SystemFacade.getInstance().removeManager(username,storename);
@@ -87,9 +83,6 @@ public class StoreManagerHandler {
             }
             if(!SystemFacade.getInstance().userExists(userName)){
                 throw new RuntimeException("This username doesn't exist");
-            }
-            if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storeName)){
-                throw new RuntimeException("You must be this store owner for this command");
             }
             if(!(SystemFacade.getInstance().checkIfUserIsManager(storeName, userName) && SystemFacade.getInstance().isUserAppointer(session_id, userName, storeName))){
                 throw new RuntimeException("You can't edit this user's privileges");
