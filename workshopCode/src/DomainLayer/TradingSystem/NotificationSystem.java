@@ -31,6 +31,7 @@ public class NotificationSystem {
 
     public void addUser(String userName) {
         notification.put(userName, new ConcurrentLinkedQueue<>());
+        loggedIn.put(userName,false);
     }
     public void logInUser(String username) {
         loggedIn.put(username,true);

@@ -1,6 +1,7 @@
 package DomainLayer.TradingSystem;
 
 
+import DataAccessLayer.PersistenceController;
 import ExternalSystems.PaymentCollectionStub;
 import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
@@ -41,6 +42,7 @@ public class SystemFacade {
         SecurityFacade.getInstance().addUser("Admin159", "951");
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
+        NotificationSystem.getInstance().addUser("Admin159");
     }
 
     public UUID createNewSession(){
@@ -86,6 +88,11 @@ public class SystemFacade {
     }
 
     public void resetStores(){
+        for(Store s : stores.values()){
+            for(Product p : s.getInventory().keySet()){
+                PersistenceController.delete(p);
+            }
+        }
         stores.clear();
     }
 
@@ -211,7 +218,8 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
+        if(se.getLoggedin_user().getUsername() != null)
+            NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
         return "You have been successfully logged out!";
     }
@@ -941,5 +949,21 @@ public class SystemFacade {
     public void removePolicies(String storeName){
         Store store = getStoreByName(storeName);
         store.removeDiscountPolicies();
+    }
+
+    public String removeStoreOwner(String userName, String storeName){
+        Store store = getStoreByName(storeName);
+        User userToRemove = users.get(userName);
+        store.removeOwner(userToRemove);
+        return "owner been removed successfully";
+    }
+
+    public boolean isOwnerAppointer(UUID session_id, String storeName, String userName){
+        Store store = getStoreByName(storeName);
+        User user = users.get(userName);
+        if(active_sessions.get(session_id).equals(store.getOwnerAppointer(user))){
+            return true;
+        }
+        return false;
     }
 }

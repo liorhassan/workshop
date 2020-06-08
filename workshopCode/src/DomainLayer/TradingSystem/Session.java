@@ -3,6 +3,7 @@ package DomainLayer.TradingSystem;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ public class Session {
     public Session() {
         session_id = UUID.randomUUID();
         loggedin_user = new User();
-        lastSearchResult = null;
+        lastSearchResult = new ArrayList<>();
         adminMode = false;
     }
 
