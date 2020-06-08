@@ -1,29 +1,50 @@
 package DomainLayer.TradingSystem.Models;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.StoreManaging;
 import DomainLayer.TradingSystem.StoreOwning;
 import DomainLayer.TradingSystem.UserPurchaseHistory;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class User {
-
+@Entity
+@Table(name = "users")
+public class User implements Serializable {
+    @Transient
     private ConcurrentHashMap<Store, StoreManaging> storeManagements;
+
+    @Transient
     private ConcurrentHashMap<Store, StoreOwning> storeOwnings;
+
+    @Transient
     private ShoppingCart shoppingCart;
+
+    @Transient
     private UserPurchaseHistory purchaseHistory;
+
+
+    @Id
+    @Column(name = "username", unique = true)
     private String username;
 
-    public User(){
+    @Column(name = "isAdmin")
+    private boolean isAdmin;
+
+    public User() {
         shoppingCart = new ShoppingCart(this);
         storeManagements = new ConcurrentHashMap<>();
         storeOwnings = new ConcurrentHashMap<>();
-        this.purchaseHistory = new UserPurchaseHistory(this);
+        this.isAdmin = false;
+        this.purchaseHistory = new UserPurchaseHistory(this);//TODO: INIT PURCHASES
     }
 
     public void setUsername(String name) {
         this.username = name;
+        this.shoppingCart.setUserName(username);
     }
 
     public String getUsername() {
@@ -36,6 +57,16 @@ public class User {
 
     public ShoppingCart getShoppingCart() {
         return shoppingCart;
+    }
+
+    public void initCart() {
+        if(this.shoppingCart == null)
+            this.shoppingCart = PersistenceController.readUserCart(this.username);
+        shoppingCart.setUser(this);
+        if(this.shoppingCart == null)
+            this.shoppingCart = new ShoppingCart(this);
+        else
+            shoppingCart.initBaskets(shoppingCart);
     }
 
     public void removeStoreManagement(Store store) {
@@ -74,10 +105,31 @@ public class User {
 
     public void emptyCart(){
         this.shoppingCart = new ShoppingCart(this);
+        PersistenceController.create(this.shoppingCart);
     }
 
     public void addPurchaseToHistory(Purchase newPurchase) {
         this.purchaseHistory.add(newPurchase);
+
+        //save to db
+        PersistenceController.create(newPurchase);
     }
 
+    public boolean getIsAdmin(){
+        return this.isAdmin;
+    }
+
+    public void setIsAdmin(){
+        this.isAdmin = true;
+    }
+
+    public void initPurchaseHistory() {
+        List<Purchase> purchases = PersistenceController.readPurchaseHistory(this.username);
+        for(Purchase p : purchases) {
+            p.setCart(PersistenceController.readCartById(p.getCartId()));
+            p.getPurchasedProducts().setUser(this);
+            p.getPurchasedProducts().initBaskets(p.getPurchasedProducts());
+            this.purchaseHistory.add(p);
+        }
+    }
 }

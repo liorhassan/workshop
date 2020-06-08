@@ -14,27 +14,46 @@ import java.util.regex.Pattern;
 public class Product implements Serializable {
 
     @Id
-    @Column(name = "product_name", unique = true)
+    @Column(name = "name", unique = true)
     private String name;
 
-    @Column(name = "product_category")
-    private Category category;
-
-    @Column(name = "product_description")
-    private String description;
-
-    @Column(name = "product_price")
-    private Double price;
-
-    @Column(name = "product_storeName")
+    @Column(name = "storeName")
     private String storeName;
 
-    public Product(String name, Category category, String description, Double price, String storeName) {
+    @Column(name = "category")
+    private Category category;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "price")
+    private Double price;
+
+    @Column(name = "quantity")
+    private int quantity;
+
+    @Column(name = "inStock")
+    private boolean inStock;
+
+    public Product() {}
+
+    public Product(String name, Category category, String description, Double price, String storeName, int quantity) {
         this.name = name;
         this.category = category;
         this.description = description;
         this.price = price;
         this.storeName = storeName;
+        this.quantity = quantity;
+        this.inStock = true;
+    }
+
+    public int getQuantity() { return this.quantity;}
+
+    public void setQuantity(int newQnt) {
+        this.quantity = newQnt;
+        if(quantity == 0){
+            inStock = false;
+        }
     }
 
     public String getName() {

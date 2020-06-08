@@ -1,9 +1,9 @@
 package DomainLayer.TradingSystem;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Purchase;
 import DomainLayer.TradingSystem.Models.User;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class UserPurchaseHistory {
@@ -13,7 +13,11 @@ public class UserPurchaseHistory {
 
     public UserPurchaseHistory(User user) {
         this.purchasingUser = user;
-        this.purchases = new LinkedList<>();
+        initPurchases();
+    }
+
+    private void initPurchases() {
+        this.purchases = PersistenceController.readAllPurchases(purchasingUser.getUsername());
     }
 
     public List<Purchase> getUserPurchases() {
