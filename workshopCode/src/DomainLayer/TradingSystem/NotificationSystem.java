@@ -2,15 +2,9 @@ package DomainLayer.TradingSystem;
 
 
 
-import CommunicationLayer.ClientWebSocket;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.net.http.WebSocket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -49,6 +43,13 @@ public class NotificationSystem {
             if(loggedIn.get(userName))
                 synchronized (this) {notify();}
         }
+    }
+
+    public int getUserNotificationNumber(String userName){
+        if(notification.contains(userName)){
+            return notification.get(userName).size();
+        }
+        return 0;
     }
 
     public JSONObject getNotifications(){
