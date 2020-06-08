@@ -13,7 +13,15 @@ let result = {};
 let rootElementType;
 let totalComp;
 let prevSelect = {}
-let allDiscounts = [{ discountId: 1, discountName: "A" }, { discountId: 2, discountName: "AB" }, { discountId: 3, discountName: "C" }, { discountId: 4, discountName: "D" }];
+let allDiscounts;
+
+//let allDiscounts = fetch("http://localhost:8080/tradingSystem/getDiscounts", {
+//        method: "POST",
+//        body: JSON.stringify({session_id: localStorage["session_id"]})
+//    })
+//         .then(response => response.json())
+//         .then(setItemsToCart)
+
 function getDiscounts() {
     const store = document.getElementById("storeName").value;
 
@@ -48,6 +56,7 @@ function getDiscounts() {
                         'warning')
                 } else {
                     allDiscounts = data;
+                    createCompStatement(1,0,'Root')
                     document.getElementById("allPolicyDiv").style.display = 'inline';
                 }
             })
@@ -183,7 +192,7 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         allDiscounts.forEach(discount => {
             const rand1Option = document.createElement("option");
             rand1Option.setAttribute("value", discount.discountId);
-            rand1Option.appendChild(document.createTextNode(discount.discountName));
+            rand1Option.appendChild(document.createTextNode(discount.discountString));
             rand1Select.appendChild(rand1Option);
         });
 
@@ -226,7 +235,7 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         allDiscounts.forEach(discount => {
             const rand2Option = document.createElement("option");
             rand2Option.setAttribute("value", discount.discountId);
-            rand2Option.appendChild(document.createTextNode(discount.discountName));
+            rand2Option.appendChild(document.createTextNode(discount.discountString));
             rand2Select.appendChild(rand2Option);
         });
 

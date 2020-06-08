@@ -44,14 +44,14 @@ function addBasketAmount() {
     const data = {
         type: "simple",
         subtype: "DiscountBasketPriceOrAmount",
-        amount: radioBtn,
+        amount: amount,
         percent: percent,
         onPriceOrAmountOfProducts: radioBtn[0].checked ? true : false,
     }
     addNewDiscount(data);
 }
 
-function addCondBasketProdcts() {
+function addCondBasketProducts() {
     const condName = document.getElementById("productConditionName").value;
     const discountName = document.getElementById("discountProductName").value;
     const amount = document.getElementById("conditionalBasketAmount").value;
@@ -59,7 +59,7 @@ function addCondBasketProdcts() {
 
     const data = {
         type: "simple",
-        subtype: "DiscountCondBasketProdcts",
+        subtype: "DiscountCondBasketProducts",
         productConditionName: condName,
         conditionAmount: amount,
         discountProductName: discountName,
@@ -83,14 +83,14 @@ function addProductReveal() {
     addNewDiscount(data);
 }
 
-function addCondBasketProdcts() {
+function addProductConditional() {
     const condName = document.getElementById("productName").value;
     const amount = document.getElementById("conditionalAmount").value
     const percents = document.getElementById("conditionalDiscountPercents").value;
 
     const data = {
-        type: "onProduct",
-        subtype: "conditional",
+        type: "simple",
+        subtype: "DiscountCondProductAmount",
         productName: condName,
         minAmount: amount,
         discountPercent: percents,
@@ -127,5 +127,4 @@ function resetActiveTabsButThis(clickedTab) {
 
 function setCompose(clickedTab) {
     resetActiveTabsButThis(clickedTab);
-    createCompStatement(1,0,'Root')
 }

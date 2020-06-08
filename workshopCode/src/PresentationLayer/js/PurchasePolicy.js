@@ -50,7 +50,7 @@ function addStorePolicy() {
 
     const data = {
         type: "simple",
-        subtype: "DiscountCondBasketProdcts",
+        subtype: "PurchasePolicyStore",
         limit: limit,
         minOrMax: radioBtn[0].checked ? false : true,
     }
@@ -86,5 +86,4 @@ function resetActiveTabsButThis(clickedTab) {
 
 function setCompose(clickedTab) {
     resetActiveTabsButThis(clickedTab);
-    createCompStatement(1,0,'Root')
 }

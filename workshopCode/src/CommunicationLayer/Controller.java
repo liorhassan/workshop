@@ -435,10 +435,10 @@ public class Controller {
             }
         });
 
-        //accept: {type:"onBasket", subtype:"onProductsAmount", amount:int, percent:int}
-        //accept: {type:"onBasket", subtype:"onCost", price:int, percent:int} --> onCost = true
-        //accept: {type:"onProduct", sutType:"revealed", productName:"", percent:int} --> amount = 0 --> onAll = true
-        //accept: {type:"onProduct", sutType:"conditional", productName:"", amount:int, percent:int, onProducts:boolean, onNextProduct:boolean} --> onAll = onProducts
+        //accept: {type:simple, subType:DiscountBasketPriceOrAmount, amount:int, percent:int, onPriceOrAmountOfProducts:boolean}
+        //accept: {type:simple, subType:DiscountRevealedProduct, productName:String, discountPercent:int}
+        //accept: {type:simple, subType:DiscountCondBasketProducts, productConditionName:String, conditionAmount:int, discountProductName:String, discountPercent:int}}
+        //accept: {type:simple, subType:DiscountCondProductAmount , productName:String, minAmount:int, discountPercent:int}
         server.createContext("/tradingSystem/addDiscount", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
@@ -446,34 +446,42 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String response = "";
-                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 String type = (requestJson.containsKey("type")) ? (String) requestJson.get("type") : null;
                 String subtype = (requestJson.containsKey("subtype")) ? (String) requestJson.get("subtype") : null;
-                if(type.equals("onBasket")) {
-                    if(subtype.equals("onProductsAmount")) {
-                        int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
-                        int discount = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                //        response = storeHandler.addDiscountForBasket(storeName, discount, amount, false);
-                    }
-                    else{
-                        int price = (requestJson.containsKey("price")) ? Integer.parseInt( requestJson.get("price").toString()): null;
-                        int discount = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                //        response = storeHandler.addDiscountForBasket(storeName, discount, price, false);
-                    }
-                }
-                else{
-                    if(subtype.equals("revealed")) {
-                        String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
-                        int percent = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                //        response = storeHandler.addDiscountForProduct(storeName, productName, percent, 0, true);
-                    }
-                    else{
-                        String productName = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
-                        int percent = (requestJson.containsKey("percent")) ? Integer.parseInt(requestJson.get("percent").toString()) : null;
-                        int amount = (requestJson.containsKey("amount")) ? Integer.parseInt(requestJson.get("amount").toString()) : null;
-                        boolean onAll = (requestJson.containsKey("onProducts")) ? Boolean.parseBoolean(requestJson.get("onProducts").toString()): null;
-                //        response = storeHandler.addDiscountForProduct(storeName, productName, percent, amount, onAll);
-                    }
+                String store = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                switch(type){
+                    case "simple":
+                        switch(subtype){
+                            case "DiscountBasketPriceOrAmount":
+                                int amount = (requestJson.containsKey("amount")) ? Integer.parseInt((String) requestJson.get("amount")) : null;
+                                int percent = (requestJson.containsKey("percent")) ? Integer.parseInt((String) requestJson.get("percent")) : null;
+                                boolean onPriceOrAmountOfProducts = (requestJson.containsKey("onPriceOrAmountOfProducts")) ? (boolean) (requestJson.get("onPriceOrAmountOfProducts")) : false;
+                                response = storeHandler.addDiscountForBasketPriceOrAmount(store, percent, amount, onPriceOrAmountOfProducts);
+                                break;
+                            case "DiscountRevealedProduct":
+                                String product = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
+                                int percent1 = (requestJson.containsKey("discountPercent")) ? Integer.parseInt((String) requestJson.get("discountPercent")) : null;
+                                response = storeHandler.addDiscountRevealedProduct(store, product, percent1);
+                                break;
+                            case "DiscountCondBasketProducts":
+                                String productConditionName = (requestJson.containsKey("productConditionName")) ? (String) requestJson.get("productConditionName") : null;
+                                int amount2 = (requestJson.containsKey("conditionAmount")) ? Integer.parseInt((String) requestJson.get("conditionAmount")) : null;
+                                String product2 = (requestJson.containsKey("discountProductName")) ? (String) requestJson.get("discountProductName") : null;
+                                int percent2 = (requestJson.containsKey("discountPercent")) ? Integer.parseInt((String) requestJson.get("discountPercent")) : null;
+                                response = storeHandler.addDiscountCondBasketProducts(store, product2, productConditionName, percent2, amount2);
+                                break;
+                            case "DiscountCondProductAmount"://TODO: I pressed the add discount button and it doesnt work
+                                String product3 = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
+                                int amount3 = (requestJson.containsKey("minAmount")) ? Integer.parseInt((String) requestJson.get("minAmount")) : null;//TODO: there is a problem with minAmount = ""
+                                int percent3 = (requestJson.containsKey("discountPercent")) ? Integer.parseInt((String) requestJson.get("discountPercent")) : null;
+                                response = storeHandler.addDiscountCondProductAmount(store, product3, percent3, amount3);
+                                break;
+                        }
+                        break;
+
+                    case "compose":
+
+                        break;
                 }
 
                 headers.set("addDiscount", String.format("application/json; charset=%s", UTF8));
@@ -487,17 +495,77 @@ public class Controller {
         });
 
 
-
+        //accept: {rator: , operand1:, operand2:}
         server.createContext("/tradingSystem/addDiscountPolicy", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
-  //              String response = "";
               String response = storeHandler.addDiscountPolicy(new String(requestByte));
                 headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {
                 headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {type: simple, subtype: "PurchasePolicyProduct, productName: name, amount: int, minOrMax: bolean}
+        // /PurchasePolicyStore}
+        server.createContext("/tradingSystem/addPurchasePolicy", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                String response = "";
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String type = (requestJson.containsKey("type")) ? (String) requestJson.get("type") : null;
+                String subtype = (requestJson.containsKey("subtype")) ? (String) requestJson.get("subtype") : null;
+                String store = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                switch (type){
+                    case "simple":
+                        if(subtype.equals("PurchasePolicyProduct")){
+                            int amount = (requestJson.containsKey("amount")) ? Integer.parseInt((String) requestJson.get("amount")) : null;
+                            String product = (requestJson.containsKey("productName")) ? (String) requestJson.get("productName") : null;
+                            boolean minOrMax = (requestJson.containsKey("minOrMax")) ? (boolean) (requestJson.get("minOrMax")) : false;
+                            boolean standalone = (requestJson.containsKey("standalone")) ? (boolean) (requestJson.get("standalone")) : false;
+                            response = storeHandler.addPurchasePolicyProduct(store, product, amount, minOrMax, standalone);
+                        }else if(subtype.equals("PurchasePolicyStore")){
+                            int limit = (requestJson.containsKey("limit")) ? Integer.parseInt((String) requestJson.get("limit")) : null;
+                            boolean minOrMax = (requestJson.containsKey("minOrMax")) ? (boolean) (requestJson.get("minOrMax")) : false;
+                            boolean standalone = (requestJson.containsKey("standalone")) ? (boolean) (requestJson.get("standalone")) : false;
+                            response = storeHandler.addPurchasePolicyStore(store, limit, minOrMax, standalone);
+                        }
+                        break;
+                    case "compose":
+                        response = storeHandler.addPurchasePolicy(new String(requestByte));
+                }
+                headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (Exception e) {
+                headers.set("addDiscountPolicy", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+
+        server.createContext("/tradingSystem/getSimplePolicies", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                String response = storeHandler.viewPurchasePolicies(storeName);
+                headers.set("getSimplePolicies", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("getSimplePolicies", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();
