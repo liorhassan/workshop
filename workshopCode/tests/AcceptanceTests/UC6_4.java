@@ -10,6 +10,7 @@ import org.junit.*;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class UC6_4 {
 
@@ -19,8 +20,8 @@ public class UC6_4 {
     @BeforeClass
     public static void init() throws Exception {
         PersistenceController.initiate();
-        viewHistoryHandler = new ViewPurchaseHistoryHandler();
         session_id = (new SessionHandler()).openNewSession();
+        viewHistoryHandler = new ViewPurchaseHistoryHandler();
         (new UsersHandler()).login(session_id, "Admin159", "951", true);
         (new UsersHandler()).register("toya", "555"); // to check history
         (new StoreHandler()).openNewStore(session_id, "KKW", "best makeup products"); // to check history
@@ -36,31 +37,47 @@ public class UC6_4 {
     @Test
     public void validStore() {
         String result = viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "KKW");
-        assertEquals("Shopping history of the store:" + "\n", result);
+        assertEquals("[]", result);
     }
 
     @Test
     public void validUser() {
         String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "toya");
-        assertEquals("Shopping history:" + "\n", result);
+        assertEquals("[]", result);
     }
 
 
     @Test
     public void emptyInputStore() {
-        String result = viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "");
-        assertEquals("Must enter store name", result);
-        result = viewHistoryHandler.ViewPurchaseHistoryOfStore(session_id, null);
-        assertEquals("Must enter store name", result);
+        try{
+            String result = viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter store name", e.getMessage());
+        }
+        try{
+            viewHistoryHandler.ViewPurchaseHistoryOfStore(session_id, null);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter store name", e.getMessage());
+        }
     }
 
 
     @Test
     public void emptyInputUser() {
-        String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "");
-        assertEquals("Must enter username", result);
-        result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, null);
-        assertEquals("Must enter username", result);
+        try{
+            String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username", e.getMessage());
+        }
+        try{
+            viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, null);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username", e.getMessage());
+        }
     }
 
 
@@ -70,10 +87,18 @@ public class UC6_4 {
         (new UsersHandler()).register("nufi", "1234");
         (new UsersHandler()).login(session_id, "nufi", "1234", false);
 
-        String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "toya");
-        assertEquals("Only admin user can view other users' purchase history", result);
-        result = viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "KKW");
-        assertEquals("Only admin user can view store's purchase history", result);
+        try{
+            String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "toya");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Only admin user can view other users' purchase history", e.getMessage());
+        }
+        try{
+            viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "KKW");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Only admin user can view store's purchase history", e.getMessage());
+        }
 
         (new UsersHandler()).logout(session_id);
         (new UsersHandler()).login(session_id, "Admin159", "951", true);
@@ -81,14 +106,22 @@ public class UC6_4 {
 
     @Test
     public void storeExists() {
-        String result = viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "KYLIE");
-        assertEquals("The store requested doesn't exist in the system", result);
+        try{
+            String result = viewHistoryHandler.viewPurchaseHistoryOfStoreAsAdmin(session_id, "KYLIE");
+            fail();
+        }catch(Exception e) {
+            assertEquals("The store requested doesn't exist in the system", e.getMessage());
+        }
     }
 
     @Test
     public void userExists() {
-        String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "Kooper");
-        assertEquals("The user requested doesn't exist in the system", result);
+        try{
+            String result = viewHistoryHandler.viewPurchaseHistoryOfUserAsAdmin(session_id, "Kooper");
+            fail();
+        }catch(Exception e) {
+            assertEquals("The user requested doesn't exist in the system", e.getMessage());
+        }
     }
 
 }

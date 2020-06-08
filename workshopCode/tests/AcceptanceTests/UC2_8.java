@@ -74,7 +74,7 @@ public class UC2_8 {
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-shirt", 50);
         (new UsersHandler()).logout(session_id);
         (new UsersHandler()).login(session_id, "toya", "1234", false);
-        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-shirt", 50);
+        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-shirt", 49);
         shoppingCartHandler.purchaseCart(session_id);
         (new UsersHandler()).logout(session_id );
         (new UsersHandler()).login(session_id, "maor", "1234", false);

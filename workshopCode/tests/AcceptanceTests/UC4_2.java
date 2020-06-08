@@ -27,14 +27,14 @@ public class UC4_2 {
         (new StoreHandler()).openNewStore(session_id, "Lalin", "beauty products");
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Cream ocean", 40.0, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Scrub musk", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
-        (new StoreHandler()).UpdateInventory(session_id, "Castro", "white T-Shirt", 50.0, "Clothing", "white v t-shirt", 1000);
+        (new StoreHandler()).UpdateInventory(session_id, "Castro", "black T-Shirt", 50.0, "Clothing", "white v t-shirt", 1000);
         (new StoreHandler()).UpdateInventory(session_id, "Castro", "jeans", 120.0, "Clothing", "blue jeans", 1000);
         (new StoreHandler()).UpdateInventory(session_id, "Castro", "black skirt", 100.0, "Clothing", "black mini-skirt", 1000);
         (new StoreHandler()).UpdateInventory(session_id, "Castro", "shoes", 100.0, "Clothing", "shoes", 50);
 
         (new StoreHandler()).addDiscountCondProductAmount("Castro", "black skirt", 50, 1);
-        (new StoreHandler()).addDiscountCondBasketProducts("Castro", "white T-Shirt","jeans", 50, 1);
-        (new StoreHandler()).addDiscountRevealedProduct("Castro", "white T-Shirt", 20);
+        (new StoreHandler()).addDiscountCondBasketProducts("Castro", "black T-Shirt","jeans", 50, 1);
+        (new StoreHandler()).addDiscountRevealedProduct("Castro", "black T-Shirt", 20);
         (new StoreHandler()).addDiscountCondProductAmount("Castro", "shoes", 50, 1);
 
 
@@ -120,7 +120,7 @@ public class UC4_2 {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
 
         //(new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
-        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black T-Shirt", 4);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "jeans", 1);
         // rev t=shirt xor condJeans
         String message;
@@ -148,7 +148,7 @@ public class UC4_2 {
         assertEquals("220.0", result);
         shoppingCartHandler.purchaseCart(session_id);
        // shoppingCartHandler.editCart("Castro", "jeans", 0);
-      //  shoppingCartHandler.editCart("Castro", "white T-Shirt", 0);
+      //  shoppingCartHandler.editCart("Castro", "black T-Shirt", 0);
         (new StoreHandler()).removeDiscountPolicies("Castro");
         //assertEquals("120", result);
         (new UsersHandler()).logout(session_id);
@@ -158,7 +158,7 @@ public class UC4_2 {
     public void policyIFtest() {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
 
-        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black T-Shirt", 4);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black skirt", 1);
         //if skirt then rev t-shirt
 
@@ -186,13 +186,13 @@ public class UC4_2 {
         String result = shoppingCartHandler.getCartTotalPrice(session_id);
         assertEquals("300.0", result);
         shoppingCartHandler.purchaseCart(session_id);
-        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black T-Shirt", 4);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black skirt", 2);
         result = shoppingCartHandler.getCartTotalPrice(session_id);
         assertEquals("310.0", result);
         shoppingCartHandler.purchaseCart(session_id);
         //hoppingCartHandler.editCart("Castro", "black skirt", 0);
-        //shoppingCartHandler.editCart("Castro", "white T-Shirt", 0);
+        //shoppingCartHandler.editCart("Castro", "black T-Shirt", 0);
         (new StoreHandler()).removeDiscountPolicies("Castro");
         //assertEquals("120", result);
         (new UsersHandler()).logout(session_id);
@@ -202,7 +202,7 @@ public class UC4_2 {
     public void policyANDtest() {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
 
-        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black T-Shirt", 4);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black skirt", 2);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "shoes", 2);
         //if skirt and jeans then shoes
@@ -241,7 +241,7 @@ public class UC4_2 {
         String result = shoppingCartHandler.getCartTotalPrice(session_id);
         assertEquals("460.0", result);
         shoppingCartHandler.purchaseCart(session_id);
-        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-Shirt", 4);
+        shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black T-Shirt", 4);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black skirt", 2);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "jeans", 1);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "shoes", 2);

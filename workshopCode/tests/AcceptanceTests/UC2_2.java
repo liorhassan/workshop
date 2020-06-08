@@ -1,6 +1,7 @@
 package AcceptanceTests;
 
 import DataAccessLayer.PersistenceController;
+import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +24,7 @@ public class UC2_2 {
     @After
     public void tearDown() throws Exception {
         (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
     }
 
     @Test

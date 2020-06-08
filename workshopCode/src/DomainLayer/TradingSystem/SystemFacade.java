@@ -43,6 +43,7 @@ public class SystemFacade {
         SecurityFacade.getInstance().addUser("Admin159", "951");
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
+        NotificationSystem.getInstance().addUser("Admin159");
     }
 
     public UUID createNewSession(){

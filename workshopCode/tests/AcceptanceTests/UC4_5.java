@@ -9,6 +9,7 @@ import org.junit.*;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class UC4_5 {
     private static StoreManagerHandler service;
@@ -38,46 +39,78 @@ public class UC4_5 {
     @Test
     public void successful(){
         String output1 = service.addStoreManager(session_id, "Aviv", "Rami Levi");
-        assertEquals("Username has been added as one of the store managers successfully", output1);
+        assertEquals("{\"SUCCESS\":\"Username has been added as one of the store managers successfully\"}", output1);
         service.removeStoreManager(session_id, "Aviv","Rami Levi");
     }
 
     @Test
     public void storeDoesNotExists(){
-        String output1 = service.addStoreManager(session_id, "Aviv","Osher Ad");
-        assertEquals("This store doesn't exist", output1);
+        try{
+            String output1 = service.addStoreManager(session_id, "Aviv","Osher Ad");
+            fail();
+        }catch(Exception e) {
+            assertEquals("This store doesn't exist", e.getMessage());
+        }
     }
 
     @Test
     public void userDoesNotExists(){
-        String output = service.addStoreManager(session_id, "Ben", "Rami Levi");
-        assertEquals("This username doesn't exist", output);
+        try{
+            String output = service.addStoreManager(session_id, "Ben", "Rami Levi");
+            fail();
+        }catch(Exception e) {
+            assertEquals("This username doesn't exist", e.getMessage());
+        }
     }
 
     @Test
     public void doesNotAStoreOwner(){
-        String output = service.addStoreManager(session_id, "Aviv", "Shufersal");
-        assertEquals("You must be a store owner for this action", output);
+        try{
+            String output = service.addStoreManager(session_id, "Aviv", "Shufersal");
+            fail();
+        }catch(Exception e) {
+            assertEquals("You must be a store owner for this action", e.getMessage());
+        }
     }
 
     @Test
     public void alreadyAManager(){
         String output1 = service.addStoreManager(session_id, "Aviv", "Rami Levi");
-        assertEquals("Username has been added as one of the store managers successfully", output1);
-        String output2 = service.addStoreManager(session_id, "Aviv", "Rami Levi");
-        assertEquals("This username is already one of the store's managers", output2);
+        assertEquals("{\"SUCCESS\":\"Username has been added as one of the store managers successfully\"}", output1);
+        try{
+            String output2 = service.addStoreManager(session_id, "Aviv", "Rami Levi");
+            fail();
+        }catch(Exception e) {
+            assertEquals("This username is already one of the store's managers", e.getMessage());
+        }
     }
 
     @Test
     public void emptyInput(){
-        String output1 = service.addStoreManager(session_id, "","Rami Levi");
-        assertEquals("Must enter username and store name", output1);
-        String output2 = service.addStoreManager(session_id, null,"Rami Levi");
-        assertEquals("Must enter username and store name", output2);
-        String output3 = service.addStoreManager(session_id, "Aviv","");
-        assertEquals("Must enter username and store name", output3);
-        String output4 = service.addStoreManager(session_id, "Aviv",null);
-        assertEquals("Must enter username and store name", output4);
+        try{
+            String output1 = service.addStoreManager(session_id, "","Rami Levi");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username and store name", e.getMessage());
+        }
+        try{
+            String output2 = service.addStoreManager(session_id, null,"Rami Levi");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username and store name", e.getMessage());
+        }
+        try{
+            String output3 = service.addStoreManager(session_id, "Aviv","");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username and store name", e.getMessage());
+        }
+        try{
+            String output4 = service.addStoreManager(session_id, "Aviv",null);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username and store name", e.getMessage());
+        }
     }
 
 }

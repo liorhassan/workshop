@@ -10,6 +10,7 @@ import org.junit.*;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class UC4_7 {
     private StoreManagerHandler handler;
@@ -39,54 +40,82 @@ public class UC4_7 {
     public static void clean(){
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
-    }
-
-    @After
-    public void tearDown() throws Exception {
         (new SessionHandler()).closeSession(session_id);
     }
 
     @Test
     public void valid(){
         String result = handler.removeStoreManager(session_id, "toya","FoxHome");
-        assertEquals("Manager removed successfully!", result);
+        assertEquals("{\"SUCCESS\":\"Manager removed successfully!\"}", result);
         (new StoreManagerHandler()).addStoreManager(session_id, "toya","FoxHome");
     }
 
     @Test
     public void storeDoesNotExists(){
-        String result = handler.removeStoreManager(session_id, "toya","Fox");
-        assertEquals("This store doesn't exist", result);
+        try{
+            String result = handler.removeStoreManager(session_id, "toya","Fox");
+            fail();
+        }catch(Exception e) {
+            assertEquals("This store doesn't exist", e.getMessage());
+        }
     }
 
     @Test
     public void userDoesNotExists(){
-        String result = handler.removeStoreManager(session_id, "cooper","FoxHome");
-        assertEquals("This username doesn't exist", result);
+        try{
+            String result = handler.removeStoreManager(session_id, "cooper","FoxHome");
+            fail();
+        }catch(Exception e) {
+            assertEquals("This username doesn't exist", e.getMessage());
+        }
     }
 
     @Test
     public void doesNotHavePrivileges(){
-        String result = handler.removeStoreManager(session_id, "toya", "Castro");
-        assertEquals("You must be this store owner for this command", result);
+        try{
+            String result = handler.removeStoreManager(session_id, "toya", "Castro");
+            fail();
+        }catch(Exception e) {
+            assertEquals("You must be this store owner for this command", e.getMessage());
+        }
     }
 
     @Test
     public void notAppointedByUser(){
-        String result = handler.removeStoreManager(session_id, "shauli","FoxHome");
-        assertEquals("This username is not one of this store's managers appointed by you", result);
+        try{
+            String result = handler.removeStoreManager(session_id, "shauli","FoxHome");
+            fail();
+        }catch(Exception e) {
+            assertEquals("This username is not one of this store's managers appointed by you", e.getMessage());
+        }
     }
 
     @Test
     public void emptyInput(){
-        String result = handler.removeStoreManager(session_id, "","FoxHome");
-        assertEquals("Must enter username and store name", result);
-        result = handler.removeStoreManager(session_id, null,"FoxHome");
-        assertEquals("Must enter username and store name", result);
-        result = handler.removeStoreManager(session_id, "toya","");
-        assertEquals("Must enter username and store name", result);
-        result = handler.removeStoreManager(session_id, "toya",null);
-        assertEquals("Must enter username and store name", result);
+        try{
+            String result = handler.removeStoreManager(session_id, "","FoxHome");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username and store name", e.getMessage());
+        }
+        try{
+        handler.removeStoreManager(session_id, null,"FoxHome");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username and store name", e.getMessage());
+        }
+        try{
+        handler.removeStoreManager(session_id, "toya","");
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username and store name", e.getMessage());
+        }
+        try{
+            handler.removeStoreManager(session_id, "toya",null);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter username and store name", e.getMessage());
+        }
     }
 
 }

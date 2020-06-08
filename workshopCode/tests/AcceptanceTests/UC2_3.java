@@ -2,6 +2,7 @@ package AcceptanceTests;
 
 import DataAccessLayer.PersistenceController;
 import ServiceLayer.SessionHandler;
+import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
@@ -33,6 +34,7 @@ public class UC2_3 {
     public static void clean() {
         (new UsersHandler()).resetUsers();
         (new UsersHandler()).resetAdmins();
+        (new StoreHandler()).resetStores();
         (new SessionHandler()).closeSession(session_id);
     }
 

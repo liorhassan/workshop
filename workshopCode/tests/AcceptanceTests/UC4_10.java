@@ -17,14 +17,10 @@ public class UC4_10 {
     private static ViewPurchaseHistoryHandler storePurchaseHistory;
     private static UUID session_id;
 
-    @Before
-    public void setUp(){
-        storePurchaseHistory = new ViewPurchaseHistoryHandler();
-    }
-
     @BeforeClass
     public static void init(){
         PersistenceController.initiate();
+        storePurchaseHistory = new ViewPurchaseHistoryHandler();
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).register("rachel", "1234");
@@ -38,7 +34,7 @@ public class UC4_10 {
         (new StoreManagerHandler()).addStoreManager(session_id, "maor", "Lalin");
 
         List<String> p = new LinkedList<>();
-        p.add("View store purchase history");
+        p.add("View Purchasing History");
         (new StoreManagerHandler()).editManagerPermissions(session_id, "rachel", p, "Lalin");
 
         (new ShoppingCartHandler()).AddToShoppingBasket(session_id, "Lalin", "Body Cream ocean", 5);
@@ -51,12 +47,12 @@ public class UC4_10 {
         (new UsersHandler()).logout(session_id);
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
+        (new SessionHandler()).closeSession(session_id);
     }
 
 
     @After
     public void tearDown() throws Exception {
-        (new SessionHandler()).closeSession(session_id);
     }
 
     @Test

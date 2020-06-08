@@ -50,13 +50,14 @@ public class UC2_4 {
     @Test
     public void valid() throws ParseException {
         String result = viewInfo.viewStoreinfo("Lalin");
-        String expected = "{\"name\":\"Lalin\",\"description\":\"beauty products\",\"products\":[{\"price\":50.0,\"productName\":\"Body Scrub musk\"},{\"price\":40.0,\"productName\":\"Body Cream ocean\"}]}";
+        String expected1 = "{\"name\":\"Lalin\",\"description\":\"beauty products\",\"products\":[{\"price\":50.0,\"productName\":\"Body Scrub musk\"},{\"price\":40.0,\"productName\":\"Body Cream ocean\"}]}";
+        String expected2 = "{\"name\":\"Lalin\",\"description\":\"beauty products\",\"products\":[{\"price\":40.0,\"productName\":\"Body Cream ocean\"},{\"price\":50.0,\"productName\":\"Body Scrub musk\"}]}";
         JSONParser parser = new JSONParser();
 
-        assertEquals(parser.parse(expected), parser.parse(result));
+        assertTrue(parser.parse(expected1).equals(parser.parse(result))||parser.parse(expected2).equals(parser.parse(result)));
 
         result = viewInfo.viewProductInfo("Lalin", "Body Cream ocean");
-        expected = "{\"name\":\"Body Cream ocean\",\"description\":\"Velvety and soft skin lotion with ocean scent\",\"price\":40.0}";
+        String expected = "{\"name\":\"Body Cream ocean\",\"description\":\"Velvety and soft skin lotion with ocean scent\",\"price\":40.0}";
         assertEquals(parser.parse(expected), parser.parse(result));
     }
 
