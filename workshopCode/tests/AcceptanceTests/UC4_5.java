@@ -63,15 +63,15 @@ public class UC4_5 {
         }
     }
 
-    @Test
-    public void doesNotAStoreOwner(){
-        try{
-            String output = service.addStoreManager(session_id, "Aviv", "Shufersal");
-            fail();
-        }catch(Exception e) {
-            assertEquals("You must be a store owner for this action", e.getMessage());
-        }
-    }
+//    @Test
+//    public void doesNotAStoreOwner(){
+//        try{
+//            String output = service.addStoreManager(session_id, "Aviv", "Shufersal");
+//            fail();
+//        }catch(Exception e) {
+//            assertEquals("You must be a store owner for this action", e.getMessage());
+//        }
+//    }
 
     @Test
     public void alreadyAManager(){

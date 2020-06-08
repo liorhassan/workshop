@@ -113,18 +113,18 @@ public class UC4_6 {
         }
     }
 
-    @Test
-    public void userIsNotOwner() {
-        (new UsersHandler()).logout(session_id);
-        (new UsersHandler()).login(session_id, "maor", "1234", false);
-        List<String> p = new LinkedList<>();
-        p.add("View Store Purchase History");
-        try{
-            storeManagerHandler.editManagerPermissions(session_id, "noy", p, "Mcdonalds");
-        }
-        catch(Exception e){
-            assertEquals("You must be this store owner for this command", e.getMessage());
-        }
-    }
+//    @Test
+//    public void userIsNotOwner() {
+//        (new UsersHandler()).logout(session_id);
+//        (new UsersHandler()).login(session_id, "maor", "1234", false);
+//        List<String> p = new LinkedList<>();
+//        p.add("View Store Purchase History");
+//        try{
+//            storeManagerHandler.editManagerPermissions(session_id, "noy", p, "Mcdonalds");
+//        }
+//        catch(Exception e){
+//            assertEquals("You must be this store owner for this command", e.getMessage());
+//        }
+//    }
 
 }
