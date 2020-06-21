@@ -1,6 +1,6 @@
 package UnitTests;
 
-import DomainLayer.Models.Product;
+import DomainLayer.TradingSystem.Models.Product;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class ProductTest {
 
     @Before
     public void setUp() throws Exception {
-        product = new Product("Shirt",null,"",40.0);
+        product = new Product("Shirt",null,"",40.0, "castro",1);
     }
 
     @After

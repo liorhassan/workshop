@@ -1,7 +1,7 @@
 package UnitTests;
 
-import DomainLayer.Models.Store;
-import DomainLayer.Models.User;
+import DomainLayer.TradingSystem.Models.Store;
+import DomainLayer.TradingSystem.Models.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

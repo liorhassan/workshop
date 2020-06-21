@@ -1,27 +1,29 @@
 package AcceptanceTests;
 
-import DomainLayer.Security.SecurityHandler;
-import DomainLayer.SystemHandler;
+import DataAccessLayer.PersistenceController;
+import ServiceLayer.SessionHandler;
+import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
-import java.util.HashMap;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 public class UC2_3 {
 
-    private UsersHandler service;
+    private static UUID session_id;
 
-    @Before
-    public void setUp() throws Exception {
-        service = new UsersHandler();
-        service.addAdmin("lior");
-
+    @BeforeClass
+    public static void setUp() {
+        PersistenceController.initiate();
+        session_id = (new SessionHandler()).openNewSession();
+        (new UsersHandler()).register("toya", "1234");
     }
 
     @BeforeClass
     public static void init() throws Exception{
+        session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("lior", "1234");
         (new UsersHandler()).register("Amit", "good");
         (new UsersHandler()).addAdmin("lior");
@@ -32,45 +34,67 @@ public class UC2_3 {
     public static void clean() {
         (new UsersHandler()).resetUsers();
         (new UsersHandler()).resetAdmins();
+        (new StoreHandler()).resetStores();
+        (new SessionHandler()).closeSession(session_id);
     }
 
     @After
     public void tearDown() throws Exception {
-        (new UsersHandler()).logout();
     }
 
     @Test
     public void successfully() {
-        String output1 = service.login("lior", "1234", true);
-        assertEquals("You have been successfully logged in!", output1);
-        service.logout();
-        String output2 = service.login("Amit", "good", false);
-        assertEquals("You have been successfully logged in!", output2);
+        String output1 = (new UsersHandler()).login(session_id, "lior", "1234", true);
+        assertEquals("{\"SUCCESS\":\"You have been successfully logged in!\"}", output1);
+        (new UsersHandler()).logout(session_id);
+        String output2 = (new UsersHandler()).login(session_id , "Amit", "good", false);
+        assertEquals("{\"SUCCESS\":\"You have been successfully logged in!\"}", output2);
+        (new UsersHandler()).logout(session_id);
     }
 
     @Test
     public void incorrectPassword() {
-        String output = service.login("lior", "notgood", false);
-        assertEquals("This password is incorrect", output);
+        try{
+            String output = (new UsersHandler()).login(session_id, "lior", "notgood", false);
+            fail();
+        }catch(Exception e) {
+            assertEquals("This password is incorrect", e.getMessage());
+        }
     }
 
     @Test
     public void usernameNotExist() {
-        String output = service.login("hassan", "good", false);
-        assertEquals("This user is not registered", output);
+        try{
+            String output = (new UsersHandler()).login(session_id, "hassan", "good", false);
+            fail();
+        }catch(Exception e) {
+            assertEquals("This user is not registered", e.getMessage());
+        }
     }
     @Test
     public void NotAdmin() {
-        String output = service.login("Amit", "good", true);
-        assertEquals("this user is not a system admin", output);
+        try{
+            String output = (new UsersHandler()).login(session_id, "Amit", "good", true);
+            fail();
+        }catch(Exception e) {
+            assertEquals("this user is not a system admin", e.getMessage());
+        }
     }
 
     @Test
     public void emptyUsername() {
-        String output1 = service.login(null, "1234", false);
-        assertEquals("The username is invalid" , output1);
-        String output2 = service.login("", "good", false);
-        assertEquals("The username is invalid" , output2);
+        try{
+            String output1 = (new UsersHandler()).login(session_id, null, "1234", false);
+            fail();
+        }catch(Exception e) {
+            assertEquals("The username is invalid", e.getMessage());
+        }
+        try{
+            String output2 = (new UsersHandler()).login(session_id, "", "good", false);
+            fail();
+        }catch(Exception e) {
+            assertEquals("The username is invalid", e.getMessage());
+        }
     }
 
 }

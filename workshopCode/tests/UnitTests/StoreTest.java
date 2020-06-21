@@ -1,9 +1,9 @@
 package UnitTests;
 
-import DomainLayer.Models.Product;
-import DomainLayer.Models.Store;
-import DomainLayer.Models.User;
-import DomainLayer.StoreManaging;
+import DomainLayer.TradingSystem.Models.Product;
+import DomainLayer.TradingSystem.Models.Store;
+import DomainLayer.TradingSystem.Models.User;
+import DomainLayer.TradingSystem.StoreManaging;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +26,8 @@ public class StoreTest {
     @Test
     public void checkIfProductAvailable() {
         assertFalse(store.checkIfProductAvailable("Shirt",1));
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0, "Fox",1);
+        Product p2 = new Product("Dress",null,null,45.5, "Fox",1);
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         assertTrue(store.checkIfProductAvailable("Shirt",7));
@@ -37,8 +37,8 @@ public class StoreTest {
     @Test
     public void getProductByName() {
         assertNull(store.getProductByName("Shirt"));
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0, "Fox",1);
+        Product p2 = new Product("Dress",null,null,45.5,"Fox",1);
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         assertEquals(p,store.getProductByName("Shirt"));
@@ -50,8 +50,8 @@ public class StoreTest {
         User user1 = new User();
         assertNull(store.getAppointer(user1));
         User user2 = new User();
-        StoreManaging sm = new StoreManaging(user2);
-        store.addManager(user1,sm);
+        StoreManaging sm = new StoreManaging(user2, store.getName(), user1.getUsername());
+        store.addManager(user1,sm, false);
         assertEquals(user2,store.getAppointer(user1));
     }
 
@@ -59,8 +59,8 @@ public class StoreTest {
     public void hasProduct() {
         assertFalse(store.hasProduct("Shirt"));
         assertFalse(store.hasProduct("Dress"));
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0,"Fox",1);
+        Product p2 = new Product("Dress",null,null,45.5,"Fox",1);
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         assertTrue(store.hasProduct("Shirt"));
@@ -69,8 +69,8 @@ public class StoreTest {
 
     @Test
     public void updateInventory() {
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0,"Fox",1);
+        Product p2 = new Product("Dress",null,null,45.5, "Fox",1);
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         store.updateInventory("Shirt",30.0,null,"test",7);
@@ -81,15 +81,15 @@ public class StoreTest {
 
     @Test
     public void purchaseProduct() {
-        Product p = new Product("Shirt",null,null,40.0);
-        Product p2 = new Product("Dress",null,null,45.5);
+        Product p = new Product("Shirt",null,null,40.0,"Fox",1);
+        Product p2 = new Product("Dress",null,null,45.5,"Fox",1);
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
-        store.purchaseProduct(p,3);
+        store.reserveProduct(p,3);
         assertEquals(7,(int)store.getInventory().get(p));
-        store.purchaseProduct(p,10);
+        store.reserveProduct(p,10);
         assertEquals(7,(int)store.getInventory().get(p));
-        store.purchaseProduct(p,7);
+        store.reserveProduct(p,7);
         assertFalse(store.getInventory().containsKey(p));
     }
 }

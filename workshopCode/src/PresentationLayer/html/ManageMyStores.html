@@ -1,0 +1,242 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./../css/ManageMyStores.css">
+    <script src="../js/ManageMyStores.js"></script>
+    <script src="../js/NavibarManager.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+</head>
+
+<body class="d-flex flex-column h-100">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand">Trading System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+        </div>
+    </nav>
+
+    <main role="main" class="container">
+        <div class="p-3 bg-white rounded shadow-sm" id="stores">
+            <button id="new-store-button" class="btn btn-primary mb-2">Open New Store</button>
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">My Stores</span>
+                <span class="badge badge-secondary badge-pill" id="num-of-stores">0</span>
+            </h4>
+            <ul class="list-group mb-3" id="stores-list">
+            </ul>
+        </div>
+    </main>
+
+
+    <div id="openStoreModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Open Store</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <input id="StoreNameInput" type="text" class="form-control" placeholder="Store Name">
+                <textarea id="StoreDescInput" type="text" class="form-control" placeholder="Store Decription"></textarea>
+                <button id="confirm-open-store-btn" class="btn btn-primary">Open The Store</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="addManagerModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Manager</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <input id="new-manager-name" type="text" class="form-control" placeholder="User name">
+                <button id="add-manager-button" class="btn btn-primary">Add Manager</button>
+            </div>
+        </div>
+
+    </div>
+    <div id="addOwnerModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Owner</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <input id="new-owner-name" type="text" class="form-control" placeholder="User name">
+                <button id="add-owner-button" class="btn btn-primary">Add Owner</button>       
+            </div>
+        </div>
+
+    </div>
+    <div id="approveNewOwnerModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Approve Candidate</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <ul class="list-group mb-3" id="candidates-list">
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div id="removeManagerModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove Manager</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <input id="remove-manager-name" type="text" class="form-control" placeholder="User name">
+                <button id="remove-manager-button" class="btn btn-primary">Remove Manager</button>        
+            </div>
+        </div>
+
+    </div>
+    <div id="removeOwnerModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove Manager</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <input id="remove-owner-name" type="text" class="form-control" placeholder="User name">
+                <button id="remove-owner-button" class="btn btn-primary">Remove Owner</button>        
+            </div>
+        </div>
+
+    </div>
+    <div id="editPermissionsModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Permissions</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <input type="text" id="perm-username" class="form-control" placeholder="Username"/>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="addManagerPermOpt">
+                  <label class="form-check-label" for="addManagerPermOpt">
+                    Add Manager
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="remManagerPermOpt">
+                  <label class="form-check-label" for="remManagerPermOpt">
+                    Remove Manager
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="editPermPermOpt">
+                  <label class="form-check-label" for="editPermPermOpt">
+                    Edit Permissions
+                  </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="manageSupplyPermOpt">
+                    <label class="form-check-label" for="manageSupplyPermOpt">
+                      Manage Supply
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="viewHistoryPermOpt">
+                    <label class="form-check-label" for="viewHistoryPermOpt">
+                      View Purchase History
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="addDiscPermOpt">
+                    <label class="form-check-label" for="addDiscPermOpt">
+                      Add New Discount
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="addPerchPolPermOpt">
+                    <label class="form-check-label" for="addpPrchPolPermOpt">
+                      Add New Purchase Policy
+                    </label>
+                  </div>
+                <button id="editPermBtn" class="btn btn-primary">Update Permissions</button>
+            </div>
+        </div>
+
+    </div>
+    <div id="manageSupplyModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage Supply</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="update-product-form">
+                <input type="text" id="edited-product-name" list="store-product-list" class="form-control" placeholder="Product Name"/>
+                <datalist id="store-product-list">
+                    <option value="Pen">Pen</option>
+                    <option value="Pencil">Pencil</option>
+                    <option value="Paper">Paper</option>
+                </datalist>
+                <input id="update-product-price" type="number" min=0 class="form-control" placeholder="Price">
+                <select class="custom-select" id="update-product-category">
+                    <option selected>Caterory</option>
+                    <option value="1">Clothes</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                </select>
+                <textarea id="update-store-desc" type="text" class="form-control" placeholder="Decription"></textarea>
+                <input id="update-product-amount" type="number" min=0 class="form-control" placeholder="Amount">
+                <button id="updateSpplyBtn" class="btn btn-primary">Update Supply</button>
+            </div>
+        </div>
+
+    </div>
+    <div id="viewPurchaseHistoryModal" class="modal"> -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Purchase History</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="editCartElements" class="">
+                <ul class="list-group mb-3" id="history-list">
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
+

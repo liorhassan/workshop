@@ -1,58 +1,81 @@
 package AcceptanceTests;
 
+import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
+
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
 public class UC3_2 {
 
-    private StoreHandler storeHandler;
-
+    public static UUID session_id;
     @BeforeClass
-    public static void init() throws Exception{
-        (new UsersHandler()).register("nufi", "1234");
-        (new UsersHandler()).login("nufi", "1234", false);
+    public static void init() {
+        session_id = (new SessionHandler()).openNewSession();
+        UC2_3.setUp();
+        (new UsersHandler()).login(session_id, "toya", "1234", false);
     }
 
     @AfterClass
     public static void clean() {
         (new UsersHandler()).resetUsers();
+        (new StoreHandler()).resetStores();
+        (new SessionHandler()).closeSession(session_id);
+        UC2_3.clean();
     }
 
-    @Before
-    public void setUp() throws Exception {
-        storeHandler = new StoreHandler();
-    }
+
 
     @After
     public void tearDown() throws Exception {
-        storeHandler.resetStores();
+        (new StoreHandler()).resetStores();
     }
 
     @Test
     public void valid() {
-        String result = storeHandler.openNewStore("KKW store", "best Kim Kardashian beauty products");
-        assertEquals("The new store is now open!", result);
+        String result = (new StoreHandler()).openNewStore(session_id, "KKW store", "best Kim Kardashian beauty products");
+        assertEquals("{\"SUCCESS\":\"The new store is now open!\"}", result);
     }
 
     @Test
     public void emptyInput(){
-        String result = storeHandler.openNewStore("", "best Kim Kardashian beauty products");
-        assertEquals("Must enter store name and description", result);
-        result = storeHandler.openNewStore(null, "best Kim Kardashian beauty products");
-        assertEquals("Must enter store name and description", result);
-        result = storeHandler.openNewStore("KKW store", "");
-        assertEquals("Must enter store name and description", result);
-        result = storeHandler.openNewStore("KKW store", null);
-        assertEquals("Must enter store name and description", result);
+        try{
+            String result = (new StoreHandler()).openNewStore(session_id, "", "best Kim Kardashian beauty products");
+        }
+        catch (Exception e) {
+            assertEquals("Must enter store name and description", e.getMessage());
+        }
+        try{
+            (new StoreHandler()).openNewStore(session_id, null, "best Kim Kardashian beauty products");
+        }
+        catch (Exception e) {
+            assertEquals("Must enter store name and description", e.getMessage());
+        }
+        try{
+            (new StoreHandler()).openNewStore(session_id, "KKW store", "");
+        }
+        catch (Exception e) {
+            assertEquals("Must enter store name and description", e.getMessage());
+        }
+        try{
+            (new StoreHandler()).openNewStore(session_id, "KKW store", null);
+        }
+        catch (Exception e) {
+            assertEquals("Must enter store name and description", e.getMessage());
+        }
     }
 
     @Test
     public void storeAlreadyExist(){
-        storeHandler.openNewStore("KKW store", "best Kim Kardashian beauty products");
-        String result = storeHandler.openNewStore("KKW store", "best storeeeee");
-        assertEquals("Store name already exists, please choose a different one", result);
+        (new StoreHandler()).openNewStore(session_id, "KKW store", "best Kim Kardashian beauty products");
+        try{
+            String result = (new StoreHandler()).openNewStore(session_id, "KKW store", "best storeeeee");
+        }
+        catch (Exception e) {
+            assertEquals("Store name already exists, please choose a different one", e.getMessage());
+        }
     }
 }

@@ -1,15 +1,14 @@
 package UnitTests;
 
-import DomainLayer.Models.Basket;
-import DomainLayer.Models.Product;
-import DomainLayer.Models.ShoppingCart;
-import DomainLayer.Models.Store;
+import DomainLayer.TradingSystem.Models.Basket;
+import DomainLayer.TradingSystem.Models.Product;
+import DomainLayer.TradingSystem.Models.ShoppingCart;
+import DomainLayer.TradingSystem.Models.Store;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
@@ -29,7 +28,7 @@ public class ShoppingCartTest {
     @Test
     public void addProduct() {
         assertTrue(sc.getBaskets().isEmpty());
-        Product p = new Product("Shirt",null,null,40.0);
+        Product p = new Product("Shirt",null,null,40.0, "Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
         sc.addProduct("Shirt",store,1);
@@ -43,7 +42,7 @@ public class ShoppingCartTest {
     @Test
     public void view() {
         assertEquals("Your ShoppingCart details: \nempty!",sc.view());
-        Product p = new Product("Shirt",null,null,40.0);
+        Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
         sc.addProduct("Shirt",store,1);
@@ -52,7 +51,7 @@ public class ShoppingCartTest {
 
     @Test
     public void edit() {
-        Product p = new Product("Shirt",null,null,40.0);
+        Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
         sc.addProduct("Shirt",store,1);

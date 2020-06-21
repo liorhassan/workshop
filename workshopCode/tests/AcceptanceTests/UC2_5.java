@@ -1,18 +1,19 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.SearchHandler;
+import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 public class UC2_5 {
     private SearchHandler handler;
+    private static UUID session_id;
     @Before
     public void setUp() throws Exception {
         handler = new SearchHandler();
@@ -20,47 +21,67 @@ public class UC2_5 {
 
     @BeforeClass
     public static void init() throws Exception{
+        PersistenceController.initiate();
+        session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("shauli","shauli");
-        (new UsersHandler()).login("shauli","shauli", false);
-        (new StoreHandler()).openNewStore("FoxHome", "stuff for home");
-        (new StoreHandler()).UpdateInventory("FoxHome","banana", 7, "Food", "yellow with banana-like texture", 1);
-        (new StoreHandler()).UpdateInventory("FoxHome","shirt", 40, "Clothing", "hawaiian shirt", 1);
-        (new StoreHandler()).UpdateInventory("FoxHome","hat", 900, "Clothing", "beauty pillow", 1);
+        (new UsersHandler()).login(session_id, "shauli","shauli", false);
+        (new StoreHandler()).openNewStore(session_id, "FoxHome", "stuff for home");
+        (new StoreHandler()).UpdateInventory(session_id, "FoxHome","banana", 7.0, "Food", "yellow with banana-like texture", 1);
+        (new StoreHandler()).UpdateInventory(session_id, "FoxHome","shirt", 40.0, "Clothing", "hawaiian shirt", 1);
+        (new StoreHandler()).UpdateInventory(session_id, "FoxHome","hat", 900.0, "Clothing", "beauty pillow", 1);
     }
 
     @AfterClass
     public static void clean(){
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
+        (new SessionHandler()).closeSession(session_id);
     }
+
 
     @Test
     public void valid() {
-        String result = handler.searchProduct(null,"Clothing",null);
-        assertTrue(result.equals("Name: shirt, Category: Clothing, Description: hawaiian shirt, Price: 40.0\nName: hat, Category: Clothing, Description: beauty pillow, Price: 900.0")||result.equals("Name: hat, Category: Clothing, Description: beauty pillow, Price: 900.0\nName: shirt, Category: Clothing, Description: hawaiian shirt, Price: 40.0"));
-        result = handler.filterResults(0,50, null);
-        assertEquals("Name: shirt, Category: Clothing, Description: hawaiian shirt, Price: 40.0", result);
+        String result = handler.searchProduct(session_id, null,"Clothing",null);
+        assertTrue(result.equals("[{\"price\":40.0,\"name\":\"shirt\",\"description\":\"hawaiian shirt\",\"store\":\"FoxHome\"},{\"price\":900.0,\"name\":\"hat\",\"description\":\"beauty pillow\",\"store\":\"FoxHome\"}]") || result.equals("[{\"price\":900.0,\"name\":\"hat\",\"description\":\"beauty pillow\",\"store\":\"FoxHome\"},{\"price\":40.0,\"name\":\"shirt\",\"description\":\"hawaiian shirt\",\"store\":\"FoxHome\"}]"));
+        result = handler.filterResults(session_id, 0,50, null);
+        assertEquals("[{\"price\":40.0,\"name\":\"shirt\",\"description\":\"hawaiian shirt\",\"store\":\"\"}]", result);
     }
 
     @Test
     public void searchNoMatch() {
-        String result = handler.searchProduct("hat","Food",null);
-        assertEquals("There are no products that match these parameters", result);
+        try{
+            String result = handler.searchProduct(session_id, "hat","Food",null);
+            fail();
+        }catch(Exception e) {
+            assertEquals("There are no products that match these parameters", e.getMessage());
+        }
     }
 
     @Test
     public void filterNoMatch() {
-        handler.searchProduct(null,"Clothing",null);
-        String result = handler.filterResults(0,10, null);
-        assertEquals("There are no products that match this search filter", result);
+        handler.searchProduct(session_id, null,"Clothing",null);
+        try{
+            String result = handler.filterResults(session_id, 0,10, null);
+            fail();
+        }catch(Exception e) {
+            assertEquals("There are no products that match this search filter", e.getMessage());
+        }
     }
 
     @Test
     public void invalidInput() {
-        String result = handler.searchProduct(null,null,null);
-        assertEquals("Must enter search parameter", result);
-        result = handler.searchProduct("",null,null);
-        assertEquals("Must enter search parameter", result);
+        try{
+            String result = handler.searchProduct(session_id, null,null,null);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter search parameter", e.getMessage());
+        }
+        try{
+            handler.searchProduct(session_id, "",null,null);
+            fail();
+        }catch(Exception e) {
+            assertEquals("Must enter search parameter", e.getMessage());
+        }
     }
 
 
