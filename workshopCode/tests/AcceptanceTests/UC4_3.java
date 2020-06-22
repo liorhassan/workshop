@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.SystemFacade;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
@@ -18,6 +19,7 @@ public class UC4_3 {
 
     @BeforeClass
     public static void init() throws Exception{
+        PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         storeHandler = new StoreHandler();
 
@@ -49,7 +51,7 @@ public class UC4_3 {
     }
 
     @Test
-    public void valid() {
+    public void valid1() {
         UUID sessionId2 = (new SessionHandler()).openNewSession();
         (new UsersHandler()).login(sessionId2,"tooti","1234", false);
         String result = storeHandler.addStoreOwner(session_id, "tooti", "KKW");
@@ -60,7 +62,18 @@ public class UC4_3 {
         assertEquals("{\"SUCCESS\":\"the appointment of the new owner is waiting for the owners response\"}", result2);
         String result3 = storeHandler.responseToAppointmentRequest(sessionId2,"KKW","lior",false);
         assertEquals("{\"SUCCESS\":\"your response was updated successfully - the new appointment declined\"}", result3);
-        //approved
+     (new UsersHandler()).logout(sessionId2);
+
+    }
+
+    @Test
+    public void valid2() {
+        UUID sessionId2 = (new SessionHandler()).openNewSession();
+        (new UsersHandler()).login(sessionId2,"tooti","1234", false);
+        String result = storeHandler.addStoreOwner(session_id, "tooti", "KKW");
+        //add the second owner - dont need approvement
+        assertEquals("{\"SUCCESS\":\"the appointment of the new owner is done successfully\"}", result);
+      //approved
         String result4 = storeHandler.addStoreOwner(session_id,"lior","KKW");
         assertEquals("{\"SUCCESS\":\"the appointment of the new owner is waiting for the owners response\"}", result4);
         String result5 = storeHandler.responseToAppointmentRequest(sessionId2,"KKW","lior",true);
