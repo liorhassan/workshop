@@ -17,7 +17,7 @@ public class UC2_2 {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         handler = new UsersHandler();
     }
 

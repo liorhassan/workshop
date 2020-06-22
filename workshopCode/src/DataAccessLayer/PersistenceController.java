@@ -33,7 +33,7 @@ public class PersistenceController {
     /**
           * Initialize the SessionFactory instance.
           */
-    public static void initiate() {
+    public static void initiate(boolean isProduction) {
         // Create a Configuration object.
         Configuration config = new Configuration();
 
@@ -52,7 +52,11 @@ public class PersistenceController {
         config.addAnnotatedClass(UserDetails.class);
 
         // Configure using the application resource named hibernate.cfg.xml.
-        config.configure();
+        if (isProduction)
+            config.configure("hibernate.cfg.xml");
+        else
+            config.configure("TestSchemaHibernate.cfg.xml");
+
         // Extract the properties from the configuration file.
         Properties prop = config.getProperties();
 

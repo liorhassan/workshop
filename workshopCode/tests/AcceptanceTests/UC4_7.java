@@ -23,7 +23,7 @@ public class UC4_7 {
 
     @BeforeClass
     public static void init() throws Exception{
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("tester","tester");
         (new UsersHandler()).login(session_id, "tester","tester", false);

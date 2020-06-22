@@ -16,7 +16,7 @@ public class UC2_3 {
 
     @BeforeClass
     public static void setUp() {
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("toya", "1234");
     }
