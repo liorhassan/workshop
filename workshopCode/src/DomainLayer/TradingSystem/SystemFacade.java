@@ -641,12 +641,9 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreOwning owning = new StoreOwning(se.getLoggedin_user(), storeName, username);
-        store.addStoreOwner(appointed_user, se.getLoggedin_user());
-        appointed_user.addOwnedStore(store, owning);
-
-
-        return "Username has been added as one of the store owners successfully";
+        //StoreOwning owning = new StoreOwning(se.getLoggedin_user(), storeName, username);
+        return store.addStoreOwner(appointed_user, se.getLoggedin_user());
+        //appointed_user.addOwnedStore(store, owning);
 
     }
 
@@ -1046,12 +1043,12 @@ public class SystemFacade {
         User waiting = users.get(userToResponse);
         Store store = getStoreByName(storeName);
         if(isApproved){
-            store.approveAppointment(waiting, se.getLoggedin_user());
+            return store.approveAppointment(waiting, se.getLoggedin_user());
         }
         else{
-            store.declinedAppointment(waiting, se.getLoggedin_user());
+            return store.declinedAppointment(waiting, se.getLoggedin_user());
         }
-        return "your response was updated successfully";
+
     }
 
     public String getCartTotalPrice(UUID session_id){
@@ -1070,14 +1067,15 @@ public class SystemFacade {
     public String removeStoreOwner(String userName, String storeName){
         Store store = getStoreByName(storeName);
         User userToRemove = users.get(userName);
-        store.removeOwner(userToRemove);
-        return "owner been removed successfully";
+        String result = store.removeOwner(userToRemove);
+        return "owner been removed successfully, " +result;
     }
 
     public boolean isOwnerAppointer(UUID session_id, String storeName, String userName){
         Store store = getStoreByName(storeName);
         User user = users.get(userName);
-        if(active_sessions.get(session_id).equals(store.getOwnerAppointer(user))){
+        User appointer = store.getAppointer(user);
+        if((appointer != null) && active_sessions.get(session_id).equals(appointer)){
             return true;
         }
         return false;
