@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
+
     @Transient
     private ConcurrentHashMap<Store, StoreManaging> storeManagements;
 
