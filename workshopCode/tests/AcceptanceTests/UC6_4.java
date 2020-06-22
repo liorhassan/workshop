@@ -19,7 +19,7 @@ public class UC6_4 {
 
     @BeforeClass
     public static void init() throws Exception {
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         viewHistoryHandler = new ViewPurchaseHistoryHandler();
         (new UsersHandler()).login(session_id, "Admin159", "951", true);

@@ -25,7 +25,7 @@ public class UC3_1 {
 
     @BeforeClass
     public static void init() throws Exception{
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         handler = new UsersHandler();
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("shauli","shauli");

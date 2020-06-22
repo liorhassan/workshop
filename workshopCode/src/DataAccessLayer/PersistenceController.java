@@ -1,5 +1,6 @@
 package DataAccessLayer;
 
+import DomainLayer.Security.UserDetails;
 import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.TradingSystem.Permission;
 import DomainLayer.TradingSystem.ProductItem;
@@ -32,7 +33,7 @@ public class PersistenceController {
     /**
           * Initialize the SessionFactory instance.
           */
-    public static void initiate() {
+    public static void initiate(boolean isProduction) {
         // Create a Configuration object.
         Configuration config = new Configuration();
 
@@ -48,8 +49,14 @@ public class PersistenceController {
         config.addAnnotatedClass(StoreOwning.class);
         config.addAnnotatedClass(Permission.class);
 
+        config.addAnnotatedClass(UserDetails.class);
+
         // Configure using the application resource named hibernate.cfg.xml.
-        config.configure();
+        if (isProduction)
+            config.configure("hibernate.cfg.xml");
+        else
+            config.configure("TestSchemaHibernate.cfg.xml");
+
         // Extract the properties from the configuration file.
         Properties prop = config.getProperties();
 
@@ -551,6 +558,38 @@ public class PersistenceController {
 
         return perms;
 
+    }
+
+    public static UserDetails readUserDetails(String username) {
+        List<UserDetails> userDetails = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<UserDetails> cr = cb.createQuery(UserDetails.class);
+            Root<UserDetails> root = cr.from(UserDetails.class);
+            cr.select(root).where(cb.equal(root.get("username"), username));
+            Query<UserDetails> query = session.createQuery(cr);
+            userDetails = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return userDetails.get(0);
     }
 
 }

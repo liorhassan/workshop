@@ -31,9 +31,9 @@ public class PurchaseTest {
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p1,10);
         store.getInventory().put(p2,10);
-        purchase.getPurchasedProducts().addProduct("Shirt",store,1);;
+        purchase.getPurchasedProducts().addProduct("Shirt",store,1, true);
         assertEquals(40,purchase.getTotalCheck(),0.0000000001);
-        purchase.getPurchasedProducts().addProduct("Dress",store,3);;
+        purchase.getPurchasedProducts().addProduct("Dress",store,3, true);
         assertEquals(40+3*45.5,purchase.getTotalCheck(),0.0000000001);
     }
 }

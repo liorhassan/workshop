@@ -283,7 +283,7 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        se.getLoggedin_user().getShoppingCart().addProduct(product, stores.get(store), amount);
+        se.getLoggedin_user().getShoppingCart().addProduct(product, stores.get(store), amount, se.getLoggedin_user().isRegistred());
     }
 
     //helper function for UseCase 2.6
@@ -338,7 +338,7 @@ public class SystemFacade {
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
         Store store = stores.get(storeName);
-        return se.getLoggedin_user().getShoppingCart().edit(store, productName, amount);
+        return se.getLoggedin_user().getShoppingCart().edit(store, productName, amount, se.getLoggedin_user().isRegistred());
 
     }
 
@@ -612,20 +612,23 @@ public class SystemFacade {
 
         //handle User-Purchase-History
         Purchase newPurchase = new Purchase(sc);
-        se.getLoggedin_user().addPurchaseToHistory(newPurchase);
+        se.getLoggedin_user().addPurchaseToHistory(newPurchase, se.getLoggedin_user().isRegistred());
 
         //handle Store-Purchase-History
-        sc.addStoresPurchaseHistory();
+        if (se.getLoggedin_user().isRegistred()) {
+            sc.addStoresPurchaseHistory();
+        }
 
         //notify all stores owners that products have been purchased in their store
         sc.notifyOwners();
 
         //finally - empty the shopping cart
-        se.getLoggedin_user().emptyCart();
+        se.getLoggedin_user().emptyCart(se.getLoggedin_user().isRegistred());
 
         // update cart state
-        PersistenceController.update(sc);
-
+        if (se.getLoggedin_user().isRegistred()) {
+            PersistenceController.update(sc);
+        }
     }
 
 
@@ -638,12 +641,9 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreOwning owning = new StoreOwning(se.getLoggedin_user(), storeName, username);
-        store.addStoreOwner(appointed_user, se.getLoggedin_user());
-        appointed_user.addOwnedStore(store, owning);
-
-
-        return "Username has been added as one of the store owners successfully";
+        //StoreOwning owning = new StoreOwning(se.getLoggedin_user(), storeName, username);
+        return store.addStoreOwner(appointed_user, se.getLoggedin_user());
+        //appointed_user.addOwnedStore(store, owning);
 
     }
 
@@ -762,7 +762,7 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        se.getLoggedin_user().emptyCart();
+        se.getLoggedin_user().emptyCart(se.getLoggedin_user().isRegistred());
     }
 
 
@@ -1043,12 +1043,12 @@ public class SystemFacade {
         User waiting = users.get(userToResponse);
         Store store = getStoreByName(storeName);
         if(isApproved){
-            store.approveAppointment(waiting, se.getLoggedin_user());
+            return store.approveAppointment(waiting, se.getLoggedin_user());
         }
         else{
-            store.declinedAppointment(waiting, se.getLoggedin_user());
+            return store.declinedAppointment(waiting, se.getLoggedin_user());
         }
-        return "your response was updated successfully";
+
     }
 
     public String getCartTotalPrice(UUID session_id){
@@ -1067,14 +1067,15 @@ public class SystemFacade {
     public String removeStoreOwner(String userName, String storeName){
         Store store = getStoreByName(storeName);
         User userToRemove = users.get(userName);
-        store.removeOwner(userToRemove);
-        return "owner been removed successfully";
+        String result = store.removeOwner(userToRemove);
+        return "owner been removed successfully, " +result;
     }
 
     public boolean isOwnerAppointer(UUID session_id, String storeName, String userName){
         Store store = getStoreByName(storeName);
         User user = users.get(userName);
-        if(active_sessions.get(session_id).equals(store.getOwnerAppointer(user))){
+        User appointer = store.getAppointer(user);
+        if((appointer != null) && active_sessions.get(session_id).equals(appointer)){
             return true;
         }
         return false;
