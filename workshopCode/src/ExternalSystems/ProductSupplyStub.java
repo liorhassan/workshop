@@ -24,13 +24,13 @@ public class ProductSupplyStub implements ProductSupply{
     public int supply(Hashtable<String, String> data){
         var handshake = new Hashtable<String, String>();
         handshake.put("action_type", "handshake");
-        String response = postMsq(handshake);
+        String response = postMsg(handshake);
         if(!response.equals("OK")){
             return -1;
         }
 
         try{
-            int transId = Integer.parseInt(postMsq(data));
+            int transId = Integer.parseInt(postMsg(data));
             return transId;
         }
         catch(Exception e){
@@ -44,7 +44,7 @@ public class ProductSupplyStub implements ProductSupply{
 
         var handshake = new Hashtable<String, String>();
         handshake.put("action_type", "handshake");
-        String response = postMsq(handshake);
+        String response = postMsg(handshake);
         if(!response.equals("OK")){
             return -1;
         }
@@ -53,8 +53,7 @@ public class ProductSupplyStub implements ProductSupply{
         data.put("action_type", "cancel_supply");
         data.put("transaction_id", String.valueOf(transactionId));
         try{
-            String ans = postMsq(data);
-            int transId = ans.equals("")? -1 : Integer.parseInt(ans);
+            int transId = Integer.parseInt(postMsg(data));
             return transId;
         }
         catch(Exception e){
@@ -64,7 +63,7 @@ public class ProductSupplyStub implements ProductSupply{
     }
 
 
-    private String postMsq(Hashtable<String, String> dict){
+    private String postMsg(Hashtable<String, String> dict){
         try{
 
             StringBuilder postData = new StringBuilder();
@@ -92,8 +91,8 @@ public class ProductSupplyStub implements ProductSupply{
                 sb.append((char)c);
             String response = sb.toString();
 
-//            System.out.println(dict.toString());
-//            System.out.println(response);
+            System.out.println(dict.toString());
+            System.out.println(response);
             return response;
         }
         catch (Exception e){
