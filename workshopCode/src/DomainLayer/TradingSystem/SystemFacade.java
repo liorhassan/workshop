@@ -589,6 +589,24 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
+    public boolean payment(Hashtable<String,String> paymentData, UUID session_id) {
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        ShoppingCart sc = se.getLoggedin_user().getShoppingCart();
+        int transactionId = PC.pay(paymentData);
+        if(transactionId == -1){
+            sc.unreserveProducts();
+            return false;
+        }
+        sc.setPaymentTransactionId(transactionId);
+        return true;
+
+    }
+
+
+
+    // function for handling Use Case 2.8 - written by Noy
     public boolean supply(UUID session_id){
         Session se = active_sessions.get(session_id);
         if(se == null)
@@ -600,6 +618,28 @@ public class SystemFacade {
         }
         return true;
     }
+
+    // function for handling Use Case 2.8 - written by Noy
+    public boolean supply(Hashtable<String,String> supplyData, UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        ShoppingCart sc = se.getLoggedin_user().getShoppingCart();
+        int transactionId = PS.supply(supplyData);
+        if(transactionId == -1  ) {
+            sc.unreserveProducts();
+            PC.cancelPayment(sc.getPaymentTransactionId());
+            //TODO ????
+//            if(PC.cancelPayment(sc.getPaymentTransactionId()) == -1){
+//                throw new RuntimeException("supplement and cancle payment failed");
+//            }
+            return false;
+        }
+        sc.setSupplementTransactionId(transactionId);
+        return true;
+    }
+
+
 
     // function for handling Use Case 2.8 - written by Noy
     public void addPurchaseToHistory(UUID session_id) {

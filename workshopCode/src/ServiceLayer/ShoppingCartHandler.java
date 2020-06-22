@@ -4,6 +4,8 @@ import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.UUID;
 
 public class ShoppingCartHandler {
@@ -86,6 +88,32 @@ public class ShoppingCartHandler {
             throw new RuntimeException(e.getMessage());
             //return createJSONMsg("ERROR", e.getMessage());
             //return e.getMessage();
+        }
+    }
+
+    public String purchaseCart(Hashtable<String,String> paymentData, Hashtable<String,String> supplyData, UUID session_id) {
+        SystemLogger.getInstance().writeEvent("Purchase Cart command");
+        try {
+            if(SystemFacade.getInstance().cartIsEmpty(session_id)){
+                throw new RuntimeException("The shopping cart is empty");
+            }
+            SystemFacade.getInstance().reserveProducts(session_id);
+            SystemFacade.getInstance().computePrice(session_id);
+            if (!SystemFacade.getInstance().payment(paymentData, session_id)) {
+                throw new RuntimeException("Payment failed");
+            }
+            if(!SystemFacade.getInstance().supply(supplyData, session_id)){
+                throw new RuntimeException("supplement failed");
+            }
+
+            SystemFacade.getInstance().addPurchaseToHistory(session_id);
+            return createJSONMsg("SUCCESS", "Purchasing completed successfully");
+        }
+
+        catch (Exception e) {
+            SystemFacade.getInstance().emptyCart(session_id);
+            SystemLogger.getInstance().writeError("Purchase Cart error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
