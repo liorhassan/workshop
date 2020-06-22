@@ -2,7 +2,6 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.UUID;
@@ -89,7 +88,7 @@ public class StoreHandler {
             if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storename))
                 throw new RuntimeException("You must be this store owner for this command");
             if(!SystemFacade.getInstance().isOwnerAppointer(session_id,storename, username))
-                throw new RuntimeException("This username is not one of this store's managers appointed by you");
+                throw new RuntimeException("This username is not one of this store's owners appointed by you");
             return SystemFacade.getInstance().removeStoreOwner(username,storename);
             //return SystemFacade.getInstance().removeManager(username,storename);
         } catch(Exception e) {
