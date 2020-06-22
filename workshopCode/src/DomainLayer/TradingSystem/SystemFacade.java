@@ -2,7 +2,9 @@ package DomainLayer.TradingSystem;
 
 
 import DataAccessLayer.PersistenceController;
+import ExternalSystems.PaymentCollectionProxy;
 import ExternalSystems.PaymentCollectionStub;
+import ExternalSystems.ProductSupplyProxy;
 import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.Security.SecurityFacade;
@@ -24,8 +26,8 @@ public class SystemFacade {
     private ConcurrentHashMap<String, User> users;
     private ConcurrentHashMap<String, Store> stores;
     private List<User> adminsList;
-    private PaymentCollectionStub PC;
-    private ProductSupplyStub PS;
+    private PaymentCollectionProxy PC;
+    private ProductSupplyProxy PS;
 
     private SystemFacade() {
 
@@ -34,8 +36,8 @@ public class SystemFacade {
         users = new ConcurrentHashMap<>();
         stores = new ConcurrentHashMap<>();
         adminsList = new ArrayList<>();
-        PC = new PaymentCollectionStub();
-        PS = new ProductSupplyStub();
+        PC = new PaymentCollectionProxy();
+        PS = new ProductSupplyProxy();
     }
 
     public void initSystem(){
@@ -628,11 +630,9 @@ public class SystemFacade {
         int transactionId = PS.supply(supplyData);
         if(transactionId == -1  ) {
             sc.unreserveProducts();
-            PC.cancelPayment(sc.getPaymentTransactionId());
-            //TODO ????
-//            if(PC.cancelPayment(sc.getPaymentTransactionId()) == -1){
-//                throw new RuntimeException("supplement and cancle payment failed");
-//            }
+            if(PC.cancelPayment(sc.getPaymentTransactionId()) == -1){
+                throw new RuntimeException("supplement and payment cancellation failed, please check your credit card");
+            }
             return false;
         }
         sc.setSupplementTransactionId(transactionId);
