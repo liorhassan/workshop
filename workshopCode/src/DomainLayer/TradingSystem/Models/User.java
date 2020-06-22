@@ -103,16 +103,21 @@ public class User implements Serializable {
             this.storeOwnings.put(store, storeOwning);
     }
 
-    public void emptyCart(){
-        this.shoppingCart = new ShoppingCart(this);
-        PersistenceController.create(this.shoppingCart);
+    public void emptyCart(boolean persist){
+//        this.shoppingCart. = new ShoppingCart(this);
+        this.shoppingCart.emptyCart();
+        if (persist) {
+            PersistenceController.update(this.shoppingCart);
+        }
     }
 
-    public void addPurchaseToHistory(Purchase newPurchase) {
+    public void addPurchaseToHistory(Purchase newPurchase, boolean persist) {
         this.purchaseHistory.add(newPurchase);
 
         //save to db
-        PersistenceController.create(newPurchase);
+        if (persist) {
+            PersistenceController.create(newPurchase);
+        }
     }
 
     public boolean getIsAdmin(){
@@ -131,5 +136,9 @@ public class User implements Serializable {
             p.getPurchasedProducts().initBaskets(p.getPurchasedProducts());
             this.purchaseHistory.add(p);
         }
+    }
+
+    public boolean isRegistred() {
+        return this.username != null && !this.username.equals("");
     }
 }

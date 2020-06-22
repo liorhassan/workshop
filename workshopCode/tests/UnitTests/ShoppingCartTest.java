@@ -31,10 +31,10 @@ public class ShoppingCartTest {
         Product p = new Product("Shirt",null,null,40.0, "Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
-        sc.addProduct("Shirt",store,1);
+        sc.addProduct("Shirt",store,1, true);
         ArrayList<Basket> baskets = new ArrayList<>(sc.getBaskets());
         assertTrue(baskets.size()==1&&baskets.get(0).getProductItems().size()==1&&baskets.get(0).getProductItems().get(0).getProduct()==p&&baskets.get(0).getProductItems().get(0).getAmount()==1);
-        sc.addProduct("Shirt",store,2);
+        sc.addProduct("Shirt",store,2, true);
         baskets = new ArrayList<>(sc.getBaskets());
         assertTrue(baskets.size()==1&&baskets.get(0).getProductItems().size()==1&&baskets.get(0).getProductItems().get(0).getProduct()==p&&baskets.get(0).getProductItems().get(0).getAmount()==3);
     }
@@ -45,7 +45,7 @@ public class ShoppingCartTest {
         Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
-        sc.addProduct("Shirt",store,1);
+        sc.addProduct("Shirt",store,1, true);
         assertEquals("Your ShoppingCart details: \n"+(new ArrayList<>(sc.getBaskets())).get(0).viewBasket(),sc.view());
     }
 
@@ -54,12 +54,12 @@ public class ShoppingCartTest {
         Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);
-        sc.addProduct("Shirt",store,1);
-        sc.edit(store,"Shirt",2);
+        sc.addProduct("Shirt",store,1, true);
+        sc.edit(store,"Shirt",2, true);
         assertEquals(2,(new ArrayList<>(sc.getBaskets())).get(0).getProductItems().get(0).getAmount());
-        sc.edit(store,"Dress",2);
+        sc.edit(store,"Dress",2, true);
         assertEquals(1,(new ArrayList<>(sc.getBaskets())).get(0).getProductItems().size());
-        sc.edit(store,"Shirt",0);
+        sc.edit(store,"Shirt",0, true);
         assertEquals(0,sc.getBaskets().size());
     }
 

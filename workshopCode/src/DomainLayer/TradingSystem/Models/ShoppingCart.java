@@ -61,17 +61,22 @@ public class ShoppingCart implements Serializable {
         }
     }
 
-    public void addProduct(String product, Store store, int amount) {
+    public void addProduct(String product, Store store, int amount, boolean persist) {
         if (!baskets.containsKey(store)) {
             Basket b = new Basket(store, this);
+
             //create basket in DB
-            PersistenceController.create(b);
+            if (persist) {
+                PersistenceController.create(b);
+            }
             baskets.put(store, b);
         }
         baskets.get(store).addProduct(store.getProductByName(product), amount);
 
         //update DB
-//        PersistenceController.update(baskets.get(store));
+//        if (persist) {
+//            PersistenceController.update(baskets.get(store));
+//        }
     }
 
     public User getUser() {
@@ -109,7 +114,7 @@ public class ShoppingCart implements Serializable {
         return response.toJSONString();
     }
 
-    public String edit(Store store, String product, int amount) {
+    public String edit(Store store, String product, int amount, boolean persist) {
         Basket basket = baskets.get(store);
         List<ProductItem> items = basket.getProductItems();
         JSONObject response = new JSONObject();
@@ -119,19 +124,27 @@ public class ShoppingCart implements Serializable {
                     items.remove(pi);
                     if (items.isEmpty()) {
                         baskets.remove(store);
+
                         //update DB
-                        PersistenceController.delete(pi);
-                        PersistenceController.delete(baskets);
+                        if (persist) {
+                            PersistenceController.delete(pi);
+                            PersistenceController.delete(baskets);
+                        }
                     } else {
-                        PersistenceController.delete(pi);
+                        if (persist) {
+                            PersistenceController.delete(pi);
+                        }
                     }
                     response.put("SUCCESS", "The product has been updated successfully");
                     return response.toJSONString();
                     //return "The product has been updated successfully";
                 } else {
                     pi.setAmount(amount);
+
                     //update DB
-                    PersistenceController.update(pi);
+                    if (persist) {
+                        PersistenceController.update(pi);
+                    }
                     response.put("SUCCESS", "The product has been updated successfully");
                     return response.toJSONString();
                     //return "The product has been updated successfully";
@@ -237,6 +250,12 @@ public class ShoppingCart implements Serializable {
 
     public String getUserName() {
         return this.userName;
+    }
+
+    public void emptyCart() {
+        this.baskets = new ConcurrentHashMap<Store, Basket>();
+        this.isHistory = false;
+        this.cartTotalPrice = 0;
     }
 }
 

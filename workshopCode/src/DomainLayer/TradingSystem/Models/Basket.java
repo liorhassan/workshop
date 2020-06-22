@@ -24,7 +24,6 @@ public class Basket implements Serializable {
     @GeneratedValue
     private int id;
 
-
     @Column(name = "store")
     private String storeName;
 
@@ -260,4 +259,5 @@ public class Basket implements Serializable {
 
 
     }
+
 }
