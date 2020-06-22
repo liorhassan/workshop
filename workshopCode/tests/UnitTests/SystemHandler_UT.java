@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class SystemHandler_UT {
-
+/*
     private SystemFacade sys;
 
     @Before
@@ -210,7 +210,7 @@ public class SystemHandler_UT {
         sys.logout();
     }
      */
-
+/*
     @Test
     public void checkIfActiveUserIsOwner_Test(){
         sys.login("noy", false);
@@ -297,5 +297,5 @@ public class SystemHandler_UT {
         exceptionRule.expectMessage("There are no products that match this search filter");
         sys.filterResults(40, 80, "Clothing");
     }
-
+*/
 }
