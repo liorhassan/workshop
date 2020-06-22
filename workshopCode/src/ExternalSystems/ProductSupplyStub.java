@@ -53,7 +53,8 @@ public class ProductSupplyStub implements ProductSupply{
         data.put("action_type", "cancel_supply");
         data.put("transaction_id", String.valueOf(transactionId));
         try{
-            int transId = Integer.parseInt(postMsg(data));
+            String ans = postMsg(data);
+            int transId = ans.equals("") ? -1 : Integer.parseInt(ans);
             return transId;
         }
         catch(Exception e){
@@ -91,8 +92,8 @@ public class ProductSupplyStub implements ProductSupply{
                 sb.append((char)c);
             String response = sb.toString();
 
-            System.out.println(dict.toString());
-            System.out.println(response);
+//            System.out.println(dict.toString());
+//            System.out.println(response);
             return response;
         }
         catch (Exception e){

@@ -31,7 +31,6 @@ public class SystemInitHandler {
             usersHandler.addAdmin("Admin159");
         }
 
-
         sessionHandler.closeSession(session_id);
     }
 

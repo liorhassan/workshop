@@ -51,7 +51,8 @@ public class PaymentCollectionStub implements PaymentCollection{
         data.put("action_type", "cancel_pay");
         data.put("transaction_id", String.valueOf(transactionId));
         try{
-            int transId = Integer.parseInt(postMsg(data));
+            String ans = postMsg(data);
+            int transId = ans.equals("") ? -1 : Integer.parseInt(ans);
             return transId;
         }
         catch(Exception e){
@@ -89,8 +90,8 @@ public class PaymentCollectionStub implements PaymentCollection{
                 sb.append((char)c);
             String response = sb.toString();
 
-            System.out.println(dict.toString());
-            System.out.println(response);
+//            System.out.println(dict.toString());
+//            System.out.println(response);
             return response;
         }
         catch (Exception e){
