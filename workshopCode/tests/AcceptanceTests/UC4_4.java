@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.SystemFacade;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
@@ -19,6 +20,7 @@ public class UC4_4 {
 
     @BeforeClass
     public static void init() throws Exception{
+        PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         storeHandler = new StoreHandler();
 
@@ -68,7 +70,7 @@ public class UC4_4 {
         (new StoreManagerHandler()).addStoreManager(sessionId2,"lior", "KKW");
 
         String result1 = storeHandler.removeStoreOwner(session_id, "tooti", "KKW");
-        assertEquals("owner been removed successfully, more appointments was deleted: lior-manager", result1);
+        assertEquals("owner been removed successfully, more appointments was deleted: lior-manager ", result1);
         (new UsersHandler()).logout(sessionId2);
     }
 
@@ -135,7 +137,7 @@ public class UC4_4 {
             String result = storeHandler.removeStoreOwner(session_id, "tooti", "KKW");
             fail();
         }catch(Exception e) {
-            assertEquals("You must be this store owner for this action", e.getMessage());
+            assertEquals("You must be this store owner for this command", e.getMessage());
         }
         SystemFacade.getInstance().logout(session_id);
         SystemFacade.getInstance().login(session_id, "nufi", false);

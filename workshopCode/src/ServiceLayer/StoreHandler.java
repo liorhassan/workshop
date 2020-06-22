@@ -66,7 +66,7 @@ public class StoreHandler {
                 throw new RuntimeException("You must be this store owner for this action");
             if(SystemFacade.getInstance().checkIfUserIsOwner(storeName, username))
                 throw new RuntimeException("This username is already one of the store's owners");
-            return createJSONMsg("SUCCESS", SystemFacade.getInstance().responseToAppointment(SessionID, username, storeName, isApproved));
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().responseToAppointment(SessionID, storeName, username, isApproved));
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Response to store owner appointment error: " + e.getMessage());

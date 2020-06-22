@@ -220,6 +220,7 @@ public class Store implements Serializable {
 
     }
 
+
     public void removeManager(User user) {
         //update DB
         PersistenceController.delete(managements.get(user));
@@ -291,7 +292,7 @@ public class Store implements Serializable {
             StoreOwning storeOwning = new StoreOwning(appointer, name, newOwner.getUsername());
             ownerships.put(newOwner, storeOwning);
             newOwner.addOwnedStore(this, storeOwning);
-            PersistenceController.create(ownerships);
+            PersistenceController.create(storeOwning);
             return"the appointment of the new owner is done successfully";
         } else {
             if (!waitingAgreements.containsKey(newOwner))
@@ -317,11 +318,11 @@ public class Store implements Serializable {
         AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
         apag.approve(approveOwner);
         if (apag.getWaitingForResponse().size() == 0) {
-            if (apag.getDeclined().size() != 0) {
+            if (apag.getDeclined().size() == 0) {
                 StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser(), name, "");//TODO: apointeeName?????
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
-                PersistenceController.create(ownerships);
+                PersistenceController.create(storeOwning);
 
                 //notify that the appointment approved )
                 for(User u: ownerships.keySet()) {
@@ -675,7 +676,7 @@ public class Store implements Serializable {
             }
         }
         for(User ownUser : ownerships.keySet()){
-            if(ownerships.get(ownUser).getAppointer().equals(user)){
+            if(ownerships.get(ownUser).getAppointer()!= null && ownerships.get(ownUser).getAppointer().equals(user)){
                 //sand alert to the user being removed from owners list
                 NotificationSystem.getInstance().notify(ownUser.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
                 ownUser.getStoreOwnings().remove(this);

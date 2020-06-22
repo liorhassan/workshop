@@ -1074,8 +1074,8 @@ public class SystemFacade {
     public boolean isOwnerAppointer(UUID session_id, String storeName, String userName){
         Store store = getStoreByName(storeName);
         User user = users.get(userName);
-        User appointer = store.getAppointer(user);
-        if((appointer != null) && active_sessions.get(session_id).equals(appointer)){
+        User appointer = store.getOwnerAppointer(user);
+        if((appointer != null) && active_sessions.get(session_id).getLoggedin_user().equals(appointer)){
             return true;
         }
         return false;

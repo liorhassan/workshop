@@ -1,5 +1,6 @@
 package AcceptanceTests;
 
+import DataAccessLayer.PersistenceController;
 import ServiceLayer.ShoppingCartHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
@@ -20,6 +21,7 @@ public class UC4_2 {
 
     @BeforeClass
     public static void init(){
+        PersistenceController.initiate(false);
         shoppingCartHandler = new ShoppingCartHandler();
         UC3_2.init(); // user toya is logged in
         session_id = UC3_2.session_id;
