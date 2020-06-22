@@ -269,8 +269,7 @@ public class SystemFacade {
             JSONObject curr = new JSONObject();
             curr.put("name", p.getName());
             curr.put("price", p.getPrice());
-            //TODO: ADD STORE TO PRODUCT !!
-            curr.put("store", "");
+            curr.put("store", p.getStoreName());
             curr.put("description", p.getDescription());
             matching.add(curr);
         }
