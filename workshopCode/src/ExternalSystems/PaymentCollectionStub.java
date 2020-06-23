@@ -51,8 +51,7 @@ public class PaymentCollectionStub implements PaymentCollection{
         data.put("action_type", "cancel_pay");
         data.put("transaction_id", String.valueOf(transactionId));
         try{
-            String ans = postMsg(data);
-            int transId = ans.equals("") ? -1 : Integer.parseInt(ans);
+            int transId = Integer.parseInt(postMsg(data));
             return transId;
         }
         catch(Exception e){
@@ -95,7 +94,7 @@ public class PaymentCollectionStub implements PaymentCollection{
             return response;
         }
         catch (Exception e){
-            return "";
+            return "-1";
         }
     }
 }
