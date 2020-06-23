@@ -71,4 +71,5 @@ public class Purchase implements Serializable {
     public void setCart(ShoppingCart sc) {
         this.shoppingCart = sc;
     }
+
 }

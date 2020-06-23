@@ -322,6 +322,7 @@ public class Store implements Serializable {
                 StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser(), name, "");//TODO: apointeeName?????
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
+                waitingForApprove.addOwnedStore(this, storeOwning);
                 PersistenceController.create(storeOwning);
 
                 //notify that the appointment approved )
@@ -366,7 +367,7 @@ public class Store implements Serializable {
         this.reservedProducts.put(b, new LinkedList<>());
         for (PurchasePolicy p : purchasePolicies) {
             if (!p.purchaseAccordingToPolicy(b))
-                throw new RuntimeException("Your purchase doesn’t match the store’s policy");
+                throw new RuntimeException("Your purchase doesn’t match the store’s policy, details: "+ p.getPurchaseDescription());
         }
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {
@@ -679,7 +680,7 @@ public class Store implements Serializable {
             if(ownerships.get(ownUser).getAppointer()!= null && ownerships.get(ownUser).getAppointer().equals(user)){
                 //sand alert to the user being removed from owners list
                 NotificationSystem.getInstance().notify(ownUser.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
-                ownUser.getStoreOwnings().remove(this);
+                ownUser.removeStoreOwning(this);
                 ownerships.remove(ownUser);
                 output = output + ownUser.getUsername()+"-owner ";
 
@@ -687,6 +688,7 @@ public class Store implements Serializable {
         }
         NotificationSystem.getInstance().notify(user.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
         ownerships.remove(user);
+        user.removeStoreOwning(this);
         return output;
     }
 
