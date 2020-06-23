@@ -224,9 +224,9 @@ public class Basket implements Serializable {
 
     public void unreserve() throws SQLException {
         if(!store.getReservedProducts(this).isEmpty()) {
-            PersistenceController.create(this);
             //there are reserved products in the basket that needs to be returned
             store.unreserveBasket(this);
+            PersistenceController.create(this);
         }
     }
 

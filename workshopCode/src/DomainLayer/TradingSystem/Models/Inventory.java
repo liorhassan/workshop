@@ -19,6 +19,7 @@ public class Inventory implements Serializable {
 
     public Inventory() {
         this.products = new ConcurrentHashMap<>();
+        this.reservedProducts = new ConcurrentHashMap<>();
     }
 
     public ConcurrentHashMap<Product, Integer> getProducts() {
@@ -63,6 +64,12 @@ public class Inventory implements Serializable {
             else{
                 this.products.replace(p, prevAmount - amount);
                 p.setQuantity(prevAmount - amount);
+                if(!reservedProducts.containsKey(b)){
+                    List<ProductItem> pis = new LinkedList<>();
+                    reservedProducts.put(b, pis);
+
+                }
+                reservedProducts.get(b).add(pi);
 
                 // update database
                 PersistenceController.update(p);
