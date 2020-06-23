@@ -283,8 +283,8 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
-                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                String userName = (requestJson.containsKey("user")) ? requestJson.get("user").toString() : null;
+                String storeName = (requestJson.containsKey("store")) ? requestJson.get("store").toString() : null;
                 Boolean status = (requestJson.containsKey("status")) ? requestJson.get("status").toString().equals("approve") : false;
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
                 String response = storeHandler.responseToAppointmentRequest(UUID.fromString(session_id), userName, storeName, status);
@@ -335,15 +335,7 @@ public class Controller {
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
-                //String response = storeHandler.getOwnerCandidates(session_id, storeName); TODO: implement missing functionality
-                JSONArray ja = new JSONArray();
-                JSONObject jo1 = new JSONObject();
-                JSONObject jo2 = new JSONObject();
-                jo1.put("name","test1");
-                jo2.put("name","test2");
-                ja.add(jo1);
-                ja.add(jo2);
-                String response = ja.toJSONString();
+                String response = storeHandler.getAllWaitingAppointments(UUID.fromString(session_id), storeName);
                 headers.set("newOwnerCandidates", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -367,8 +359,7 @@ public class Controller {
                 String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
-                //String response = storeHandler.removeStoreOwner(session_id, userName, storeName);
-                String response = "";//TODO
+                String response = storeHandler.removeStoreOwner(UUID.fromString(session_id), userName, storeName);
                 headers.set("removeStoreOwner", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -957,7 +948,7 @@ public class Controller {
         });
 
         //accept: {session_id}
-        //retrieve: {"", "", ...}
+        //retrieve: {loggedin: "", username: ""}
         server.createContext("/tradingSystem/isLoggedIn", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
@@ -971,7 +962,7 @@ public class Controller {
             } catch (ParseException e) {
                 e.printStackTrace();
             } catch (Exception e) {
-                headers.set("myStores", String.format("application/json; charset=%s", UTF8));
+                headers.set("isLoggedIn", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();

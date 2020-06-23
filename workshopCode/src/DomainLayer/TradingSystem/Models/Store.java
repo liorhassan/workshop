@@ -351,7 +351,7 @@ public class Store implements Serializable {
         this.reservedProducts.put(b, new LinkedList<>());
         for (PurchasePolicy p : purchasePolicies) {
             if (!p.purchaseAccordingToPolicy(b))
-                throw new RuntimeException("Your purchase doesn’t match the store’s policy");
+                throw new RuntimeException("Your purchase doesn’t match the store’s policy: " + p.getPurchaseDescription());
         }
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {

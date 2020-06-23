@@ -113,7 +113,13 @@ public class UsersHandler {
     }
 
     public String isLoggedIn(UUID sessin_id){
-        return SystemFacade.getInstance().checkIfActiveUserSubscribed(sessin_id) ? createJSONMsg("loggedin","True") : createJSONMsg("loggedin","False");
+        JSONObject response = new JSONObject();
+        response.put("username", SystemFacade.getInstance().getLoggedInUsername(sessin_id));
+        if(SystemFacade.getInstance().checkIfActiveUserSubscribed(sessin_id))
+            response.put("loggedin","True");
+        else
+            response.put("loggedin","False");
+        return response.toJSONString();
     }
 
 }

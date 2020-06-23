@@ -381,7 +381,7 @@ function updateCandidatesWindow(candidates){
         const element_div = document.createElement("div");
         const cand_name = document.createElement("h6");
         cand_name.classList.add("my-0");
-        cand_name.append(document.createTextNode(cand.name));
+        cand_name.append(document.createTextNode(cand.userName));
         element_div.appendChild(cand_name);
         const app_button = document.createElement("button");
         app_button.classList.add("btn");
@@ -391,7 +391,7 @@ function updateCandidatesWindow(candidates){
         app_button.addEventListener("click",function(){
             fetch("http://localhost:8080/tradingSystem/approveCandidate", {
                 method: "POST",
-                body: JSON.stringify({session_id: localStorage["session_id"], user: user_name, store: store_name, status: "approve"})
+                body: JSON.stringify({session_id: localStorage["session_id"], user: cand.userName, store: activeStore.name, status: "approve"})
             })
             .then(response => {
                 if (response.ok) {
