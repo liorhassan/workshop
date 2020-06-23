@@ -921,7 +921,7 @@ public class Controller {
         });
 
         //accept: {session_id}
-        //retrieve: {"", "", ...}
+        //retrieve: {loggedin: "", username: ""}
         server.createContext("/tradingSystem/isLoggedIn", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
@@ -935,7 +935,7 @@ public class Controller {
             } catch (ParseException e) {
                 e.printStackTrace();
             } catch (Exception e) {
-                headers.set("myStores", String.format("application/json; charset=%s", UTF8));
+                headers.set("isLoggedIn", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();

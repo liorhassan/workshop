@@ -34,6 +34,9 @@ function updateNavBar(isLoggedIn){
         </ul>\
         <ul class = \"navbar-nav navbar-right\">\
             <li class=\"nav-item\" >\
+            <p class="nav-link">Hello ${isLoggedIn.username}!</p>\
+            </li>\
+            <li class=\"nav-item\" >\
             <a class=\"nav-link\" id=\"logout_navbar\" href=\"/html/SearchWindow.html\">Logout</a>\
             </li>\
         </ul>`;
