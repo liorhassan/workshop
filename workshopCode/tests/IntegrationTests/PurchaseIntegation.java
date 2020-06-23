@@ -60,7 +60,7 @@ public class PurchaseIntegation {
         int amountBefore = inv.get(store.getProductByName("white T-shirt"));
 
         String result = (new ShoppingCartHandler()).purchaseCart(se);
-        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\"}", result);
+        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\\nTotal price: 10.0$\"}", result);
         inv = store.getInventory();
         int amountAfter = inv.get(store.getProductByName("white T-shirt"));
         assertEquals(amountBefore-2, amountAfter);
