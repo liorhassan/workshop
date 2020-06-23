@@ -93,7 +93,7 @@ public class Inventory implements Serializable {
         }
     }
 
-    public void init(String storeName) {
+    public void init(String storeName) throws SQLException {
 
         List<Product> storeProducts = PersistenceController.readAllProducts(storeName,true);
         for(int i = 0; i < storeProducts.size(); i++) {
