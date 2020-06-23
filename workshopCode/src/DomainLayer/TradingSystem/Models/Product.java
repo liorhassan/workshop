@@ -97,4 +97,8 @@ public class Product implements Serializable {
         }
         return strs;
     }
+
+    public String getStoreName(){
+        return this.storeName;
+    }
 }
