@@ -19,7 +19,7 @@ public class UC2_6 {
 
     @BeforeClass
     public static void init() throws Exception {
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         handler = new ShoppingCartHandler();
         (new StoreHandler()).resetStores();

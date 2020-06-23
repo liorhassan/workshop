@@ -18,7 +18,7 @@ public class UC4_5 {
 
     @BeforeClass
     public static void init() throws Exception{
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         service = new StoreManagerHandler();
         (new UsersHandler()).register("lior", "1234");

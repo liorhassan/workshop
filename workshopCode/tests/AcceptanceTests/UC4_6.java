@@ -21,7 +21,7 @@ public class UC4_6 {
 
     @BeforeClass
     public static void init(){
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         storeManagerHandler = new StoreManagerHandler();
         // store owner

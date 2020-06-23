@@ -11,7 +11,7 @@
         <!-- SQL dialect -->
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL55Dialect</property>
         <!-- The JDBC URL to the database instance -->
-        <property name="hibernate.connection.url">jdbc:mysql://localhost/tradingsystem?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost/tradingsystemtests?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC</property>
         <!-- The database username -->
         <property name="hibernate.connection.username">root</property>
         <!-- The database password -->

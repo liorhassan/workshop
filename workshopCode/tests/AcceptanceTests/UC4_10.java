@@ -19,7 +19,7 @@ public class UC4_10 {
 
     @BeforeClass
     public static void init(){
-        PersistenceController.initiate();
+        PersistenceController.initiate(false);
         storePurchaseHistory = new ViewPurchaseHistoryHandler();
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("noy", "1234");

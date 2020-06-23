@@ -284,7 +284,7 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        se.getLoggedin_user().getShoppingCart().addProduct(product, stores.get(store), amount);
+        se.getLoggedin_user().getShoppingCart().addProduct(product, stores.get(store), amount, se.getLoggedin_user().isRegistred());
     }
 
     //helper function for UseCase 2.6
@@ -339,7 +339,7 @@ public class SystemFacade {
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
         Store store = stores.get(storeName);
-        return se.getLoggedin_user().getShoppingCart().edit(store, productName, amount);
+        return se.getLoggedin_user().getShoppingCart().edit(store, productName, amount, se.getLoggedin_user().isRegistred());
 
     }
 
@@ -651,20 +651,23 @@ public class SystemFacade {
 
         //handle User-Purchase-History
         Purchase newPurchase = new Purchase(sc);
-        se.getLoggedin_user().addPurchaseToHistory(newPurchase);
+        se.getLoggedin_user().addPurchaseToHistory(newPurchase, se.getLoggedin_user().isRegistred());
 
         //handle Store-Purchase-History
-        sc.addStoresPurchaseHistory();
+        if (se.getLoggedin_user().isRegistred()) {
+            sc.addStoresPurchaseHistory();
+        }
 
         //notify all stores owners that products have been purchased in their store
         sc.notifyOwners();
 
         //finally - empty the shopping cart
-        se.getLoggedin_user().emptyCart();
+        se.getLoggedin_user().emptyCart(se.getLoggedin_user().isRegistred());
 
         // update cart state
-        PersistenceController.update(sc);
-
+        if (se.getLoggedin_user().isRegistred()) {
+            PersistenceController.update(sc);
+        }
     }
 
 
@@ -801,7 +804,7 @@ public class SystemFacade {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
-        se.getLoggedin_user().emptyCart();
+        se.getLoggedin_user().emptyCart(se.getLoggedin_user().isRegistred());
     }
 
 

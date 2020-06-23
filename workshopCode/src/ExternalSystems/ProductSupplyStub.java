@@ -16,7 +16,7 @@ import java.util.Map;
 public class ProductSupplyStub implements ProductSupply{
 
     public boolean supply(Collection<Basket> products, User user){
-        if(user.getUsername().equals("zuzu"))
+        if(user.isRegistred() && user.getUsername().equals("zuzu"))
             return false;
         return true;
     }
