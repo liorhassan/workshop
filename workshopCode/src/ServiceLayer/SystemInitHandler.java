@@ -1,9 +1,9 @@
 package ServiceLayer;
 
+import DomainLayer.TradingSystem.SystemFacade;
+
 import java.io.File;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 public class SystemInitHandler {
     private final String INIT_FILE_PATH = "./configurations/init.ini";
@@ -30,6 +30,7 @@ public class SystemInitHandler {
             usersHandler.register("Admin159","951");
             usersHandler.addAdmin("Admin159");
         }
+
         sessionHandler.closeSession(session_id);
     }
 
