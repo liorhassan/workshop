@@ -595,14 +595,19 @@ public class SystemFacade {
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
         ShoppingCart sc = se.getLoggedin_user().getShoppingCart();
-        int transactionId = PC.pay(paymentData);
-        if(transactionId == -1){
-            sc.unreserveProducts();
-            return false;
+        try {
+            int transactionId = PC.pay(paymentData);
+            if (transactionId == -1) {
+                sc.unreserveProducts();
+                return false;
+            }
+            sc.setPaymentTransactionId(transactionId);
+            return true;
         }
-        sc.setPaymentTransactionId(transactionId);
-        return true;
-
+        catch(Exception e){//connection to payment external system failed
+            sc.unreserveProducts();
+            throw e;
+        }
     }
 
 
@@ -626,16 +631,28 @@ public class SystemFacade {
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
         ShoppingCart sc = se.getLoggedin_user().getShoppingCart();
-        int transactionId = PS.supply(supplyData);
-        if(transactionId == -1  ) {
+
+        try{
+            int transactionId = PS.supply(supplyData);
+            if(transactionId == -1  ) {
+                sc.unreserveProducts();
+                if(PC.cancelPayment(sc.getPaymentTransactionId()) == -1){
+                    throw new RuntimeException("supplement and payment cancellation failed, please check your credit card");
+                }
+                return false;
+            }
+            sc.setSupplementTransactionId(transactionId);
+            return true;
+        }
+        catch(Exception e){//connection to supply external system failed
             sc.unreserveProducts();
             if(PC.cancelPayment(sc.getPaymentTransactionId()) == -1){
                 throw new RuntimeException("supplement and payment cancellation failed, please check your credit card");
             }
-            return false;
+            throw e;
         }
-        sc.setSupplementTransactionId(transactionId);
-        return true;
+
+
     }
 
 

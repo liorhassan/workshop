@@ -94,7 +94,7 @@ public class PaymentCollectionStub implements PaymentCollection{
             return response;
         }
         catch (Exception e){
-            return "-1";
+            throw new RuntimeException("Connection to Payment External System failed");
         }
     }
 }
