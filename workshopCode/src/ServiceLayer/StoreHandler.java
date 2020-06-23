@@ -5,6 +5,7 @@ import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 
@@ -23,7 +24,7 @@ public class StoreHandler {
                 throw new RuntimeException("Store name already exists, please choose a different one");
             return createJSONMsg("SUCCESS", SystemFacade.getInstance().openNewStore(session_id,storeName,storeDescription));
         }
-        catch (RuntimeException e){
+        catch (Exception e){
             SystemLogger.getInstance().writeError("Open new store error: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
             //return e.getMessage();
@@ -403,7 +404,7 @@ public class StoreHandler {
         return SystemFacade.getInstance().getAllProducts(storeName);
     }
 
-    public void resetStores(){
+    public void resetStores() throws SQLException {
         SystemFacade.getInstance().resetStores();
     }
     public void removeDiscountPolicies(String storeName){

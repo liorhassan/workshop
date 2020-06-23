@@ -4,6 +4,7 @@ import DomainLayer.TradingSystem.Models.User;
 import DataAccessLayer.PersistenceController;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class StoreOwning implements Serializable {
 
     public StoreOwning(){}
     //first owner constructor
-    public StoreOwning(String storeName, String appointeeName) {
+    public StoreOwning(String storeName, String appointeeName) throws SQLException {
         this.storeName = storeName;
         this.appointeeName = appointeeName;
         permissions = new ArrayList<>();
@@ -42,7 +43,7 @@ public class StoreOwning implements Serializable {
         PersistenceController.create(this);
     }
 
-    public StoreOwning(User appointer, String storeName, String appointeeName) {
+    public StoreOwning(User appointer, String storeName, String appointeeName) throws SQLException {
         this.appointer = appointer;
         this.appointeeName = appointerName;
         this.storeName = storeName;

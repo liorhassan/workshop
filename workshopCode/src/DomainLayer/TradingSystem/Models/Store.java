@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -60,7 +61,7 @@ public class Store implements Serializable {
     private int purchaseID_counter;
 
     public Store(){};
-    public Store(String name, String description, User firstOwner, StoreOwning owning) {
+    public Store(String name, String description, User firstOwner, StoreOwning owning) throws SQLException {
         this.name = name;
         this.description = description;
         this.storeFirstOwner = firstOwner;
@@ -79,7 +80,7 @@ public class Store implements Serializable {
         this.discountID_counter = 0;
     }
 
-    public void init() {
+    public void init() throws SQLException {
         this.storeFirstOwner = SystemFacade.getInstance().getUserByName(firstOwnerName);
         this.inventory = new Inventory();
         inventory.init(name);
@@ -217,7 +218,7 @@ public class Store implements Serializable {
 
     }
 
-    public void removeManager(User user) {
+    public void removeManager(User user) throws SQLException {
         //update DB
         PersistenceController.delete(managements.get(user));
 
@@ -238,7 +239,7 @@ public class Store implements Serializable {
         return this.inventory;
     }
 
-    public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
+    public void addToInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) throws SQLException {
         Product p = new Product(productName, productCategory, productDescription, productPrice, this.name, amount);
         inventory.getProducts().put(p, amount);
 
@@ -246,7 +247,7 @@ public class Store implements Serializable {
         PersistenceController.create(p);
     }
 
-    public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) {
+    public void updateInventory(String productName, double productPrice, Category productCategory, String productDescription, int amount) throws SQLException {
         for (Product p : inventory.getProducts().keySet()) {
             if (p.getName().equals(productName)) {
                 p.setPrice(productPrice);
@@ -282,7 +283,7 @@ public class Store implements Serializable {
 
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
-    public void addStoreOwner(User newOwner, User appointer) {
+    public void addStoreOwner(User newOwner, User appointer) throws SQLException {
         if (ownerships.size() == 1) {
             NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
             StoreOwning storeOwning = new StoreOwning(appointer, name, newOwner.getUsername());
@@ -307,7 +308,7 @@ public class Store implements Serializable {
     }
 
     //UC 4.3
-    public void approveAppointment(User waitingForApprove, User approveOwner) {
+    public void approveAppointment(User waitingForApprove, User approveOwner) throws SQLException {
         AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
         apag.approve(approveOwner);
         if (apag.getWaitingForResponse().size() == 0) {
@@ -342,7 +343,7 @@ public class Store implements Serializable {
 
     //for each inventory in the basket - checks if the product meets the purchase policy requirements
     //if it does - reserve the product and adds it to the reserved inventory list
-    public void reserveBasket(Basket b) {
+    public void reserveBasket(Basket b) throws SQLException {
         //this field save all the inventory that have been reserved
         for (PurchasePolicy p : purchasePolicies) {
             if (!p.purchaseAccordingToPolicy(b))
@@ -362,7 +363,7 @@ public class Store implements Serializable {
         return this.inventory.getReservedProducts(b);
     }
 
-    public void unreserveBasket(Basket b) {
+    public void unreserveBasket(Basket b) throws SQLException {
         this.inventory.unreserveBasket(b);
     }
 
@@ -386,7 +387,7 @@ public class Store implements Serializable {
     }
 
 
-    public void addStorePurchaseHistory(Basket b, User u) {
+    public void addStorePurchaseHistory(Basket b, User u) throws SQLException {
         Purchase p = new Purchase(b, u);
         p.getPurchasedProducts().computeCartPrice();
         this.purchaseHistory.addPurchase(p);
@@ -615,11 +616,11 @@ public class Store implements Serializable {
     }
 
     //for store unit test
-    public void reserveProduct(ProductItem pi, Basket b) {
+    public void reserveProduct(ProductItem pi, Basket b) throws SQLException {
         this.inventory.reserveProduct(pi, b);
     }
 
-    public void initPurchaseHistory() {
+    public void initPurchaseHistory() throws SQLException {
         List<Purchase> purchases = PersistenceController.readPurchaseHistory(this.name);
         for(Purchase p: purchases){
             p.setCart(PersistenceController.readCartById(p.getCartId()));

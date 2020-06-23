@@ -10,6 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.Assert.*;
 
 public class StoreTest {
@@ -48,7 +50,7 @@ public class StoreTest {
     }
 
     @Test
-    public void getAppointer() {
+    public void getAppointer() throws SQLException {
         User user1 = new User();
         assertNull(store.getAppointer(user1));
         User user2 = new User();
@@ -70,7 +72,7 @@ public class StoreTest {
     }
 
     @Test
-    public void updateInventory() {
+    public void updateInventory() throws SQLException {
         Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Product p2 = new Product("Dress",null,null,45.5, "Fox",1);
         store.getInventory().put(p,10);
@@ -82,7 +84,7 @@ public class StoreTest {
     }
 
     @Test
-    public void purchaseProduct() {
+    public void purchaseProduct() throws SQLException {
         Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Product p2 = new Product("Dress",null,null,45.5,"Fox",1);
         store.getInventory().put(p,10);

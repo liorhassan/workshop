@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
@@ -34,7 +35,7 @@ public class BasketTest {
     }
 
     @Test
-    public void addProduct() {
+    public void addProduct() throws SQLException {
         assertEquals(new ArrayList<>(),basket.getProductItems());
         Product p = new Product("Shirt",null,null,40.0,"Fox", 1);
         basket.addProduct(p,1);

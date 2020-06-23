@@ -7,6 +7,7 @@ import ServiceLayer.UsersHandler;
 import ServiceLayer.StoreHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +36,7 @@ public class UC2_7 {
         (new  ShoppingCartHandler()).AddToShoppingBasket(session_id, "Rami Levi", "water", 1);
     }
     @AfterClass
-    public static void clean() {
+    public static void clean() throws SQLException {
         (new SessionHandler()).closeSession(session_id);
         (new  UsersHandler()).resetUsers();
         (new  StoreHandler()).resetStores();

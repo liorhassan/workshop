@@ -7,6 +7,7 @@ import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -32,7 +33,7 @@ public class UC2_5 {
     }
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
         (new SessionHandler()).closeSession(session_id);

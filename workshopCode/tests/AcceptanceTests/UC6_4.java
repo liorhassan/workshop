@@ -7,6 +7,7 @@ import ServiceLayer.UsersHandler;
 import ServiceLayer.ViewPurchaseHistoryHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +29,7 @@ public class UC6_4 {
     }
 
     @AfterClass
-    public static void clean() {
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
         (new SessionHandler()).closeSession(session_id);

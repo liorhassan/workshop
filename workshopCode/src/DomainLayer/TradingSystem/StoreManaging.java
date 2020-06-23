@@ -5,6 +5,7 @@ import DomainLayer.TradingSystem.Models.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class StoreManaging implements Serializable {
         this.permissions.add(new Permission(("View Purchasing History")));
     }
 
-    public void initPermissions(){
+    public void initPermissions() throws SQLException {
         this.permissions = new LinkedList<>();
         List<Permission> perms = PersistenceController.readAllPermissions(storeName, appointeeName);
         for(Permission p: perms){
@@ -57,7 +58,7 @@ public class StoreManaging implements Serializable {
         return  permissions;
     }
 
-    public void setPermission(List<Permission> perm){
+    public void setPermission(List<Permission> perm) throws SQLException {
         for(Permission p: this.permissions){
             PersistenceController.delete(p);
         }

@@ -4,6 +4,7 @@ import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Purchase;
 import DomainLayer.TradingSystem.Models.Store;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,12 +13,12 @@ public class StorePurchaseHistory {
     private List<Purchase> purchases;
     private Store store;
 
-    public StorePurchaseHistory(Store s) {
+    public StorePurchaseHistory(Store s) throws SQLException {
         this.store = s;
         initPurchases();
     }
 
-    private void initPurchases() {
+    private void initPurchases() throws SQLException {
         this.purchases = PersistenceController.readAllPurchases(store.getName());
     }
 

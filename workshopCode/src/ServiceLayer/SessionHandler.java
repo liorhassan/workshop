@@ -2,10 +2,11 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class SessionHandler {
-    public UUID openNewSession(){
+    public UUID openNewSession() throws SQLException {
         return SystemFacade.getInstance().createNewSession();
     }
 

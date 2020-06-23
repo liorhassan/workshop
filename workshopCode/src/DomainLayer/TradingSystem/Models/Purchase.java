@@ -4,6 +4,7 @@ import DataAccessLayer.PersistenceController;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.SQLException;
 
 @Entity
 @Table(name = "purchases")
@@ -37,7 +38,7 @@ public class Purchase implements Serializable {
     }
 
     // Ctor for store's purchase
-    public Purchase(Basket b, User u){
+    public Purchase(Basket b, User u) throws SQLException {
         this.isUsersPurchase = false;
         this.ownerName = b.getStoreName();
         this.shoppingCart = new ShoppingCart(u);

@@ -5,6 +5,7 @@ import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -13,14 +14,14 @@ public class UC3_2 {
 
     public static UUID session_id;
     @BeforeClass
-    public static void init() {
+    public static void init() throws SQLException {
         session_id = (new SessionHandler()).openNewSession();
         UC2_3.setUp();
         (new UsersHandler()).login(session_id, "toya", "1234", false);
     }
 
     @AfterClass
-    public static void clean() {
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
         (new SessionHandler()).closeSession(session_id);

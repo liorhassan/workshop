@@ -12,6 +12,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static junit.framework.TestCase.assertEquals;
@@ -28,7 +29,7 @@ public class UC2_4 {
     }
 
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
         PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("noy", "1234");
@@ -40,7 +41,7 @@ public class UC2_4 {
 
 
     @AfterClass
-    public static void clean() {
+    public static void clean() throws SQLException {
         (new UsersHandler()).logout(session_id);
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();

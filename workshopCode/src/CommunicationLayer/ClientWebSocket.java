@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.net.InetSocketAddress;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +49,12 @@ public class ClientWebSocket extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
-        UUID id = sessionHandler.openNewSession();
+        UUID id = null;
+        try {
+            id = sessionHandler.openNewSession();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         connsPerSession.put(conn,id);
         JSONObject sid = new JSONObject();
         sid.put("session_id",id.toString());

@@ -4,6 +4,8 @@ import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.ProductItem;
 
 import java.io.Serializable;
+import java.sql.SQLException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +42,7 @@ public class Inventory implements Serializable {
 
     //reserve a specific product
     //returns false if the product is unavailable in the inventory
-    public boolean reserveProduct(ProductItem pi, Basket b){
+    public boolean reserveProduct(ProductItem pi, Basket b) throws SQLException {
         Product p = pi.getProduct();
         int amount = pi.getAmount();
         if(checkIfProductAvailable(p.getName(), amount)){
@@ -62,7 +64,6 @@ public class Inventory implements Serializable {
                 this.products.replace(p, prevAmount - amount);
                 p.setQuantity(prevAmount - amount);
 
-
                 // update database
                 PersistenceController.update(p);
             }
@@ -71,7 +72,7 @@ public class Inventory implements Serializable {
         return false;
     }
 
-    public void unreserveProduct(Product p, int amount) {
+    public void unreserveProduct(Product p, int amount) throws SQLException {
         if(products.get(p) != null){
             int newAmount = products.get(p) + amount;
             products.put(p, newAmount);
@@ -85,7 +86,7 @@ public class Inventory implements Serializable {
         }
     }
 
-    public void unreserveBasket(Basket b) {
+    public void unreserveBasket(Basket b) throws SQLException {
         for (ProductItem pi : this.reservedProducts.get(b)) {
             unreserveProduct(pi.getProduct(), pi.getAmount());
             PersistenceController.create(pi);

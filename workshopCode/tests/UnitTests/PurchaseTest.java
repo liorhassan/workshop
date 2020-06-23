@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.Assert.*;
 
 public class PurchaseTest {
@@ -24,7 +26,7 @@ public class PurchaseTest {
     }
 
     @Test
-    public void getTotalCheck() {
+    public void getTotalCheck() throws SQLException {
         assertEquals(0,purchase.getTotalCheck(),0.0000000001);
         Product p1 = new Product("Shirt",null,null,40.0,"Fox",1);
         Product p2 = new Product("Dress",null,null,45.5,"Fox",1);

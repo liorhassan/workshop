@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 public class StoreManagerIntegration {
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
 
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).register("maor", "1234");
@@ -40,13 +41,13 @@ public class StoreManagerIntegration {
     }
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
     }
 
     @Test
-    public void validAppointmentTest(){
+    public void validAppointmentTest() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"toya", "1234", false);
         Store store = SystemFacade.getInstance().getStoreByName("Castro");
@@ -68,7 +69,7 @@ public class StoreManagerIntegration {
     }
 
     @Test
-    public void notOwnerAddTest(){
+    public void notOwnerAddTest() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"maor", "1234", false);
         Store store = SystemFacade.getInstance().getStoreByName("Castro");
@@ -89,7 +90,7 @@ public class StoreManagerIntegration {
     }
 
     @Test
-    public void validRemoveTest(){
+    public void validRemoveTest() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se, "toya", "1234", false);
         Store store = SystemFacade.getInstance().getStoreByName("Castro");
@@ -104,7 +105,7 @@ public class StoreManagerIntegration {
     }
 
     @Test
-    public void notOwnerRemoveTest(){
+    public void notOwnerRemoveTest() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
 
         (new UsersHandler()).login(se,"noy", "1234", false);
