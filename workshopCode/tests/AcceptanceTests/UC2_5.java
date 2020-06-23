@@ -44,7 +44,7 @@ public class UC2_5 {
         String result = handler.searchProduct(session_id, null,"Clothing",null);
         assertTrue(result.equals("[{\"price\":40.0,\"name\":\"shirt\",\"description\":\"hawaiian shirt\",\"store\":\"FoxHome\"},{\"price\":900.0,\"name\":\"hat\",\"description\":\"beauty pillow\",\"store\":\"FoxHome\"}]") || result.equals("[{\"price\":900.0,\"name\":\"hat\",\"description\":\"beauty pillow\",\"store\":\"FoxHome\"},{\"price\":40.0,\"name\":\"shirt\",\"description\":\"hawaiian shirt\",\"store\":\"FoxHome\"}]"));
         result = handler.filterResults(session_id, 0,50, null);
-        assertEquals("[{\"price\":40.0,\"name\":\"shirt\",\"description\":\"hawaiian shirt\",\"store\":\"\"}]", result);
+        assertEquals("[{\"price\":40.0,\"name\":\"shirt\",\"description\":\"hawaiian shirt\",\"store\":\"FoxHome\"}]", result);
     }
 
     @Test

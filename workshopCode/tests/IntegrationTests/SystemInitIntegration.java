@@ -26,7 +26,7 @@ public class SystemInitIntegration {
         PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         handler = new SystemInitHandler();
-        handler.initSystem("init.ini");
+        handler.initSystem("test1.ini");
 
     }
 

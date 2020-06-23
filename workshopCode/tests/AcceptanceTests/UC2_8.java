@@ -1,11 +1,12 @@
 package AcceptanceTests;
 
 
-import ServiceLayer.SessionHandler;
 import ServiceLayer.ShoppingCartHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.UUID;
 
@@ -62,7 +63,7 @@ public class UC2_8 {
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "jeans skirt", 2);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Lalin", "Body Cream ocean", 5);
         String result = shoppingCartHandler.purchaseCart(session_id);
-        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\"}", result);
+        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\\nTotal price: 300.0$\"}", result);
         (new UsersHandler()).logout(session_id );
     }
 
