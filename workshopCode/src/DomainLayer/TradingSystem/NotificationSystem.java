@@ -46,7 +46,7 @@ public class NotificationSystem {
     }
 
     public int getUserNotificationNumber(String userName){
-        if(notification.contains(userName)){
+        if(notification.containsKey(userName)){
             return notification.get(userName).size();
         }
         return 0;
