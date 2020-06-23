@@ -24,7 +24,7 @@ public class PaymentCollectionStub implements PaymentCollection{
         handshake.put("action_type", "handshake");
         String response = postMsg(handshake);
         if(!response.equals("OK")){
-                return -1;
+            throw new RuntimeException("Connection to Payment External System failed");
         }
 
         try{
@@ -44,7 +44,7 @@ public class PaymentCollectionStub implements PaymentCollection{
         handshake.put("action_type", "handshake");
         String response = postMsg(handshake);
         if(!response.equals("OK")){
-            return -1;
+            throw new RuntimeException("Connection to Payment External System failed");
         }
 
         var data = new Hashtable<String, String>();

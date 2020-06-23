@@ -26,7 +26,7 @@ public class ProductSupplyStub implements ProductSupply{
         handshake.put("action_type", "handshake");
         String response = postMsg(handshake);
         if(!response.equals("OK")){
-            return -1;
+            throw new RuntimeException("Connection to Supply External System failed");
         }
 
         response = postMsg(data);
@@ -47,7 +47,7 @@ public class ProductSupplyStub implements ProductSupply{
         handshake.put("action_type", "handshake");
         String response = postMsg(handshake);
         if(!response.equals("OK")){
-            return -1;
+            throw new RuntimeException("Connection to Supply External System failed");
         }
 
         var data = new Hashtable<String, String>();
