@@ -4,6 +4,7 @@ import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class ShoppingCartHandler {
@@ -59,7 +60,7 @@ public class ShoppingCartHandler {
         }
     }
 
-    public String purchaseCart(UUID session_id) {
+    public String purchaseCart(UUID session_id) throws SQLException {
         SystemLogger.getInstance().writeEvent("Purchase Cart command");
         try {
             if(SystemFacade.getInstance().cartIsEmpty(session_id)){
@@ -79,9 +80,8 @@ public class ShoppingCartHandler {
 
 //            return "Purchasing completed successfully";
         }
-
         catch (Exception e) {
-            SystemFacade.getInstance().emptyCart(session_id);
+//            SystemFacade.getInstance().emptyCart(session_id);
             SystemLogger.getInstance().writeError("Purchase Cart error: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
             //return createJSONMsg("ERROR", e.getMessage());

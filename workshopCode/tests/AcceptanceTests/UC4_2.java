@@ -8,6 +8,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -19,7 +20,7 @@ public class UC4_2 {
 
 
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
         shoppingCartHandler = new ShoppingCartHandler();
         UC3_2.init(); // user toya is logged in
         session_id = UC3_2.session_id;
@@ -43,12 +44,12 @@ public class UC4_2 {
     }
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         UC3_2.clean();
     }
 
     @Test
-    public void revealedDiscountForProduct() {
+    public void revealedDiscountForProduct() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Scrub vanil", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
 
@@ -61,7 +62,7 @@ public class UC4_2 {
     }
 
     @Test
-    public void conditionalDiscountForProduct() {
+    public void conditionalDiscountForProduct() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
         (new StoreHandler()).addDiscountCondProductAmount("Lalin","Body Scrub musk", 50,2);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Lalin", "Body Scrub musk", 2);
@@ -79,7 +80,7 @@ public class UC4_2 {
 
 
     @Test
-    public void onCostDiscountForBasket() {
+    public void onCostDiscountForBasket() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Scrub pear", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
         (new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 100, true);
@@ -97,7 +98,7 @@ public class UC4_2 {
 
 
     @Test
-    public void onProductAmountDiscountForBasket() {
+    public void onProductAmountDiscountForBasket() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Scrub apple", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
 
@@ -116,7 +117,7 @@ public class UC4_2 {
     }
 
     @Test
-    public void policyXORtest() {
+    public void policyXORtest() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
 
         //(new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 2, false);
@@ -155,7 +156,7 @@ public class UC4_2 {
     }
 
     @Test
-    public void policyIFtest() {
+    public void policyIFtest() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
 
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black T-Shirt", 4);
@@ -199,7 +200,7 @@ public class UC4_2 {
     }
 
     @Test
-    public void policyANDtest() {
+    public void policyANDtest() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
 
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "black T-Shirt", 4);

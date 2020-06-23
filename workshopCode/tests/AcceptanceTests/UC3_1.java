@@ -6,6 +6,7 @@ import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -17,7 +18,7 @@ public class UC3_1 {
 
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
         (new SessionHandler()).closeSession(session_id);
@@ -33,7 +34,7 @@ public class UC3_1 {
     }
 
     @Test
-    public void valid() {
+    public void valid() throws SQLException {
         String result = handler.logout(session_id);
         assertEquals("{\"SUCCESS\":\"You have been successfully logged out!\"}", result);
     }

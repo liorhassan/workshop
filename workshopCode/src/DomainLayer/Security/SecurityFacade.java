@@ -2,6 +2,8 @@ package DomainLayer.Security;
 
 import DataAccessLayer.PersistenceController;
 
+import java.sql.SQLException;
+
 public class SecurityFacade {
     private static SecurityFacade ourInstance = new SecurityFacade();
 
@@ -12,7 +14,7 @@ public class SecurityFacade {
     private SecurityFacade() {
     }
 
-    public boolean addUser(String username, String password){
+    public boolean addUser(String username, String password) throws SQLException {
         UserDetails userDetails = new UserDetails(username, encrypt(password));
         PersistenceController.create(userDetails);
 
@@ -27,7 +29,7 @@ public class SecurityFacade {
         return true;
     }
 
-    public boolean CorrectPassword (String username, String password) {
+    public boolean CorrectPassword (String username, String password) throws SQLException {
 //        if(password.equals("1234") || password.equals("good") || password.equals("951") || password.equals("toya") || password.equals("tester") || password.equals("shauli"))
 //            return true;
 //        return false;

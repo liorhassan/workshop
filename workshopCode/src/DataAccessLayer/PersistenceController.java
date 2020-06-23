@@ -18,6 +18,8 @@ import org.hibernate.service.ServiceRegistry;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
@@ -25,6 +27,8 @@ public class PersistenceController {
 
     // Create the SessionFactory when you start the application.
     private static SessionFactory SESSION_FACTORY;
+
+    private static Configuration config;
 
     public static void closeFactory() {
         SESSION_FACTORY.close();
@@ -35,7 +39,7 @@ public class PersistenceController {
           */
     public static void initiate(boolean isProduction) {
         // Create a Configuration object.
-        Configuration config = new Configuration();
+        config = new Configuration();
 
         // TODO: add here all consistent objects
         config.addAnnotatedClass(Product.class);
@@ -71,7 +75,23 @@ public class PersistenceController {
         SESSION_FACTORY = config.buildSessionFactory(registry);
     }
 
-    public static void create(Object model) {
+    private static void checkConnection() throws SQLException {
+        Properties p = config.getProperties();
+
+        String url = p.getProperty("hibernate.connection.url");
+        String user = p.getProperty("hibernate.connection.username");
+        String password = p.getProperty("hibernate.connection.password");
+
+        try {
+            DriverManager.getConnection(url, user, password).close();
+        } catch (SQLException e) {
+            throw new SQLException("Storage service is unavailable, hang in there we're on it :)");
+        }
+    }
+
+    public static void create(Object model) throws SQLException {
+        checkConnection();
+
         // Create a session
         Session session = SESSION_FACTORY.openSession();
         Transaction transaction = null;
@@ -97,7 +117,10 @@ public class PersistenceController {
     }
 
 
-    public static void delete(Object model) {
+    public static void delete(Object model) throws SQLException {
+
+        checkConnection();
+
         // Create a session
         Session session = SESSION_FACTORY.openSession();
         Transaction transaction = null;
@@ -124,7 +147,9 @@ public class PersistenceController {
     }
 
 
-    public static void update(Object updatedModel) {
+    public static void update(Object updatedModel) throws SQLException {
+        checkConnection();
+
         // Create a session
         Session session = SESSION_FACTORY.openSession();
 
@@ -153,7 +178,9 @@ public class PersistenceController {
 
     //byStore = false --> retrieve all products in the database
     //byStore = true --> retrieve all products that belong to the store
-    public static List<Product> readAllProducts(String storeName, boolean byStore) {
+    public static List<Product> readAllProducts(String storeName, boolean byStore) throws SQLException {
+        checkConnection();
+
         List<Product> data = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -186,7 +213,9 @@ public class PersistenceController {
         return data;
     }
 
-    public static List<User> readAllUsers(boolean isAdmin) {
+    public static List<User> readAllUsers(boolean isAdmin) throws SQLException {
+        checkConnection();
+
         List<User> users = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -226,7 +255,9 @@ public class PersistenceController {
         return users;
     }
 
-    public static List<Store> readAllStores() {
+    public static List<Store> readAllStores() throws SQLException {
+        checkConnection();
+
         List<Store> stores = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -259,7 +290,9 @@ public class PersistenceController {
 
     }
 
-    public static List<Purchase> readAllPurchases(String storeName) {
+    public static List<Purchase> readAllPurchases(String storeName) throws SQLException {
+        checkConnection();
+
         List<Purchase> purchases = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -291,7 +324,9 @@ public class PersistenceController {
         return purchases;
     }
 
-    public static List<StoreManaging> readAllManagers(String storeName) {
+    public static List<StoreManaging> readAllManagers(String storeName) throws SQLException {
+        checkConnection();
+
         List<StoreManaging> manages = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -323,7 +358,9 @@ public class PersistenceController {
         return manages;
     }
 
-    public static List<StoreOwning> readAllOwners(String storeName) {
+    public static List<StoreOwning> readAllOwners(String storeName) throws SQLException {
+        checkConnection();
+
         List<StoreOwning> owners = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -355,7 +392,9 @@ public class PersistenceController {
         return owners;
     }
 
-    public static ShoppingCart readUserCart(String username) {
+    public static ShoppingCart readUserCart(String username) throws SQLException {
+        checkConnection();
+
         List<ShoppingCart> carts = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -393,7 +432,9 @@ public class PersistenceController {
 
     }
 
-    public static List<ProductItem> readAllProductItems(int basketId) {
+    public static List<ProductItem> readAllProductItems(int basketId) throws SQLException {
+        checkConnection();
+
         List<ProductItem> pi = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -426,7 +467,9 @@ public class PersistenceController {
 
     }
 
-    public static List<Basket> readAllBasket(int Cartid) {
+    public static List<Basket> readAllBasket(int Cartid) throws SQLException {
+        checkConnection();
+
         List<Basket> baskets = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -459,7 +502,9 @@ public class PersistenceController {
 
     }
 
-    public static List<Purchase> readPurchaseHistory(String ownerName) {
+    public static List<Purchase> readPurchaseHistory(String ownerName) throws SQLException {
+        checkConnection();
+
         List<Purchase> purchases = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -491,7 +536,9 @@ public class PersistenceController {
         return purchases;
     }
 
-    public static ShoppingCart readCartById(int cartId) {
+    public static ShoppingCart readCartById(int cartId) throws SQLException {
+        checkConnection();
+
         List<ShoppingCart> cart = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -526,7 +573,9 @@ public class PersistenceController {
         return cart.get(0);
     }
 
-    public static List<Permission> readAllPermissions(String storeName, String appointeeName) {
+    public static List<Permission> readAllPermissions(String storeName, String appointeeName) throws SQLException {
+        checkConnection();
+
         List<Permission> perms = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();
@@ -560,7 +609,9 @@ public class PersistenceController {
 
     }
 
-    public static UserDetails readUserDetails(String username) {
+    public static UserDetails readUserDetails(String username) throws SQLException {
+        checkConnection();
+
         List<UserDetails> userDetails = null;
         // Create a session
         Session session = SESSION_FACTORY.openSession();

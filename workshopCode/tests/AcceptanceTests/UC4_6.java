@@ -7,6 +7,7 @@ import ServiceLayer.StoreManagerHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +21,7 @@ public class UC4_6 {
 
 
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
         PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         storeManagerHandler = new StoreManagerHandler();
@@ -34,7 +35,7 @@ public class UC4_6 {
     }
 
     @AfterClass
-    public static void clean() {
+    public static void clean() throws SQLException {
         (new UsersHandler()).logout(session_id);
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();

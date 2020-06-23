@@ -8,6 +8,7 @@ import DomainLayer.TradingSystem.ProductItem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.persistence.*;
@@ -61,7 +62,7 @@ public class Basket implements Serializable {
     public List<DiscountBInterface> getDiscountsOnProducts() {
         return discountsOnProducts;
     }
-    public void initProductItems(Basket b) {
+    public void initProductItems(Basket b) throws SQLException {
         productItems = PersistenceController.readAllProductItems(id);
         for(ProductItem pi: productItems){
             pi.setBasket(b);
@@ -201,7 +202,7 @@ public class Basket implements Serializable {
     }
 
 
-    public void addProduct(Product p, int amount) {
+    public void addProduct(Product p, int amount) throws SQLException {
         for (ProductItem pi : productItems) {
             if (pi.getProduct().equals(p)) {
                 pi.setAmount(pi.getAmount() + amount);
@@ -217,11 +218,11 @@ public class Basket implements Serializable {
         PersistenceController.create(pi);
     }
 
-    public void reserve(){
+    public void reserve() throws SQLException {
         store.reserveBasket(this);
     }
 
-    public void unreserve(){
+    public void unreserve() throws SQLException {
         if(!store.getReservedProducts(this).isEmpty()) {
             PersistenceController.create(this);
             //there are reserved products in the basket that needs to be returned
@@ -246,7 +247,7 @@ public class Basket implements Serializable {
         this.cartId = cartId;
     }
 
-    public void copyProductItems(Basket b) {
+    public void copyProductItems(Basket b) throws SQLException {
         for(ProductItem pi: b.productItems){
             ProductItem piNew = new ProductItem();
             piNew.setProductName(pi.getProduct().getName());

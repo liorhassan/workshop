@@ -1,6 +1,7 @@
 package ServiceLayer;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class SystemInitHandler {
     private ViewInfoHandler viewInfoHandler = new ViewInfoHandler();
     private ViewPurchaseHistoryHandler viewPurchaseHistoryHandler = new ViewPurchaseHistoryHandler();
 
-    public void initSystem(){
+    public void initSystem() throws SQLException {
         UUID session_id = sessionHandler.openNewSession();
         File initFile = new File(INIT_FILE_PATH);
         String s = initFile.getAbsolutePath();
@@ -33,7 +34,7 @@ public class SystemInitHandler {
         sessionHandler.closeSession(session_id);
     }
 
-    private void executeCommand(String command, UUID session_id){
+    private void executeCommand(String command, UUID session_id) throws SQLException {
         String[] splitedCommand =  command.split(", ");
         if (splitedCommand[0].equals("Register"))
             usersHandler.register(splitedCommand[1], splitedCommand[2]);

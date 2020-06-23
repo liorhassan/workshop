@@ -7,6 +7,7 @@ import DomainLayer.TradingSystem.UserPurchaseHistory;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +36,7 @@ public class User implements Serializable {
     @Column(name = "isAdmin")
     private boolean isAdmin;
 
-    public User() {
+    public User() throws SQLException {
         shoppingCart = new ShoppingCart(this);
         storeManagements = new ConcurrentHashMap<>();
         storeOwnings = new ConcurrentHashMap<>();
@@ -60,7 +61,7 @@ public class User implements Serializable {
         return shoppingCart;
     }
 
-    public void initCart() {
+    public void initCart() throws SQLException {
         if(this.shoppingCart == null)
             this.shoppingCart = PersistenceController.readUserCart(this.username);
         shoppingCart.setUser(this);
@@ -104,7 +105,7 @@ public class User implements Serializable {
             this.storeOwnings.put(store, storeOwning);
     }
 
-    public void emptyCart(boolean persist){
+    public void emptyCart(boolean persist) throws SQLException {
 //        this.shoppingCart. = new ShoppingCart(this);
         this.shoppingCart.emptyCart();
         if (persist) {
@@ -112,7 +113,7 @@ public class User implements Serializable {
         }
     }
 
-    public void addPurchaseToHistory(Purchase newPurchase, boolean persist) {
+    public void addPurchaseToHistory(Purchase newPurchase, boolean persist) throws SQLException {
         this.purchaseHistory.add(newPurchase);
 
         //save to db
@@ -129,7 +130,7 @@ public class User implements Serializable {
         this.isAdmin = true;
     }
 
-    public void initPurchaseHistory() {
+    public void initPurchaseHistory() throws SQLException {
         List<Purchase> purchases = PersistenceController.readPurchaseHistory(this.username);
         for(Purchase p : purchases) {
             p.setCart(PersistenceController.readCartById(p.getCartId()));

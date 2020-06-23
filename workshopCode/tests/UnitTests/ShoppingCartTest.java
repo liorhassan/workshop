@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
@@ -26,7 +27,7 @@ public class ShoppingCartTest {
     }
 
     @Test
-    public void addProduct() {
+    public void addProduct() throws SQLException {
         assertTrue(sc.getBaskets().isEmpty());
         Product p = new Product("Shirt",null,null,40.0, "Fox",1);
         Store store = new Store("Fox",null,null,null);
@@ -40,7 +41,7 @@ public class ShoppingCartTest {
     }
 
     @Test
-    public void view() {
+    public void view() throws SQLException {
         assertEquals("Your ShoppingCart details: \nempty!",sc.view());
         Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Store store = new Store("Fox",null,null,null);
@@ -50,7 +51,7 @@ public class ShoppingCartTest {
     }
 
     @Test
-    public void edit() {
+    public void edit() throws SQLException {
         Product p = new Product("Shirt",null,null,40.0,"Fox",1);
         Store store = new Store("Fox",null,null,null);
         store.getInventory().put(p,10);

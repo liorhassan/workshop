@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +50,7 @@ public class ShoppingCart implements Serializable {
         this.isHistory = false;
     }
 
-    public void initBaskets(ShoppingCart sc) {
+    public void initBaskets(ShoppingCart sc) throws SQLException {
         this.baskets = new ConcurrentHashMap<>();
         List<Basket> b = PersistenceController.readAllBasket(id);
 
@@ -61,7 +62,7 @@ public class ShoppingCart implements Serializable {
         }
     }
 
-    public void addProduct(String product, Store store, int amount, boolean persist) {
+    public void addProduct(String product, Store store, int amount, boolean persist) throws SQLException {
         if (!baskets.containsKey(store)) {
             Basket b = new Basket(store, this);
 
@@ -114,7 +115,7 @@ public class ShoppingCart implements Serializable {
         return response.toJSONString();
     }
 
-    public String edit(Store store, String product, int amount, boolean persist) {
+    public String edit(Store store, String product, int amount, boolean persist) throws SQLException {
         Basket basket = baskets.get(store);
         List<ProductItem> items = basket.getProductItems();
         JSONObject response = new JSONObject();
@@ -190,7 +191,7 @@ public class ShoppingCart implements Serializable {
 
     //for each basket in the cart - reserved the products in the basket
     //if a product is unavailable - return all reserved products in the cart and throws exception
-    public void reserveBaskets() {
+    public void reserveBaskets() throws Exception {
         for (Basket b : baskets.values()) {
             try {
                 b.reserve();
@@ -203,14 +204,14 @@ public class ShoppingCart implements Serializable {
 
     //checks for each basket in the cart if there are reserved products in the store
     //if such products exist, it returns them
-    public void unreserveProducts() {
+    public void unreserveProducts() throws SQLException {
         for (Basket b : baskets.values()) {
             b.unreserve();
         }
     }
 
     //for each store in the cart adds it store purchase history
-    public void addStoresPurchaseHistory() {
+    public void addStoresPurchaseHistory() throws SQLException {
         for (Store s : baskets.keySet()) {
             s.addStorePurchaseHistory(baskets.get(s), user);
         }

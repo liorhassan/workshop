@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 public class PurchaseIntegation {
 
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
         (new UsersHandler()).register("toya", "1234");
         UUID se = SystemFacade.getInstance().createNewSession();
 
@@ -36,13 +37,13 @@ public class PurchaseIntegation {
     }
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
     }
 
     @Test
-    public void validPurchaseCheck(){
+    public void validPurchaseCheck() throws SQLException {
         UUID se = SystemFacade.getInstance().createNewSession();
 
         (new UsersHandler()).login(se,"noy", "1234", false);
@@ -65,7 +66,7 @@ public class PurchaseIntegation {
     }
 
     @Test
-    public void ExtSysFailPurchaseCheck(){
+    public void ExtSysFailPurchaseCheck() throws SQLException {
         UUID se = SystemFacade.getInstance().createNewSession();
 
         (new UsersHandler()).login(se,"noy", "1234", false);
@@ -94,7 +95,7 @@ public class PurchaseIntegation {
     }
 
     @Test
-    public void notAvailableAmountPurchaseCheck(){
+    public void notAvailableAmountPurchaseCheck() throws SQLException {
         UUID se = SystemFacade.getInstance().createNewSession();
 
         (new UsersHandler()).login(se,"noy", "1234", false);

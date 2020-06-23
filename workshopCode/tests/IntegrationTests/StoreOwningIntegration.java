@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -17,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 public class StoreOwningIntegration {
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
 
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).register("maor", "1234");
@@ -41,13 +42,13 @@ public class StoreOwningIntegration {
     }
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
     }
 
     @Test
-    public void validAppointmentTest(){
+    public void validAppointmentTest() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"toya", "1234", false);
         Store store = SystemFacade.getInstance().getStoreByName("Lalin");
@@ -67,7 +68,7 @@ public class StoreOwningIntegration {
     }
 
     @Test
-    public void validAppointmentTest2(){
+    public void validAppointmentTest2() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"toya", "1234", false);
         Store store = SystemFacade.getInstance().getStoreByName("Castro");
@@ -98,7 +99,7 @@ public class StoreOwningIntegration {
     }
 
     @Test
-    public void notApprovedAddTest(){
+    public void notApprovedAddTest() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"toya", "1234", false);
         Store store = SystemFacade.getInstance().getStoreByName("Castro");
@@ -128,7 +129,7 @@ public class StoreOwningIntegration {
     }
 
     @Test
-    public void validRemoveTest(){
+    public void validRemoveTest() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se, "toya", "1234", false);
         SystemFacade.getInstance().openNewStore(se,"Zara", "Clothing");
@@ -163,7 +164,7 @@ public class StoreOwningIntegration {
     }
 
     @Test
-    public void notOwnerRemoveTest(){
+    public void notOwnerRemoveTest() throws SQLException {
         UUID se =  SystemFacade.getInstance().createNewSession();
 
         (new UsersHandler()).login(se,"toya", "1234", false);

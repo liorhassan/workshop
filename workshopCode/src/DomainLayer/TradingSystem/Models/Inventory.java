@@ -3,6 +3,7 @@ package DomainLayer.TradingSystem.Models;
 import DataAccessLayer.PersistenceController;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
@@ -36,7 +37,7 @@ public class Inventory implements Serializable {
 
     //reserve a specific product
     //returns false if the product is unavailable in the inventory
-    public boolean reserveProduct(Product p, int amount){
+    public boolean reserveProduct(Product p, int amount) throws SQLException {
         if(checkIfProductAvailable(p.getName(), amount)){
             int prevAmount = this.products.get(p);
             if(prevAmount == amount){
@@ -57,7 +58,7 @@ public class Inventory implements Serializable {
         return false;
     }
 
-    public void unreserveProduct(Product p, int amount) {
+    public void unreserveProduct(Product p, int amount) throws SQLException {
         if(products.get(p) != null){
             int newAmount = products.get(p) + amount;
             products.put(p, newAmount);
@@ -71,7 +72,7 @@ public class Inventory implements Serializable {
         }
     }
 
-    public void init(String storeName) {
+    public void init(String storeName) throws SQLException {
 
         List<Product> storeProducts = PersistenceController.readAllProducts(storeName,true);
         for(int i = 0; i < storeProducts.size(); i++) {

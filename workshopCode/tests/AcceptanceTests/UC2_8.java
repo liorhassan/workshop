@@ -7,6 +7,7 @@ import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -17,7 +18,7 @@ public class UC2_8 {
     private static UUID session_id;
 
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
         shoppingCartHandler = new ShoppingCartHandler();
         UC3_2.init(); // user toya is logged in
         session_id = UC3_2.session_id;
@@ -37,13 +38,13 @@ public class UC2_8 {
     }
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         UC3_2.clean();
     }
 
 
     @Test
-    public void emptyCart() {
+    public void emptyCart() throws SQLException {
         (new UsersHandler()).login(session_id, "noy", "1234", false);
         try {
             shoppingCartHandler.purchaseCart(session_id);
@@ -57,7 +58,7 @@ public class UC2_8 {
 
 
     @Test
-    public void valid() {
+    public void valid() throws SQLException {
         (new UsersHandler()).login(session_id, "noy", "1234", false);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "jeans skirt", 2);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Lalin", "Body Cream ocean", 5);
@@ -68,7 +69,7 @@ public class UC2_8 {
 
 
     @Test
-    public void productNotInStock() {
+    public void productNotInStock() throws SQLException {
 
         (new UsersHandler()).login(session_id, "maor", "1234", false);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "white T-shirt", 50);
@@ -90,7 +91,7 @@ public class UC2_8 {
 
 
     @Test
-    public void paymentFail() {
+    public void paymentFail() throws SQLException {
 
         (new UsersHandler()).login(session_id, "rachel", "1234", false);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Castro", "Michael Kors bag", 2);
@@ -123,7 +124,7 @@ public class UC2_8 {
 //    }
 
     @Test
-    public void revealedDiscountForProduct() {
+    public void revealedDiscountForProduct() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Scrub vanil", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
 
@@ -136,7 +137,7 @@ public class UC2_8 {
     }
 
     @Test
-    public void conditionalDiscountForProduct() {
+    public void conditionalDiscountForProduct() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
         (new StoreHandler()).addDiscountCondProductAmount("Lalin","Body Scrub musk", 50,2);
         shoppingCartHandler.AddToShoppingBasket(session_id, "Lalin", "Body Scrub musk", 2);
@@ -154,7 +155,7 @@ public class UC2_8 {
 
 
     @Test
-    public void onCostDiscountForBasket() {
+    public void onCostDiscountForBasket() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Scrub pear", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
         (new StoreHandler()).addDiscountForBasketPriceOrAmount("Lalin",  10, 100, true);
@@ -172,7 +173,7 @@ public class UC2_8 {
 
 
     @Test
-    public void onProductAmountDiscountForBasket() {
+    public void onProductAmountDiscountForBasket() throws SQLException {
         (new UsersHandler()).login(session_id, "toya", "1234", false);
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Scrub apple", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
 

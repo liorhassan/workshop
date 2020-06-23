@@ -6,6 +6,7 @@ import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -15,7 +16,7 @@ public class UC2_3 {
     private static UUID session_id;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws SQLException {
         PersistenceController.initiate(false);
         session_id = (new SessionHandler()).openNewSession();
         (new UsersHandler()).register("toya", "1234");
@@ -31,7 +32,7 @@ public class UC2_3 {
 
 
     @AfterClass
-    public static void clean() {
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new UsersHandler()).resetAdmins();
         (new StoreHandler()).resetStores();
@@ -43,7 +44,7 @@ public class UC2_3 {
     }
 
     @Test
-    public void successfully() {
+    public void successfully() throws SQLException {
         String output1 = (new UsersHandler()).login(session_id, "lior", "1234", true);
         assertEquals("{\"SUCCESS\":\"You have been successfully logged in!\"}", output1);
         (new UsersHandler()).logout(session_id);

@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.Assert.*;
 
 public class UserTest {
@@ -22,7 +24,7 @@ public class UserTest {
     }
 
     @Test
-    public void hasEditPrivileges() {
+    public void hasEditPrivileges() throws SQLException {
         Store store1 = new Store("Fox",null,null,null);
         Store store2 = new Store("Castro",null,null,null);
         assertFalse(user.hasEditPrivileges("Fox"));

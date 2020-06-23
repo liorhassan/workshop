@@ -6,6 +6,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class UC4_10 {
     private static UUID session_id;
 
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
         PersistenceController.initiate(false);
         storePurchaseHistory = new ViewPurchaseHistoryHandler();
         session_id = (new SessionHandler()).openNewSession();
@@ -43,7 +44,7 @@ public class UC4_10 {
 
 
     @AfterClass
-    public static void clean() {
+    public static void clean() throws SQLException {
         (new UsersHandler()).logout(session_id);
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
@@ -56,7 +57,7 @@ public class UC4_10 {
     }
 
     @Test
-    public void valid() throws ParseException {
+    public void valid() throws ParseException, SQLException {
         //noy - store owner
         String result = storePurchaseHistory.ViewPurchaseHistoryOfStore(session_id, "Lalin");
         JSONParser parser = new JSONParser();
@@ -81,7 +82,7 @@ public class UC4_10 {
     }
 
     @Test
-    public void noPermissions() {
+    public void noPermissions() throws SQLException {
         //zuzu - neither a manager nor a store owner
         (new UsersHandler()).logout(session_id);
         (new UsersHandler()).login(session_id, "zuzu", "1234", false);

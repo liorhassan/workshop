@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class SystemFacade {
         PS = new ProductSupplyStub();
     }
 
-    public void initSystem(){
+    public void initSystem() throws SQLException {
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
         firstAdmin.setIsAdmin();
@@ -50,7 +51,7 @@ public class SystemFacade {
         NotificationSystem.getInstance().addUser("Admin159");
     }
 
-    public UUID createNewSession(){
+    public UUID createNewSession() throws SQLException {
         Session newSession = new Session();
         active_sessions.put(newSession.getSession_id(), newSession);
         return newSession.getSession_id();
@@ -65,7 +66,7 @@ public class SystemFacade {
         active_sessions.remove(session_id);
     }
 
-    public void init() {
+    public void init() throws SQLException {
         initSubscribedUsers();
         initAdmins();
         initStores();
@@ -75,7 +76,7 @@ public class SystemFacade {
 
 
 
-    private void initSubscribedUsers() {
+    private void initSubscribedUsers() throws SQLException {
         List<User> allSubscribedUsers = PersistenceController.readAllUsers(false);
 
         for (User user: allSubscribedUsers) {
@@ -85,7 +86,7 @@ public class SystemFacade {
         }
     }
 
-    private void initAdmins() {
+    private void initAdmins() throws SQLException {
         List<User> allAdmins = PersistenceController.readAllUsers(true);
 
         for (User user: allAdmins) {
@@ -93,13 +94,13 @@ public class SystemFacade {
         }
     }
 
-    private void initCarts() {
+    private void initCarts() throws SQLException {
         for(User u: this.users.values()){
             u.initCart();
         }
     }
 
-    private void initStores() {
+    private void initStores() throws SQLException {
         List<Store> allStores = PersistenceController.readAllStores();
 
         for (Store s: allStores) {
@@ -110,7 +111,7 @@ public class SystemFacade {
         }
     }
 
-    private void initManagments(Store store) {
+    private void initManagments(Store store) throws SQLException {
         List<StoreManaging> sm = PersistenceController.readAllManagers(store.getName());
         User currUser;
         for (StoreManaging s: sm){
@@ -124,7 +125,7 @@ public class SystemFacade {
         }
     }
 
-    private void initOwnerships(Store store) {
+    private void initOwnerships(Store store) throws SQLException {
         List<StoreOwning> so = PersistenceController.readAllOwners(store.getName());
         User currUser;
         for (StoreOwning s:so){
@@ -139,7 +140,7 @@ public class SystemFacade {
         }
     }
 
-    private void initPurchaseHistory() {
+    private void initPurchaseHistory() throws SQLException {
 
         for(User u : this.users.values()){
             u.initPurchaseHistory();
@@ -171,13 +172,13 @@ public class SystemFacade {
     }
 
     //reset functions
-    public void resetUsers(){
+    public void resetUsers() throws SQLException {
         users.clear();
         adminsList.clear();
         initSystem();
     }
 
-    public void resetStores(){
+    public void resetStores() throws SQLException {
         for(Store s : stores.values()){
             for(Product p : s.getInventory().keySet()){
                 PersistenceController.delete(p);
@@ -187,7 +188,7 @@ public class SystemFacade {
     }
 
     //function for handling UseCase 2.2
-    public void register(String username) {
+    public void register(String username) throws SQLException {
 
         User newUser = new User();
         newUser.setUsername(username);
@@ -279,7 +280,7 @@ public class SystemFacade {
     }
 
     //function for handling UseCase 2.6
-    public void addToShoppingBasket(UUID session_id, String store, String product, int amount){
+    public void addToShoppingBasket(UUID session_id, String store, String product, int amount) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -308,7 +309,7 @@ public class SystemFacade {
     }
 
     //function for handling UseCase 3.1
-    public String logout(UUID session_id){
+    public String logout(UUID session_id) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -333,7 +334,7 @@ public class SystemFacade {
     }
 
     // function for use case 2.7
-    public String editShoppingCart(UUID session_id, String storeName, String productName, int amount){
+    public String editShoppingCart(UUID session_id, String storeName, String productName, int amount) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -343,7 +344,7 @@ public class SystemFacade {
     }
 
     //function for handling Use Case 4.1
-    public String updateInventory(String storeName, String productName, double productPrice, String productCategory, String productDescription, int amount){
+    public String updateInventory(String storeName, String productName, double productPrice, String productCategory, String productDescription, int amount) throws SQLException {
         Store s = stores.get(storeName);
         if (!s.hasProduct(productName)) {
             s.addToInventory(productName, productPrice, Category.valueOf(productCategory), productDescription, amount);
@@ -364,7 +365,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 4.7
-    public String removeManager(String username,String storename){
+    public String removeManager(String username,String storename) throws SQLException {
         Store store = stores.get(storename);
         User user = users.get(username);
         JSONObject response = new JSONObject();
@@ -395,7 +396,7 @@ public class SystemFacade {
         return appointer.equals(se.getLoggedin_user());
     }
 
-    public String appointManager(UUID session_id, String username, String storeName){
+    public String appointManager(UUID session_id, String username, String storeName) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -430,7 +431,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 3.2 written by Nufar
-    public String openNewStore(UUID session_id, String storeName, String storeDescription) {
+    public String openNewStore(UUID session_id, String storeName, String storeDescription) throws SQLException {
 
         Session se = active_sessions.get(session_id);
         if(se == null)
@@ -506,7 +507,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 4.6 - written by Noy
-    public String editPermissions(String userName, List<String> permissions, String storeName){
+    public String editPermissions(String userName, List<String> permissions, String storeName) throws SQLException {
         Store store = getStoreByName(storeName);
         User user = getUserByName(userName);
 
@@ -559,7 +560,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void reserveProducts(UUID session_id) {
+    public void reserveProducts(UUID session_id) throws Exception {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -575,7 +576,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public boolean payment(UUID session_id) {
+    public boolean payment(UUID session_id) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -589,7 +590,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public boolean supply(UUID session_id){
+    public boolean supply(UUID session_id) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -602,7 +603,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void addPurchaseToHistory(UUID session_id) {
+    public void addPurchaseToHistory(UUID session_id) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -633,7 +634,7 @@ public class SystemFacade {
 
 
     // function for handling Use Case 4.3 - written by Nufar
-    public String appointOwner(UUID session_id, String username, String storeName) {
+    public String appointOwner(UUID session_id, String username, String storeName) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -703,7 +704,7 @@ public class SystemFacade {
         return se.getLoggedin_user().getShoppingCart().isBasketExists(getStoreByName(storeName));
     }
 
-    public void addAdmin(String userName){
+    public void addAdmin(String userName) throws SQLException {
         User user = users.get(userName);
         user.setIsAdmin();
         adminsList.add(user);
@@ -761,7 +762,7 @@ public class SystemFacade {
         return true;
     }
 
-    public void emptyCart(UUID session_id){
+    public void emptyCart(UUID session_id) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -1039,7 +1040,7 @@ public class SystemFacade {
         return "";
     }
 
-    public String responseToAppointment(UUID session_id, String storeName, String userToResponse, boolean isApproved){
+    public String responseToAppointment(UUID session_id, String storeName, String userToResponse, boolean isApproved) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");

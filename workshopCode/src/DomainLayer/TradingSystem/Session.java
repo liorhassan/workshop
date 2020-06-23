@@ -3,6 +3,7 @@ package DomainLayer.TradingSystem;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.User;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class Session {
 
     private boolean adminMode;
 
-    public Session() {
+    public Session() throws SQLException {
         session_id = UUID.randomUUID();
         loggedin_user = new User();
         lastSearchResult = new ArrayList<>();

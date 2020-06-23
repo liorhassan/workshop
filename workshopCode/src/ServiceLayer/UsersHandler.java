@@ -6,6 +6,7 @@ import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class UsersHandler {
@@ -42,7 +43,7 @@ public class UsersHandler {
     }
 
 
-    public String logout(UUID session_id){
+    public String logout(UUID session_id) throws SQLException {
         SystemLogger.getInstance().writeEvent("Logout command");
         return createJSONMsg("SUCCESS", SystemFacade.getInstance().logout(session_id));
         //return SystemFacade.getInstance().logout();
@@ -75,7 +76,7 @@ public class UsersHandler {
         }
     }
 
-    public void resetUsers(){
+    public void resetUsers() throws SQLException {
         SystemFacade.getInstance().resetUsers();
     }
 

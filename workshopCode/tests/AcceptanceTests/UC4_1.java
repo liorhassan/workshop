@@ -5,6 +5,7 @@ import ServiceLayer.StoreHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -25,7 +26,7 @@ public class UC4_1 {
     }
 
     @Before
-    public void setUp(){
+    public void setUp() throws SQLException {
         (new UsersHandler()).login(session_id, "toya","toya", false);
         (new StoreHandler()).openNewStore(session_id, "Castro","clothing");
         (new UsersHandler()).logout(session_id);
@@ -38,13 +39,13 @@ public class UC4_1 {
 
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new SessionHandler()).closeSession(session_id);
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() throws SQLException {
         (new StoreHandler()).resetStores();
     }
 
