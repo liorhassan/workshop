@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // When the user clicks on <span> (x), close the modal
     document.getElementsByClassName("close")[0].addEventListener("click", function () {
         document.getElementById("editModal").style.display = "none";
+        document.getElementById("purchaseModal").style.display = "none";
     })
 
     document.getElementById("confirmEditbtn").addEventListener("click", function () {
@@ -70,9 +71,29 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     document.getElementById("purchasebtn").addEventListener("click", function () {
+        // items[0].amount = 20
+        // setItemsToCart(items)
+        clearPurchaseModalFields();
+        document.getElementById("purchaseModal").style.display = "block";
+    })
+
+
+    document.getElementById("confirmPurchasebtn").addEventListener("click", function () {
+            var cardNumberUpdate = document.getElementById("cardNumberUpdate").value;
+            var monthUpdate = document.getElementById("monthUpdate").value;
+            var yearUpdate = document.getElementById("yearUpdate").value;
+            var holderUpdate = document.getElementById("holderUpdate").value;
+            var cvvUpdate = document.getElementById("cvvUpdate").value;
+            var idUpdate = document.getElementById("idUpdate").value;
+            var nameUpdate = document.getElementById("nameUpdate").value;
+            var addressUpdate = document.getElementById("addressUpdate").value;
+            var cityUpdate = document.getElementById("cityUpdate").value;
+            var countryUpdate = document.getElementById("countryUpdate").value;
+            var zipUpdate = document.getElementById("zipUpdate").value;
+
          fetch("http://localhost:8080/tradingSystem/purchaseCart", {
             method: "POST",
-            body: JSON.stringify({session_id: localStorage["session_id"]})
+            body: JSON.stringify({session_id: localStorage["session_id"], cardNumber:cardNumberUpdate, month:monthUpdate, year:yearUpdate, holder:holderUpdate, cvv:cvvUpdate, id:idUpdate, name:nameUpdate, addr:addressUpdate, city:cityUpdate, country:countryUpdate, zip:zipUpdate})
         })
              .then(response => {
                 if (response.ok) {
@@ -94,15 +115,28 @@ document.addEventListener("DOMContentLoaded", function () {
                         'error').then(setItemsToCart)
                  }
              })
+
+             document.getElementById("purchaseModal").style.display = "none";
     })
 
 });
 
 function clearEditModalFields() {
-    document.getElementById("productNameUpdate").value = "";
+    document.getElementById("cardNumberUpdate").value = "";
     document.getElementById("storeNameUpdate").value = "";
     document.getElementById("quantityUpdate").value = "1";
 }
+
+function clearPurchaseModalFields() {
+    document.getElementById("productNameUpdate").value = "";
+    document.getElementById("monthUpdate").value = "";
+    document.getElementById("yearUpdate").value = "";
+    document.getElementById("holderUpdate").value = "";
+    document.getElementById("cvvUpdate").value = "";
+    document.getElementById("idUpdate").value = "";
+    document.getElementById("idUpdate").value = "";
+}
+
 
 function setItemsToCart(items) {
     const shoppingCart = document.getElementById("shopCartContainer");
@@ -148,6 +182,9 @@ function setItemsToCart(items) {
 window.onclick = function (event) {
     if (event.target == document.getElementById("editModal")) {
         document.getElementById("editModal").style.display = "none";
+    }
+    if (event.target == document.getElementById("purchaseModal")) {
+            document.getElementById("purchaseModal").style.display = "none";
     }
 }
 

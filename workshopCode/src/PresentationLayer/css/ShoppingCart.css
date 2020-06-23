@@ -59,6 +59,8 @@ body {
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+
+
 /* Modal Content/Box */
 .modal-content {
   background-color: #fefefe;
@@ -76,6 +78,18 @@ body {
   height: 40vh;
   width: 85%;
 }
+
+#purchaseElements {
+  display: flex!important;
+  flex-direction: column!important;
+  justify-content: space-evenly!important;
+  align-self: center;
+  height: 70vh;
+  width: 85%;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
 
 /* The Close Button */
 .close {
@@ -98,3 +112,4 @@ input[type=number]::-webkit-outer-spin-button {
    opacity: 1;
 
 }
+

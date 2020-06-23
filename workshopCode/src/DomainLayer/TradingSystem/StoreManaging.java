@@ -5,6 +5,7 @@ import DomainLayer.TradingSystem.Models.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class StoreManaging implements Serializable {
         this.storeName = storeName;
 
         // TODO: init from db
-        this.permissions = new LinkedList<>();
-        this.permissions.add(new Permission(("View Purchasing History")));
+        this.permissions = new ArrayList<>();
+        this.permissions.add(new Permission("View Purchasing History"));
     }
 
     public void initPermissions(){
