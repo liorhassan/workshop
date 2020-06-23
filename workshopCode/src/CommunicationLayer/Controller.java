@@ -5,9 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import ServiceLayer.*;
 import com.sun.net.httpserver.Headers;
@@ -643,7 +641,36 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
-                String response = cartHandler.purchaseCart(UUID.fromString(session_id));
+                String cardNumber = (requestJson.containsKey("cardNumber")) ?  (requestJson.get("cardNumber").toString()) : "";
+                String month = (requestJson.containsKey("month")) ?  (requestJson.get("month").toString()) : "";
+                String year = (requestJson.containsKey("year")) ?  (requestJson.get("year").toString()) : "";
+                String holder = (requestJson.containsKey("holder")) ?  (requestJson.get("holder").toString()) : "";
+                String cvv = (requestJson.containsKey("cvv")) ?  (requestJson.get("cvv").toString()) : "";
+                String id = (requestJson.containsKey("id")) ?  (requestJson.get("id").toString()) : "";
+                Hashtable<String, String> paymentData = new Hashtable<>();
+                paymentData.put("action_type", "pay");
+                paymentData.put("card_number", cardNumber);
+                paymentData.put("month", month);
+                paymentData.put("year", year);
+                paymentData.put("holder", holder);
+                paymentData.put("ccv", cvv);
+                paymentData.put("id", id);
+
+                String name = (requestJson.containsKey("name")) ?  (requestJson.get("name").toString()) : "";
+                String addr = (requestJson.containsKey("addr")) ?  (requestJson.get("addr").toString()) : "";
+                String city = (requestJson.containsKey("city")) ?  (requestJson.get("city").toString()) : "";
+                String country = (requestJson.containsKey("country")) ?  (requestJson.get("country").toString()) : "";
+                String zip = (requestJson.containsKey("zip")) ?  (requestJson.get("zip").toString()) : "";
+                Hashtable<String, String> supplyData = new Hashtable<>();
+                supplyData.put("action_type", "supply");
+                supplyData.put("name", name);
+                supplyData.put("address", addr);
+                supplyData.put("city", city);
+                supplyData.put("country", country);
+                supplyData.put("zip", zip);
+
+
+                String response = cartHandler.purchaseCart(paymentData, supplyData, UUID.fromString(session_id));
                 headers.set("purchaseCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {

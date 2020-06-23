@@ -39,6 +39,12 @@ public class ShoppingCart implements Serializable {
     @Column(name = "totalPrice")
     private double cartTotalPrice;
 
+    @Transient
+    private int paymentTransactionId;
+
+    @Transient
+    private int supplementTransactionId;
+
     public ShoppingCart() {
     }
 
@@ -256,6 +262,22 @@ public class ShoppingCart implements Serializable {
         this.baskets = new ConcurrentHashMap<Store, Basket>();
         this.isHistory = false;
         this.cartTotalPrice = 0;
+    }
+
+    public int getPaymentTransactionId() {
+        return paymentTransactionId;
+    }
+
+    public void setPaymentTransactionId(int id){
+        this.paymentTransactionId = id;
+    }
+
+    public int getSupplementTransactionId() {
+        return supplementTransactionId;
+    }
+
+    public void setSupplementTransactionId(int id){
+        this.supplementTransactionId = id;
     }
 }
 
