@@ -43,8 +43,6 @@ public class Store implements Serializable {
     @Transient
     private StorePurchaseHistory purchaseHistory;
     @Transient
-    private ConcurrentHashMap<Basket, List<ProductItem>> reservedProducts;
-    @Transient
     private List<DiscountBInterface> discountPolicies;
     @Transient
     private List<DiscountBInterface> discountsOnProducts;
@@ -77,7 +75,6 @@ public class Store implements Serializable {
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
         this.notStandAlonePolicies = new ArrayList<>();
-        this.reservedProducts = new ConcurrentHashMap<>();
         this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
     }
@@ -94,7 +91,6 @@ public class Store implements Serializable {
         this.notStandAlonePolicies = new ArrayList<>();
         this.discountsOnProducts = new ArrayList<>();
         this.purchasePolicies = new ArrayList<>();
-        this.reservedProducts = new ConcurrentHashMap<>();
         this.waitingAgreements = new ConcurrentHashMap<>();
         this.discountID_counter = 0;
         this.purchaseID_counter = 0;
@@ -348,7 +344,6 @@ public class Store implements Serializable {
     //if it does - reserve the product and adds it to the reserved inventory list
     public void reserveBasket(Basket b) {
         //this field save all the inventory that have been reserved
-        this.reservedProducts.put(b, new LinkedList<>());
         for (PurchasePolicy p : purchasePolicies) {
             if (!p.purchaseAccordingToPolicy(b))
                 throw new RuntimeException("Your purchase doesn’t match the store’s policy");
@@ -357,22 +352,18 @@ public class Store implements Serializable {
         for (ProductItem pi : products) {
             Product p = pi.getProduct();
             int amount = pi.getAmount();
-            if (!this.inventory.reserveProduct(p, amount)) {
+            if (!this.inventory.reserveProduct(pi, b)) {
                 throw new RuntimeException("There is currently no stock of " + amount + " " + p.getName() + " products");
             }
-            this.reservedProducts.get(b).add(pi);
         }
     }
 
     public List<ProductItem> getReservedProducts(Basket b) {
-        return this.reservedProducts.get(b);
+        return this.inventory.getReservedProducts(b);
     }
 
     public void unreserveBasket(Basket b) {
-        for (ProductItem pi : this.reservedProducts.get(b)) {
-            this.inventory.unreserveProduct(pi.getProduct(), pi.getAmount());
-            PersistenceController.create(pi);
-        }
+        this.inventory.unreserveBasket(b);
     }
 
     public double calculateTotalCheck(Basket b) {
@@ -624,8 +615,8 @@ public class Store implements Serializable {
     }
 
     //for store unit test
-    public void reserveProduct(Product p, int amount) {
-        this.inventory.reserveProduct(p, amount);
+    public void reserveProduct(ProductItem pi, Basket b) {
+        this.inventory.reserveProduct(pi, b);
     }
 
     public void initPurchaseHistory() {

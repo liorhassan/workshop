@@ -1,8 +1,10 @@
 package UnitTests;
 
+import DomainLayer.TradingSystem.Models.Basket;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.Models.User;
+import DomainLayer.TradingSystem.ProductItem;
 import DomainLayer.TradingSystem.StoreManaging;
 import org.junit.After;
 import org.junit.Before;
@@ -85,11 +87,17 @@ public class StoreTest {
         Product p2 = new Product("Dress",null,null,45.5,"Fox",1);
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
-        store.reserveProduct(p,3);
+        Basket b = new Basket();
+        b.setStore(store);
+        b.addProduct(p, 3);
+        b.addProduct(p2, 10);
+
+        store.reserveProduct(b.getProductItemByProduct(p), b);
         assertEquals(7,(int)store.getInventory().get(p));
-        store.reserveProduct(p,10);
+        b.addProduct(p, 10);
+        store.reserveProduct(b.getProductItemByProduct(p), b);
         assertEquals(7,(int)store.getInventory().get(p));
-        store.reserveProduct(p,7);
+        store.reserveProduct(b.getProductItemByProduct(p2), b);
         assertFalse(store.getInventory().containsKey(p));
     }
 }

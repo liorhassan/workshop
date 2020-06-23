@@ -195,7 +195,12 @@ public class ShoppingCart implements Serializable {
             try {
                 b.reserve();
             } catch (Exception e) {
-                unreserveProducts();
+                try {
+                    unreserveProducts();
+                }
+                catch(Exception e1){
+                    throw e1;
+                }
                 throw new RuntimeException(e.getMessage());
             }
         }
@@ -205,7 +210,7 @@ public class ShoppingCart implements Serializable {
     //if such products exist, it returns them
     public void unreserveProducts() {
         for (Basket b : baskets.values()) {
-            b.unreserve();
+                b.unreserve();
         }
     }
 
