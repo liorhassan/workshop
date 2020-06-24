@@ -43,10 +43,12 @@ public class UC1_1 {
         catch (Exception e){
             assertEquals("This user is not registered", e.getMessage());
         }
+
     }
 
     @Test
     public void inValidFileTest() throws Exception {
+//        session_id = (new SessionHandler()).openNewSession();
         try{
             handler.initSystem("../configurations/test2.ini");
         }
