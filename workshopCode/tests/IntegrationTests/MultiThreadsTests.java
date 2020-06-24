@@ -95,11 +95,12 @@ public class MultiThreadsTests {
     public void openStoreTest() throws InterruptedException {
         AtomicInteger counterSecc = new AtomicInteger();
         AtomicInteger counterFail = new AtomicInteger();
+        StoreHandler storeHandler = new StoreHandler();
         Thread th1 = new Thread(()->{
             UUID se = SystemFacade.getInstance().createNewSession();
             (new UsersHandler()).login(se, "maor", "1234", false);
             try{
-                (new StoreHandler()).openNewStore(se,"TheThread","food");
+                storeHandler.openNewStore(se,"TheThread","food");
                 counterSecc.getAndIncrement();
             }
             catch (Exception e){
@@ -113,7 +114,7 @@ public class MultiThreadsTests {
             UUID se = SystemFacade.getInstance().createNewSession();
             (new UsersHandler()).login(se, "rachel", "1234", false);
             try{
-                (new StoreHandler()).openNewStore(se,"TheThread","food");
+                storeHandler.openNewStore(se,"TheThread","food");
                 counterSecc.getAndIncrement();
             }
             catch (Exception e){
@@ -176,11 +177,12 @@ public class MultiThreadsTests {
     public void addRevealDiscountTest() throws InterruptedException {
         AtomicInteger counterSecc = new AtomicInteger();
         AtomicInteger counterFail = new AtomicInteger();
+        StoreHandler storeHandler = new StoreHandler();
         Thread th1 = new Thread(()->{
             UUID se = SystemFacade.getInstance().createNewSession();
             (new UsersHandler()).login(se, "maor", "1234", false);
             try{
-                (new StoreHandler()).addDiscountRevealedProduct("ZARA","jeans skirt", 30);
+                storeHandler.addDiscountRevealedProduct("ZARA","jeans skirt", 30);
                 counterSecc.getAndIncrement();
             }
             catch (Exception e){
@@ -194,7 +196,7 @@ public class MultiThreadsTests {
             UUID se = SystemFacade.getInstance().createNewSession();
             (new UsersHandler()).login(se, "toya", "1234", false);
             try{
-                (new StoreHandler()).addDiscountRevealedProduct("ZARA","jeans skirt", 20);
+                storeHandler.addDiscountRevealedProduct("ZARA","jeans skirt", 20);
                 counterSecc.getAndIncrement();
             }
             catch (Exception e){
@@ -209,7 +211,6 @@ public class MultiThreadsTests {
 
         assertTrue(counterSecc.get() ==1);
         assertTrue(counterFail.get() ==1);
-        assertTrue(SystemFacade.getInstance().checkIfUserIsManager("ZARA", "rachel"));
 
     }
 }

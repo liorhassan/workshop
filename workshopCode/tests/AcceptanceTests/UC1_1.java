@@ -5,7 +5,6 @@ import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
 import ServiceLayer.SystemInitHandler;
 import ServiceLayer.UsersHandler;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,8 +33,8 @@ public class UC1_1 {
 
     @Test
     public void validFileTest() throws Exception {
-        handler.initSystem("../configurations/init.ini");
-        String result = (new UsersHandler()).login(session_id, "u1", "1234", true);
+        handler.initSystem("../configurations/test1.ini");
+        String result = (new UsersHandler()).login(session_id, "user1", "1234", true);
         assertEquals("{\"SUCCESS\":\"You have been successfully logged in!\"}", result);
         (new UsersHandler()).logout(session_id);
         try{
@@ -49,7 +48,7 @@ public class UC1_1 {
     @Test
     public void inValidFileTest() throws Exception {
         try{
-            handler.initSystem("test2.ini");
+            handler.initSystem("../configurations/test2.ini");
         }
         catch (Exception e){
            // assertEquals("{\"SUCCESS\":\"You have been successfully logged in!\"}", e.getMessage());

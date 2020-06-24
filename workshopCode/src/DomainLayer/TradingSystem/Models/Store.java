@@ -174,7 +174,7 @@ public class Store implements Serializable {
     public boolean hasRevDiscountOnProduct(String productName) {
         Product product = getProductByName(productName);
         for (DiscountBInterface dis : discountsOnProducts) {
-            if (dis instanceof DiscountCondProductAmount) {
+            if (dis instanceof DiscountRevealedProduct) {
                 if (((DiscountRevealedProduct) dis).getProductDiscount().getName().equals(productName)) {
                     return true;
                 }
