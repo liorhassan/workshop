@@ -2,12 +2,9 @@ package DomainLayer.TradingSystem;
 
 
 import DataAccessLayer.PersistenceController;
-import ExternalSystems.PaymentCollectionProxy;
-import ExternalSystems.PaymentCollectionStub;
-import ExternalSystems.ProductSupplyProxy;
-import ExternalSystems.ProductSupplyStub;
 import DomainLayer.TradingSystem.Models.*;
-import DomainLayer.Security.SecurityFacade;
+import ExternalSystems.PaymentCollectionProxy;
+import ExternalSystems.ProductSupplyProxy;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -211,6 +208,11 @@ public class SystemFacade {
 
     //reset functions
     public void resetUsers(){
+//        for(User u : users.values()){
+//            if(u.getUsername() == null)
+//                continue;
+//            PersistenceController.delete(PersistenceController.readUserDetails(u.getUsername()));
+//        }
         users.clear();
 
         adminsList.clear();

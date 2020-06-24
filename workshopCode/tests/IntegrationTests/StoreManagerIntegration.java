@@ -82,7 +82,7 @@ public class StoreManagerIntegration {
             (new StoreManagerHandler()).addStoreManager(se,"zuzu", "Lalin");
         }
         catch (Exception e){
-            assertEquals("You must be this store owner for this command", e.getMessage());
+            assertEquals("You must be this store owner for this command or store manager with permissions", e.getMessage());
             assertTrue(!store.isManager(zuzu));
             assertTrue(!zuzu.getStoreManagements().containsKey(store));
 

@@ -116,7 +116,7 @@ public class StoreOwningIntegration {
 
         assertTrue(!store.isOwner(maor));
         assertTrue(!maor.getStoreOwnings().containsKey(store));
-        SystemFacade.getInstance().appointOwner(se,"maor", "Castro");
+        SystemFacade.getInstance().appointOwner(se,"maor", "P&B");
         // maor get notification
         //rachel get notification
         int maorNumOfNotificAfter = NotificationSystem.getInstance().getUserNotificationNumber("maor");
