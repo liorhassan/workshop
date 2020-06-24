@@ -26,11 +26,12 @@ public class ProductSupplyStub implements ProductSupply{
         handshake.put("action_type", "handshake");
         String response = postMsg(handshake);
         if(!response.equals("OK")){
-            return -1;
+            throw new RuntimeException("Connection to Supply External System failed");
         }
 
+        response = postMsg(data);
         try{
-            int transId = Integer.parseInt(postMsg(data));
+            int transId = Integer.parseInt(response);
             return transId;
         }
         catch(Exception e){
@@ -46,14 +47,15 @@ public class ProductSupplyStub implements ProductSupply{
         handshake.put("action_type", "handshake");
         String response = postMsg(handshake);
         if(!response.equals("OK")){
-            return -1;
+            throw new RuntimeException("Connection to Supply External System failed");
         }
 
         var data = new Hashtable<String, String>();
         data.put("action_type", "cancel_supply");
         data.put("transaction_id", String.valueOf(transactionId));
+        response = postMsg(data);
         try{
-            int transId = Integer.parseInt(postMsg(data));
+            int transId = Integer.parseInt(response);
             return transId;
         }
         catch(Exception e){
@@ -96,7 +98,7 @@ public class ProductSupplyStub implements ProductSupply{
             return response;
         }
         catch (Exception e){
-            return "-1";
+            throw new RuntimeException("Connection to Supply External System failed");
         }
     }
 }
