@@ -5,7 +5,7 @@
 <hibernate-configuration>
     <session-factory>
         <!-- Create table if not exists -->
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">create-drop</property>
         <!-- The JDBC driver of your database -->
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <!-- SQL dialect -->

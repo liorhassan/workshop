@@ -1,11 +1,15 @@
 package UnitTests;
 
+import DataAccessLayer.PersistenceController;
+import DomainLayer.TradingSystem.Category;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.Models.User;
 import DomainLayer.TradingSystem.StoreManaging;
+import DomainLayer.TradingSystem.StoreOwning;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -14,9 +18,17 @@ public class StoreTest {
 
     Store store;
 
+    @BeforeClass
+    public static void init() {
+        PersistenceController.initiate(false);
+    }
+
     @Before
     public void setUp() throws Exception {
-        store = new Store("Fox",null,null,null);
+        User user = new User();
+        user.setUsername("tester");
+        StoreOwning storeOwning = new StoreOwning("Fox", "tester");
+        store = new Store("Fox","clothsss",user,storeOwning);
     }
 
     @After
@@ -81,8 +93,10 @@ public class StoreTest {
 
     @Test
     public void purchaseProduct() {
-        Product p = new Product("Shirt",null,null,40.0,"Fox",1);
+        Product p = new Product("Shirt", Category.Clothing,"nice",40.0,"Fox",1);
         Product p2 = new Product("Dress",null,null,45.5,"Fox",1);
+        PersistenceController.create(p);
+        PersistenceController.create(p2);
         store.getInventory().put(p,10);
         store.getInventory().put(p2,10);
         store.reserveProduct(p,3);
