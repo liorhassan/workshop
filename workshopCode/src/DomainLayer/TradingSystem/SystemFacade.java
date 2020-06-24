@@ -2,6 +2,7 @@ package DomainLayer.TradingSystem;
 
 
 import DataAccessLayer.PersistenceController;
+import DomainLayer.Security.SecurityFacade;
 import DomainLayer.TradingSystem.Models.*;
 import ExternalSystems.PaymentCollectionProxy;
 import ExternalSystems.ProductSupplyProxy;
@@ -45,8 +46,7 @@ public class SystemFacade {
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
         firstAdmin.setIsAdmin();
-        //SecurityFacade.getInstance().addUser("Admin159", "951");
-
+        SecurityFacade.getInstance().addUser("Admin159", "951");
 
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
@@ -214,8 +214,8 @@ public class SystemFacade {
 //            PersistenceController.delete(PersistenceController.readUserDetails(u.getUsername()));
 //        }
         users.clear();
-
         adminsList.clear();
+        active_sessions = new ConcurrentHashMap<>();
         initSystem();
     }
 
@@ -363,6 +363,7 @@ public class SystemFacade {
         }
         NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
+        se.setAdminMode(false);
         return "You have been successfully logged out!";
     }
 
@@ -1191,5 +1192,13 @@ public class SystemFacade {
     public void removePurchasePolicies(String storeName){
         Store store = getStoreByName(storeName);
         store.removePurchasePolicies();
+    }
+
+    public boolean haveAdmin() {
+        return (this.adminsList.size() > 0);
+    }
+
+    public void removeSession(UUID session_id) {
+        this.active_sessions.remove(session_id);
     }
 }
