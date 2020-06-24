@@ -75,6 +75,13 @@ public class SystemFacade {
         initPurchaseHistory();
     }
 
+    public String getLoggedInUsername(UUID session_id){
+        Session se = active_sessions.get(session_id);
+        if(se == null)
+            throw new IllegalArgumentException("Invalid Session ID");
+        return (se.getLoggedin_user().getUsername() == null) ? "Guest" : se.getLoggedin_user().getUsername();
+    }
+
 
 
     private void initSubscribedUsers() {
@@ -568,11 +575,12 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public void computePrice(UUID session_id) {
+    public double computePrice(UUID session_id) {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
         se.getLoggedin_user().getShoppingCart().computeCartPrice();
+        return se.getLoggedin_user().getShoppingCart().getTotalCartPrice();
     }
 
     // function for handling Use Case 2.8 - written by Noy

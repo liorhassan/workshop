@@ -68,18 +68,17 @@ public class ShoppingCartHandler {
                 throw new RuntimeException("The shopping cart is empty");
             }
             SystemFacade.getInstance().reserveProducts(session_id);
-            SystemFacade.getInstance().computePrice(session_id);
+            double price = SystemFacade.getInstance().computePrice(session_id);
             if (!SystemFacade.getInstance().payment(session_id)) {
                 throw new RuntimeException("Payment failed");
             }
             if(!SystemFacade.getInstance().supply(session_id)){
-                throw new RuntimeException("supplement failed");
+                throw new RuntimeException("supply failed");
             }
 
             SystemFacade.getInstance().addPurchaseToHistory(session_id);
-            return createJSONMsg("SUCCESS", "Purchasing completed successfully");
+            return createJSONMsg("SUCCESS", "Purchasing completed successfully\nTotal price: "+price+"$");
 
-//            return "Purchasing completed successfully";
         }
 
         catch (Exception e) {
