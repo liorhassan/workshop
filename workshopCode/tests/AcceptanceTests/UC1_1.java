@@ -6,6 +6,7 @@ import ServiceLayer.StoreHandler;
 import ServiceLayer.SystemInitHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -25,15 +26,15 @@ public class UC1_1 {
         handler = new SystemInitHandler();
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @AfterClass
+    public static void tearDown() throws Exception {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
     }
 
     @Test
     public void validFileTest() throws Exception {
-        handler.initSystem("../configuration/init.ini");
+        handler.initSystem("../configurations/init.ini");
         String result = (new UsersHandler()).login(session_id, "u1", "1234", true);
         assertEquals("{\"SUCCESS\":\"You have been successfully logged in!\"}", result);
         (new UsersHandler()).logout(session_id);

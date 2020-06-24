@@ -18,7 +18,7 @@ public class SystemInitHandler {
 
     public void initSystem(String fileName){
         UUID session_id = sessionHandler.openNewSession();
-        File initFile = new File( fileName);
+        File initFile = new File(fileName);
         String s = initFile.getAbsolutePath();
         try{
             Scanner scn = new Scanner(initFile);

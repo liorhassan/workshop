@@ -11,7 +11,7 @@ public class starter {
     public static void main(String[] args) throws IOException {
         PersistenceController.initiate(true);
         SystemFacade.getInstance().init();
-        (new SystemInitHandler()).initSystem("./configuration/init.ini");
+        (new SystemInitHandler()).initSystem("./configurations/init.ini");
         Controller.start();
     }
 }
