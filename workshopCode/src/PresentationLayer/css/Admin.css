@@ -4,6 +4,22 @@
     flex-direction: column;
 }
 
+
+#filter-stats {
+    max-width: 250pt;
+    margin-left: 20pt;
+}
+
+#search-results {
+    max-height: 300pt;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+#filter-button {
+    color: white;
+}
+
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */

@@ -6,6 +6,7 @@ import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.sql.Date;
 import java.util.UUID;
 
 public class UsersHandler {
@@ -120,6 +121,14 @@ public class UsersHandler {
         else
             response.put("loggedin","False");
         return response.toJSONString();
+    }
+
+    public String getAdminStats(Date from, Date to){
+        if(from == null || to == null)
+            throw new IllegalArgumentException("From Date And To Date Must Be Entered");
+        if(from.after(to))
+            throw new IllegalArgumentException("To Date Cant Be Smaller Then From Date");
+        return SystemFacade.getInstance().getAdminStats(from, to);
     }
 
 }

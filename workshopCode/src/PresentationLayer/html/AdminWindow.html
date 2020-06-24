@@ -76,6 +76,52 @@
             <div id="HistoryPurchasesContent">
             </div>
         </div>
+        <div class="row" id="stats-part">
+            <div class="col-md-8 order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Statistics</span>
+                    <span class="badge badge-secondary badge-pill" id="num-of-results">0</span>
+                </h4>
+                <!-- <ul class="list-group mb-3" id="search-results"></ul>-->
+                <table class="table table-striped table-hover" id="search-results">
+                    <thead>
+                      <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Guest Connections</th>
+                        <th scope="col">Subscribed Connections</th>
+                        <th scope="col">Manager Connection</th>
+                        <th scope="col">Owner Connection</th>
+                      </tr>
+                    </thead>
+                    <tbody id="results-body">
+                      <tr class = "table-dark">
+                        <td>total</th>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                      </tr>
+                    </tbody>
+                  </table>
+    
+            </div>
+            <div class="col-md-4 order-md-1" id="filter-stats">
+                <h4 class="mb-3">Get Statistics</h4>
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">From Date</div>
+                    </div>
+                    <input id="from-date" type="date" class="form-control">
+                </div>
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">To Date</div>
+                    </div>
+                    <input id="to-date" type="date" class="form-control">
+                </div>
+                <button class="btn btn-primary btn-lg btn-block" id="filter-button">Apply</button>
+            </div>
+        </div>
     </main>
 
     <!-- Modals -->
