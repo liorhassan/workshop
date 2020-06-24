@@ -1,11 +1,8 @@
 package DataAccessLayer;
 
 import DomainLayer.Security.UserDetails;
+import DomainLayer.TradingSystem.*;
 import DomainLayer.TradingSystem.Models.*;
-import DomainLayer.TradingSystem.Permission;
-import DomainLayer.TradingSystem.ProductItem;
-import DomainLayer.TradingSystem.StoreManaging;
-import DomainLayer.TradingSystem.StoreOwning;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -50,6 +47,8 @@ public class PersistenceController {
         config.addAnnotatedClass(Permission.class);
 
         config.addAnnotatedClass(UserDetails.class);
+
+        config.addAnnotatedClass((AdministrativeStatistics.class));
 
         // Configure using the application resource named hibernate.cfg.xml.
         if (isProduction)
@@ -590,6 +589,39 @@ public class PersistenceController {
             session.close();
         }
         return userDetails.get(0);
+    }
+
+    public static List<AdministrativeStatistics> readAllAdminStats() {
+        List<AdministrativeStatistics> administrativeStatistics = null;
+        // Create a session
+        Session session = SESSION_FACTORY.openSession();
+        Transaction transaction = null;
+        try {
+            // Begin a transaction
+            transaction = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<AdministrativeStatistics> cr = cb.createQuery(AdministrativeStatistics.class);
+            Root<AdministrativeStatistics> rootEntry = cr.from(AdministrativeStatistics.class);
+            CriteriaQuery<AdministrativeStatistics> all = cr.select(rootEntry);
+            Query<AdministrativeStatistics> query = session.createQuery(all);
+            administrativeStatistics = query.getResultList();
+
+
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception ex) {
+            // If there are any exceptions, roll back the changes
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            // Print the Exception
+            ex.printStackTrace();
+        } finally {
+            // Close the session
+            session.close();
+        }
+        return administrativeStatistics;
+
     }
 
 }
