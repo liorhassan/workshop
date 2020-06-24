@@ -1,11 +1,13 @@
 package UnitTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Basket;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.ShoppingCart;
 import DomainLayer.TradingSystem.Models.Store;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,6 +17,11 @@ import static org.junit.Assert.*;
 public class ShoppingCartTest {
 
     ShoppingCart sc;
+
+    @BeforeClass
+    public static void init() {
+        PersistenceController.initiate(false);
+    }
 
     @Before
     public void setUp() throws Exception {

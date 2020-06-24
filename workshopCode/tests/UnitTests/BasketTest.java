@@ -1,9 +1,12 @@
 package UnitTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.TradingSystem.ProductItem;
+import DomainLayer.TradingSystem.StoreOwning;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,10 +17,22 @@ public class BasketTest {
 
     Basket basket;
     Store store;
+
+    @BeforeClass
+    public static void init() {
+        PersistenceController.initiate(false);
+    }
+
     @Before
     public void setUp() throws Exception {
-        store = new Store("Fox",null,null,null);
+        User user = new User();
+        user.setUsername("tester");
+        StoreOwning storeOwning = new StoreOwning("Fox", "tester");
+
+        store = new Store("Fox",null,user,storeOwning);
+        PersistenceController.create(store);
         basket = new Basket(store, new ShoppingCart(new User()));
+        PersistenceController.create(basket);
     }
 
     @After
@@ -26,22 +41,33 @@ public class BasketTest {
 
     @Test
     public void viewBasket() {
-        assertEquals("",basket.viewBasket());
-        basket.getProductItems().add(new ProductItem(new Product("Shirt",null,null,40.0,"Fox", 1),1,basket));
-        assertEquals("Store name: Fox\nProduct name: Shirt price: 40.0 amount: 1\n",basket.viewBasket());
-        basket.getProductItems().add(new ProductItem(new Product("Dress",null,null,45.5,"Fox", 1),2,basket));
-        assertEquals("Store name: Fox\nProduct name: Shirt price: 40.0 amount: 1\nProduct name: Dress price: 45.5 amount: 2\n",basket.viewBasket());
+        assertEquals("[]",basket.viewBasket().toString());
+        Product p1 = new Product("Shirt",null,null,40.0,"Fox", 1);
+        PersistenceController.create(p1);
+        ProductItem pi = new ProductItem(p1,1,basket);
+        PersistenceController.create(pi);
+        basket.getProductItems().add(pi);
+        assertEquals("[{\"amount\":1,\"price\":40.0,\"name\":\"Shirt\",\"store\":\"Fox\"}]",basket.viewBasket().toString());
+
+        Product p2 = new Product("Dress",null,null,45.5,"Fox", 1);
+        ProductItem pi2 = new ProductItem(p2,2,basket);
+
+        basket.getProductItems().add(pi2);
+        assertEquals("[{\"amount\":1,\"price\":40.0,\"name\":\"Shirt\",\"store\":\"Fox\"},{\"amount\":2,\"price\":45.5,\"name\":\"Dress\",\"store\":\"Fox\"}]",basket.viewBasket().toString());
     }
 
     @Test
     public void addProduct() {
         assertEquals(new ArrayList<>(),basket.getProductItems());
         Product p = new Product("Shirt",null,null,40.0,"Fox", 1);
+        PersistenceController.create(p);
         basket.addProduct(p,1);
+
         assertEquals(1,basket.getProductItems().size());
         assertEquals(p,basket.getProductItems().get(0).getProduct());
         assertEquals(1,basket.getProductItems().get(0).getAmount());
         Product p2 = new Product("Dress",null,null,45.5,"Fox",1);
+        PersistenceController.create(p2);
         basket.addProduct(p2,3);
         assertEquals(2,basket.getProductItems().size());
         assertEquals(p2,basket.getProductItems().get(1).getProduct());

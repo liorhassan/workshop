@@ -1,9 +1,11 @@
 package UnitTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.Models.User;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,6 +13,11 @@ import static org.junit.Assert.*;
 public class UserTest {
 
     User user;
+
+    @BeforeClass
+    public static void init() {
+        PersistenceController.initiate(false);
+    }
 
     @Before
     public void setUp() throws Exception {
