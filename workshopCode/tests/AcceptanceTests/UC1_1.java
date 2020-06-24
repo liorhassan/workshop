@@ -33,7 +33,7 @@ public class UC1_1 {
 
     @Test
     public void validFileTest() throws Exception {
-        handler.initSystem("init.ini");
+        handler.initSystem("../configuration/init.ini");
         String result = (new UsersHandler()).login(session_id, "u1", "1234", true);
         assertEquals("{\"SUCCESS\":\"You have been successfully logged in!\"}", result);
         (new UsersHandler()).logout(session_id);
