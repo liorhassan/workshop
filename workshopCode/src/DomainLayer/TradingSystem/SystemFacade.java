@@ -48,7 +48,7 @@ public class SystemFacade {
         User firstAdmin = new User();
         firstAdmin.setUsername("Admin159");
         firstAdmin.setIsAdmin();
-        SecurityFacade.getInstance().addUser("Admin159", "951");
+        //SecurityFacade.getInstance().addUser("Admin159", "951");
 
 
         this.adminsList.add(firstAdmin);
@@ -212,6 +212,7 @@ public class SystemFacade {
     //reset functions
     public void resetUsers(){
         users.clear();
+
         adminsList.clear();
         initSystem();
     }
