@@ -1,12 +1,12 @@
 package ServiceLayer;
 
-import DomainLayer.TradingSystem.SystemFacade;
-
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.util.UUID;
 
 public class SystemInitHandler {
-    private final String INIT_FILE_FOLDER = "./configurations/";
+   // private final String INIT_FILE_FOLDER = "./configurations/";
     private SessionHandler sessionHandler = new SessionHandler();
     private SearchHandler searchHandler = new SearchHandler();
     private ShoppingCartHandler shoppingCartHandler = new ShoppingCartHandler();
@@ -18,7 +18,7 @@ public class SystemInitHandler {
 
     public void initSystem(String fileName){
         UUID session_id = sessionHandler.openNewSession();
-        File initFile = new File(INIT_FILE_FOLDER + fileName);
+        File initFile = new File( fileName);
         String s = initFile.getAbsolutePath();
         try{
             Scanner scn = new Scanner(initFile);
