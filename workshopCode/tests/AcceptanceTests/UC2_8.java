@@ -186,6 +186,4 @@ public class UC2_8 {
         (new UsersHandler()).logout(session_id);
     }
 
-
-
 }
