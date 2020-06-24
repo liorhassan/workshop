@@ -12,6 +12,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ public class SystemFacade {
     private List<User> adminsList;
     private PaymentCollectionProxy PC;
     private ProductSupplyProxy PS;
+    private AdministrativeStatistics as;
 
     private SystemFacade() {
 
@@ -38,6 +40,8 @@ public class SystemFacade {
         adminsList = new ArrayList<>();
         PC = new PaymentCollectionProxy();
         PS = new ProductSupplyProxy();
+        as = new AdministrativeStatistics();
+        PersistenceController.create(as);
     }
 
     public void initSystem(){
@@ -52,9 +56,25 @@ public class SystemFacade {
         NotificationSystem.getInstance().addUser("Admin159");
     }
 
+    private void handleSession(Session se){
+        Date now = new Date(new java.util.Date().getTime());
+        if(!as.getDate().toString().equals(now.toString())){
+            as = new AdministrativeStatistics();
+            PersistenceController.create(as);
+        }
+        String msg = as.handleConnection(se);
+        PersistenceController.update(as);
+        for(Session s : active_sessions.values()){
+            if(s == se) continue; // to not get notified of own connection
+            if(s.isAdminMode())
+                NotificationSystem.getInstance().notify(s.getLoggedin_user().getUsername(),msg);
+        }
+    }
+
     public UUID createNewSession(){
         Session newSession = new Session();
         active_sessions.put(newSession.getSession_id(), newSession);
+        handleSession(newSession);
         return newSession.getSession_id();
     }
 
@@ -157,6 +177,16 @@ public class SystemFacade {
         for(Store s : this.stores.values()){
             s.initPurchaseHistory();
         }
+    }
+
+    public String getAdminStats(Date from, Date to){
+        JSONArray output = new JSONArray();
+        List<AdministrativeStatistics> stats = PersistenceController.readAllAdminStats();
+        for(AdministrativeStatistics stat : stats){
+            if(stat.getDate().equals(from) || stat.getDate().equals(to) || (stat.getDate().after(from) && stat.getDate().before(to)))
+                output.add(stat.getStatistics());
+        }
+        return output.toJSONString();
     }
 
     public User getUserByName(String username) {
@@ -312,6 +342,7 @@ public class SystemFacade {
         User user = users.get(username);
         se.setAdminMode(adminMode);
         se.setLoggedin_user(user);
+        handleSession(se);
         NotificationSystem.getInstance().logInUser(username);
     }
 

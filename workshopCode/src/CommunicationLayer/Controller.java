@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.util.*;
 
 import ServiceLayer.*;
@@ -192,6 +193,30 @@ public class Controller {
                 sendERROR(he, e.getMessage());
             }
             finally {
+                he.close();
+            }
+        });
+
+        //accept: {from_date:"", to_date:""}
+        //retrieve: [{date: "", guestCount: "", subscribedCount: "", managerCount: "", ownerCount: ""}
+        server.createContext("/tradingSystem/adminstats", he -> {
+            final Headers headers = he.getResponseHeaders();
+
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                Date from = (requestJson.containsKey("from_date")) && !requestJson.get("from_date").toString().equals("") ? Date.valueOf(requestJson.get("from_date").toString()) : null;
+                Date to = (requestJson.containsKey("to_date")) && !requestJson.get("to_date").toString().equals("") ? Date.valueOf(requestJson.get("to_date").toString()) : null;
+                String response = usersHandler.getAdminStats(from, to);
+                headers.set("adminstats", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("adminstats", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
                 he.close();
             }
         });
