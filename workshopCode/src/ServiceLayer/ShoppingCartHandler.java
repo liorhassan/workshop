@@ -110,7 +110,6 @@ public class ShoppingCartHandler {
         }
 
         catch (Exception e) {
-            SystemFacade.getInstance().emptyCart(session_id);
             SystemLogger.getInstance().writeError("Purchase Cart error: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
