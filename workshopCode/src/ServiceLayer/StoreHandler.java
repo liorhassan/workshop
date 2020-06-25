@@ -96,7 +96,7 @@ public class StoreHandler {
                 throw new RuntimeException("You must be this store owner for this command");
             if(!SystemFacade.getInstance().isOwnerAppointer(session_id,storename, username))
                 throw new RuntimeException("This username is not one of this store's owners appointed by you");
-            return SystemFacade.getInstance().removeStoreOwner(username,storename);
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().removeStoreOwner(username,storename));
             //return SystemFacade.getInstance().removeManager(username,storename);
         } catch(Exception e) {
             SystemLogger.getInstance().writeError("Remove manager error: " + e.getMessage());
