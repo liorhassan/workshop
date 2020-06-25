@@ -44,11 +44,19 @@ public class BasketTest {
 
     @Test
     public void viewBasket() {
-        assertEquals("",basket.viewBasket().toJSONString());
-        basket.getProductItems().add(new ProductItem(new Product("Shirt",null,null,40.0,"Fox", 1),1,basket));
-        assertEquals("Store name: Fox\nProduct name: Shirt price: 40.0 amount: 1\n",basket.viewBasket().toJSONString());
-        basket.getProductItems().add(new ProductItem(new Product("Dress",null,null,45.5,"Fox", 1),2,basket));
-        assertEquals("Store name: Fox\nProduct name: Shirt price: 40.0 amount: 1\nProduct name: Dress price: 45.5 amount: 2\n",basket.viewBasket().toJSONString());
+        assertEquals("[]",basket.viewBasket().toString());
+        Product p1 = new Product("Shirt",null,null,40.0,"Fox", 1);
+        PersistenceController.create(p1);
+        ProductItem pi = new ProductItem(p1,1,basket);
+        PersistenceController.create(pi);
+        basket.getProductItems().add(pi);
+        assertEquals("[{\"amount\":1,\"price\":40.0,\"name\":\"Shirt\",\"store\":\"Fox\"}]",basket.viewBasket().toString());
+
+        Product p2 = new Product("Dress",null,null,45.5,"Fox", 1);
+        ProductItem pi2 = new ProductItem(p2,2,basket);
+
+        basket.getProductItems().add(pi2);
+        assertEquals("[{\"amount\":1,\"price\":40.0,\"name\":\"Shirt\",\"store\":\"Fox\"},{\"amount\":2,\"price\":45.5,\"name\":\"Dress\",\"store\":\"Fox\"}]",basket.viewBasket().toString());
     }
 
     @Test
