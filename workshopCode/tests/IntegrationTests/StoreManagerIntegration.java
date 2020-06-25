@@ -1,5 +1,6 @@
 package IntegrationTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.Models.User;
 import DomainLayer.TradingSystem.NotificationSystem;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 public class StoreManagerIntegration {
     @BeforeClass
     public static void init(){
+        PersistenceController.initiate(false);
 
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).register("maor", "1234");
@@ -33,6 +35,7 @@ public class StoreManagerIntegration {
         SystemFacade.getInstance().updateInventory("Castro", "white T-shirt", 5.0, "Clothing", "white T-shirt for men", 50);
         SystemFacade.getInstance().updateInventory("Lalin", "Body Scrub ocean", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
         SystemFacade.getInstance().appointManager(se, "rachel", "Castro");
+        SystemFacade.getInstance().appointManager(se, "rachel", "Lalin");
 
         (new UsersHandler()).logout(se);
 
@@ -52,7 +55,7 @@ public class StoreManagerIntegration {
         Store store = SystemFacade.getInstance().getStoreByName("Castro");
         User noy = SystemFacade.getInstance().getUserByName("noy");
         assertTrue(!store.isManager(noy));
-        assertTrue(!noy.getStoreManagements().contains(store));
+        assertTrue(!noy.getStoreManagements().containsKey(store));
 
         int noyNumOfNotificBefore = NotificationSystem.getInstance().getUserNotificationNumber("noy");
 
@@ -62,7 +65,7 @@ public class StoreManagerIntegration {
         assertEquals(noyNumOfNotificBefore+1,noyNumOfNotificAfter);
 
         assertTrue(store.isManager(noy));
-        assertTrue(noy.getStoreManagements().contains(store));
+        assertTrue(noy.getStoreManagements().containsKey(store));
 
         SystemFacade.getInstance().logout(se);
     }
@@ -71,19 +74,20 @@ public class StoreManagerIntegration {
     public void notOwnerAddTest(){
         UUID se =  SystemFacade.getInstance().createNewSession();
         (new UsersHandler()).login(se,"maor", "1234", false);
-        Store store = SystemFacade.getInstance().getStoreByName("Castro");
+        Store store = SystemFacade.getInstance().getStoreByName("Lalin");
         User zuzu = SystemFacade.getInstance().getUserByName("zuzu");
         assertTrue(!store.isManager(zuzu));
-        assertTrue(!zuzu.getStoreManagements().contains(store));
+        assertTrue(!zuzu.getStoreManagements().containsKey(store));
         try{
-            (new StoreManagerHandler()).addStoreManager(se,"zuzu", "Castro");
+            (new StoreManagerHandler()).addStoreManager(se,"zuzu", "Lalin");
         }
         catch (Exception e){
-            assertEquals("You must be a store owner for this action", e.getMessage());
+            assertEquals("You must be this store owner for this command or store manager with permissions", e.getMessage());
+            assertTrue(!store.isManager(zuzu));
+            assertTrue(!zuzu.getStoreManagements().containsKey(store));
 
         }
-        assertTrue(!store.isManager(zuzu));
-        assertTrue(!zuzu.getStoreManagements().contains(store));
+
 
         SystemFacade.getInstance().logout(se);
     }
@@ -96,10 +100,10 @@ public class StoreManagerIntegration {
         User maor = SystemFacade.getInstance().getUserByName("maor");
         SystemFacade.getInstance().appointManager(se,"maor", "Castro");
         assertTrue(store.isManager(maor));
-        assertTrue(maor.getStoreManagements().contains(store));
+        assertTrue(maor.getStoreManagements().containsKey(store));
         SystemFacade.getInstance().removeManager("maor", "Castro");
         assertTrue(!store.isManager(maor));
-        assertTrue(!maor.getStoreManagements().contains(store));
+        assertTrue(!maor.getStoreManagements().containsKey(store));
         SystemFacade.getInstance().logout(se);
     }
 
@@ -108,20 +112,21 @@ public class StoreManagerIntegration {
         UUID se =  SystemFacade.getInstance().createNewSession();
 
         (new UsersHandler()).login(se,"noy", "1234", false);
-        Store store = SystemFacade.getInstance().getStoreByName("Castro");
+        Store store = SystemFacade.getInstance().getStoreByName("Lalin");
         User rachel = SystemFacade.getInstance().getUserByName("rachel");
 
         assertTrue(store.isManager(rachel));
-        assertTrue(rachel.getStoreManagements().contains(store));
+        assertTrue(rachel.getStoreManagements().containsKey(store));
         try{
-            SystemFacade.getInstance().removeManager("rachel", "Castro");
+            (new StoreManagerHandler()).removeStoreManager(se,"rachel", "Castro");
         }
         catch (Exception e){
-            assertEquals("You must be a store owner for this action", e.getMessage());
+            assertEquals("This username is not one of this store's managers appointed by you", e.getMessage());
+            assertTrue(store.isManager(rachel));
+            assertTrue(rachel.getStoreManagements().containsKey(store));
 
         }
-        assertTrue(store.isManager(rachel));
-        assertTrue(rachel.getStoreManagements().contains(store));
+
 
         SystemFacade.getInstance().logout(se);
     }

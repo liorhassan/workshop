@@ -2,12 +2,10 @@ package DomainLayer.TradingSystem;
 
 
 import DataAccessLayer.PersistenceController;
-import ExternalSystems.PaymentCollectionProxy;
-import ExternalSystems.PaymentCollectionStub;
-import ExternalSystems.ProductSupplyProxy;
-import ExternalSystems.ProductSupplyStub;
-import DomainLayer.TradingSystem.Models.*;
 import DomainLayer.Security.SecurityFacade;
+import DomainLayer.TradingSystem.Models.*;
+import ExternalSystems.PaymentCollectionProxy;
+import ExternalSystems.ProductSupplyProxy;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -49,7 +47,6 @@ public class SystemFacade {
         firstAdmin.setUsername("Admin159");
         firstAdmin.setIsAdmin();
         SecurityFacade.getInstance().addUser("Admin159", "951");
-
 
         this.adminsList.add(firstAdmin);
         this.users.put("Admin159", firstAdmin);
@@ -211,8 +208,14 @@ public class SystemFacade {
 
     //reset functions
     public void resetUsers(){
+//        for(User u : users.values()){
+//            if(u.getUsername() == null)
+//                continue;
+//            PersistenceController.delete(PersistenceController.readUserDetails(u.getUsername()));
+//        }
         users.clear();
         adminsList.clear();
+        active_sessions = new ConcurrentHashMap<>();
         initSystem();
     }
 
@@ -360,6 +363,7 @@ public class SystemFacade {
         }
         NotificationSystem.getInstance().logOutUser(se.getLoggedin_user().getUsername());
         se.setLoggedin_user(new User());
+        se.setAdminMode(false);
         return "You have been successfully logged out!";
     }
 
@@ -736,12 +740,9 @@ public class SystemFacade {
         User appointed_user = users.get(username);
 
         // update store and user
-        StoreOwning owning = new StoreOwning(se.getLoggedin_user(), storeName, username);
-        store.addStoreOwner(appointed_user, se.getLoggedin_user());
-        appointed_user.addOwnedStore(store, owning);
-
-
-        return "Username has been added as one of the store owners successfully";
+        //StoreOwning owning = new StoreOwning(se.getLoggedin_user(), storeName, username);
+        return store.addStoreOwner(appointed_user, se.getLoggedin_user());
+        //appointed_user.addOwnedStore(store, owning);
 
     }
 
@@ -1141,12 +1142,12 @@ public class SystemFacade {
         User waiting = users.get(userToResponse);
         Store store = getStoreByName(storeName);
         if(isApproved){
-            store.approveAppointment(waiting, se.getLoggedin_user());
+            return store.approveAppointment(waiting, se.getLoggedin_user());
         }
         else{
-            store.declinedAppointment(waiting, se.getLoggedin_user());
+            return store.declinedAppointment(waiting, se.getLoggedin_user());
         }
-        return "your response was updated successfully";
+
     }
 
     public String getCartTotalPrice(UUID session_id){
@@ -1165,14 +1166,15 @@ public class SystemFacade {
     public String removeStoreOwner(String userName, String storeName){
         Store store = getStoreByName(storeName);
         User userToRemove = users.get(userName);
-        store.removeOwner(userToRemove);
-        return "owner been removed successfully";
+        String result = store.removeOwner(userToRemove);
+        return "owner been removed successfully, " +result;
     }
 
     public boolean isOwnerAppointer(UUID session_id, String storeName, String userName){
         Store store = getStoreByName(storeName);
         User user = users.get(userName);
-        if(active_sessions.get(session_id).equals(store.getOwnerAppointer(user))){
+        User appointer = store.getOwnerAppointer(user);
+        if((appointer != null) && active_sessions.get(session_id).getLoggedin_user().equals(appointer)){
             return true;
         }
         return false;
@@ -1190,5 +1192,13 @@ public class SystemFacade {
     public void removePurchasePolicies(String storeName){
         Store store = getStoreByName(storeName);
         store.removePurchasePolicies();
+    }
+
+    public boolean haveAdmin() {
+        return (this.adminsList.size() > 0);
+    }
+
+    public void removeSession(UUID session_id) {
+        this.active_sessions.remove(session_id);
     }
 }

@@ -3,10 +3,12 @@ package ServiceLayer;
 import DomainLayer.TradingSystem.SystemFacade;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.util.UUID;
 
 public class SystemInitHandler {
-    private final String INIT_FILE_FOLDER = "./configurations/";
+   // private final String INIT_FILE_FOLDER = "./configurations/";
     private SessionHandler sessionHandler = new SessionHandler();
     private SearchHandler searchHandler = new SearchHandler();
     private ShoppingCartHandler shoppingCartHandler = new ShoppingCartHandler();
@@ -15,10 +17,11 @@ public class SystemInitHandler {
     private UsersHandler usersHandler = new UsersHandler();
     private ViewInfoHandler viewInfoHandler = new ViewInfoHandler();
     private ViewPurchaseHistoryHandler viewPurchaseHistoryHandler = new ViewPurchaseHistoryHandler();
+    private boolean haveAdmin = false;
 
     public void initSystem(String fileName){
         UUID session_id = sessionHandler.openNewSession();
-        File initFile = new File(INIT_FILE_FOLDER + fileName);
+        File initFile = new File(fileName);
         String s = initFile.getAbsolutePath();
         try{
             Scanner scn = new Scanner(initFile);
@@ -31,6 +34,11 @@ public class SystemInitHandler {
             usersHandler.addAdmin("Admin159");
         }
 
+        if(!haveAdmin){
+            usersHandler.register("Admin159","951");
+            usersHandler.addAdmin("Admin159");
+        }
+        haveAdmin = false;
         sessionHandler.closeSession(session_id);
     }
 
@@ -40,8 +48,10 @@ public class SystemInitHandler {
             usersHandler.register(splitedCommand[1], splitedCommand[2]);
         else if (splitedCommand[0].equals("Login"))
             usersHandler.login(session_id, splitedCommand[1], splitedCommand[2], false);
-        else if (splitedCommand[0].equals("Add Admin"))
+        else if (splitedCommand[0].equals("Add Admin")) {
             usersHandler.addAdmin(splitedCommand[1]);
+            haveAdmin = true;
+        }
         else if (splitedCommand[0].equals("Logout"))
             usersHandler.logout(session_id);
         else if (splitedCommand[0].equals("Add To ShoppingBasket"))

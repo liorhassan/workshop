@@ -7,7 +7,6 @@ import DomainLayer.TradingSystem.UserPurchaseHistory;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -73,7 +72,9 @@ public class User implements Serializable {
     public void removeStoreManagement(Store store) {
         storeManagements.remove(store);
     }
-
+    public void removeStoreOwning(Store store) {
+        storeOwnings.remove(store);
+    }
     public ConcurrentHashMap<Store, StoreOwning> getStoreOwnings() {
         return storeOwnings;
     }

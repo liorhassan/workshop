@@ -4,6 +4,7 @@ import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.SystemFacade;
 import ServiceLayer.SessionHandler;
 import ServiceLayer.StoreHandler;
+import ServiceLayer.StoreManagerHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class UC4_3 {
+public class UC4_4 {
 
     private static StoreHandler storeHandler;
     private static UUID session_id;
@@ -34,7 +35,6 @@ public class UC4_3 {
         (new UsersHandler()).login(session_id, "nufi", "1234", false);
 
         (new StoreHandler()).openNewStore(session_id, "KKW", "best Kim Kardashian beauty products");
-
     }
 
     @AfterClass
@@ -52,20 +52,13 @@ public class UC4_3 {
 
     @Test
     public void valid1() {
-        UUID sessionId2 = (new SessionHandler()).openNewSession();
-        (new UsersHandler()).login(sessionId2,"tooti","1234", false);
         String result = storeHandler.addStoreOwner(session_id, "tooti", "KKW");
         //add the second owner - dont need approvement
         assertEquals("{\"SUCCESS\":\"the appointment of the new owner is done successfully\"}", result);
-        //declined
-        String result2 = storeHandler.addStoreOwner(session_id,"lior","KKW");
-        assertEquals("{\"SUCCESS\":\"the appointment of the new owner is waiting for the owners response\"}", result2);
-        String result3 = storeHandler.responseToAppointmentRequest(sessionId2,"lior","KKW",false);
-        assertEquals("{\"SUCCESS\":\"your response was updated successfully - the new appointment declined\"}", result3);
-     (new UsersHandler()).logout(sessionId2);
+        String result1 = storeHandler.removeStoreOwner(session_id, "tooti", "KKW");
+        assertEquals("owner been removed successfully, more appointments was deleted: ", result1);
 
     }
-
     @Test
     public void valid2() {
         UUID sessionId2 = (new SessionHandler()).openNewSession();
@@ -73,37 +66,39 @@ public class UC4_3 {
         String result = storeHandler.addStoreOwner(session_id, "tooti", "KKW");
         //add the second owner - dont need approvement
         assertEquals("{\"SUCCESS\":\"the appointment of the new owner is done successfully\"}", result);
-      //approved
-        String result4 = storeHandler.addStoreOwner(session_id,"lior","KKW");
-        assertEquals("{\"SUCCESS\":\"the appointment of the new owner is waiting for the owners response\"}", result4);
-        String result5 = storeHandler.responseToAppointmentRequest(sessionId2,"lior", "KKW",true);
-        assertEquals("{\"SUCCESS\":\"your response was updated successfully - the new appointment approved\"}", result5);
-        (new UsersHandler()).logout(sessionId2);
+        //tooti add new manager
+        (new StoreManagerHandler()).addStoreManager(sessionId2,"lior", "KKW");
 
+        String result1 = storeHandler.removeStoreOwner(session_id, "tooti", "KKW");
+        assertEquals("owner been removed successfully, more appointments was deleted: lior-manager ", result1);
+        (new UsersHandler()).logout(sessionId2);
     }
+
+
 
     @Test
     public void emptyInput(){
+        storeHandler.addStoreOwner(session_id, "tooti", "KKW");
         try{
-            String result = storeHandler.addStoreOwner(session_id, "", "KKW");
+            storeHandler.removeStoreOwner(session_id, "", "KKW");
             fail();
         }catch(Exception e) {
             assertEquals("Must enter username and store name", e.getMessage());
         }
         try{
-            storeHandler.addStoreOwner(session_id, "tooti", "");
+            storeHandler.removeStoreOwner(session_id, "tooti", "");
             fail();
         }catch(Exception e) {
             assertEquals("Must enter username and store name", e.getMessage());
         }
         try{
-            storeHandler.addStoreOwner(session_id, null, "KKW");
+            storeHandler.removeStoreOwner(session_id, null, "KKW");
             fail();
         }catch(Exception e) {
             assertEquals("Must enter username and store name", e.getMessage());
         }
         try{
-            storeHandler.addStoreOwner(session_id, "tooti", null);
+            storeHandler.removeStoreOwner(session_id, "tooti", null);
             fail();
         }catch(Exception e) {
             assertEquals("Must enter username and store name", e.getMessage());
@@ -112,8 +107,10 @@ public class UC4_3 {
 
     @Test
     public void storeDoesNotExist(){
+        storeHandler.addStoreOwner(session_id, "tooti", "KKW");
+
         try{
-            String result = storeHandler.addStoreOwner(session_id, "tooti", "poosh");
+            String result = storeHandler.removeStoreOwner(session_id, "tooti", "poosh");
             fail();
         }catch(Exception e) {
             assertEquals("This store doesn't exist", e.getMessage());
@@ -122,8 +119,9 @@ public class UC4_3 {
 
     @Test
     public void userDoesNotExist(){
+        storeHandler.addStoreOwner(session_id, "tooti", "KKW");
         try{
-            String result = storeHandler.addStoreOwner(session_id, "tooton", "KKW");
+            String result = storeHandler.removeStoreOwner(session_id, "tooton", "KKW");
             fail();
         }catch(Exception e) {
             assertEquals("This username doesn't exist", e.getMessage());
@@ -136,22 +134,13 @@ public class UC4_3 {
         SystemFacade.getInstance().register("toya");
         SystemFacade.getInstance().login(session_id, "toya", false);
         try{
-            String result = storeHandler.addStoreOwner(session_id, "tooti", "KKW");
+            String result = storeHandler.removeStoreOwner(session_id, "tooti", "KKW");
             fail();
         }catch(Exception e) {
-            assertEquals("You must be this store owner for this action", e.getMessage());
+            assertEquals("You must be this store owner for this command", e.getMessage());
         }
         SystemFacade.getInstance().logout(session_id);
         SystemFacade.getInstance().login(session_id, "nufi", false);
     }
 
-    @Test
-    public void userAlreadyOwner() {
-        try{
-            String result = storeHandler.addStoreOwner(session_id, "nufi", "KKW");
-            fail();
-        }catch(Exception e) {
-            assertEquals("This username is already one of the store's owners", e.getMessage());
-        }
-    }
 }

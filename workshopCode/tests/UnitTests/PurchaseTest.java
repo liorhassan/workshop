@@ -1,12 +1,20 @@
 package UnitTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.Purchase;
 import DomainLayer.TradingSystem.Models.ShoppingCart;
 import DomainLayer.TradingSystem.Models.Store;
+import DomainLayer.TradingSystem.SystemFacade;
+import ServiceLayer.SessionHandler;
+import ServiceLayer.StoreHandler;
+import ServiceLayer.UsersHandler;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -14,9 +22,17 @@ public class PurchaseTest {
 
     Purchase purchase;
 
+    @BeforeClass
+    public static void init() throws Exception {
+        PersistenceController.initiate(false);
+        UUID session_id = (new SessionHandler()).openNewSession();
+        (new StoreHandler()).resetStores();
+        (new UsersHandler()).register("ben", "toya");
+    }
+
     @Before
     public void setUp() throws Exception {
-        purchase = new Purchase(new ShoppingCart(null));
+        purchase = new Purchase(new ShoppingCart(SystemFacade.getInstance().getUserByName("ben")));
     }
 
     @After

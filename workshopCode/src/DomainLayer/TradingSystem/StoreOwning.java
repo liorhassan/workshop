@@ -44,7 +44,7 @@ public class StoreOwning implements Serializable {
 
     public StoreOwning(User appointer, String storeName, String appointeeName) {
         this.appointer = appointer;
-        this.appointeeName = appointerName;
+        this.appointerName = appointer.getUsername();
         this.storeName = storeName;
         this.appointeeName = appointeeName;
         this.permissions = new ArrayList<>();

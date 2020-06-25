@@ -1,5 +1,6 @@
 package IntegrationTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.SystemFacade;
@@ -19,6 +20,8 @@ public class PurchaseIntegation {
 
     @BeforeClass
     public static void init(){
+        PersistenceController.initiate(false);
+
         (new UsersHandler()).register("toya", "1234");
         UUID se = SystemFacade.getInstance().createNewSession();
 
@@ -27,6 +30,8 @@ public class PurchaseIntegation {
         (new StoreHandler()).openNewStore(se,"Castro", "clothes for women and men");
         (new StoreHandler()).UpdateInventory(se,"Castro", "white T-shirt", 5.0, "Clothing", "white T-shirt for men", 50);
         (new StoreHandler()).UpdateInventory(se,"Castro", "jeans skirt", 50.0, "Clothing", "mini jeans skirt for women", 50);
+        (new StoreHandler()).UpdateInventory(se, "Castro", "Michael Kors bag", 1000.0, "Clothing", "bag", 50);
+
         (new UsersHandler()).logout(se);
         (new UsersHandler()).register("noy", "1234");
         (new UsersHandler()).register("maor", "1234");
@@ -55,9 +60,9 @@ public class PurchaseIntegation {
         int amountBefore = inv.get(store.getProductByName("white T-shirt"));
 
         String result = (new ShoppingCartHandler()).purchaseCart(se);
-        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\"}", result);
-
-        int amountAfter = inv.get(store.getProductByName("jeans skirt"));
+        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\\nTotal price: 10.0$\"}", result);
+        inv = store.getInventory();
+        int amountAfter = inv.get(store.getProductByName("white T-shirt"));
         assertEquals(amountBefore-2, amountAfter);
         int sizePurchaseHAfter = store.getPurchaseHistory().getStorePurchases().size();
         assertEquals(sizePurchaseHBefore+1, sizePurchaseHAfter);
@@ -84,7 +89,7 @@ public class PurchaseIntegation {
             assertEquals("Payment failed", e.getMessage());
 
         }
-        int amountAfter = inv.get(store.getProductByName("jeans skirt"));
+        int amountAfter = inv.get(store.getProductByName("Michael Kors bag"));
         assertEquals(amountBefore, amountAfter);
 
         int sizePurchaseHAfter = store.getPurchaseHistory().getStorePurchases().size();
@@ -110,10 +115,10 @@ public class PurchaseIntegation {
             String result = (new ShoppingCartHandler()).purchaseCart(se);
         }
         catch (Exception e){
-            assertEquals("Payment failed", e.getMessage());
+            assertEquals("There is currently no stock of 100 white T-shirt products", e.getMessage());
 
         }
-        int amountAfter = inv.get(store.getProductByName("jeans skirt"));
+        int amountAfter = inv.get(store.getProductByName("white T-shirt"));
         assertEquals(amountBefore, amountAfter);
 
         int sizePurchaseHAfter = store.getPurchaseHistory().getStorePurchases().size();
