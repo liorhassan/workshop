@@ -93,6 +93,9 @@ public class ShoppingCartHandler {
     public String purchaseCart(Hashtable<String,String> paymentData, Hashtable<String,String> supplyData, UUID session_id) {
         SystemLogger.getInstance().writeEvent("Purchase Cart command");
         try {
+            if(emptyArg(paymentData) || emptyArg(supplyData)){
+                throw new RuntimeException("Must enter all fields");
+            }
             if(SystemFacade.getInstance().cartIsEmpty(session_id)){
                 throw new RuntimeException("The shopping cart is empty");
             }
@@ -116,6 +119,14 @@ public class ShoppingCartHandler {
     }
 
 
+    public boolean emptyArg(Hashtable<String,String> dic){
+        for(String s: dic.values()){
+            if(s == null || s.equals("")){
+                return true;
+            }
+        }
+        return false;
+    }
     public String getCartTotalPrice(UUID session_id){
         return SystemFacade.getInstance().getCartTotalPrice(session_id);
     }
