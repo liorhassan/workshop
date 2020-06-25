@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 public class MultiThreadsTests {
     @BeforeClass
-    public static void init(){
+    public static void init() throws SQLException {
         PersistenceController.initiate(false);
 
         (new UsersHandler()).register("toya", "1234");
@@ -41,7 +42,7 @@ public class MultiThreadsTests {
     }
 
     @AfterClass
-    public static void clean(){
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
     }
@@ -51,7 +52,12 @@ public class MultiThreadsTests {
         AtomicInteger counterSecc = new AtomicInteger();
         AtomicInteger counterFail = new AtomicInteger();
         Thread th1 = new Thread(()->{
-            UUID se = SystemFacade.getInstance().createNewSession();
+            UUID se = null;
+            try {
+                se = SystemFacade.getInstance().createNewSession();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             (new UsersHandler()).login(se, "maor", "1234", false);
             try{
                 (new ShoppingCartHandler()).AddToShoppingBasket(se, "ZARA", "white T-shirt", 2);
@@ -62,11 +68,20 @@ public class MultiThreadsTests {
                 assertEquals("There is currently no stock of 2 white T-shirt products", e.getMessage());
                 counterFail.getAndIncrement();
             }
-            (new UsersHandler()).logout(se);
+            try {
+                (new UsersHandler()).logout(se);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
 
         Thread th2 = new Thread(()->{
-            UUID se = SystemFacade.getInstance().createNewSession();
+            UUID se = null;
+            try {
+                se = SystemFacade.getInstance().createNewSession();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             (new UsersHandler()).login(se, "rachel", "1234", false);
             try{
                 (new ShoppingCartHandler()).AddToShoppingBasket(se, "ZARA", "white T-shirt", 2);
@@ -77,7 +92,11 @@ public class MultiThreadsTests {
                 assertEquals("There is currently no stock of 2 white T-shirt products", e.getMessage());
                 counterFail.getAndIncrement();
             }
-            (new UsersHandler()).logout(se);
+            try {
+                (new UsersHandler()).logout(se);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
         });
         th1.start();
@@ -97,7 +116,12 @@ public class MultiThreadsTests {
         AtomicInteger counterFail = new AtomicInteger();
         StoreHandler storeHandler = new StoreHandler();
         Thread th1 = new Thread(()->{
-            UUID se = SystemFacade.getInstance().createNewSession();
+            UUID se = null;
+            try {
+                se = SystemFacade.getInstance().createNewSession();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             (new UsersHandler()).login(se, "maor", "1234", false);
             try{
                 storeHandler.openNewStore(se,"TheThread","food");
@@ -107,11 +131,20 @@ public class MultiThreadsTests {
                 assertEquals("Store name already exists, please choose a different one", e.getMessage());
                 counterFail.getAndIncrement();
             }
-            (new UsersHandler()).logout(se);
+            try {
+                (new UsersHandler()).logout(se);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
 
         Thread th2 = new Thread(()->{
-            UUID se = SystemFacade.getInstance().createNewSession();
+            UUID se = null;
+            try {
+                se = SystemFacade.getInstance().createNewSession();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             (new UsersHandler()).login(se, "rachel", "1234", false);
             try{
                 storeHandler.openNewStore(se,"TheThread","food");
@@ -121,7 +154,11 @@ public class MultiThreadsTests {
                 assertEquals("Store name already exists, please choose a different one", e.getMessage());
                 counterFail.getAndIncrement();
             }
-            (new UsersHandler()).logout(se);
+            try {
+                (new UsersHandler()).logout(se);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
         th1.start();
         th2.start();
@@ -137,7 +174,12 @@ public class MultiThreadsTests {
         AtomicInteger counterSecc = new AtomicInteger();
         AtomicInteger counterFail = new AtomicInteger();
         Thread th1 = new Thread(()->{
-            UUID se = SystemFacade.getInstance().createNewSession();
+            UUID se = null;
+            try {
+                se = SystemFacade.getInstance().createNewSession();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             (new UsersHandler()).login(se, "maor", "1234", false);
             try{
                 (new StoreManagerHandler()).addStoreManager(se, "rachel", "ZARA");
@@ -147,11 +189,20 @@ public class MultiThreadsTests {
                 assertEquals("This username is already one of the store's managers", e.getMessage());
                 counterFail.getAndIncrement();
             }
-            (new UsersHandler()).logout(se);
+            try {
+                (new UsersHandler()).logout(se);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
 
         Thread th2 = new Thread(()->{
-            UUID se = SystemFacade.getInstance().createNewSession();
+            UUID se = null;
+            try {
+                se = SystemFacade.getInstance().createNewSession();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             (new UsersHandler()).login(se, "toya", "1234", false);
             try{
                 (new StoreManagerHandler()).addStoreManager(se, "rachel", "ZARA");
@@ -161,7 +212,11 @@ public class MultiThreadsTests {
                 assertEquals("This username is already one of the store's managers", e.getMessage());
                 counterFail.getAndIncrement();
             }
-            (new UsersHandler()).logout(se);
+            try {
+                (new UsersHandler()).logout(se);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
         th1.start();
         th2.start();
@@ -179,7 +234,12 @@ public class MultiThreadsTests {
         AtomicInteger counterFail = new AtomicInteger();
         StoreHandler storeHandler = new StoreHandler();
         Thread th1 = new Thread(()->{
-            UUID se = SystemFacade.getInstance().createNewSession();
+            UUID se = null;
+            try {
+                se = SystemFacade.getInstance().createNewSession();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             (new UsersHandler()).login(se, "maor", "1234", false);
             try{
                 storeHandler.addDiscountRevealedProduct("ZARA","jeans skirt", 30);
@@ -189,11 +249,20 @@ public class MultiThreadsTests {
                 assertEquals("Cant add the discount on this product", e.getMessage());
                 counterFail.getAndIncrement();
             }
-            (new UsersHandler()).logout(se);
+            try {
+                (new UsersHandler()).logout(se);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
 
         Thread th2 = new Thread(()->{
-            UUID se = SystemFacade.getInstance().createNewSession();
+            UUID se = null;
+            try {
+                se = SystemFacade.getInstance().createNewSession();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             (new UsersHandler()).login(se, "toya", "1234", false);
             try{
                 storeHandler.addDiscountRevealedProduct("ZARA","jeans skirt", 20);
@@ -203,7 +272,11 @@ public class MultiThreadsTests {
                 assertEquals("Cant add the discount on this product", e.getMessage());
                 counterFail.getAndIncrement();
             }
-            (new UsersHandler()).logout(se);
+            try {
+                (new UsersHandler()).logout(se);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
         th1.start();
         th2.start();

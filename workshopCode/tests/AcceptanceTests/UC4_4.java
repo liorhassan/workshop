@@ -8,6 +8,7 @@ import ServiceLayer.StoreManagerHandler;
 import ServiceLayer.UsersHandler;
 import org.junit.*;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +39,7 @@ public class UC4_4 {
     }
 
     @AfterClass
-    public static void clean() {
+    public static void clean() throws SQLException {
         (new UsersHandler()).resetUsers();
         (new StoreHandler()).resetStores();
         (new SessionHandler()).closeSession(session_id);
@@ -60,7 +61,7 @@ public class UC4_4 {
 
     }
     @Test
-    public void valid2() {
+    public void valid2() throws SQLException {
         UUID sessionId2 = (new SessionHandler()).openNewSession();
         (new UsersHandler()).login(sessionId2,"tooti","1234", false);
         String result = storeHandler.addStoreOwner(session_id, "tooti", "KKW");
@@ -129,7 +130,7 @@ public class UC4_4 {
     }
 
     @Test
-    public void appointerIsNotOwner() {
+    public void appointerIsNotOwner() throws SQLException {
         SystemFacade.getInstance().logout(session_id);
         SystemFacade.getInstance().register("toya");
         SystemFacade.getInstance().login(session_id, "toya", false);

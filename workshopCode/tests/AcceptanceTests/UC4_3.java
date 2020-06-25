@@ -52,7 +52,7 @@ public class UC4_3 {
     }
 
     @Test
-    public void valid1() {
+    public void valid1() throws SQLException {
         UUID sessionId2 = (new SessionHandler()).openNewSession();
         (new UsersHandler()).login(sessionId2,"tooti","1234", false);
         String result = storeHandler.addStoreOwner(session_id, "tooti", "KKW");
@@ -68,7 +68,7 @@ public class UC4_3 {
     }
 
     @Test
-    public void valid2() {
+    public void valid2() throws SQLException {
         UUID sessionId2 = (new SessionHandler()).openNewSession();
         (new UsersHandler()).login(sessionId2,"tooti","1234", false);
         String result = storeHandler.addStoreOwner(session_id, "tooti", "KKW");

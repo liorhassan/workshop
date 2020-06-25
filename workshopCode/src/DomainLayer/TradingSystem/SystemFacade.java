@@ -16,7 +16,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class SystemFacade {
-    private static SystemFacade ourInstance = new SystemFacade();
+    private static SystemFacade ourInstance;
+
+    static {
+        try {
+            ourInstance = new SystemFacade();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static SystemFacade getInstance() {
         return ourInstance;
     }
@@ -29,7 +38,7 @@ public class SystemFacade {
     private ProductSupplyProxy PS;
     private AdministrativeStatistics as;
 
-    private SystemFacade() {
+    private SystemFacade() throws SQLException {
 
         users = new ConcurrentHashMap<>();
         active_sessions = new ConcurrentHashMap<>();
@@ -68,7 +77,7 @@ public class SystemFacade {
         }
     }
 
-    public UUID createNewSession(){
+    public UUID createNewSession() throws SQLException {
         Session newSession = new Session();
         active_sessions.put(newSession.getSession_id(), newSession);
         handleSession(newSession);
@@ -207,7 +216,7 @@ public class SystemFacade {
     }
 
     //reset functions
-    public void resetUsers(){
+    public void resetUsers() throws SQLException {
 //        for(User u : users.values()){
 //            if(u.getUsername() == null)
 //                continue;
@@ -338,7 +347,7 @@ public class SystemFacade {
     }
 
     // function for handling UseCase 2.3
-    public void login(UUID session_id, String username, boolean adminMode) {
+    public void login(UUID session_id, String username, boolean adminMode) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -633,7 +642,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public boolean payment(Hashtable<String,String> paymentData, UUID session_id) {
+    public boolean payment(Hashtable<String,String> paymentData, UUID session_id) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");
@@ -669,7 +678,7 @@ public class SystemFacade {
     }
 
     // function for handling Use Case 2.8 - written by Noy
-    public boolean supply(Hashtable<String,String> supplyData, UUID session_id){
+    public boolean supply(Hashtable<String,String> supplyData, UUID session_id) throws SQLException {
         Session se = active_sessions.get(session_id);
         if(se == null)
             throw new IllegalArgumentException("Invalid Session ID");

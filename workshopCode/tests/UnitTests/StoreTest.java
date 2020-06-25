@@ -2,6 +2,7 @@ package UnitTests;
 
 import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Category;
+import DomainLayer.TradingSystem.Models.Basket;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.Models.User;

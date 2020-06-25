@@ -4,8 +4,9 @@ import DomainLayer.Security.SecurityFacade;
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class UsersHandler {
