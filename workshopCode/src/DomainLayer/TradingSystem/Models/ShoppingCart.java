@@ -211,7 +211,12 @@ public class ShoppingCart implements Serializable {
     //if such products exist, it returns them
     public void unreserveProducts() {
         for (Basket b : baskets.values()) {
-            b.unreserve();
+            try {
+                b.unreserve();
+            }
+            catch(Exception e){
+                return;
+            }
         }
     }
 
