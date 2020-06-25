@@ -45,6 +45,7 @@ public class User implements Serializable {
     public void setUsername(String name) {
         this.username = name;
         this.shoppingCart.setUserName(username);
+//        this.purchaseHistory = new UserPurchaseHistory(this); //INIT PURCHASES
     }
 
     public String getUsername() {

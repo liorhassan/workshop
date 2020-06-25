@@ -1,8 +1,10 @@
 package UnitTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Product;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -13,6 +15,11 @@ import static org.junit.Assert.*;
 public class ProductTest {
 
     Product product;
+
+    @BeforeClass
+    public static void init() {
+        PersistenceController.initiate(false);
+    }
 
     @Before
     public void setUp() throws Exception {
