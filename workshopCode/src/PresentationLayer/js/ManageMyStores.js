@@ -255,7 +255,7 @@ function initRemoveOwnerModel() {
         var username  = document.getElementById("remove-owner-name").value;
         fetch("http://localhost:8080/tradingSystem/removeStoreOwner", {
             method: "POST",
-            body: JSON.stringify( {user: username, store:store_name})
+            body: JSON.stringify( {session_id: localStorage["session_id"], user: username, store:store_name})
         })
         .then(response => {
             if (response.ok) {
