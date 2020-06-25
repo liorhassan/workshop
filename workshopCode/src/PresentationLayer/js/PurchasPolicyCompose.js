@@ -187,7 +187,7 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         rand1Select.appendChild(rand1DefaultOption);
         allSimplePolicies.forEach(policy => {
             const rand1Option = document.createElement("option");
-            rand1Option.setAttribute("value", policy.purchaseId);
+            rand1Option.setAttribute("value", policy.policyId);
             rand1Option.appendChild(document.createTextNode(policy.description));
             rand1Select.appendChild(rand1Option);
         });
@@ -230,7 +230,7 @@ function createCompStatement(compCounter, parentIndex, parentID) {
         rand2Select.appendChild(rand2DefaultOption);
         allSimplePolicies.forEach(policy => {
             const rand2Option = document.createElement("option");
-            rand2Option.setAttribute("value", policy.purchaseId);
+            rand2Option.setAttribute("value", policy.policyId);
             rand2Option.appendChild(document.createTextNode(policy.description));
             rand2Select.appendChild(rand2Option);
         });
