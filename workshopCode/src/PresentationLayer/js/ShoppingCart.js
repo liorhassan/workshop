@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
          .then(response => response.json())
          .then(setItemsToCart)
 
+
+
+
     document.getElementById("editbtn").addEventListener("click", function () {
         // items[0].amount = 20
         // setItemsToCart(items)
@@ -143,11 +146,18 @@ function setItemsToCart(items) {
     shoppingCart.innerHTML = "";
 
     // TODO: get from server total price and put in var "total"
-    document.getElementById("totalPriceContainer").innerHTML = "";
-    var total = "100$";
-    var totalPricelbl = document.createElement("h5");
-    totalPricelbl.append(document.createTextNode("Total Price: "+total));
-    document.getElementById("totalPriceContainer").appendChild(totalPricelbl);
+    fetch("http://localhost:8080/tradingSystem/cartTotalPrice", {
+            method: "POST",
+            body: JSON.stringify({session_id: localStorage["session_id"]})
+        })
+             .then(response => response.json())
+             .then((data) => {
+                document.getElementById("totalPriceContainer").innerHTML = "";
+                var totalPricelbl = document.createElement("h5");
+                totalPricelbl.append(document.createTextNode("Total Price: "+data.price));
+                document.getElementById("totalPriceContainer").appendChild(totalPricelbl);
+
+             })
 
 
     items.forEach(currItem => {
