@@ -22,7 +22,7 @@ public class StoreManagerHandler {
                 throw new IllegalArgumentException("This username doesn't exist");
             if(SystemFacade.getInstance().checkIfUserIsManager(storeName, username))
                 throw new RuntimeException("This username is already one of the store's managers");
-            if(!(SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storeName)||(SystemFacade.getInstance().checkIfActiveUserIsManager(session_id,storeName) && SystemFacade.getInstance().checkIfUserHavePermission(session_id, storeName, "Add Manager"))))
+            if(!(SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storeName)||!(SystemFacade.getInstance().checkIfActiveUserIsManager(session_id,storeName) && SystemFacade.getInstance().checkIfUserHavePermission(session_id, storeName, "Add Manager"))))
                 throw new RuntimeException("You must be this store owner for this command or store manager with permissions");
             return createJSONMsg("SUCCESS", SystemFacade.getInstance().appointManager(session_id, username, storeName));
             //return SystemFacade.getInstance().appointManager(username, storeName);
