@@ -658,6 +658,31 @@ public class Controller {
         });
 
         //accept: {session_id: ""}
+        //retrieve: {price:Integer}
+        server.createContext("/tradingSystem/cartTotalPrice", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = cartHandler.getCartTotalPrice(UUID.fromString(session_id));
+                JSONObject jo = new JSONObject();
+                jo.put("price", response);
+                response = jo.toJSONString();
+                headers.set("cartTotalPrice", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("cartTotalPrice", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {session_id: ""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/purchaseCart", he -> {
             final Headers headers = he.getResponseHeaders();
