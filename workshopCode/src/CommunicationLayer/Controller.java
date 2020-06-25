@@ -5,9 +5,8 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.sql.Date;
+import java.util.*;
 
 import ServiceLayer.*;
 import com.sun.net.httpserver.Headers;
@@ -197,6 +196,30 @@ public class Controller {
                 he.close();
             }
         });
+
+        //accept: {from_date:"", to_date:""}
+        //retrieve: [{date: "", guestCount: "", subscribedCount: "", managerCount: "", ownerCount: ""}
+        server.createContext("/tradingSystem/adminstats", he -> {
+            final Headers headers = he.getResponseHeaders();
+
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                Date from = (requestJson.containsKey("from_date")) && !requestJson.get("from_date").toString().equals("") ? Date.valueOf(requestJson.get("from_date").toString()) : null;
+                Date to = (requestJson.containsKey("to_date")) && !requestJson.get("to_date").toString().equals("") ? Date.valueOf(requestJson.get("to_date").toString()) : null;
+                String response = usersHandler.getAdminStats(from, to);
+                headers.set("adminstats", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("adminstats", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
         //-----------------------------------------SearchHandler cases------------------------------------------
         //accept: {session_id: "",name: "", category:"", keyWords:["", "", ""]}
         //retrieve: [{name:"", price:"", store:"", description:""}, ..]  OR  ERROR
@@ -285,8 +308,8 @@ public class Controller {
                 byte[] requestByte = he.getRequestBody().readAllBytes();
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
-                String userName = (requestJson.containsKey("user")) ? (String) requestJson.get("user") : null;
-                String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
+                String userName = (requestJson.containsKey("user")) ? requestJson.get("user").toString() : null;
+                String storeName = (requestJson.containsKey("store")) ? requestJson.get("store").toString() : null;
                 Boolean status = (requestJson.containsKey("status")) ? requestJson.get("status").toString().equals("approve") : false;
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
                 String response = storeHandler.responseToAppointmentRequest(UUID.fromString(session_id), userName, storeName, status);
@@ -337,15 +360,7 @@ public class Controller {
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String storeName = (requestJson.containsKey("store")) ? (String) requestJson.get("store") : null;
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
-                //String response = storeHandler.getOwnerCandidates(session_id, storeName); TODO: implement missing functionality
-                JSONArray ja = new JSONArray();
-                JSONObject jo1 = new JSONObject();
-                JSONObject jo2 = new JSONObject();
-                jo1.put("name","test1");
-                jo2.put("name","test2");
-                ja.add(jo1);
-                ja.add(jo2);
-                String response = ja.toJSONString();
+                String response = storeHandler.getAllWaitingAppointments(UUID.fromString(session_id), storeName);
                 headers.set("newOwnerCandidates", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -369,8 +384,7 @@ public class Controller {
                 String userName = (requestJson.containsKey("user")) ? ((String) requestJson.get("user")) : null;
                 String storeName = (requestJson.containsKey("store")) ? ((String) requestJson.get("store")) : null;
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
-                //String response = storeHandler.removeStoreOwner(session_id, userName, storeName);
-                String response = "";//TODO
+                String response = storeHandler.removeStoreOwner(UUID.fromString(session_id), userName, storeName);
                 headers.set("removeStoreOwner", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (ParseException e) {
@@ -644,6 +658,31 @@ public class Controller {
         });
 
         //accept: {session_id: ""}
+        //retrieve: {price:Integer}
+        server.createContext("/tradingSystem/cartTotalPrice", he -> {
+            final Headers headers = he.getResponseHeaders();
+            try {
+                byte[] requestByte = he.getRequestBody().readAllBytes();
+                JSONParser parser = new JSONParser();
+                JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
+                String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
+                String response = cartHandler.getCartTotalPrice(UUID.fromString(session_id));
+                JSONObject jo = new JSONObject();
+                jo.put("price", response);
+                response = jo.toJSONString();
+                headers.set("cartTotalPrice", String.format("application/json; charset=%s", UTF8));
+                sendResponse(he, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                headers.set("cartTotalPrice", String.format("application/json; charset=%s", UTF8));
+                sendERROR(he, e.getMessage());
+            } finally {
+                he.close();
+            }
+        });
+
+        //accept: {session_id: ""}
         //retrieve: {SUCCESS: msg} OR ERROR
         server.createContext("/tradingSystem/purchaseCart", he -> {
             final Headers headers = he.getResponseHeaders();
@@ -652,7 +691,36 @@ public class Controller {
                 JSONParser parser = new JSONParser();
                 JSONObject requestJson = (JSONObject) parser.parse(new String(requestByte));
                 String session_id = (requestJson.containsKey("session_id")) ?  (requestJson.get("session_id").toString()) : "";
-                String response = cartHandler.purchaseCart(UUID.fromString(session_id));
+                String cardNumber = (requestJson.containsKey("cardNumber")) ?  (requestJson.get("cardNumber").toString()) : "";
+                String month = (requestJson.containsKey("month")) ?  (requestJson.get("month").toString()) : "";
+                String year = (requestJson.containsKey("year")) ?  (requestJson.get("year").toString()) : "";
+                String holder = (requestJson.containsKey("holder")) ?  (requestJson.get("holder").toString()) : "";
+                String cvv = (requestJson.containsKey("cvv")) ?  (requestJson.get("cvv").toString()) : "";
+                String id = (requestJson.containsKey("id")) ?  (requestJson.get("id").toString()) : "";
+                Hashtable<String, String> paymentData = new Hashtable<>();
+                paymentData.put("action_type", "pay");
+                paymentData.put("card_number", cardNumber);
+                paymentData.put("month", month);
+                paymentData.put("year", year);
+                paymentData.put("holder", holder);
+                paymentData.put("ccv", cvv);
+                paymentData.put("id", id);
+
+                String name = (requestJson.containsKey("name")) ?  (requestJson.get("name").toString()) : "";
+                String addr = (requestJson.containsKey("addr")) ?  (requestJson.get("addr").toString()) : "";
+                String city = (requestJson.containsKey("city")) ?  (requestJson.get("city").toString()) : "";
+                String country = (requestJson.containsKey("country")) ?  (requestJson.get("country").toString()) : "";
+                String zip = (requestJson.containsKey("zip")) ?  (requestJson.get("zip").toString()) : "";
+                Hashtable<String, String> supplyData = new Hashtable<>();
+                supplyData.put("action_type", "supply");
+                supplyData.put("name", name);
+                supplyData.put("address", addr);
+                supplyData.put("city", city);
+                supplyData.put("country", country);
+                supplyData.put("zip", zip);
+
+
+                String response = cartHandler.purchaseCart(paymentData, supplyData, UUID.fromString(session_id));
                 headers.set("purchaseCart", String.format("application/json; charset=%s", UTF8));
                 sendResponse(he, response);
             } catch (Exception e) {
@@ -930,7 +998,7 @@ public class Controller {
         });
 
         //accept: {session_id}
-        //retrieve: {"", "", ...}
+        //retrieve: {loggedin: "", username: ""}
         server.createContext("/tradingSystem/isLoggedIn", he -> {
             final Headers headers = he.getResponseHeaders();
             try {
@@ -944,7 +1012,7 @@ public class Controller {
             } catch (ParseException e) {
                 e.printStackTrace();
             } catch (Exception e) {
-                headers.set("myStores", String.format("application/json; charset=%s", UTF8));
+                headers.set("isLoggedIn", String.format("application/json; charset=%s", UTF8));
                 sendERROR(he, e.getMessage());
             } finally {
                 he.close();

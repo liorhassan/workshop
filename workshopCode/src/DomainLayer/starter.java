@@ -12,7 +12,7 @@ public class starter {
     public static void main(String[] args) throws IOException, SQLException {
         PersistenceController.initiate(true);
         SystemFacade.getInstance().init();
-        (new SystemInitHandler()).initSystem();
+        (new SystemInitHandler()).initSystem("./configurations/init.ini");
         Controller.start();
     }
 }

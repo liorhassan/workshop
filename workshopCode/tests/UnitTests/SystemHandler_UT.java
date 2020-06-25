@@ -1,17 +1,5 @@
 package UnitTests;
 
-import DomainLayer.TradingSystem.Models.Basket;
-import DomainLayer.TradingSystem.Models.Store;
-import DomainLayer.TradingSystem.Models.User;
-import DomainLayer.TradingSystem.*;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.junit.Assert.*;
-
 public class SystemHandler_UT {
 /*
     private SystemFacade sys;

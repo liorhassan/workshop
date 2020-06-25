@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "storeManagings")
@@ -38,8 +39,8 @@ public class StoreManaging implements Serializable {
         this.storeName = storeName;
 
         // TODO: init from db
-        this.permissions = new LinkedList<>();
-        this.permissions.add(new Permission(("View Purchasing History")));
+        this.permissions = new ArrayList<>();
+        this.permissions.add(new Permission("View Purchasing History"));
     }
 
     public void initPermissions() throws SQLException {

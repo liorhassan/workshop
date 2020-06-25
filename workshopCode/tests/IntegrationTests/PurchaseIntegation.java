@@ -1,5 +1,6 @@
 package IntegrationTests;
 
+import DataAccessLayer.PersistenceController;
 import DomainLayer.TradingSystem.Models.Product;
 import DomainLayer.TradingSystem.Models.Store;
 import DomainLayer.TradingSystem.SystemFacade;
@@ -56,9 +57,9 @@ public class PurchaseIntegation {
         int amountBefore = inv.get(store.getProductByName("white T-shirt"));
 
         String result = (new ShoppingCartHandler()).purchaseCart(se);
-        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\"}", result);
-
-        int amountAfter = inv.get(store.getProductByName("jeans skirt"));
+        assertEquals("{\"SUCCESS\":\"Purchasing completed successfully\\nTotal price: 10.0$\"}", result);
+        inv = store.getInventory();
+        int amountAfter = inv.get(store.getProductByName("white T-shirt"));
         assertEquals(amountBefore-2, amountAfter);
         int sizePurchaseHAfter = store.getPurchaseHistory().getStorePurchases().size();
         assertEquals(sizePurchaseHBefore+1, sizePurchaseHAfter);
@@ -85,7 +86,7 @@ public class PurchaseIntegation {
             assertEquals("Payment failed", e.getMessage());
 
         }
-        int amountAfter = inv.get(store.getProductByName("jeans skirt"));
+        int amountAfter = inv.get(store.getProductByName("Michael Kors bag"));
         assertEquals(amountBefore, amountAfter);
 
         int sizePurchaseHAfter = store.getPurchaseHistory().getStorePurchases().size();
@@ -111,10 +112,10 @@ public class PurchaseIntegation {
             String result = (new ShoppingCartHandler()).purchaseCart(se);
         }
         catch (Exception e){
-            assertEquals("Payment failed", e.getMessage());
+            assertEquals("There is currently no stock of 100 white T-shirt products", e.getMessage());
 
         }
-        int amountAfter = inv.get(store.getProductByName("jeans skirt"));
+        int amountAfter = inv.get(store.getProductByName("white T-shirt"));
         assertEquals(amountBefore, amountAfter);
 
         int sizePurchaseHAfter = store.getPurchaseHistory().getStorePurchases().size();

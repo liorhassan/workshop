@@ -25,6 +25,7 @@ public class UC4_2 {
         UC3_2.init(); // user toya is logged in
         session_id = UC3_2.session_id;
         (new StoreHandler()).openNewStore(session_id, "Castro", "clothes for women and men");
+        (new StoreHandler()).openNewStore(session_id,"BUG", "digital products");
         (new StoreHandler()).openNewStore(session_id, "Lalin", "beauty products");
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Cream ocean", 40.0, "BeautyProducts", "Velvety and soft skin lotion with ocean scent", 50);
         (new StoreHandler()).UpdateInventory(session_id, "Lalin", "Body Scrub musk", 50.0, "BeautyProducts", "Deep cleaning with natural salt crystals with a musk scent", 50);
@@ -32,7 +33,9 @@ public class UC4_2 {
         (new StoreHandler()).UpdateInventory(session_id, "Castro", "jeans", 120.0, "Clothing", "blue jeans", 1000);
         (new StoreHandler()).UpdateInventory(session_id, "Castro", "black skirt", 100.0, "Clothing", "black mini-skirt", 1000);
         (new StoreHandler()).UpdateInventory(session_id, "Castro", "shoes", 100.0, "Clothing", "shoes", 50);
-
+        (new StoreHandler()).UpdateInventory(session_id,"BUG", "Ipad", 1000.0, "Clothing", "ipad 128 G", 50);
+        (new StoreHandler()).UpdateInventory(session_id,"BUG", "hp laptop", 3000.0, "Clothing", "white laptop", 50);
+        (new StoreHandler()).UpdateInventory(session_id,"BUG", "Dell laptop", 3000.0, "Clothing", "white laptop", 50);
         (new StoreHandler()).addDiscountCondProductAmount("Castro", "black skirt", 50, 1);
         (new StoreHandler()).addDiscountCondBasketProducts("Castro", "black T-Shirt","jeans", 50, 1);
         (new StoreHandler()).addDiscountRevealedProduct("Castro", "black T-Shirt", 20);
@@ -254,5 +257,72 @@ public class UC4_2 {
         (new UsersHandler()).logout(session_id);
     }
 
+    public void purchasePolicyProductTest(){
+        (new UsersHandler()).login(session_id,"toya", "1234", false);
 
+        shoppingCartHandler.AddToShoppingBasket(session_id,"BUG", "hp laptop", 1);
+        (new StoreHandler()).addPurchasePolicyProduct("BUG", "ipad", 1, false,true);
+        try{
+            shoppingCartHandler.purchaseCart(session_id);
+        }
+        catch (Exception e){
+            assertEquals("Your purchase doesn’t match the store’s policy", e.getMessage());
+            (new StoreHandler()).removePurchasePolicies("BUG");
+
+        }
+        (new StoreHandler()).removePurchasePolicies("BUG");
+
+    }
+
+    public void purchasePolicyStoreTest(){
+        (new UsersHandler()).login(session_id,"toya", "1234", false);
+
+        shoppingCartHandler.AddToShoppingBasket(session_id,"BUG", "hp laptop", 1);
+        shoppingCartHandler.AddToShoppingBasket(session_id,"BUG", "ipad", 2);
+
+        (new StoreHandler()).addPurchasePolicyStore("BUG",  4, false,true);
+        try{
+            shoppingCartHandler.purchaseCart(session_id);
+        }
+        catch (Exception e){
+            assertEquals("Your purchase doesn’t match the store’s policy", e.getMessage());
+            (new StoreHandler()).removePurchasePolicies("BUG");
+        }
+        (new StoreHandler()).removePurchasePolicies("BUG");
+
+    }
+
+    public void purchasePolicyXorTest(){
+        (new UsersHandler()).login(session_id,"toya", "1234", false);
+
+        shoppingCartHandler.AddToShoppingBasket(session_id,"BUG", "hp laptop", 1);
+        shoppingCartHandler.AddToShoppingBasket(session_id,"BUG", "Dell laptop", 1);
+
+        (new StoreHandler()).addPurchasePolicyProduct("BUG", "hp laptop", 1, false,true);
+        (new StoreHandler()).addPurchasePolicyProduct("BUG", "Dell laptop", 1, false,true);
+
+        JSONObject jsonObj1 = new JSONObject();
+        JSONObject jsonObj2 = new JSONObject();
+        JSONObject jsonObjXOR = new JSONObject();
+
+        jsonObj1.put("type", "simple");
+        jsonObj1.put("policyId", 0);
+
+        jsonObj2.put("type", "simple");
+        jsonObj2.put("policyId", 1);
+
+        jsonObjXOR.put("type", "compose");
+        jsonObjXOR.put("operand1", jsonObj1);
+        jsonObjXOR.put("operand2", jsonObj2);
+        jsonObjXOR.put("operator", "XOR");
+        jsonObjXOR.put("store", "BUG");
+        try{
+            shoppingCartHandler.purchaseCart(session_id);
+        }
+        catch (Exception e){
+            assertEquals("Your purchase doesn’t match the store’s policy", e.getMessage());
+            (new StoreHandler()).removePurchasePolicies("BUG");
+        }
+        (new StoreHandler()).removePurchasePolicies("BUG");
+    }
 }

@@ -4,6 +4,8 @@ import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -67,19 +69,20 @@ public class ShoppingCartHandler {
                 throw new RuntimeException("The shopping cart is empty");
             }
             SystemFacade.getInstance().reserveProducts(session_id);
-            SystemFacade.getInstance().computePrice(session_id);
+            double price = SystemFacade.getInstance().computePrice(session_id);
             if (!SystemFacade.getInstance().payment(session_id)) {
                 throw new RuntimeException("Payment failed");
             }
             if(!SystemFacade.getInstance().supply(session_id)){
-                throw new RuntimeException("supplement failed");
+                throw new RuntimeException("supply failed");
             }
 
             SystemFacade.getInstance().addPurchaseToHistory(session_id);
-            return createJSONMsg("SUCCESS", "Purchasing completed successfully");
+            return createJSONMsg("SUCCESS", "Purchasing completed successfully\nTotal price: "+price+"$");
 
 //            return "Purchasing completed successfully";
         }
+
         catch (Exception e) {
 //            SystemFacade.getInstance().emptyCart(session_id);
             SystemLogger.getInstance().writeError("Purchase Cart error: " + e.getMessage());
@@ -89,7 +92,43 @@ public class ShoppingCartHandler {
         }
     }
 
+    public String purchaseCart(Hashtable<String,String> paymentData, Hashtable<String,String> supplyData, UUID session_id) {
+        SystemLogger.getInstance().writeEvent("Purchase Cart command");
+        try {
+            if(emptyArg(paymentData) || emptyArg(supplyData)){
+                throw new RuntimeException("Must enter all fields");
+            }
+            if(SystemFacade.getInstance().cartIsEmpty(session_id)){
+                throw new RuntimeException("The shopping cart is empty");
+            }
+            SystemFacade.getInstance().reserveProducts(session_id);
+            SystemFacade.getInstance().computePrice(session_id);
+            if (!SystemFacade.getInstance().payment(paymentData, session_id)) {
+                throw new RuntimeException("Payment failed");
+            }
+            if(!SystemFacade.getInstance().supply(supplyData, session_id)){
+                throw new RuntimeException("supplement failed");
+            }
 
+            SystemFacade.getInstance().addPurchaseToHistory(session_id);
+            return createJSONMsg("SUCCESS", "Purchasing completed successfully");
+        }
+
+        catch (Exception e) {
+            SystemLogger.getInstance().writeError("Purchase Cart error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+
+    public boolean emptyArg(Hashtable<String,String> dic){
+        for(String s: dic.values()){
+            if(s == null || s.equals("")){
+                return true;
+            }
+        }
+        return false;
+    }
     public String getCartTotalPrice(UUID session_id){
         return SystemFacade.getInstance().getCartTotalPrice(session_id);
     }

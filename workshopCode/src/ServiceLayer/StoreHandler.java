@@ -2,16 +2,19 @@ package ServiceLayer;
 
 import DomainLayer.TradingSystem.SystemFacade;
 import DomainLayer.TradingSystem.SystemLogger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
 import java.util.UUID;
-
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class StoreHandler {
+    private Lock lock1 = new ReentrantLock();
+    private Lock lock2 = new ReentrantLock();
 
     public String openNewStore(UUID session_id, String storeName, String storeDescription){
+        lock1.lock();
         SystemLogger.getInstance().writeEvent(String.format("Open new store command: store name - %s, store description - %s", storeName, storeDescription));
         String[] args = {storeName, storeDescription};
 
@@ -22,10 +25,13 @@ public class StoreHandler {
                 throw new IllegalArgumentException("Must enter store name and description");
             if (SystemFacade.getInstance().storeExists(storeName))
                 throw new RuntimeException("Store name already exists, please choose a different one");
-            return createJSONMsg("SUCCESS", SystemFacade.getInstance().openNewStore(session_id,storeName,storeDescription));
+            String output =  createJSONMsg("SUCCESS", SystemFacade.getInstance().openNewStore(session_id,storeName,storeDescription));
+            lock1.unlock();
+            return output;
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Open new store error: " + e.getMessage());
+            lock1.unlock();
             throw new RuntimeException(e.getMessage());
             //return e.getMessage();
         }
@@ -54,7 +60,7 @@ public class StoreHandler {
         }
     }
 
-    public String responseToAppointmentRequest(UUID SessionID,  String storeName, String username, boolean isApproved) {
+    public String responseToAppointmentRequest(UUID SessionID, String username, String storeName, boolean isApproved) {
         SystemLogger.getInstance().writeEvent(String.format("Response to store owner appointment command: new owner username - %s, store name - %s",username,storeName));
         try {
             String[] args = {username, storeName};
@@ -68,7 +74,7 @@ public class StoreHandler {
                 throw new RuntimeException("You must be this store owner for this action");
             if(SystemFacade.getInstance().checkIfUserIsOwner(storeName, username))
                 throw new RuntimeException("This username is already one of the store's owners");
-            return createJSONMsg("SUCCESS", SystemFacade.getInstance().responseToAppointment(SessionID, username, storeName, isApproved));
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().responseToAppointment(SessionID, storeName, username, isApproved));
         }
         catch (Exception e){
             SystemLogger.getInstance().writeError("Response to store owner appointment error: " + e.getMessage());
@@ -90,8 +96,8 @@ public class StoreHandler {
             if(!SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storename))
                 throw new RuntimeException("You must be this store owner for this command");
             if(!SystemFacade.getInstance().isOwnerAppointer(session_id,storename, username))
-                throw new RuntimeException("This username is not one of this store's managers appointed by you");
-            return SystemFacade.getInstance().removeStoreOwner(username,storename);
+                throw new RuntimeException("This username is not one of this store's owners appointed by you");
+            return createJSONMsg("SUCCESS", SystemFacade.getInstance().removeStoreOwner(username,storename));
             //return SystemFacade.getInstance().removeManager(username,storename);
         } catch(Exception e) {
             SystemLogger.getInstance().writeError("Remove manager error: " + e.getMessage());
@@ -109,7 +115,7 @@ public class StoreHandler {
                 throw new IllegalArgumentException("Must enter store name, and product info");
             if (!SystemFacade.getInstance().storeExists(storeName))
                 throw new IllegalArgumentException("This store doesn't exist");
-            if (!SystemFacade.getInstance().userHasEditPrivileges(session_id, storeName))
+            if (!(SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storeName)) ||!SystemFacade.getInstance().userHasEditPrivileges(session_id, storeName))
                 throw new IllegalArgumentException("Must have editing privileges");
             String[] args2 = {productDes};
             if(SystemFacade.getInstance().checkIfProductExists(storeName,productName)){
@@ -132,7 +138,7 @@ public class StoreHandler {
     }
 
     public String addDiscountCondProductAmount(String storeName, String productName, int percentage, int amount) {
-
+        lock2.lock();
         try {
             String[] args = {storeName, productName};
             if (SystemFacade.getInstance().emptyString(args)) {
@@ -151,16 +157,18 @@ public class StoreHandler {
                 throw new IllegalArgumentException("Cant add the discount on this product");
             }
             SystemFacade.getInstance().addDiscountCondProductAmount(storeName, productName, percentage, amount);
+            lock2.unlock();
             return createJSONMsg("SUCCESS", "The discount has been added successfully");
 
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("Add Discount For product: " + e.getMessage());
+            lock2.unlock();
             throw new RuntimeException(e.getMessage());
         }
     }
 
     public String addDiscountRevealedProduct(String storeName, String productName, int percentage){
-
+        lock2.lock();
         try{
             String[] args = {storeName, productName};
             if(SystemFacade.getInstance().emptyString(args)){
@@ -172,21 +180,23 @@ public class StoreHandler {
             if(!SystemFacade.getInstance().storeExists(storeName)){
                 throw new IllegalArgumentException("The store doesn't exist");
             }
-            if(!SystemFacade.getInstance().checkIfProductExists(storeName, productName) && SystemFacade.getInstance().productHasDiscount(storeName, productName)){
+            if((!SystemFacade.getInstance().checkIfProductExists(storeName, productName)) || SystemFacade.getInstance().productHasDiscount(storeName, productName)){
                 throw new IllegalArgumentException("Cant add the discount on this product");
             }
             SystemFacade.getInstance().addDiscountRevealedProduct(storeName, productName, percentage );
+            lock2.unlock();
             return createJSONMsg("SUCCESS","The discount has been added successfully");
 
         }
         catch(Exception e){
             SystemLogger.getInstance().writeError("Add Discount For product: " + e.getMessage());
+            lock2.unlock();
             throw new RuntimeException(e.getMessage());
         }
     }
 
     public String addDiscountCondBasketProducts(String storeName, String productDiscount, String condProduct, int percentage, int amount){
-
+        lock2.lock();
         try{
             String[] args = {storeName, productDiscount, condProduct};
             if(SystemFacade.getInstance().emptyString(args)){
@@ -205,16 +215,19 @@ public class StoreHandler {
                 throw new IllegalArgumentException("productCond or productDiscount does not exist in the store");
             }
             SystemFacade.getInstance().addDiscountCondBasketProducts(storeName, productDiscount, condProduct, percentage, amount);
+            lock2.unlock();
             return createJSONMsg("SUCCESS","The discount has been added successfully");
 
         }
         catch(Exception e){
             SystemLogger.getInstance().writeError("Add Discount For product: " + e.getMessage());
+            lock2.unlock();
             throw new RuntimeException(e.getMessage());
         }
     }
 
     public String addDiscountForBasketPriceOrAmount(String storeName,  int percentage, int amount, boolean onPrice) {
+        lock2.lock();
         try {
             String[] args = {storeName};
             if (SystemFacade.getInstance().emptyString(args)) {
@@ -231,10 +244,12 @@ public class StoreHandler {
             }
 
             SystemFacade.getInstance().addDiscountOnBasket(storeName, percentage, amount, onPrice);
+            lock2.unlock();
             return createJSONMsg("SUCCESS","The discount has been added successfully");
 
         } catch (Exception e) {
             SystemLogger.getInstance().writeError("Add Discount For Basket error: " + e.getMessage());
+            lock2.unlock();
             throw new RuntimeException(e.getMessage());
         }
 
@@ -360,13 +375,16 @@ public class StoreHandler {
     }
 
     public String addDiscountPolicy(String discountPolicy){
+        lock2.lock();
         try{
 
             String result = SystemFacade.getInstance().addDiscountPolicy(discountPolicy);
+            lock2.unlock();
             return createJSONMsg("SUCCESS", result);
         }
         catch (Exception e) {
             SystemLogger.getInstance().writeError("Add Discount Policy error: " + e.getMessage());
+            lock2.unlock();
             throw new RuntimeException(e.getMessage());
         }
     }

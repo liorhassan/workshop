@@ -35,7 +35,7 @@ public class StoreOwning implements Serializable {
         this.storeName = storeName;
         this.appointeeName = appointeeName;
         permissions = new ArrayList<>();
-        String[] perms = {"Add Manager", "Add Owner", "Remove Manager", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add New Purchase Policy"};
+        String[] perms = {"Add Owner", "Add Manager", "Remove Owner", "Remove Manager", "Approve New Owner", "Edit Permissions", "Manage Supply", "View Purchasing History", "Add New Discount", "Add New Purchase Policy"};
         for(String p : perms)
             permissions.add(new Permission(p));
 
@@ -45,7 +45,7 @@ public class StoreOwning implements Serializable {
 
     public StoreOwning(User appointer, String storeName, String appointeeName) throws SQLException {
         this.appointer = appointer;
-        this.appointeeName = appointerName;
+        this.appointerName = appointer.getUsername();
         this.storeName = storeName;
         this.appointeeName = appointeeName;
         this.permissions = new ArrayList<>();

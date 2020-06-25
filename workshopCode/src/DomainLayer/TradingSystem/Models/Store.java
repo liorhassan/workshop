@@ -172,7 +172,7 @@ public class Store implements Serializable {
     public boolean hasRevDiscountOnProduct(String productName) {
         Product product = getProductByName(productName);
         for (DiscountBInterface dis : discountsOnProducts) {
-            if (dis instanceof DiscountCondProductAmount) {
+            if (dis instanceof DiscountRevealedProduct) {
                 if (((DiscountRevealedProduct) dis).getProductDiscount().getName().equals(productName)) {
                     return true;
                 }
@@ -283,13 +283,14 @@ public class Store implements Serializable {
 
     // before activating this function make sure the new Owner is registered!!!
     // the function will return true if added successfully and false if the user is already an owner
-    public void addStoreOwner(User newOwner, User appointer) throws SQLException {
+    public String addStoreOwner(User newOwner, User appointer) throws SQLException {
         if (ownerships.size() == 1) {
             NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
             StoreOwning storeOwning = new StoreOwning(appointer, name, newOwner.getUsername());
             ownerships.put(newOwner, storeOwning);
             newOwner.addOwnedStore(this, storeOwning);
-            PersistenceController.create(ownerships);
+            PersistenceController.create(storeOwning);
+            return "the appointment of the new owner is done successfully";
         } else {
             if (!waitingAgreements.containsKey(newOwner))
                 this.waitingAgreements.put(newOwner, new AppointmentAgreement(ownerships.keySet(), appointer));
@@ -301,6 +302,8 @@ public class Store implements Serializable {
             }
             NotificationSystem.getInstance().notify(newOwner.getUsername(), "Your appointment as owner of" + name + "store, is waiting to be approved");
         }
+        return "the appointment of the new owner is waiting for the owners response";
+
     }
 
     public void addStoreOwner(User u, StoreOwning so) {
@@ -308,20 +311,22 @@ public class Store implements Serializable {
     }
 
     //UC 4.3
-    public void approveAppointment(User waitingForApprove, User approveOwner) throws SQLException {
+    public String approveAppointment(User waitingForApprove, User approveOwner) throws SQLException {
         AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
         apag.approve(approveOwner);
         if (apag.getWaitingForResponse().size() == 0) {
-            if (apag.getDeclined().size() != 0) {
+            if (apag.getDeclined().size() == 0) {
                 StoreOwning storeOwning = new StoreOwning(apag.getTheAppointerUser(), name, "");//TODO: apointeeName?????
                 ownerships.put(waitingForApprove, storeOwning);
                 waitingAgreements.remove(waitingForApprove);
-                PersistenceController.create(ownerships);
+                waitingForApprove.addOwnedStore(this, storeOwning);
+                PersistenceController.create(storeOwning);
 
                 //notify that the appointment approved )
                 for(User u: ownerships.keySet()) {
                     NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is approved");
                 }
+                return "your response was updated successfully - the new appointment approved";
             }
             else {
                 waitingAgreements.remove(waitingForApprove);
@@ -329,15 +334,26 @@ public class Store implements Serializable {
                 for(User u: ownerships.keySet()) {
                     NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is declined");
                 }
-
+                return "your response was updated successfully - the new appointment declined";
             }
         }
+        return "your response was updated successfully";
     }
 
     //UC 4.3
-    public void declinedAppointment(User waitingForApprove, User declinedOwner) {
+    public String declinedAppointment(User waitingForApprove, User declinedOwner) {
         AppointmentAgreement apag = waitingAgreements.get(waitingForApprove);
         apag.decline(declinedOwner);
+        if (apag.getWaitingForResponse().size() == 0) {
+            waitingAgreements.remove(waitingForApprove);
+            //notify that the appointment declined
+            for(User u: ownerships.keySet()) {
+                NotificationSystem.getInstance().notify(u.getUsername(), "the appointment of the user: " + waitingForApprove.getUsername() + " as owner of: " + getName() + " is declined");
+            }
+            return "your response was updated successfully - the new appointment declined";
+        }
+        return "your response was updated successfully";
+
     }
 
 
@@ -347,7 +363,7 @@ public class Store implements Serializable {
         //this field save all the inventory that have been reserved
         for (PurchasePolicy p : purchasePolicies) {
             if (!p.purchaseAccordingToPolicy(b))
-                throw new RuntimeException("Your purchase doesn’t match the store’s policy");
+                throw new RuntimeException("Your purchase doesn’t match the store’s policy, details: "+ p.getPurchaseDescription());
         }
         Collection<ProductItem> products = b.getProductItems();
         for (ProductItem pi : products) {
@@ -641,25 +657,31 @@ public class Store implements Serializable {
 
     }
 
-    public void removeOwner(User user){
+    public String removeOwner(User user){
+        String output = "more appointments was deleted: ";
         for(User manUser : managements.keySet()){
             if(managements.get(manUser).getAppointer().equals(user)){
                 //sand alert to the user being removed from managers list
                 NotificationSystem.getInstance().notify(manUser.getUsername(), "your appointment as manager of: " + getName() + " is canceled");
                 manUser.removeStoreManagement(this);
                 managements.remove(manUser);
+                output = output + manUser.getUsername()+"-manager ";
             }
         }
         for(User ownUser : ownerships.keySet()){
-            if(ownerships.get(ownUser).getAppointer().equals(user)){
+            if(ownerships.get(ownUser).getAppointer()!= null && ownerships.get(ownUser).getAppointer().equals(user)){
                 //sand alert to the user being removed from owners list
                 NotificationSystem.getInstance().notify(ownUser.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
-                ownUser.getStoreOwnings().remove(this);
+                ownUser.removeStoreOwning(this);
                 ownerships.remove(ownUser);
+                output = output + ownUser.getUsername()+"-owner ";
+
             }
         }
         NotificationSystem.getInstance().notify(user.getUsername(), "your appointment as owner of: " + getName() + " is canceled");
         ownerships.remove(user);
+        user.removeStoreOwning(this);
+        return output;
     }
 
 }

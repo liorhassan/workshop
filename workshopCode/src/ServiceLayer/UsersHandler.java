@@ -6,7 +6,6 @@ import DomainLayer.TradingSystem.SystemLogger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 public class UsersHandler {
@@ -114,7 +113,21 @@ public class UsersHandler {
     }
 
     public String isLoggedIn(UUID sessin_id){
-        return SystemFacade.getInstance().checkIfActiveUserSubscribed(sessin_id) ? createJSONMsg("loggedin","True") : createJSONMsg("loggedin","False");
+        JSONObject response = new JSONObject();
+        response.put("username", SystemFacade.getInstance().getLoggedInUsername(sessin_id));
+        if(SystemFacade.getInstance().checkIfActiveUserSubscribed(sessin_id))
+            response.put("loggedin","True");
+        else
+            response.put("loggedin","False");
+        return response.toJSONString();
+    }
+
+    public String getAdminStats(Date from, Date to){
+        if(from == null || to == null)
+            throw new IllegalArgumentException("From Date And To Date Must Be Entered");
+        if(from.after(to))
+            throw new IllegalArgumentException("To Date Cant Be Smaller Then From Date");
+        return SystemFacade.getInstance().getAdminStats(from, to);
     }
 
 }
