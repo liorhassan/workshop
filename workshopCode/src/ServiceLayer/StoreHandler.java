@@ -59,7 +59,7 @@ public class StoreHandler {
         }
     }
 
-    public String responseToAppointmentRequest(UUID SessionID,  String storeName, String username, boolean isApproved) {
+    public String responseToAppointmentRequest(UUID SessionID, String username, String storeName, boolean isApproved) {
         SystemLogger.getInstance().writeEvent(String.format("Response to store owner appointment command: new owner username - %s, store name - %s",username,storeName));
         try {
             String[] args = {username, storeName};
@@ -114,7 +114,7 @@ public class StoreHandler {
                 throw new IllegalArgumentException("Must enter store name, and product info");
             if (!SystemFacade.getInstance().storeExists(storeName))
                 throw new IllegalArgumentException("This store doesn't exist");
-            if (!SystemFacade.getInstance().userHasEditPrivileges(session_id, storeName))
+            if (!(SystemFacade.getInstance().checkIfActiveUserIsOwner(session_id, storeName)) ||!SystemFacade.getInstance().userHasEditPrivileges(session_id, storeName))
                 throw new IllegalArgumentException("Must have editing privileges");
             String[] args2 = {productDes};
             if(SystemFacade.getInstance().checkIfProductExists(storeName,productName)){

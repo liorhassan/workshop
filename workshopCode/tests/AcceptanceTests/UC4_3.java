@@ -60,7 +60,7 @@ public class UC4_3 {
         //declined
         String result2 = storeHandler.addStoreOwner(session_id,"lior","KKW");
         assertEquals("{\"SUCCESS\":\"the appointment of the new owner is waiting for the owners response\"}", result2);
-        String result3 = storeHandler.responseToAppointmentRequest(sessionId2,"KKW","lior",false);
+        String result3 = storeHandler.responseToAppointmentRequest(sessionId2,"lior","KKW",false);
         assertEquals("{\"SUCCESS\":\"your response was updated successfully - the new appointment declined\"}", result3);
      (new UsersHandler()).logout(sessionId2);
 
@@ -76,7 +76,7 @@ public class UC4_3 {
       //approved
         String result4 = storeHandler.addStoreOwner(session_id,"lior","KKW");
         assertEquals("{\"SUCCESS\":\"the appointment of the new owner is waiting for the owners response\"}", result4);
-        String result5 = storeHandler.responseToAppointmentRequest(sessionId2,"KKW","lior",true);
+        String result5 = storeHandler.responseToAppointmentRequest(sessionId2,"lior", "KKW",true);
         assertEquals("{\"SUCCESS\":\"your response was updated successfully - the new appointment approved\"}", result5);
         (new UsersHandler()).logout(sessionId2);
 
